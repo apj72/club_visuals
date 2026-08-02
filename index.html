@@ -1,0 +1,1087 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Instagram Video Saver</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #1a1a2e;
+    color: #e0e0e0;
+    min-height: 100vh;
+    padding: 20px;
+  }
+
+  .header {
+    max-width: 1100px;
+    margin: 0 auto 20px;
+  }
+
+  .main-layout {
+    display: flex;
+    gap: 24px;
+    max-width: 1100px;
+    margin: 0 auto;
+    align-items: flex-start;
+  }
+
+  .left-col {
+    flex: 1;
+    min-width: 0;
+    position: sticky;
+    top: 20px;
+  }
+
+  .right-col {
+    width: 280px;
+    flex-shrink: 0;
+    max-height: calc(100vh - 40px);
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #333 transparent;
+  }
+
+  .right-col::-webkit-scrollbar { width: 6px; }
+  .right-col::-webkit-scrollbar-track { background: transparent; }
+  .right-col::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+
+  h1 {
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin-bottom: 24px;
+    color: #fff;
+    text-align: center;
+  }
+
+  .input-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  input[type="text"] {
+    flex: 1;
+    padding: 12px 16px;
+    border: 1px solid #333;
+    border-radius: 8px;
+    background: #16213e;
+    color: #fff;
+    font-size: 0.95rem;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  input[type="text"]:focus {
+    border-color: #e94560;
+  }
+
+  input[type="text"]::placeholder {
+    color: #666;
+  }
+
+  button {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.1s;
+  }
+
+  button:active { transform: scale(0.97); }
+  button:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+  .btn-download {
+    background: #e94560;
+    color: #fff;
+    white-space: nowrap;
+  }
+
+  .status {
+    font-size: 0.85rem;
+    color: #888;
+    min-height: 20px;
+    margin-bottom: 16px;
+    word-break: break-word;
+  }
+
+  .status.error { color: #e94560; }
+  .status.success { color: #4ecca3; }
+
+  .player-section {
+    display: none;
+    margin-top: 20px;
+    border-top: 1px solid #333;
+    padding-top: 20px;
+  }
+
+  .player-section.visible { display: block; }
+
+  .video-wrap {
+    position: relative;
+    background: #000;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .video-wrap:fullscreen { border-radius: 0; }
+
+  /* --- Video stage layouts --- */
+
+  .video-stage {
+    display: flex;
+    width: 100%;
+  }
+
+  .video-stage video {
+    width: 100%;
+    display: block;
+    background: #000;
+    max-height: 70vh;
+  }
+
+  .video-stage .video-clone { display: none; }
+
+  /* Dual */
+  .video-wrap.dual .video-stage video { width: 50%; }
+  .video-wrap.dual .video-stage .video-clone { display: block; }
+
+  /* Octo */
+  .video-wrap.octo .video-stage {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+  }
+  .video-wrap.octo .video-stage video {
+    width: 100%;
+    max-height: 35vh;
+  }
+  .video-wrap.octo .video-stage .video-clone { display: block; }
+
+  /* Fullscreen — single */
+  .video-wrap:fullscreen .video-stage video {
+    max-height: 100vh;
+    height: 100vh;
+    object-fit: contain;
+  }
+
+  /* Fullscreen — dual: fill each half, crop outer edges */
+  .video-wrap.dual:fullscreen .video-stage {
+    height: 100vh;
+  }
+  .video-wrap.dual:fullscreen .video-stage video {
+    height: 100vh;
+    max-height: 100vh;
+    object-fit: cover;
+    object-position: center center;
+  }
+
+  /* Fullscreen — octo: fill each cell, crop edges */
+  .video-wrap.octo:fullscreen .video-stage {
+    height: 100vh;
+  }
+  .video-wrap.octo:fullscreen .video-stage video {
+    height: 50vh;
+    max-height: 50vh;
+    object-fit: cover;
+    object-position: center center;
+  }
+
+  /* --- Controls --- */
+
+  .controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 12px;
+    flex-wrap: wrap;
+  }
+
+  .video-wrap:fullscreen .controls {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: 0;
+    padding: 12px 16px;
+    background: linear-gradient(transparent, rgba(0,0,0,0.8));
+    opacity: 1;
+    transition: opacity 0.3s;
+  }
+
+  .video-wrap:fullscreen .controls.hidden {
+    opacity: 0;
+    cursor: none;
+  }
+
+  .btn-play { background: #4ecca3; color: #1a1a2e; padding: 10px 20px; }
+
+  .btn-ctrl {
+    background: #16213e;
+    color: #888;
+    border: 1px solid #333;
+    padding: 10px 16px;
+    font-size: 0.85rem;
+  }
+
+  .btn-ctrl.active {
+    color: #4ecca3;
+    border-color: #4ecca3;
+  }
+
+  .slider-wrap { display: none; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .slider-wrap.visible { display: flex; }
+  .config-slider { width: 140px; accent-color: #4ecca3; cursor: pointer; }
+  .config-label { font-size: 0.75rem; color: #888; min-width: 20px; }
+  .preset-btn {
+    background: #16213e; color: #888; border: 1px solid #333;
+    padding: 4px 7px; font-size: 0.7rem; border-radius: 4px;
+    cursor: pointer; font-weight: 600;
+  }
+  .preset-btn.active { color: #4ecca3; border-color: #4ecca3; }
+
+  .btn-fullscreen.active {
+    color: #e94560 !important;
+    border-color: #e94560 !important;
+  }
+
+  .filename {
+    flex: 1;
+    font-size: 0.8rem;
+    color: #666;
+    text-align: right;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* --- Library --- */
+
+  .library h2 {
+    font-size: 0.9rem;
+    color: #888;
+    margin-bottom: 12px;
+  }
+
+  .library-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .library-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #16213e;
+    transition: background 0.15s;
+    padding: 6px;
+  }
+
+  .library-item:hover { background: #1f2b4d; }
+
+  .library-item.active {
+    background: #1f2b4d;
+    outline: 2px solid #4ecca3;
+  }
+
+  .library-item img {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    display: block;
+    background: #111;
+    border-radius: 4px;
+    flex-shrink: 0;
+  }
+
+  .library-item .label {
+    font-size: 0.75rem;
+    color: #999;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    word-break: break-word;
+  }
+
+  /* --- Tabs --- */
+  .tab-bar { display: flex; gap: 0; margin-bottom: 12px; }
+  .tab {
+    flex: 1; padding: 8px; font-size: 0.8rem; font-weight: 600;
+    background: #16213e; color: #666; border: 1px solid #333;
+    cursor: pointer; text-align: center;
+  }
+  .tab:first-child { border-radius: 6px 0 0 6px; }
+  .tab:last-child { border-radius: 0 6px 6px 0; }
+  .tab.active { color: #4ecca3; border-color: #4ecca3; background: #1a2744; }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  /* --- Playlist Editor --- */
+  .pl-header { display: flex; gap: 6px; margin-bottom: 8px; align-items: center; }
+  .pl-select, .pl-name-input, .pl-video-select {
+    width: 100%; padding: 8px; font-size: 0.8rem;
+    background: #16213e; color: #fff; border: 1px solid #333; border-radius: 6px;
+    margin-bottom: 8px;
+  }
+  .pl-header .pl-select { flex: 1; margin-bottom: 0; }
+  .pl-entries { margin-bottom: 12px; min-height: 20px; }
+  .pl-entry {
+    display: flex; align-items: center; gap: 6px;
+    padding: 6px 8px; margin-bottom: 4px;
+    background: #16213e; border-radius: 6px; font-size: 0.72rem; color: #aaa;
+  }
+  .pl-entry.active { outline: 2px solid #4ecca3; }
+  .pl-entry .pl-e-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .pl-entry .pl-e-badge {
+    padding: 2px 5px; border-radius: 3px; font-size: 0.65rem; font-weight: 600;
+    background: #333; color: #4ecca3; white-space: nowrap;
+  }
+  .pl-entry .pl-e-dur { color: #888; white-space: nowrap; font-size: 0.65rem; }
+  .pl-entry .pl-e-btn {
+    background: none; border: none; color: #666; font-size: 0.8rem;
+    cursor: pointer; padding: 0 3px; line-height: 1;
+  }
+  .pl-entry .pl-e-btn:hover { color: #e94560; }
+  .pl-video-picker { position: relative; margin-bottom: 8px; }
+  .pl-video-selected {
+    display: flex; align-items: center; gap: 8px;
+    padding: 6px 8px; background: #16213e; border: 1px solid #333;
+    border-radius: 6px; cursor: pointer; font-size: 0.8rem; color: #999;
+  }
+  .pl-video-selected img { width: 36px; height: 36px; object-fit: cover; border-radius: 3px; flex-shrink: 0; }
+  .pl-video-selected .pl-vs-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .pl-video-selected .pl-vs-arrow { color: #555; font-size: 0.7rem; }
+  .pl-video-dropdown {
+    display: none; position: absolute; left: 0; right: 0; top: 100%; margin-top: 2px;
+    background: #16213e; border: 1px solid #4ecca3; border-radius: 6px;
+    max-height: 200px; overflow-y: auto; z-index: 20;
+    scrollbar-width: thin; scrollbar-color: #333 transparent;
+  }
+  .pl-video-dropdown.open { display: block; }
+  .pl-video-option {
+    display: flex; align-items: center; gap: 8px;
+    padding: 6px 8px; cursor: pointer; font-size: 0.75rem; color: #ccc;
+  }
+  .pl-video-option:hover { background: #1f2b4d; }
+  .pl-video-option.selected { background: #1a2744; color: #4ecca3; }
+  .pl-video-option img { width: 40px; height: 40px; object-fit: cover; border-radius: 3px; flex-shrink: 0; }
+  .pl-video-option .pl-vo-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+  .pl-add-form {
+    background: #111827; border-radius: 8px; padding: 10px; margin-bottom: 10px;
+  }
+  .pl-add-form h3 { font-size: 0.75rem; color: #666; margin-bottom: 8px; }
+  .pl-add-row { display: flex; gap: 6px; margin-bottom: 6px; }
+  .pl-add-row select, .pl-add-row input {
+    flex: 1; padding: 6px; font-size: 0.8rem;
+    background: #16213e; color: #fff; border: 1px solid #333; border-radius: 4px;
+  }
+  .pl-btn {
+    padding: 6px 12px; font-size: 0.75rem; font-weight: 600;
+    background: #16213e; color: #888; border: 1px solid #333; border-radius: 6px;
+    cursor: pointer;
+  }
+  .pl-btn:hover { color: #fff; }
+  .pl-btn-add { width: 100%; color: #4ecca3; border-color: #4ecca3; }
+  .pl-actions { display: flex; gap: 6px; }
+  .pl-actions .pl-btn { flex: 1; text-align: center; }
+  .pl-btn-save { color: #4ecca3; border-color: #4ecca3; }
+  .pl-btn-play { color: #1a1a2e; background: #4ecca3; border-color: #4ecca3; }
+
+  /* --- Playlist Indicator --- */
+  .pl-indicator {
+    display: none; align-items: center; gap: 10px;
+    padding: 8px 12px; background: rgba(0,0,0,0.7); color: #fff; font-size: 0.8rem;
+  }
+  .pl-indicator span { flex: 1; }
+  .pl-ind-btn {
+    padding: 4px 10px; font-size: 0.75rem; font-weight: 600;
+    background: #333; color: #fff; border: 1px solid #555; border-radius: 4px;
+    cursor: pointer;
+  }
+  .pl-ind-btn:hover { background: #555; }
+  .video-wrap:fullscreen .pl-indicator {
+    position: absolute; top: 0; left: 0; right: 0; z-index: 10;
+    opacity: 1; transition: opacity 0.3s;
+  }
+  .video-wrap:fullscreen .pl-indicator.hidden { opacity: 0; }
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>Instagram Video Saver</h1>
+
+  <div class="input-row">
+    <input type="text" id="url" placeholder="Paste Instagram URL here..." autofocus>
+    <button class="btn-download" id="downloadBtn" onclick="download()">Download</button>
+  </div>
+
+  <div class="status" id="status"></div>
+</div>
+
+<div class="main-layout">
+  <div class="left-col">
+    <div class="player-section" id="playerSection">
+      <div class="video-wrap" id="videoWrap">
+        <div class="pl-indicator" id="plIndicator">
+          <span id="plIndicatorText"></span>
+          <button class="pl-ind-btn" onclick="plNext()">Next</button>
+          <button class="pl-ind-btn" onclick="stopPlaylist()">Stop</button>
+        </div>
+        <div class="video-stage" id="videoStage">
+          <video id="video" playsinline></video>
+        </div>
+        <div class="controls" id="controls">
+          <button class="btn-play" id="playBtn" onclick="togglePlay()">Play</button>
+          <button class="btn-ctrl" id="loopBtn" onclick="toggleLoop()">Loop: Off</button>
+          <button class="btn-ctrl" id="muteBtn" onclick="toggleMute()">Mute</button>
+          <button class="btn-ctrl" id="viewBtn" onclick="cycleView()">Dual</button>
+          <span class="slider-wrap" id="sliderWrap"><input type="range" class="config-slider" id="configSlider" min="1" max="32" value="1"><span class="config-label" id="configLabel">1</span><span id="presetContainer"></span></span>
+          <button class="btn-ctrl btn-fullscreen" id="fsBtn" onclick="toggleFullscreen()">Fullscreen</button>
+          <span class="filename" id="filename"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="right-col">
+    <div class="tab-bar">
+      <button class="tab active" onclick="switchTab('library')">Library</button>
+      <button class="tab" onclick="switchTab('playlist')">Playlist</button>
+    </div>
+    <div class="tab-content active" id="libraryTab">
+      <div class="library" id="librarySection" style="display:none">
+        <div class="library-grid" id="libraryGrid"></div>
+      </div>
+    </div>
+    <div class="tab-content" id="playlistTab">
+      <div class="pl-header">
+        <select class="pl-select" id="plSelect" onchange="loadPlaylistBySlug(this.value)"></select>
+        <button class="pl-btn" onclick="newPlaylist()">New</button>
+        <button class="pl-btn" onclick="deletePlaylistConfirm()">Del</button>
+      </div>
+      <input type="text" class="pl-name-input" id="plName" placeholder="Playlist name...">
+      <div class="pl-entries" id="plEntries"></div>
+      <div class="pl-add-form">
+        <h3>Add Entry</h3>
+        <div class="pl-video-picker" id="plVideoPicker">
+          <div class="pl-video-selected" id="plVideoSelected" onclick="toggleVideoDropdown()">
+            <span class="pl-vs-name">Select video...</span>
+            <span class="pl-vs-arrow">▼</span>
+          </div>
+          <div class="pl-video-dropdown" id="plVideoDropdown"></div>
+        </div>
+        <div class="pl-add-row">
+          <select id="plView">
+            <option value="single">Single</option>
+            <option value="dual">Dual</option>
+            <option value="octo">8x</option>
+          </select>
+          <select id="plPreset"></select>
+        </div>
+        <div class="pl-add-row">
+          <select id="plDurType">
+            <option value="loops">Loops</option>
+            <option value="seconds">Seconds</option>
+          </select>
+          <input type="number" id="plDurVal" min="1" value="5">
+        </div>
+        <button class="pl-btn pl-btn-add" onclick="addEntry()">Add</button>
+      </div>
+      <div class="pl-actions">
+        <button class="pl-btn pl-btn-save" onclick="savePlaylist()">Save</button>
+        <button class="pl-btn pl-btn-play" onclick="startPlaylist()">Play</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const videoStage = document.getElementById('videoStage');
+  const videoWrap = document.getElementById('videoWrap');
+  const video = document.getElementById('video');
+  const playBtn = document.getElementById('playBtn');
+  const loopBtn = document.getElementById('loopBtn');
+  const muteBtn = document.getElementById('muteBtn');
+  const viewBtn = document.getElementById('viewBtn');
+  const sliderWrap = document.getElementById('sliderWrap');
+  const configSlider = document.getElementById('configSlider');
+  const configLabel = document.getElementById('configLabel');
+  const fsBtn = document.getElementById('fsBtn');
+  const controlsEl = document.getElementById('controls');
+  const filenameEl = document.getElementById('filename');
+  const playerSection = document.getElementById('playerSection');
+  const librarySection = document.getElementById('librarySection');
+  const libraryGrid = document.getElementById('libraryGrid');
+
+  let looping = false;
+  let hideTimer = null;
+  let currentFilename = null;
+
+  // View: 0=single, 1=dual, 2=octo
+  let viewMode = 0;
+  const VIEW_NAMES = ['single', 'dual', 'octo'];
+  const VIEW_LABELS = ['Dual', '8x', 'Single'];
+
+  let configIdx = 0;
+  let clones = [];
+  let videoListCache = [];
+
+  const H_RULES = [
+    [0,0,0,0], [0,0,1,1], [1,0,0,1], [0,1,1,0],
+    [1,1,1,1], [1,1,0,0], [0,1,0,1], [1,0,1,0],
+  ];
+  const V_RULES = [[0,0], [0,1], [1,0], [1,1]];
+  const CONFIGS = [];
+  for (let h = 0; h < 8; h++) {
+    for (let v = 0; v < 4; v++) {
+      const t = [];
+      for (let i = 0; i < 8; i++) {
+        const fh = H_RULES[h][i % 4], fv = V_RULES[v][i >> 2];
+        t.push(fh && fv ? 'scaleX(-1) scaleY(-1)' : fh ? 'scaleX(-1)' : fv ? 'scaleY(-1)' : '');
+      }
+      CONFIGS.push(t);
+    }
+  }
+
+
+  // --- Events ---
+
+  document.getElementById('url').addEventListener('keydown', e => {
+    if (e.key === 'Enter') download();
+  });
+
+  video.addEventListener('play', () => { playBtn.textContent = 'Pause'; });
+  video.addEventListener('pause', () => { playBtn.textContent = 'Play'; });
+  video.addEventListener('ended', () => { playBtn.textContent = 'Play'; });
+
+  video.addEventListener('timeupdate', () => {
+    if (looping && video.duration && video.currentTime > video.duration - 0.15) {
+      video.currentTime = 0;
+      video.play();
+      if (plPlaying) {
+        plLoopCount++;
+        updatePlIndicator();
+        const entry = plPlaylist.entries[plEntryIdx];
+        if (entry && entry.duration.type === 'loops' && plLoopCount >= entry.duration.value) {
+          onEntryComplete();
+        }
+      }
+    }
+  });
+
+  videoWrap.addEventListener('mousemove', showControls);
+  videoWrap.addEventListener('click', showControls);
+
+  document.addEventListener('fullscreenchange', () => {
+    const isFs = !!document.fullscreenElement;
+    fsBtn.textContent = isFs ? 'Exit Fullscreen' : 'Fullscreen';
+    fsBtn.classList.toggle('active', isFs);
+    if (isFs) {
+      showControls();
+    } else {
+      clearTimeout(hideTimer);
+      controlsEl.classList.remove('hidden');
+    }
+  });
+
+  function showControls() {
+    if (!document.fullscreenElement) return;
+    controlsEl.classList.remove('hidden');
+    if (plPlaying) plIndicator.classList.remove('hidden');
+    videoWrap.style.cursor = '';
+    clearTimeout(hideTimer);
+    hideTimer = setTimeout(() => {
+      controlsEl.classList.add('hidden');
+      if (plPlaying) plIndicator.classList.add('hidden');
+      videoWrap.style.cursor = 'none';
+    }, 1500);
+  }
+
+  loadLibrary();
+
+  // --- Clone management ---
+
+  function buildClones(count) {
+    destroyClones();
+    if (!video.src) return;
+    const stream = video.captureStream ? video.captureStream() : null;
+    for (let i = 1; i <= count; i++) {
+      const c = document.createElement('video');
+      c.className = 'video-clone';
+      c.setAttribute('playsinline', '');
+      c.muted = true;
+      if (stream) {
+        c.srcObject = stream;
+      } else {
+        c.src = video.src;
+        c.currentTime = video.currentTime;
+      }
+      c.dataset.pos = i;
+      videoStage.appendChild(c);
+      clones.push(c);
+      c.play().catch(() => {});
+    }
+    video.dataset.pos = '0';
+    applyTransforms();
+  }
+
+  function destroyClones() {
+    clones.forEach(c => { c.pause(); c.srcObject = null; c.remove(); });
+    clones = [];
+    delete video.dataset.pos;
+    video.style.transform = '';
+  }
+
+  function applyTransforms() {
+    if (viewMode === 0) { video.style.transform = ''; return; }
+    const cfg = CONFIGS[configIdx];
+    if (viewMode === 1) {
+      video.style.transform = cfg[0];
+      clones.forEach(c => { c.style.transform = cfg[3]; });
+    } else {
+      video.style.transform = cfg[0];
+      clones.forEach(c => { c.style.transform = cfg[parseInt(c.dataset.pos)]; });
+    }
+  }
+
+  // --- Controls ---
+
+  async function download() {
+    const url = document.getElementById('url').value.trim();
+    if (!url) return;
+
+    if (!url.includes('instagram.com')) {
+      setStatus('Not an Instagram URL.', 'error');
+      return;
+    }
+
+    document.getElementById('downloadBtn').disabled = true;
+    setStatus('Starting download...', '');
+
+    try {
+      const res = await fetch('/download', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url })
+      });
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+
+        const parts = buffer.split('\n\n');
+        buffer = parts.pop();
+
+        for (const part of parts) {
+          const line = part.replace(/^data: /, '');
+          if (!line) continue;
+          try {
+            const msg = JSON.parse(line);
+            if (msg.status === 'progress') {
+              setStatus(msg.message, '');
+            } else if (msg.status === 'done') {
+              setStatus('Download complete!', 'success');
+              showVideo(msg.filename);
+              loadLibrary();
+            } else if (msg.status === 'error') {
+              setStatus(msg.message || 'Download failed.', 'error');
+            }
+          } catch {}
+        }
+      }
+    } catch (err) {
+      setStatus('Connection error: ' + err.message, 'error');
+    } finally {
+      document.getElementById('downloadBtn').disabled = false;
+    }
+  }
+
+  function setStatus(msg, type) {
+    document.getElementById('status').textContent = msg;
+    document.getElementById('status').className = 'status' + (type ? ' ' + type : '');
+  }
+
+  function showVideo(filename) {
+    currentFilename = filename;
+    const src = '/video/' + encodeURIComponent(filename);
+    video.src = src;
+    video.loop = false;
+    filenameEl.textContent = filename;
+    playerSection.classList.add('visible');
+    video.load();
+    if (viewMode > 0) {
+      const count = viewMode === 1 ? 1 : 7;
+      buildClones(count);
+    }
+    document.querySelectorAll('.library-item').forEach(el => {
+      el.classList.toggle('active', el.dataset.filename === filename);
+    });
+  }
+
+  function togglePlay() {
+    if (video.paused || video.ended) video.play();
+    else video.pause();
+  }
+
+  function toggleLoop() {
+    looping = !looping;
+    video.loop = false;
+    loopBtn.textContent = looping ? 'Loop: On' : 'Loop: Off';
+    loopBtn.classList.toggle('active', looping);
+  }
+
+  function toggleMute() {
+    video.muted = !video.muted;
+    muteBtn.textContent = video.muted ? 'Unmute' : 'Mute';
+    muteBtn.classList.toggle('active', video.muted);
+  }
+
+  function setViewModeTo(mode) {
+    videoWrap.classList.remove('dual', 'octo');
+    destroyClones();
+    viewMode = mode;
+    const name = VIEW_NAMES[viewMode];
+    if (name !== 'single') videoWrap.classList.add(name);
+    viewBtn.textContent = VIEW_LABELS[viewMode];
+    viewBtn.classList.toggle('active', viewMode > 0);
+    sliderWrap.classList.toggle('visible', viewMode > 0);
+    if (viewMode > 0) buildPresetButtons();
+    if (viewMode === 1 && video.src) buildClones(1);
+    else if (viewMode === 2 && video.src) buildClones(7);
+  }
+
+  function cycleView() {
+    setViewModeTo((viewMode + 1) % 3);
+  }
+
+  const DUAL_PRESETS = [1, 3, 5, 7, 9, 11, 21, 23];
+  const OCTO_PRESETS = [1, 5, 6, 7, 21, 22, 23, 25, 26, 27, 30, 31];
+  const presetContainer = document.getElementById('presetContainer');
+
+  function buildPresetButtons() {
+    presetContainer.innerHTML = '';
+    const presets = viewMode === 1 ? DUAL_PRESETS : OCTO_PRESETS;
+    presets.forEach(val => {
+      const btn = document.createElement('button');
+      btn.className = 'preset-btn' + (configIdx === val - 1 ? ' active' : '');
+      btn.dataset.preset = val;
+      btn.textContent = val;
+      btn.addEventListener('click', () => setConfig(val));
+      presetContainer.appendChild(btn);
+    });
+  }
+
+  function setConfig(val) {
+    configIdx = val - 1;
+    configSlider.value = val;
+    configLabel.textContent = val;
+    document.querySelectorAll('.preset-btn').forEach(b => b.classList.toggle('active', parseInt(b.dataset.preset) === val));
+    applyTransforms();
+  }
+
+  configSlider.addEventListener('input', () => {
+    setConfig(parseInt(configSlider.value));
+  });
+
+  function toggleFullscreen() {
+    if (document.fullscreenElement) document.exitFullscreen();
+    else videoWrap.requestFullscreen();
+  }
+
+  async function loadLibrary() {
+    try {
+      const res = await fetch('/api/videos');
+      const videos = await res.json();
+      videoListCache = videos;
+      if (videos.length === 0) {
+        librarySection.style.display = 'none';
+        return;
+      }
+      librarySection.style.display = 'block';
+      libraryGrid.innerHTML = '';
+      videos.forEach(v => {
+        const item = document.createElement('div');
+        item.className = 'library-item' + (v.filename === currentFilename ? ' active' : '');
+        item.dataset.filename = v.filename;
+        item.onclick = () => showVideo(v.filename);
+
+        const img = document.createElement('img');
+        img.src = '/thumbnail/' + encodeURIComponent(v.filename);
+        img.alt = v.filename;
+        img.loading = 'lazy';
+
+        const label = document.createElement('div');
+        label.className = 'label';
+        label.textContent = v.filename.replace(/\.[^.]+$/, '');
+
+        item.appendChild(img);
+        item.appendChild(label);
+        libraryGrid.appendChild(item);
+      });
+      populateVideoDropdown();
+    } catch {}
+  }
+  // --- Playlist ---
+
+  let plPlaylist = { name: '', entries: [] };
+  let plPlaying = false;
+  let plEntryIdx = 0;
+  let plLoopCount = 0;
+  let plTimer = null;
+  let plSlug = '';
+
+  const plIndicator = document.getElementById('plIndicator');
+  const plIndicatorText = document.getElementById('plIndicatorText');
+  const plSelect = document.getElementById('plSelect');
+  const plNameInput = document.getElementById('plName');
+  const plEntriesEl = document.getElementById('plEntries');
+  const plVideoSelected = document.getElementById('plVideoSelected');
+  const plVideoDropdown = document.getElementById('plVideoDropdown');
+  let plSelectedVideo = '';
+  const plView = document.getElementById('plView');
+  const plPreset = document.getElementById('plPreset');
+  const plDurType = document.getElementById('plDurType');
+  const plDurVal = document.getElementById('plDurVal');
+
+  for (let i = 1; i <= 32; i++) {
+    const opt = document.createElement('option');
+    opt.value = i; opt.textContent = 'P' + i;
+    plPreset.appendChild(opt);
+  }
+
+  function switchTab(tab) {
+    document.querySelectorAll('.tab').forEach((t, i) => t.classList.toggle('active', i === (tab === 'library' ? 0 : 1)));
+    document.getElementById('libraryTab').classList.toggle('active', tab === 'library');
+    document.getElementById('playlistTab').classList.toggle('active', tab === 'playlist');
+  }
+
+  function populateVideoDropdown() {
+    plVideoDropdown.innerHTML = '';
+    videoListCache.forEach(v => {
+      const div = document.createElement('div');
+      div.className = 'pl-video-option' + (v.filename === plSelectedVideo ? ' selected' : '');
+      const img = document.createElement('img');
+      img.src = '/thumbnail/' + encodeURIComponent(v.filename);
+      img.alt = '';
+      const span = document.createElement('span');
+      span.className = 'pl-vo-name';
+      span.textContent = v.filename.replace(/\.[^.]+$/, '');
+      div.appendChild(img);
+      div.appendChild(span);
+      div.addEventListener('click', () => selectVideo(v.filename));
+      plVideoDropdown.appendChild(div);
+    });
+    if (!plSelectedVideo && videoListCache.length) selectVideo(videoListCache[0].filename);
+  }
+
+  function selectVideo(filename) {
+    plSelectedVideo = filename;
+    const thumb = '/thumbnail/' + encodeURIComponent(filename);
+    const name = filename.replace(/\.[^.]+$/, '');
+    plVideoSelected.innerHTML =
+      '<img src="' + thumb + '" alt="">' +
+      '<span class="pl-vs-name">' + name + '</span>' +
+      '<span class="pl-vs-arrow">▼</span>';
+    plVideoDropdown.classList.remove('open');
+    plVideoDropdown.querySelectorAll('.pl-video-option').forEach(el => {
+      el.classList.toggle('selected', el.querySelector('.pl-vo-name').textContent === name);
+    });
+  }
+
+  function toggleVideoDropdown() {
+    plVideoDropdown.classList.toggle('open');
+  }
+
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.pl-video-picker')) plVideoDropdown.classList.remove('open');
+  });
+
+  async function loadPlaylists() {
+    try {
+      const res = await fetch('/api/playlists');
+      const list = await res.json();
+      plSelect.innerHTML = '<option value="">-- Select --</option>';
+      list.forEach(p => {
+        const opt = document.createElement('option');
+        opt.value = p.slug;
+        opt.textContent = p.name;
+        if (p.slug === plSlug) opt.selected = true;
+        plSelect.appendChild(opt);
+      });
+    } catch {}
+  }
+
+  async function loadPlaylistBySlug(slug) {
+    if (!slug) { plPlaylist = { name: '', entries: [] }; plSlug = ''; plNameInput.value = ''; renderPlaylistEntries(); return; }
+    try {
+      const res = await fetch('/api/playlist/' + encodeURIComponent(slug));
+      plPlaylist = await res.json();
+      plSlug = slug;
+      plNameInput.value = plPlaylist.name || '';
+      renderPlaylistEntries();
+    } catch {}
+  }
+
+  function newPlaylist() {
+    plPlaylist = { name: '', entries: [] };
+    plSlug = '';
+    plNameInput.value = '';
+    plSelect.value = '';
+    renderPlaylistEntries();
+  }
+
+  async function savePlaylist() {
+    const name = plNameInput.value.trim();
+    if (!name) { plNameInput.focus(); return; }
+    plPlaylist.name = name;
+    const slug = plSlug || name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/-+$/, '');
+    plSlug = slug;
+    await fetch('/api/playlist/' + encodeURIComponent(slug), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(plPlaylist),
+    });
+    loadPlaylists();
+  }
+
+  async function deletePlaylistConfirm() {
+    if (!plSlug) return;
+    if (!confirm('Delete playlist "' + plPlaylist.name + '"?')) return;
+    await fetch('/api/playlist/' + encodeURIComponent(plSlug), { method: 'DELETE' });
+    newPlaylist();
+    loadPlaylists();
+  }
+
+  function addEntry() {
+    const vid = plSelectedVideo;
+    if (!vid) return;
+    plPlaylist.entries.push({
+      video: vid,
+      view: plView.value,
+      preset: parseInt(plPreset.value),
+      duration: { type: plDurType.value, value: parseInt(plDurVal.value) || 5 },
+    });
+    renderPlaylistEntries();
+  }
+
+  function removeEntry(idx) {
+    plPlaylist.entries.splice(idx, 1);
+    renderPlaylistEntries();
+  }
+
+  function moveEntry(idx, dir) {
+    const ni = idx + dir;
+    if (ni < 0 || ni >= plPlaylist.entries.length) return;
+    const tmp = plPlaylist.entries[idx];
+    plPlaylist.entries[idx] = plPlaylist.entries[ni];
+    plPlaylist.entries[ni] = tmp;
+    renderPlaylistEntries();
+  }
+
+  function renderPlaylistEntries() {
+    plEntriesEl.innerHTML = '';
+    plPlaylist.entries.forEach((e, i) => {
+      const div = document.createElement('div');
+      div.className = 'pl-entry' + (plPlaying && i === plEntryIdx ? ' active' : '');
+      const vl = e.view === 'octo' ? '8x' : e.view === 'dual' ? 'Dual' : '1x';
+      const dt = e.duration.type === 'loops' ? e.duration.value + ' loops' : e.duration.value + 's';
+      const sn = e.video.replace(/\.[^.]+$/, '');
+      div.innerHTML =
+        '<span class="pl-e-name" title="' + e.video + '">' + sn + '</span>' +
+        '<span class="pl-e-badge">' + vl + '</span>' +
+        '<span class="pl-e-badge">P' + e.preset + '</span>' +
+        '<span class="pl-e-dur">' + dt + '</span>' +
+        '<button class="pl-e-btn" onclick="moveEntry(' + i + ',-1)">↑</button>' +
+        '<button class="pl-e-btn" onclick="moveEntry(' + i + ',1)">↓</button>' +
+        '<button class="pl-e-btn" onclick="removeEntry(' + i + ')">×</button>';
+      plEntriesEl.appendChild(div);
+    });
+  }
+
+  function startPlaylist() {
+    if (plPlaylist.entries.length === 0) return;
+    plPlaying = true;
+    playEntry(0);
+  }
+
+  function playEntry(idx) {
+    if (idx >= plPlaylist.entries.length) { stopPlaylist(); return; }
+    const entry = plPlaylist.entries[idx];
+    plEntryIdx = idx;
+    plLoopCount = 0;
+    clearTimeout(plTimer);
+
+    const vi = VIEW_NAMES.indexOf(entry.view);
+    setViewModeTo(vi >= 0 ? vi : 0);
+    showVideo(entry.video);
+    setConfig(entry.preset || 1);
+
+    looping = true;
+    loopBtn.textContent = 'Loop: On';
+    loopBtn.classList.add('active');
+    video.play();
+
+    if (entry.duration.type === 'seconds') {
+      plTimer = setTimeout(onEntryComplete, entry.duration.value * 1000);
+    }
+
+    updatePlIndicator();
+    renderPlaylistEntries();
+  }
+
+  function onEntryComplete() {
+    clearTimeout(plTimer);
+    if (plEntryIdx + 1 < plPlaylist.entries.length) {
+      playEntry(plEntryIdx + 1);
+    } else {
+      stopPlaylist();
+    }
+  }
+
+  function plNext() {
+    if (!plPlaying) return;
+    onEntryComplete();
+  }
+
+  function stopPlaylist() {
+    plPlaying = false;
+    clearTimeout(plTimer);
+    plIndicator.style.display = 'none';
+    renderPlaylistEntries();
+  }
+
+  function updatePlIndicator() {
+    if (!plPlaying) { plIndicator.style.display = 'none'; return; }
+    plIndicator.style.display = 'flex';
+    const entry = plPlaylist.entries[plEntryIdx];
+    const total = plPlaylist.entries.length;
+    let dt = '';
+    if (entry.duration.type === 'loops') {
+      dt = plLoopCount + '/' + entry.duration.value + ' loops';
+    } else {
+      dt = entry.duration.value + 's';
+    }
+    const vl = entry.view === 'octo' ? '8x' : entry.view === 'dual' ? 'Dual' : 'Single';
+    plIndicatorText.textContent = (plEntryIdx + 1) + '/' + total + ' • ' + vl + ' P' + entry.preset + ' • ' + dt;
+  }
+
+  loadPlaylists();
+</script>
+</body>
+</html>
