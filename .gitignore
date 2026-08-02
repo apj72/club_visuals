@@ -1,6 +1,7 @@
 downloads/
 thumbnails/
 playlists/
+config.json
 .cookies.txt
 .server.pid
 __pycache__/

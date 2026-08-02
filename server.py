@@ -10,12 +10,36 @@ from http.server import HTTPServer, BaseHTTPRequestHandler
 from pathlib import Path
 
 PORT = 8008
-DOWNLOAD_DIR = Path(__file__).parent / "downloads"
-THUMB_DIR = Path(__file__).parent / "thumbnails"
-PLAYLIST_DIR = Path(__file__).parent / "playlists"
-COOKIE_JAR = Path(__file__).parent / ".cookies.txt"
+BASE_DIR = Path(__file__).parent
+THUMB_DIR = BASE_DIR / "thumbnails"
+PLAYLIST_DIR = BASE_DIR / "playlists"
+COOKIE_JAR = BASE_DIR / ".cookies.txt"
 COOKIE_MAX_AGE = 3600
-HTML_FILE = Path(__file__).parent / "index.html"
+HTML_FILE = BASE_DIR / "index.html"
+CONFIG_FILE = BASE_DIR / "config.json"
+
+
+def load_config():
+    defaults = {"download_dir": "./downloads"}
+    if CONFIG_FILE.exists():
+        try:
+            data = json.loads(CONFIG_FILE.read_text())
+            defaults.update(data)
+        except Exception:
+            pass
+    return defaults
+
+
+def save_config(config):
+    CONFIG_FILE.write_text(json.dumps(config, indent=2))
+
+
+def get_download_dir():
+    raw = load_config()["download_dir"]
+    p = Path(raw)
+    if not p.is_absolute():
+        p = BASE_DIR / p
+    return p.resolve()
 
 
 def refresh_cookies():
@@ -55,6 +79,10 @@ class Handler(BaseHTTPRequestHandler):
             self.list_videos()
         elif self.path == "/api/playlists":
             self.list_playlists()
+        elif self.path == "/api/config":
+            self.get_config()
+        elif self.path.startswith("/api/browse"):
+            self.browse_dirs()
         elif self.path.startswith("/api/playlist/"):
             self.get_playlist()
         else:
@@ -63,6 +91,8 @@ class Handler(BaseHTTPRequestHandler):
     def do_POST(self):
         if self.path == "/download":
             self.handle_download()
+        elif self.path == "/api/config":
+            self.update_config()
         elif self.path.startswith("/api/playlist/"):
             self.save_playlist()
         else:
@@ -85,7 +115,7 @@ class Handler(BaseHTTPRequestHandler):
     def serve_video(self):
         filename = urllib.parse.unquote(self.path[len("/video/"):])
         safe_name = Path(filename).name
-        filepath = DOWNLOAD_DIR / safe_name
+        filepath = get_download_dir() / safe_name
 
         if not filepath.exists():
             self.send_error(404, "Video not found")
@@ -103,9 +133,10 @@ class Handler(BaseHTTPRequestHandler):
                 self.wfile.write(chunk)
 
     def list_videos(self):
-        DOWNLOAD_DIR.mkdir(exist_ok=True)
+        dl = get_download_dir()
+        dl.mkdir(parents=True, exist_ok=True)
         videos = []
-        for f in sorted(DOWNLOAD_DIR.glob("*.mp4"), key=os.path.getmtime, reverse=True):
+        for f in sorted(dl.glob("*.mp4"), key=os.path.getmtime, reverse=True):
             stat = f.stat()
             videos.append({
                 "filename": f.name,
@@ -117,7 +148,7 @@ class Handler(BaseHTTPRequestHandler):
     def serve_thumbnail(self):
         filename = urllib.parse.unquote(self.path[len("/thumbnail/"):])
         safe_name = Path(filename).name
-        video_path = DOWNLOAD_DIR / safe_name
+        video_path = get_download_dir() / safe_name
 
         if not video_path.exists():
             self.send_error(404, "Video not found")
@@ -189,6 +220,47 @@ class Handler(BaseHTTPRequestHandler):
             filepath.unlink()
         self.send_json_response({"ok": True})
 
+    def browse_dirs(self):
+        query = urllib.parse.urlparse(self.path).query
+        params = urllib.parse.parse_qs(query)
+        raw = params.get("path", [str(Path.home())])[0]
+        target = Path(raw).expanduser().resolve()
+        if not target.is_dir():
+            target = Path.home()
+        dirs = []
+        try:
+            for entry in sorted(target.iterdir(), key=lambda e: e.name.lower()):
+                if entry.name.startswith("."):
+                    continue
+                if entry.is_dir():
+                    dirs.append(entry.name)
+        except PermissionError:
+            pass
+        parent = str(target.parent) if target != target.parent else None
+        self.send_json_response({
+            "current": str(target),
+            "parent": parent,
+            "dirs": dirs,
+        })
+
+    def get_config(self):
+        self.send_json_response(load_config())
+
+    def update_config(self):
+        length = int(self.headers.get("Content-Length", 0))
+        data = json.loads(self.rfile.read(length))
+        config = load_config()
+        if "download_dir" in data:
+            raw = data["download_dir"].strip()
+            if not raw:
+                self.send_json_response({"ok": False, "error": "Path cannot be empty"})
+                return
+            config["download_dir"] = raw
+        save_config(config)
+        dl = get_download_dir()
+        dl.mkdir(parents=True, exist_ok=True)
+        self.send_json_response({"ok": True, "resolved": str(dl)})
+
     def handle_download(self):
         length = int(self.headers.get("Content-Length", 0))
         body = json.loads(self.rfile.read(length))
@@ -203,7 +275,8 @@ class Handler(BaseHTTPRequestHandler):
             self.send_sse({"status": "error", "message": "Invalid Instagram URL."})
             return
 
-        DOWNLOAD_DIR.mkdir(exist_ok=True)
+        dl = get_download_dir()
+        dl.mkdir(parents=True, exist_ok=True)
 
         self.send_response(200)
         self.send_header("Content-Type", "text/event-stream")
@@ -221,7 +294,7 @@ class Handler(BaseHTTPRequestHandler):
             *cookie_args,
             "-f", "bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best",
             "--merge-output-format", "mp4",
-            "-o", str(DOWNLOAD_DIR / "%(title).80s_%(id)s.%(ext)s"),
+            "-o", str(dl / "%(title).80s_%(id)s.%(ext)s"),
             "--print", "after_move:filename",
             url,
         ]
@@ -243,7 +316,7 @@ class Handler(BaseHTTPRequestHandler):
                         self.send_sse({"status": "progress", "message": f"Downloading... {match.group(1)}%"})
                 elif line.startswith("[Merger]"):
                     self.send_sse({"status": "progress", "message": "Merging audio and video..."})
-                elif line.startswith(str(DOWNLOAD_DIR)):
+                elif line.startswith(str(dl)):
                     final_filename = Path(line).name
 
             proc.wait()
@@ -251,7 +324,7 @@ class Handler(BaseHTTPRequestHandler):
             if proc.returncode == 0 and final_filename:
                 self.send_sse({"status": "done", "filename": final_filename})
             elif proc.returncode == 0:
-                files = sorted(DOWNLOAD_DIR.glob("*.mp4"), key=os.path.getmtime, reverse=True)
+                files = sorted(dl.glob("*.mp4"), key=os.path.getmtime, reverse=True)
                 if files:
                     self.send_sse({"status": "done", "filename": files[0].name})
                 else:
@@ -279,13 +352,15 @@ class Handler(BaseHTTPRequestHandler):
 
 
 if __name__ == "__main__":
-    DOWNLOAD_DIR.mkdir(exist_ok=True)
+    if not CONFIG_FILE.exists():
+        save_config({"download_dir": "./downloads"})
+    get_download_dir().mkdir(parents=True, exist_ok=True)
     THUMB_DIR.mkdir(exist_ok=True)
     PLAYLIST_DIR.mkdir(exist_ok=True)
     print("Exporting cookies from Brave...")
     refresh_cookies()
     server = HTTPServer(("127.0.0.1", PORT), Handler)
-    print(f"Instagram Video Saver running at http://localhost:{PORT}")
+    print(f"Club Visuals running at http://localhost:{PORT}")
     try:
         server.serve_forever()
     except KeyboardInterrupt:

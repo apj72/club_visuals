@@ -137,7 +137,7 @@
     width: 100%;
   }
 
-  .video-stage video {
+  .video-stage video, .video-stage canvas {
     width: 100%;
     display: block;
     background: #000;
@@ -147,7 +147,8 @@
   .video-stage .video-clone { display: none; }
 
   /* Dual */
-  .video-wrap.dual .video-stage video { width: 50%; }
+  .video-wrap.dual .video-stage video,
+  .video-wrap.dual .video-stage canvas { width: 50%; }
   .video-wrap.dual .video-stage .video-clone { display: block; }
 
   /* Octo */
@@ -156,14 +157,16 @@
     grid-template-columns: repeat(4, 1fr);
     grid-template-rows: repeat(2, 1fr);
   }
-  .video-wrap.octo .video-stage video {
+  .video-wrap.octo .video-stage video,
+  .video-wrap.octo .video-stage canvas {
     width: 100%;
     max-height: 35vh;
   }
   .video-wrap.octo .video-stage .video-clone { display: block; }
 
   /* Fullscreen — single */
-  .video-wrap:fullscreen .video-stage video {
+  .video-wrap:fullscreen .video-stage video,
+  .video-wrap:fullscreen .video-stage canvas {
     max-height: 100vh;
     height: 100vh;
     object-fit: contain;
@@ -173,7 +176,8 @@
   .video-wrap.dual:fullscreen .video-stage {
     height: 100vh;
   }
-  .video-wrap.dual:fullscreen .video-stage video {
+  .video-wrap.dual:fullscreen .video-stage video,
+  .video-wrap.dual:fullscreen .video-stage canvas {
     height: 100vh;
     max-height: 100vh;
     object-fit: cover;
@@ -184,7 +188,8 @@
   .video-wrap.octo:fullscreen .video-stage {
     height: 100vh;
   }
-  .video-wrap.octo:fullscreen .video-stage video {
+  .video-wrap.octo:fullscreen .video-stage video,
+  .video-wrap.octo:fullscreen .video-stage canvas {
     height: 50vh;
     max-height: 50vh;
     object-fit: cover;
@@ -322,6 +327,7 @@
   }
   .tab:first-child { border-radius: 6px 0 0 6px; }
   .tab:last-child { border-radius: 0 6px 6px 0; }
+  .tab:not(:first-child):not(:last-child) { border-radius: 0; }
   .tab.active { color: #4ecca3; border-color: #4ecca3; background: #1a2744; }
   .tab-content { display: none; }
   .tab-content.active { display: block; }
@@ -339,14 +345,16 @@
     display: flex; align-items: center; gap: 6px;
     padding: 6px 8px; margin-bottom: 4px;
     background: #16213e; border-radius: 6px; font-size: 0.72rem; color: #aaa;
+    cursor: grab; user-select: none;
   }
+  .pl-entry:active { cursor: grabbing; }
   .pl-entry.active { outline: 2px solid #4ecca3; }
+  .pl-entry.previewing { background: #1f2b4d; border-left: 3px solid #e94560; }
+  .pl-entry.drag-over { border-top: 2px solid #4ecca3; margin-top: -2px; }
   .pl-entry .pl-e-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .pl-entry .pl-e-badge {
-    padding: 2px 5px; border-radius: 3px; font-size: 0.65rem; font-weight: 600;
-    background: #333; color: #4ecca3; white-space: nowrap;
+  .pl-entry .pl-e-info {
+    font-size: 0.65rem; color: #888; white-space: nowrap;
   }
-  .pl-entry .pl-e-dur { color: #888; white-space: nowrap; font-size: 0.65rem; }
   .pl-entry .pl-e-btn {
     background: none; border: none; color: #666; font-size: 0.8rem;
     cursor: pointer; padding: 0 3px; line-height: 1;
@@ -396,6 +404,7 @@
   .pl-actions { display: flex; gap: 6px; }
   .pl-actions .pl-btn { flex: 1; text-align: center; }
   .pl-btn-save { color: #4ecca3; border-color: #4ecca3; }
+  .pl-btn.active { color: #4ecca3; border-color: #4ecca3; }
   .pl-btn-play { color: #1a1a2e; background: #4ecca3; border-color: #4ecca3; }
 
   /* --- Playlist Indicator --- */
@@ -415,6 +424,43 @@
     opacity: 1; transition: opacity 0.3s;
   }
   .video-wrap:fullscreen .pl-indicator.hidden { opacity: 0; }
+
+  /* --- Settings --- */
+  .settings-form { padding: 4px 0; }
+  .settings-label { font-size: 0.8rem; color: #888; display: block; margin-bottom: 6px; }
+  .settings-current {
+    font-size: 0.75rem; color: #4ecca3; word-break: break-all;
+    margin-bottom: 8px; padding: 6px 8px;
+    background: #111827; border-radius: 4px;
+  }
+  .settings-current .sc-label { color: #666; }
+  .dir-browser {
+    background: #111827; border-radius: 6px; overflow: hidden;
+    margin-bottom: 8px;
+  }
+  .dir-path {
+    padding: 6px 8px; font-size: 0.7rem; color: #888;
+    background: #0d1117; word-break: break-all;
+    border-bottom: 1px solid #222;
+  }
+  .dir-list {
+    max-height: 240px; overflow-y: auto;
+    scrollbar-width: thin; scrollbar-color: #333 transparent;
+  }
+  .dir-list::-webkit-scrollbar { width: 5px; }
+  .dir-list::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+  .dir-item {
+    display: flex; align-items: center; gap: 6px;
+    padding: 5px 8px; font-size: 0.75rem; color: #ccc;
+    cursor: pointer; border-bottom: 1px solid #1a1a2e;
+  }
+  .dir-item:hover { background: #1f2b4d; }
+  .dir-item .dir-icon { color: #4ecca3; font-size: 0.8rem; flex-shrink: 0; }
+  .dir-item .dir-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .dir-up { color: #888; font-style: italic; }
+  .settings-status { font-size: 0.8rem; margin-top: 8px; min-height: 20px; }
+  .settings-status.ok { color: #4ecca3; }
+  .settings-status.err { color: #e94560; }
 </style>
 </head>
 <body>
@@ -458,6 +504,7 @@
     <div class="tab-bar">
       <button class="tab active" onclick="switchTab('library')">Library</button>
       <button class="tab" onclick="switchTab('playlist')">Playlist</button>
+      <button class="tab" onclick="switchTab('settings')">Settings</button>
     </div>
     <div class="tab-content active" id="libraryTab">
       <div class="library" id="librarySection" style="display:none">
@@ -500,7 +547,22 @@
       </div>
       <div class="pl-actions">
         <button class="pl-btn pl-btn-save" onclick="savePlaylist()">Save</button>
+        <button class="pl-btn" id="plLoopBtn" onclick="togglePlLoop()">Loop: Off</button>
         <button class="pl-btn pl-btn-play" onclick="startPlaylist()">Play</button>
+      </div>
+    </div>
+    <div class="tab-content" id="settingsTab">
+      <div class="settings-form">
+        <label class="settings-label">Download folder</label>
+        <div class="settings-current" id="settingsCurrent">
+          <span class="sc-label">Current:</span> <span id="settingsCurrentPath">./downloads</span>
+        </div>
+        <div class="dir-browser">
+          <div class="dir-path" id="dirPath"></div>
+          <div class="dir-list" id="dirList"></div>
+        </div>
+        <button class="pl-btn pl-btn-save" onclick="selectFolder()" style="width:100%">Use this folder</button>
+        <div class="settings-status" id="settingsStatus"></div>
       </div>
     </div>
   </div>
@@ -610,37 +672,54 @@
 
   loadLibrary();
 
-  // --- Clone management ---
+  // --- Clone management (canvas-based, single decoder) ---
+
+  let rafId = null;
 
   function buildClones(count) {
     destroyClones();
     if (!video.src) return;
-    const stream = video.captureStream ? video.captureStream() : null;
     for (let i = 1; i <= count; i++) {
-      const c = document.createElement('video');
+      const c = document.createElement('canvas');
       c.className = 'video-clone';
-      c.setAttribute('playsinline', '');
-      c.muted = true;
-      if (stream) {
-        c.srcObject = stream;
-      } else {
-        c.src = video.src;
-        c.currentTime = video.currentTime;
-      }
       c.dataset.pos = i;
       videoStage.appendChild(c);
       clones.push(c);
-      c.play().catch(() => {});
     }
     video.dataset.pos = '0';
     applyTransforms();
+    startRenderLoop();
   }
 
   function destroyClones() {
-    clones.forEach(c => { c.pause(); c.srcObject = null; c.remove(); });
+    stopRenderLoop();
+    clones.forEach(c => c.remove());
     clones = [];
     delete video.dataset.pos;
     video.style.transform = '';
+  }
+
+  function startRenderLoop() {
+    stopRenderLoop();
+    function draw() {
+      if (clones.length === 0) return;
+      const vw = video.videoWidth, vh = video.videoHeight;
+      if (vw && vh && !video.paused) {
+        clones.forEach(c => {
+          if (c.width !== vw || c.height !== vh) {
+            c.width = vw;
+            c.height = vh;
+          }
+          c.getContext('2d').drawImage(video, 0, 0, vw, vh);
+        });
+      }
+      rafId = requestAnimationFrame(draw);
+    }
+    rafId = requestAnimationFrame(draw);
+  }
+
+  function stopRenderLoop() {
+    if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
   }
 
   function applyTransforms() {
@@ -845,6 +924,7 @@
   let plLoopCount = 0;
   let plTimer = null;
   let plSlug = '';
+  let plLoopPlaylist = false;
 
   const plIndicator = document.getElementById('plIndicator');
   const plIndicatorText = document.getElementById('plIndicatorText');
@@ -865,10 +945,25 @@
     plPreset.appendChild(opt);
   }
 
+  function updatePlayerPreview() {
+    if (!plSelectedVideo) return;
+    const modeIdx = VIEW_NAMES.indexOf(plView.value);
+    if (modeIdx < 0) return;
+    setViewModeTo(modeIdx);
+    setConfig(parseInt(plPreset.value) || 1);
+  }
+
+  plView.addEventListener('change', updatePlayerPreview);
+  plPreset.addEventListener('change', updatePlayerPreview);
+
+  const TABS = ['library', 'playlist', 'settings'];
   function switchTab(tab) {
-    document.querySelectorAll('.tab').forEach((t, i) => t.classList.toggle('active', i === (tab === 'library' ? 0 : 1)));
+    const idx = TABS.indexOf(tab);
+    document.querySelectorAll('.tab').forEach((t, i) => t.classList.toggle('active', i === idx));
     document.getElementById('libraryTab').classList.toggle('active', tab === 'library');
     document.getElementById('playlistTab').classList.toggle('active', tab === 'playlist');
+    document.getElementById('settingsTab').classList.toggle('active', tab === 'settings');
+    if (tab === 'settings') loadSettings();
   }
 
   function populateVideoDropdown() {
@@ -902,6 +997,8 @@
     plVideoDropdown.querySelectorAll('.pl-video-option').forEach(el => {
       el.classList.toggle('selected', el.querySelector('.pl-vo-name').textContent === name);
     });
+    showVideo(filename);
+    updatePlayerPreview();
   }
 
   function toggleVideoDropdown() {
@@ -985,12 +1082,17 @@
     renderPlaylistEntries();
   }
 
-  function moveEntry(idx, dir) {
-    const ni = idx + dir;
-    if (ni < 0 || ni >= plPlaylist.entries.length) return;
-    const tmp = plPlaylist.entries[idx];
-    plPlaylist.entries[idx] = plPlaylist.entries[ni];
-    plPlaylist.entries[ni] = tmp;
+  let plPreviewIdx = -1;
+  let plDragIdx = -1;
+
+  function previewEntry(idx) {
+    const e = plPlaylist.entries[idx];
+    if (!e) return;
+    plPreviewIdx = idx;
+    showVideo(e.video);
+    const modeIdx = VIEW_NAMES.indexOf(e.view);
+    setViewModeTo(modeIdx >= 0 ? modeIdx : 0);
+    setConfig(e.preset || 1);
     renderPlaylistEntries();
   }
 
@@ -998,18 +1100,64 @@
     plEntriesEl.innerHTML = '';
     plPlaylist.entries.forEach((e, i) => {
       const div = document.createElement('div');
-      div.className = 'pl-entry' + (plPlaying && i === plEntryIdx ? ' active' : '');
+      let cls = 'pl-entry';
+      if (plPlaying && i === plEntryIdx) cls += ' active';
+      if (!plPlaying && i === plPreviewIdx) cls += ' previewing';
+      div.className = cls;
+      div.dataset.idx = i;
+
       const vl = e.view === 'octo' ? '8x' : e.view === 'dual' ? 'Dual' : '1x';
-      const dt = e.duration.type === 'loops' ? e.duration.value + ' loops' : e.duration.value + 's';
+      const dt = e.duration.type === 'loops' ? e.duration.value + 'L' : e.duration.value + 's';
       const sn = e.video.replace(/\.[^.]+$/, '');
-      div.innerHTML =
-        '<span class="pl-e-name" title="' + e.video + '">' + sn + '</span>' +
-        '<span class="pl-e-badge">' + vl + '</span>' +
-        '<span class="pl-e-badge">P' + e.preset + '</span>' +
-        '<span class="pl-e-dur">' + dt + '</span>' +
-        '<button class="pl-e-btn" onclick="moveEntry(' + i + ',-1)">↑</button>' +
-        '<button class="pl-e-btn" onclick="moveEntry(' + i + ',1)">↓</button>' +
-        '<button class="pl-e-btn" onclick="removeEntry(' + i + ')">×</button>';
+
+      const nameSpan = document.createElement('span');
+      nameSpan.className = 'pl-e-name';
+      nameSpan.title = e.video;
+      nameSpan.textContent = sn;
+      div.appendChild(nameSpan);
+
+      const infoSpan = document.createElement('span');
+      infoSpan.className = 'pl-e-info';
+      infoSpan.textContent = vl + ' P' + e.preset + ' ' + dt;
+      div.appendChild(infoSpan);
+
+      const delBtn = document.createElement('button');
+      delBtn.className = 'pl-e-btn';
+      delBtn.textContent = '×';
+      delBtn.addEventListener('click', (ev) => { ev.stopPropagation(); removeEntry(i); });
+      div.appendChild(delBtn);
+
+      div.addEventListener('click', () => previewEntry(i));
+
+      div.draggable = true;
+      div.addEventListener('dragstart', (ev) => {
+        plDragIdx = i;
+        ev.dataTransfer.effectAllowed = 'move';
+        div.style.opacity = '0.4';
+      });
+      div.addEventListener('dragend', () => {
+        plDragIdx = -1;
+        div.style.opacity = '';
+        plEntriesEl.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
+      });
+      div.addEventListener('dragover', (ev) => {
+        ev.preventDefault();
+        ev.dataTransfer.dropEffect = 'move';
+        plEntriesEl.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
+        if (i !== plDragIdx) div.classList.add('drag-over');
+      });
+      div.addEventListener('dragleave', () => div.classList.remove('drag-over'));
+      div.addEventListener('drop', (ev) => {
+        ev.preventDefault();
+        div.classList.remove('drag-over');
+        if (plDragIdx < 0 || plDragIdx === i) return;
+        const moved = plPlaylist.entries.splice(plDragIdx, 1)[0];
+        plPlaylist.entries.splice(i, 0, moved);
+        if (plPreviewIdx === plDragIdx) plPreviewIdx = i;
+        plDragIdx = -1;
+        renderPlaylistEntries();
+      });
+
       plEntriesEl.appendChild(div);
     });
   }
@@ -1049,6 +1197,8 @@
     clearTimeout(plTimer);
     if (plEntryIdx + 1 < plPlaylist.entries.length) {
       playEntry(plEntryIdx + 1);
+    } else if (plLoopPlaylist) {
+      playEntry(0);
     } else {
       stopPlaylist();
     }
@@ -1057,6 +1207,13 @@
   function plNext() {
     if (!plPlaying) return;
     onEntryComplete();
+  }
+
+  function togglePlLoop() {
+    plLoopPlaylist = !plLoopPlaylist;
+    const btn = document.getElementById('plLoopBtn');
+    btn.textContent = plLoopPlaylist ? 'Loop: On' : 'Loop: Off';
+    btn.classList.toggle('active', plLoopPlaylist);
   }
 
   function stopPlaylist() {
@@ -1082,6 +1239,69 @@
   }
 
   loadPlaylists();
+
+  // --- Settings ---
+  let browsePath = '';
+
+  async function loadSettings() {
+    try {
+      const res = await fetch('/api/config');
+      const config = await res.json();
+      document.getElementById('settingsCurrentPath').textContent = config.download_dir || './downloads';
+      document.getElementById('settingsStatus').textContent = '';
+      browseDir(config.download_dir || '~');
+    } catch {}
+  }
+
+  async function browseDir(path) {
+    try {
+      const res = await fetch('/api/browse?path=' + encodeURIComponent(path));
+      const data = await res.json();
+      browsePath = data.current;
+      document.getElementById('dirPath').textContent = data.current;
+      const list = document.getElementById('dirList');
+      list.innerHTML = '';
+      if (data.parent) {
+        const up = document.createElement('div');
+        up.className = 'dir-item dir-up';
+        up.innerHTML = '<span class="dir-icon">&#8593;</span><span class="dir-name">..</span>';
+        up.addEventListener('click', () => browseDir(data.parent));
+        list.appendChild(up);
+      }
+      data.dirs.forEach(name => {
+        const item = document.createElement('div');
+        item.className = 'dir-item';
+        item.innerHTML = '<span class="dir-icon">&#128193;</span><span class="dir-name">' +
+          name.replace(/</g, '&lt;') + '</span>';
+        item.addEventListener('click', () => browseDir(data.current + '/' + name));
+        list.appendChild(item);
+      });
+    } catch {}
+  }
+
+  async function selectFolder() {
+    if (!browsePath) return;
+    const statusEl = document.getElementById('settingsStatus');
+    try {
+      const res = await fetch('/api/config', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ download_dir: browsePath }),
+      });
+      const data = await res.json();
+      if (data.ok) {
+        statusEl.textContent = 'Saved';
+        statusEl.className = 'settings-status ok';
+        document.getElementById('settingsCurrentPath').textContent = data.resolved || browsePath;
+      } else {
+        statusEl.textContent = data.error || 'Save failed';
+        statusEl.className = 'settings-status err';
+      }
+    } catch (e) {
+      statusEl.textContent = 'Error: ' + e.message;
+      statusEl.className = 'settings-status err';
+    }
+  }
 </script>
 </body>
 </html>
