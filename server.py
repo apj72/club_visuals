@@ -6,8 +6,14 @@ import re
 import subprocess
 import time
 import urllib.parse
+import threading
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from pathlib import Path
+from socketserver import ThreadingMixIn
+
+
+class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
+    daemon_threads = True
 
 PORT = 8008
 BASE_DIR = Path(__file__).parent
@@ -16,7 +22,10 @@ PLAYLIST_DIR = BASE_DIR / "playlists"
 COOKIE_JAR = BASE_DIR / ".cookies.txt"
 COOKIE_MAX_AGE = 3600
 HTML_FILE = BASE_DIR / "index.html"
+OUTPUT_FILE = BASE_DIR / "output.html"
 CONFIG_FILE = BASE_DIR / "config.json"
+STATE_CLIENTS = []
+STATE_LOCK = threading.Lock()
 
 
 def load_config():
@@ -71,6 +80,10 @@ class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         if self.path == "/" or self.path == "/index.html":
             self.serve_html()
+        elif self.path == "/output":
+            self.serve_output()
+        elif self.path == "/api/state-stream":
+            self.state_stream()
         elif self.path.startswith("/video/"):
             self.serve_video()
         elif self.path.startswith("/thumbnail/"):
@@ -81,6 +94,8 @@ class Handler(BaseHTTPRequestHandler):
             self.list_playlists()
         elif self.path == "/api/config":
             self.get_config()
+        elif self.path.startswith("/api/metadata/"):
+            self.get_metadata()
         elif self.path.startswith("/api/browse"):
             self.browse_dirs()
         elif self.path.startswith("/api/playlist/"):
@@ -89,10 +104,14 @@ class Handler(BaseHTTPRequestHandler):
             self.send_error(404)
 
     def do_POST(self):
-        if self.path == "/download":
+        if self.path == "/api/state":
+            self.update_state()
+        elif self.path == "/download":
             self.handle_download()
         elif self.path == "/api/config":
             self.update_config()
+        elif self.path == "/api/convert":
+            self.handle_convert()
         elif self.path.startswith("/api/playlist/"):
             self.save_playlist()
         else:
@@ -111,6 +130,54 @@ class Handler(BaseHTTPRequestHandler):
         self.send_header("Content-Length", len(content))
         self.end_headers()
         self.wfile.write(content)
+
+    def serve_output(self):
+        if not OUTPUT_FILE.exists():
+            self.send_error(404, "output.html not found")
+            return
+        content = OUTPUT_FILE.read_bytes()
+        self.send_response(200)
+        self.send_header("Content-Type", "text/html; charset=utf-8")
+        self.send_header("Content-Length", len(content))
+        self.end_headers()
+        self.wfile.write(content)
+
+    def state_stream(self):
+        self.send_response(200)
+        self.send_header("Content-Type", "text/event-stream")
+        self.send_header("Cache-Control", "no-cache")
+        self.send_header("Connection", "keep-alive")
+        self.end_headers()
+
+        with STATE_LOCK:
+            STATE_CLIENTS.append(self.wfile)
+        try:
+            while True:
+                time.sleep(1)
+                self.wfile.write(b": keepalive\n\n")
+                self.wfile.flush()
+        except (BrokenPipeError, ConnectionResetError, OSError):
+            pass
+        finally:
+            with STATE_LOCK:
+                if self.wfile in STATE_CLIENTS:
+                    STATE_CLIENTS.remove(self.wfile)
+
+    def update_state(self):
+        length = int(self.headers.get("Content-Length", 0))
+        data = json.loads(self.rfile.read(length))
+        msg = f"data: {json.dumps(data)}\n\n".encode()
+        dead = []
+        with STATE_LOCK:
+            for client in STATE_CLIENTS:
+                try:
+                    client.write(msg)
+                    client.flush()
+                except Exception:
+                    dead.append(client)
+            for d in dead:
+                STATE_CLIENTS.remove(d)
+        self.send_json_response({"ok": True})
 
     def serve_video(self):
         filename = urllib.parse.unquote(self.path[len("/video/"):])
@@ -138,12 +205,41 @@ class Handler(BaseHTTPRequestHandler):
         videos = []
         for f in sorted(dl.glob("*.mp4"), key=os.path.getmtime, reverse=True):
             stat = f.stat()
-            videos.append({
+            entry = {
                 "filename": f.name,
                 "size": stat.st_size,
                 "modified": stat.st_mtime,
-            })
+            }
+            info_path = dl / (f.stem + ".info.json")
+            if info_path.exists():
+                try:
+                    meta = json.loads(info_path.read_text())
+                    entry["uploader"] = meta.get("channel", "")
+                except Exception:
+                    pass
+            videos.append(entry)
         self.send_json_response(videos)
+
+    def get_metadata(self):
+        filename = urllib.parse.unquote(self.path[len("/api/metadata/"):])
+        safe_name = Path(filename).name
+        stem = Path(safe_name).stem
+        info_path = get_download_dir() / f"{stem}.info.json"
+        if not info_path.exists():
+            self.send_json_response({})
+            return
+        try:
+            raw = json.loads(info_path.read_text())
+            self.send_json_response({
+                "channel": raw.get("channel", ""),
+                "uploader": raw.get("uploader", ""),
+                "description": raw.get("description", ""),
+                "webpage_url": raw.get("webpage_url", ""),
+                "upload_date": raw.get("upload_date", ""),
+                "duration": raw.get("duration"),
+            })
+        except Exception:
+            self.send_json_response({})
 
     def serve_thumbnail(self):
         filename = urllib.parse.unquote(self.path[len("/thumbnail/"):])
@@ -294,6 +390,7 @@ class Handler(BaseHTTPRequestHandler):
             *cookie_args,
             "-f", "bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best",
             "--merge-output-format", "mp4",
+            "--write-infojson",
             "-o", str(dl / "%(title).80s_%(id)s.%(ext)s"),
             "--print", "after_move:filename",
             url,
@@ -337,6 +434,42 @@ class Handler(BaseHTTPRequestHandler):
         except Exception as e:
             self.send_sse({"status": "error", "message": str(e)})
 
+    def handle_convert(self):
+        length = int(self.headers.get("Content-Length", 0))
+        dl = get_download_dir()
+        timestamp = time.strftime("%Y%m%d_%H%M%S")
+        webm_path = dl / f"recording_{timestamp}.webm"
+        mp4_path = dl / f"recording_{timestamp}.mp4"
+
+        with open(webm_path, "wb") as f:
+            remaining = length
+            while remaining > 0:
+                chunk = self.rfile.read(min(65536, remaining))
+                if not chunk:
+                    break
+                f.write(chunk)
+                remaining -= len(chunk)
+
+        try:
+            result = subprocess.run([
+                "ffmpeg", "-y", "-i", str(webm_path),
+                "-c:v", "libx264", "-preset", "fast",
+                "-crf", "23", "-pix_fmt", "yuv420p",
+                "-c:a", "aac", "-b:a", "128k",
+                str(mp4_path),
+            ], capture_output=True, timeout=600)
+
+            webm_path.unlink(missing_ok=True)
+
+            if result.returncode == 0 and mp4_path.exists():
+                self.send_json_response({"ok": True, "filename": mp4_path.name})
+            else:
+                err = result.stderr.decode()[-200:] if result.stderr else "unknown"
+                self.send_json_response({"ok": False, "error": f"ffmpeg failed: {err}"})
+        except Exception as e:
+            webm_path.unlink(missing_ok=True)
+            self.send_json_response({"ok": False, "error": str(e)})
+
     def send_sse(self, data):
         msg = f"data: {json.dumps(data)}\n\n"
         self.wfile.write(msg.encode())
@@ -359,7 +492,7 @@ if __name__ == "__main__":
     PLAYLIST_DIR.mkdir(exist_ok=True)
     print("Exporting cookies from Brave...")
     refresh_cookies()
-    server = HTTPServer(("127.0.0.1", PORT), Handler)
+    server = ThreadedHTTPServer(("127.0.0.1", PORT), Handler)
     print(f"Club Visuals running at http://localhost:{PORT}")
     try:
         server.serve_forever()

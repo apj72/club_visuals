@@ -425,6 +425,20 @@
   }
   .video-wrap:fullscreen .pl-indicator.hidden { opacity: 0; }
 
+  /* --- Caption Overlay --- */
+  .caption-overlay {
+    display: none; position: absolute; bottom: 60px; left: 16px;
+    padding: 6px 12px; background: rgba(0,0,0,0.5);
+    color: rgba(255,255,255,0.85); font-size: 1rem; font-weight: 600;
+    border-radius: 6px; pointer-events: none; z-index: 5;
+  }
+  .caption-overlay.visible { display: block; }
+  .video-wrap:fullscreen .caption-overlay {
+    bottom: 70px; left: 20px; font-size: 1.2rem;
+    opacity: 1; transition: opacity 0.3s;
+  }
+  .video-wrap:fullscreen .caption-overlay.hidden { opacity: 0; }
+
   /* --- Settings --- */
   .settings-form { padding: 4px 0; }
   .settings-label { font-size: 0.8rem; color: #888; display: block; margin-bottom: 6px; }
@@ -487,10 +501,13 @@
         <div class="video-stage" id="videoStage">
           <video id="video" playsinline></video>
         </div>
+        <div class="caption-overlay" id="captionOverlay"></div>
         <div class="controls" id="controls">
           <button class="btn-play" id="playBtn" onclick="togglePlay()">Play</button>
           <button class="btn-ctrl" id="loopBtn" onclick="toggleLoop()">Loop: Off</button>
           <button class="btn-ctrl" id="muteBtn" onclick="toggleMute()">Mute</button>
+          <button class="btn-ctrl" id="captionBtn" onclick="toggleCaption()">CC</button>
+          <button class="btn-ctrl" onclick="refreshView()">&#8635;</button>
           <button class="btn-ctrl" id="viewBtn" onclick="cycleView()">Dual</button>
           <span class="slider-wrap" id="sliderWrap"><input type="range" class="config-slider" id="configSlider" min="1" max="32" value="1"><span class="config-label" id="configLabel">1</span><span id="presetContainer"></span></span>
           <button class="btn-ctrl btn-fullscreen" id="fsBtn" onclick="toggleFullscreen()">Fullscreen</button>
@@ -548,6 +565,7 @@
       <div class="pl-actions">
         <button class="pl-btn pl-btn-save" onclick="savePlaylist()">Save</button>
         <button class="pl-btn" id="plLoopBtn" onclick="togglePlLoop()">Loop: Off</button>
+        <button class="pl-btn" id="recordBtn" onclick="toggleRecording()">Record</button>
         <button class="pl-btn pl-btn-play" onclick="startPlaylist()">Play</button>
       </div>
     </div>
@@ -589,6 +607,8 @@
   let looping = false;
   let hideTimer = null;
   let currentFilename = null;
+  let captionEnabled = false;
+  const captionOverlay = document.getElementById('captionOverlay');
 
   // View: 0=single, 1=dual, 2=octo
   let viewMode = 0;
@@ -598,6 +618,20 @@
   let configIdx = 0;
   let clones = [];
   let videoListCache = [];
+  let metadataCache = {};
+
+  async function getMetadata(filename) {
+    if (metadataCache[filename] !== undefined) return metadataCache[filename];
+    try {
+      const res = await fetch('/api/metadata/' + encodeURIComponent(filename));
+      const data = await res.json();
+      metadataCache[filename] = data;
+      return data;
+    } catch {
+      metadataCache[filename] = null;
+      return null;
+    }
+  }
 
   const H_RULES = [
     [0,0,0,0], [0,0,1,1], [1,0,0,1], [0,1,1,0],
@@ -661,11 +695,13 @@
     if (!document.fullscreenElement) return;
     controlsEl.classList.remove('hidden');
     if (plPlaying) plIndicator.classList.remove('hidden');
+    captionOverlay.classList.remove('hidden');
     videoWrap.style.cursor = '';
     clearTimeout(hideTimer);
     hideTimer = setTimeout(() => {
       controlsEl.classList.add('hidden');
       if (plPlaying) plIndicator.classList.add('hidden');
+      captionOverlay.classList.add('hidden');
       videoWrap.style.cursor = 'none';
     }, 1500);
   }
@@ -702,7 +738,7 @@
   function startRenderLoop() {
     stopRenderLoop();
     function draw() {
-      if (clones.length === 0) return;
+      if (clones.length === 0 && !isRecording && !obsOutputActive) return;
       const vw = video.videoWidth, vh = video.videoHeight;
       if (vw && vh && !video.paused) {
         clones.forEach(c => {
@@ -712,6 +748,7 @@
           }
           c.getContext('2d').drawImage(video, 0, 0, vw, vh);
         });
+        if (isRecording || obsOutputActive) drawCompositeFrame();
       }
       rafId = requestAnimationFrame(draw);
     }
@@ -811,11 +848,46 @@
     document.querySelectorAll('.library-item').forEach(el => {
       el.classList.toggle('active', el.dataset.filename === filename);
     });
+    updateCaptionOverlay();
+    broadcastState({ type: 'loadVideo', filename });
+  }
+
+  function refreshView() {
+    const wasPlaying = !video.paused;
+    const t = video.currentTime;
+    destroyClones();
+    if (viewMode === 1) buildClones(1);
+    else if (viewMode === 2) buildClones(7);
+    video.currentTime = t;
+    if (wasPlaying) video.play();
+  }
+
+  function toggleCaption() {
+    captionEnabled = !captionEnabled;
+    document.getElementById('captionBtn').classList.toggle('active', captionEnabled);
+    updateCaptionOverlay();
+  }
+
+  async function updateCaptionOverlay() {
+    if (!captionEnabled || !currentFilename) {
+      captionOverlay.classList.remove('visible');
+      broadcastState({ type: 'setCaption', text: '', visible: false });
+      return;
+    }
+    const meta = await getMetadata(currentFilename);
+    if (meta && meta.channel) {
+      captionOverlay.textContent = '@' + meta.channel;
+      captionOverlay.classList.add('visible');
+      broadcastState({ type: 'setCaption', text: '@' + meta.channel, visible: true });
+    } else {
+      captionOverlay.classList.remove('visible');
+      broadcastState({ type: 'setCaption', text: '', visible: false });
+    }
   }
 
   function togglePlay() {
-    if (video.paused || video.ended) video.play();
-    else video.pause();
+    if (video.paused || video.ended) { video.play(); broadcastState({ type: 'play' }); }
+    else { video.pause(); broadcastState({ type: 'pause' }); }
   }
 
   function toggleLoop() {
@@ -843,6 +915,7 @@
     if (viewMode > 0) buildPresetButtons();
     if (viewMode === 1 && video.src) buildClones(1);
     else if (viewMode === 2 && video.src) buildClones(7);
+    broadcastState({ type: 'setView', mode });
   }
 
   function cycleView() {
@@ -872,6 +945,7 @@
     configLabel.textContent = val;
     document.querySelectorAll('.preset-btn').forEach(b => b.classList.toggle('active', parseInt(b.dataset.preset) === val));
     applyTransforms();
+    broadcastState({ type: 'setConfig', value: val });
   }
 
   configSlider.addEventListener('input', () => {
@@ -908,6 +982,12 @@
         const label = document.createElement('div');
         label.className = 'label';
         label.textContent = v.filename.replace(/\.[^.]+$/, '');
+        if (v.uploader) {
+          const handle = document.createElement('div');
+          handle.style.cssText = 'font-size:0.65rem;color:#4ecca3;margin-top:2px';
+          handle.textContent = '@' + v.uploader;
+          label.appendChild(handle);
+        }
 
         item.appendChild(img);
         item.appendChild(label);
@@ -916,6 +996,166 @@
       populateVideoDropdown();
     } catch {}
   }
+  // --- Recording ---
+
+  let compCanvas = null;
+  let compCtx = null;
+  let isRecording = false;
+  let mediaRecorder = null;
+  let recordedChunks = [];
+  let obsOutputActive = false;
+
+  function drawCompositeFrame() {
+    if (!compCanvas || !compCtx) return;
+    const vw = video.videoWidth, vh = video.videoHeight;
+    if (!vw || !vh) return;
+
+    const cw = compCanvas.width, ch = compCanvas.height;
+    compCtx.fillStyle = '#000';
+    compCtx.fillRect(0, 0, cw, ch);
+
+    let cols, rows;
+    if (viewMode === 0) { cols = 1; rows = 1; }
+    else if (viewMode === 1) { cols = 2; rows = 1; }
+    else { cols = 4; rows = 2; }
+
+    const tileW = cw / cols, tileH = ch / rows;
+    const cfg = CONFIGS[configIdx];
+
+    for (let r = 0; r < rows; r++) {
+      for (let c = 0; c < cols; c++) {
+        const idx = r * cols + c;
+        const transform = cfg[idx] || '';
+        const flipH = transform.includes('scaleX(-1)');
+        const flipV = transform.includes('scaleY(-1)');
+
+        const tx = c * tileW, ty = r * tileH;
+        compCtx.save();
+        compCtx.translate(tx + tileW / 2, ty + tileH / 2);
+        compCtx.scale(flipH ? -1 : 1, flipV ? -1 : 1);
+
+        const videoAspect = vw / vh;
+        const tileAspect = tileW / tileH;
+        let sw, sh, sx, sy;
+        if (videoAspect > tileAspect) {
+          sh = vh; sw = vh * tileAspect;
+          sx = (vw - sw) / 2; sy = 0;
+        } else {
+          sw = vw; sh = vw / tileAspect;
+          sx = 0; sy = (vh - sh) / 2;
+        }
+
+        compCtx.drawImage(video, sx, sy, sw, sh, -tileW / 2, -tileH / 2, tileW, tileH);
+        compCtx.restore();
+      }
+    }
+
+    if (captionEnabled && captionOverlay.classList.contains('visible')) {
+      const text = captionOverlay.textContent;
+      if (text) {
+        const fontSize = Math.round(cw / 50);
+        compCtx.font = `600 ${fontSize}px -apple-system, BlinkMacSystemFont, sans-serif`;
+        const metrics = compCtx.measureText(text);
+        const padX = fontSize * 0.6, padY = fontSize * 0.4;
+        const bx = 20, by = ch - 80;
+        compCtx.fillStyle = 'rgba(0,0,0,0.5)';
+        compCtx.beginPath();
+        compCtx.roundRect(bx, by - fontSize - padY, metrics.width + padX * 2, fontSize + padY * 2, 6);
+        compCtx.fill();
+        compCtx.fillStyle = 'rgba(255,255,255,0.85)';
+        compCtx.fillText(text, bx + padX, by);
+      }
+    }
+  }
+
+  function startRecording() {
+    compCanvas = document.createElement('canvas');
+    compCanvas.width = 1920;
+    compCanvas.height = 1080;
+    compCtx = compCanvas.getContext('2d');
+    recordedChunks = [];
+
+    const stream = compCanvas.captureStream(30);
+
+    if (!video.muted) {
+      try {
+        const audioStream = video.captureStream();
+        audioStream.getAudioTracks().forEach(t => stream.addTrack(t));
+      } catch {}
+    }
+
+    const mimeType = MediaRecorder.isTypeSupported('video/webm;codecs=vp9')
+      ? 'video/webm;codecs=vp9' : 'video/webm';
+
+    mediaRecorder = new MediaRecorder(stream, {
+      mimeType,
+      videoBitsPerSecond: 8000000,
+    });
+
+    mediaRecorder.ondataavailable = e => {
+      if (e.data.size > 0) recordedChunks.push(e.data);
+    };
+
+    mediaRecorder.onstop = async () => {
+      const blob = new Blob(recordedChunks, { type: 'video/webm' });
+      await uploadRecording(blob);
+      compCanvas = null;
+      compCtx = null;
+    };
+
+    isRecording = true;
+    if (!rafId) startRenderLoop();
+    mediaRecorder.start(1000);
+    updateRecordButton();
+  }
+
+  function stopRecording() {
+    if (!mediaRecorder) return;
+    isRecording = false;
+    mediaRecorder.stop();
+    updateRecordButton();
+  }
+
+  function toggleRecording() {
+    if (isRecording) stopRecording();
+    else startRecording();
+  }
+
+  function updateRecordButton() {
+    const btn = document.getElementById('recordBtn');
+    btn.textContent = isRecording ? 'Stop Rec' : 'Record';
+    btn.style.color = isRecording ? '#e94560' : '';
+    btn.style.borderColor = isRecording ? '#e94560' : '';
+  }
+
+  function broadcastState(cmd) {
+    fetch('/api/state', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(cmd),
+    }).catch(() => {});
+  }
+
+  async function uploadRecording(blob) {
+    setStatus('Converting recording to MP4...', '');
+    try {
+      const res = await fetch('/api/convert', {
+        method: 'POST',
+        headers: { 'Content-Type': 'video/webm' },
+        body: blob,
+      });
+      const data = await res.json();
+      if (data.ok) {
+        setStatus('Recording saved: ' + data.filename, 'success');
+        loadLibrary();
+      } else {
+        setStatus('Conversion failed: ' + (data.error || 'unknown'), 'error');
+      }
+    } catch (e) {
+      setStatus('Upload error: ' + e.message, 'error');
+    }
+  }
+
   // --- Playlist ---
 
   let plPlaylist = { name: '', entries: [] };
