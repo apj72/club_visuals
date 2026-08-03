@@ -139,16 +139,17 @@
 
   .video-stage video, .video-stage canvas {
     width: 100%;
+    height: 60vh;
     display: block;
     background: #000;
-    max-height: 70vh;
+    object-fit: contain;
   }
 
   .video-stage .video-clone { display: none; }
 
   /* Dual */
   .video-wrap.dual .video-stage video,
-  .video-wrap.dual .video-stage canvas { width: 50%; }
+  .video-wrap.dual .video-stage canvas { width: 50%; height: 60vh; object-fit: cover; }
   .video-wrap.dual .video-stage .video-clone { display: block; }
 
   /* Octo */
@@ -160,7 +161,8 @@
   .video-wrap.octo .video-stage video,
   .video-wrap.octo .video-stage canvas {
     width: 100%;
-    max-height: 35vh;
+    height: 30vh;
+    object-fit: cover;
   }
   .video-wrap.octo .video-stage .video-clone { display: block; }
 
@@ -288,9 +290,32 @@
     background: #16213e;
     transition: background 0.15s;
     padding: 6px;
+    position: relative;
   }
 
   .library-item:hover { background: #1f2b4d; }
+  .library-item .delete-btn {
+    position: absolute; top: 4px; right: 4px;
+    width: 22px; height: 22px; border-radius: 50%;
+    background: rgba(255,60,60,0.85); color: #fff;
+    border: none; cursor: pointer; font-size: 0.85rem;
+    line-height: 22px; text-align: center; padding: 0;
+    opacity: 0; transition: opacity 0.15s; z-index: 3;
+  }
+  .library-item:hover .delete-btn { opacity: 1; }
+  .library-item .confirm-delete {
+    position: absolute; inset: 0; z-index: 4;
+    background: rgba(20,20,40,0.95); display: flex;
+    align-items: center; justify-content: center; gap: 10px;
+    border-radius: 8px;
+  }
+  .confirm-delete span { color: #ccc; font-size: 0.8rem; }
+  .confirm-delete button {
+    padding: 4px 14px; border: none; border-radius: 4px;
+    cursor: pointer; font-size: 0.75rem; font-weight: 600;
+  }
+  .confirm-delete .yes-btn { background: #e53935; color: #fff; }
+  .confirm-delete .no-btn { background: #444; color: #fff; }
 
   .library-item.active {
     background: #1f2b4d;
@@ -319,7 +344,7 @@
   }
 
   /* --- Tabs --- */
-  .tab-bar { display: flex; gap: 0; margin-bottom: 12px; }
+  .tab-bar { display: flex; gap: 0; margin-bottom: 12px; position: sticky; top: 0; z-index: 10; background: #1a1a2e; padding-top: 4px; }
   .tab {
     flex: 1; padding: 8px; font-size: 0.8rem; font-weight: 600;
     background: #16213e; color: #666; border: 1px solid #333;
@@ -386,26 +411,59 @@
   .pl-video-option .pl-vo-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
   .pl-add-form {
-    background: #111827; border-radius: 8px; padding: 10px; margin-bottom: 10px;
+    background: #111827; border-radius: 8px; padding: 10px; margin-bottom: 0;
   }
   .pl-add-form h3 { font-size: 0.75rem; color: #666; margin-bottom: 8px; }
   .pl-add-row { display: flex; gap: 6px; margin-bottom: 6px; }
   .pl-add-row select, .pl-add-row input {
-    flex: 1; padding: 6px; font-size: 0.8rem;
+    flex: 1; min-width: 0; padding: 6px; font-size: 0.8rem;
     background: #16213e; color: #fff; border: 1px solid #333; border-radius: 4px;
+    box-sizing: border-box;
   }
   .pl-btn {
-    padding: 6px 12px; font-size: 0.75rem; font-weight: 600;
+    padding: 6px 10px; font-size: 0.75rem; font-weight: 600;
     background: #16213e; color: #888; border: 1px solid #333; border-radius: 6px;
-    cursor: pointer;
+    cursor: pointer; box-sizing: border-box;
   }
   .pl-btn:hover { color: #fff; }
-  .pl-btn-add { width: 100%; color: #4ecca3; border-color: #4ecca3; }
-  .pl-actions { display: flex; gap: 6px; }
-  .pl-actions .pl-btn { flex: 1; text-align: center; }
+  .pl-btn-add { width: 100%; color: #4ecca3; border-color: #4ecca3; border-radius: 6px; }
+  .pl-actions {
+    display: flex; flex-direction: column; gap: 6px;
+    background: #111827; border-radius: 0 0 8px 8px;
+    padding: 8px 10px 10px;
+  }
+  .pl-actions-row { display: flex; gap: 6px; }
+  .pl-actions-row .pl-btn { flex: 1; text-align: center; min-width: 0; }
   .pl-btn-save { color: #4ecca3; border-color: #4ecca3; }
   .pl-btn.active { color: #4ecca3; border-color: #4ecca3; }
   .pl-btn-play { color: #1a1a2e; background: #4ecca3; border-color: #4ecca3; }
+  .pl-btn-auto { color: #f0a500; border-color: #f0a500; }
+  .auto-gen-form {
+    display: none; background: #16213e; border-radius: 8px;
+    padding: 10px; margin-top: 8px; border: 1px solid #333;
+  }
+  .auto-gen-form.open { display: block; }
+  .auto-gen-form label { font-size: 0.75rem; color: #999; display: block; margin-bottom: 4px; }
+  .auto-gen-form input[type="number"] {
+    width: 80px; padding: 4px 8px; background: #0f3460; color: #e6e6e6;
+    border: 1px solid #333; border-radius: 4px; font-size: 0.8rem;
+  }
+  .auto-gen-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .auto-gen-row span { font-size: 0.75rem; color: #999; }
+  .auto-gen-actions { display: flex; gap: 6px; }
+  .auto-gen-actions .pl-btn { flex: 1; text-align: center; }
+  .auto-gen-status { font-size: 0.7rem; color: #4ecca3; margin-top: 6px; }
+  .auto-select-bar {
+    display: flex; align-items: center; gap: 8px;
+    margin-bottom: 6px; padding: 6px 8px;
+    background: #1a2744; border-radius: 6px;
+  }
+  .auto-select-bar span { font-size: 0.75rem; color: #f0a500; }
+  .auto-select-bar button { font-size: 0.7rem; }
+  .library-item .auto-cb {
+    position: absolute; top: 4px; left: 4px; z-index: 3;
+    width: 18px; height: 18px; accent-color: #4ecca3; cursor: pointer;
+  }
 
   /* --- Playlist Indicator --- */
   .pl-indicator {
@@ -425,19 +483,20 @@
   }
   .video-wrap:fullscreen .pl-indicator.hidden { opacity: 0; }
 
+  @keyframes rec-flash { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+
   /* --- Caption Overlay --- */
   .caption-overlay {
-    display: none; position: absolute; bottom: 60px; left: 16px;
+    position: absolute; bottom: 60px; left: 16px;
     padding: 6px 12px; background: rgba(0,0,0,0.5);
     color: rgba(255,255,255,0.85); font-size: 1rem; font-weight: 600;
     border-radius: 6px; pointer-events: none; z-index: 5;
+    opacity: 0; transition: opacity 0.5s;
   }
-  .caption-overlay.visible { display: block; }
+  .caption-overlay.visible { opacity: 1; }
   .video-wrap:fullscreen .caption-overlay {
     bottom: 70px; left: 20px; font-size: 1.2rem;
-    opacity: 1; transition: opacity 0.3s;
   }
-  .video-wrap:fullscreen .caption-overlay.hidden { opacity: 0; }
 
   /* --- Settings --- */
   .settings-form { padding: 4px 0; }
@@ -504,9 +563,9 @@
         <div class="caption-overlay" id="captionOverlay"></div>
         <div class="controls" id="controls">
           <button class="btn-play" id="playBtn" onclick="togglePlay()">Play</button>
-          <button class="btn-ctrl" id="loopBtn" onclick="toggleLoop()">Loop: Off</button>
+          <button class="btn-ctrl" id="loopBtn" onclick="toggleLoop()">Loop</button>
           <button class="btn-ctrl" id="muteBtn" onclick="toggleMute()">Mute</button>
-          <button class="btn-ctrl" id="captionBtn" onclick="toggleCaption()">CC</button>
+          <button class="btn-ctrl active" id="captionBtn" onclick="toggleCaption()">CC</button>
           <button class="btn-ctrl" onclick="refreshView()">&#8635;</button>
           <button class="btn-ctrl" id="viewBtn" onclick="cycleView()">Dual</button>
           <span class="slider-wrap" id="sliderWrap"><input type="range" class="config-slider" id="configSlider" min="1" max="32" value="1"><span class="config-label" id="configLabel">1</span><span id="presetContainer"></span></span>
@@ -559,14 +618,40 @@
             <option value="seconds">Seconds</option>
           </select>
           <input type="number" id="plDurVal" min="1" value="5">
+          <select id="plLoopMode">
+            <option value="1">Loop</option>
+            <option value="2">Bounce</option>
+          </select>
         </div>
         <button class="pl-btn pl-btn-add" onclick="addEntry()">Add</button>
       </div>
       <div class="pl-actions">
-        <button class="pl-btn pl-btn-save" onclick="savePlaylist()">Save</button>
-        <button class="pl-btn" id="plLoopBtn" onclick="togglePlLoop()">Loop: Off</button>
-        <button class="pl-btn" id="recordBtn" onclick="toggleRecording()">Record</button>
-        <button class="pl-btn pl-btn-play" onclick="startPlaylist()">Play</button>
+        <div class="pl-actions-row">
+          <button class="pl-btn pl-btn-save" onclick="savePlaylist()">Save</button>
+          <button class="pl-btn pl-btn-auto" onclick="toggleAutoGen()">Auto</button>
+          <button class="pl-btn" id="plLoopBtn" onclick="togglePlLoop()">Loop: Off</button>
+        </div>
+        <div class="pl-actions-row">
+          <button class="pl-btn" id="recordBtn" onclick="toggleRecording()">Record</button>
+          <button class="pl-btn pl-btn-play" onclick="startPlaylist()">Play</button>
+        </div>
+      </div>
+      <div class="auto-gen-form" id="autoGenForm">
+        <div class="auto-gen-row">
+          <label style="margin:0">Duration</label>
+          <input type="number" id="autoMinutes" value="30" min="1" max="480">
+          <span>minutes</span>
+        </div>
+        <div class="auto-gen-row">
+          <label style="margin:0;cursor:pointer" onclick="toggleAutoSelect()">
+            <input type="checkbox" id="autoSelectToggle" onchange="toggleAutoSelect()"> Select videos
+          </label>
+        </div>
+        <div class="auto-gen-actions">
+          <button class="pl-btn pl-btn-play" onclick="generatePlaylist()">Generate</button>
+          <button class="pl-btn" onclick="toggleAutoGen()">Cancel</button>
+        </div>
+        <div class="auto-gen-status" id="autoGenStatus"></div>
       </div>
     </div>
     <div class="tab-content" id="settingsTab">
@@ -604,10 +689,14 @@
   const librarySection = document.getElementById('librarySection');
   const libraryGrid = document.getElementById('libraryGrid');
 
-  let looping = false;
+  let loopMode = 0; // 0=off, 1=loop, 2=bounce
+  let bounceReversing = false;
+  let bounceTime = 0;
+  let lastBounceTs = 0;
   let hideTimer = null;
   let currentFilename = null;
-  let captionEnabled = false;
+  let captionEnabled = true;
+  let captionTimer = null;
   const captionOverlay = document.getElementById('captionOverlay');
 
   // View: 0=single, 1=dual, 2=octo
@@ -659,22 +748,50 @@
 
   video.addEventListener('play', () => { playBtn.textContent = 'Pause'; });
   video.addEventListener('pause', () => { playBtn.textContent = 'Play'; });
-  video.addEventListener('ended', () => { playBtn.textContent = 'Play'; });
-
-  video.addEventListener('timeupdate', () => {
-    if (looping && video.duration && video.currentTime > video.duration - 0.15) {
+  video.addEventListener('ended', () => {
+    if (loopMode === 2 && !bounceReversing) {
+      bounceReversing = true;
+      bounceTime = video.duration;
+      lastBounceTs = performance.now();
+      if (!rafId) startRenderLoop();
+      return;
+    }
+    if (loopMode === 1) {
       video.currentTime = 0;
       video.play();
-      if (plPlaying) {
-        plLoopCount++;
-        updatePlIndicator();
-        const entry = plPlaylist.entries[plEntryIdx];
-        if (entry && entry.duration.type === 'loops' && plLoopCount >= entry.duration.value) {
-          onEntryComplete();
-        }
-      }
+      onLoopComplete();
+      return;
+    }
+    playBtn.textContent = 'Play';
+  });
+
+  video.addEventListener('timeupdate', () => {
+    if (!video.duration || loopMode === 0) return;
+
+    if (loopMode === 1 && video.currentTime > video.duration - 0.15) {
+      if (recStopping) { finalizeRecording(); return; }
+      video.currentTime = 0;
+      video.play();
+      onLoopComplete();
+    } else if (loopMode === 2 && !bounceReversing && video.currentTime > video.duration - 0.15) {
+      bounceReversing = true;
+      bounceTime = video.duration;
+      lastBounceTs = performance.now();
+      video.pause();
+      if (!rafId) startRenderLoop();
     }
   });
+
+  function onLoopComplete() {
+    if (plPlaying) {
+      plLoopCount++;
+      updatePlIndicator();
+      const entry = plPlaylist.entries[plEntryIdx];
+      if (entry && entry.duration.type === 'loops' && plLoopCount >= entry.duration.value) {
+        onEntryComplete();
+      }
+    }
+  }
 
   videoWrap.addEventListener('mousemove', showControls);
   videoWrap.addEventListener('click', showControls);
@@ -695,13 +812,11 @@
     if (!document.fullscreenElement) return;
     controlsEl.classList.remove('hidden');
     if (plPlaying) plIndicator.classList.remove('hidden');
-    captionOverlay.classList.remove('hidden');
     videoWrap.style.cursor = '';
     clearTimeout(hideTimer);
     hideTimer = setTimeout(() => {
       controlsEl.classList.add('hidden');
       if (plPlaying) plIndicator.classList.add('hidden');
-      captionOverlay.classList.add('hidden');
       videoWrap.style.cursor = 'none';
     }, 1500);
   }
@@ -738,9 +853,21 @@
   function startRenderLoop() {
     stopRenderLoop();
     function draw() {
-      if (clones.length === 0 && !isRecording && !obsOutputActive) return;
+      if (clones.length === 0 && !isRecording && !obsOutputActive && !bounceReversing) return;
+      if (bounceReversing && video.duration) {
+        const now = performance.now();
+        const dt = (now - lastBounceTs) / 1000;
+        lastBounceTs = now;
+        bounceTime = Math.max(0, bounceTime - dt);
+        video.currentTime = bounceTime;
+        if (bounceTime <= 0.05) {
+          bounceReversing = false;
+          if (recStopping) { finalizeRecording(); }
+          else { video.currentTime = 0; video.play(); onLoopComplete(); }
+        }
+      }
       const vw = video.videoWidth, vh = video.videoHeight;
-      if (vw && vh && !video.paused) {
+      if (vw && vh) {
         clones.forEach(c => {
           if (c.width !== vw || c.height !== vh) {
             c.width = vw;
@@ -835,6 +962,7 @@
 
   function showVideo(filename) {
     currentFilename = filename;
+    bounceReversing = false;
     const src = '/video/' + encodeURIComponent(filename);
     video.src = src;
     video.loop = false;
@@ -848,7 +976,7 @@
     document.querySelectorAll('.library-item').forEach(el => {
       el.classList.toggle('active', el.dataset.filename === filename);
     });
-    updateCaptionOverlay();
+    showCaptionForVideo();
     broadcastState({ type: 'loadVideo', filename });
   }
 
@@ -865,24 +993,30 @@
   function toggleCaption() {
     captionEnabled = !captionEnabled;
     document.getElementById('captionBtn').classList.toggle('active', captionEnabled);
-    updateCaptionOverlay();
+    if (captionEnabled) {
+      showCaptionForVideo();
+    } else {
+      clearTimeout(captionTimer);
+      captionOverlay.classList.remove('visible');
+      broadcastState({ type: 'setCaption', text: '', visible: false });
+    }
   }
 
-  async function updateCaptionOverlay() {
-    if (!captionEnabled || !currentFilename) {
-      captionOverlay.classList.remove('visible');
-      broadcastState({ type: 'setCaption', text: '', visible: false });
-      return;
-    }
+  async function showCaptionForVideo() {
+    if (!captionEnabled || !currentFilename) return;
+    clearTimeout(captionTimer);
     const meta = await getMetadata(currentFilename);
+    let text = 'Attribution Text';
     if (meta && meta.channel) {
-      captionOverlay.textContent = '@' + meta.channel;
-      captionOverlay.classList.add('visible');
-      broadcastState({ type: 'setCaption', text: '@' + meta.channel, visible: true });
-    } else {
+      text = '@' + meta.channel;
+    }
+    captionOverlay.textContent = text;
+    captionOverlay.classList.add('visible');
+    broadcastState({ type: 'setCaption', text, visible: true });
+    captionTimer = setTimeout(() => {
       captionOverlay.classList.remove('visible');
       broadcastState({ type: 'setCaption', text: '', visible: false });
-    }
+    }, 10000);
   }
 
   function togglePlay() {
@@ -890,11 +1024,14 @@
     else { video.pause(); broadcastState({ type: 'pause' }); }
   }
 
+  const LOOP_LABELS = ['Loop', 'Loop', 'Bounce'];
   function toggleLoop() {
-    looping = !looping;
+    loopMode = (loopMode + 1) % 3;
+    bounceReversing = false;
     video.loop = false;
-    loopBtn.textContent = looping ? 'Loop: On' : 'Loop: Off';
-    loopBtn.classList.toggle('active', looping);
+    loopBtn.textContent = LOOP_LABELS[loopMode];
+    loopBtn.classList.toggle('active', loopMode > 0);
+    if (loopMode === 0) video.playbackRate = 1;
   }
 
   function toggleMute() {
@@ -912,6 +1049,8 @@
     viewBtn.textContent = VIEW_LABELS[viewMode];
     viewBtn.classList.toggle('active', viewMode > 0);
     sliderWrap.classList.toggle('visible', viewMode > 0);
+    configSlider.style.display = viewMode === 1 ? 'none' : '';
+    configLabel.style.display = viewMode === 1 ? 'none' : '';
     if (viewMode > 0) buildPresetButtons();
     if (viewMode === 1 && video.src) buildClones(1);
     else if (viewMode === 2 && video.src) buildClones(7);
@@ -989,13 +1128,42 @@
           label.appendChild(handle);
         }
 
+        const del = document.createElement('button');
+        del.className = 'delete-btn';
+        del.textContent = '×';
+        del.title = 'Delete video';
+        del.onclick = (e) => { e.stopPropagation(); deleteVideo(v.filename, item); };
+
         item.appendChild(img);
         item.appendChild(label);
+        item.appendChild(del);
         libraryGrid.appendChild(item);
       });
       populateVideoDropdown();
     } catch {}
   }
+  function deleteVideo(filename, itemEl) {
+    if (itemEl.querySelector('.confirm-delete')) return;
+    const overlay = document.createElement('div');
+    overlay.className = 'confirm-delete';
+    overlay.innerHTML = '<span>Delete?</span><button class="yes-btn">Yes</button><button class="no-btn">No</button>';
+    overlay.onclick = (e) => e.stopPropagation();
+    overlay.querySelector('.no-btn').onclick = (e) => { e.stopPropagation(); overlay.remove(); };
+    overlay.querySelector('.yes-btn').onclick = async (e) => {
+      e.stopPropagation();
+      try {
+        await fetch('/api/video/' + encodeURIComponent(filename), { method: 'DELETE' });
+        if (currentFilename === filename) {
+          video.src = '';
+          video.load();
+          destroyClones();
+        }
+        loadLibrary();
+      } catch {}
+    };
+    itemEl.appendChild(overlay);
+  }
+
   // --- Recording ---
 
   let compCanvas = null;
@@ -1068,12 +1236,17 @@
     }
   }
 
+  let recStartTime = 0;
+  let recTimerInterval = null;
+  let recStopping = false;
+
   function startRecording() {
     compCanvas = document.createElement('canvas');
     compCanvas.width = 1920;
     compCanvas.height = 1080;
     compCtx = compCanvas.getContext('2d');
     recordedChunks = [];
+    recStopping = false;
 
     const stream = compCanvas.captureStream(30);
 
@@ -1097,23 +1270,42 @@
     };
 
     mediaRecorder.onstop = async () => {
-      const blob = new Blob(recordedChunks, { type: 'video/webm' });
-      await uploadRecording(blob);
+      clearInterval(recTimerInterval);
+      const blob = new Blob(recordedChunks, { type: mediaRecorder.mimeType });
+      isRecording = false;
+      recStopping = false;
+      updateRecordButton();
+      if (blob.size > 0) {
+        await uploadRecording(blob);
+      } else {
+        setStatus('Recording was empty.', 'error');
+      }
       compCanvas = null;
       compCtx = null;
     };
 
     isRecording = true;
+    recStartTime = performance.now();
     if (!rafId) startRenderLoop();
-    mediaRecorder.start(1000);
+    mediaRecorder.start();
     updateRecordButton();
+    recTimerInterval = setInterval(updateRecordButton, 1000);
   }
 
   function stopRecording() {
+    if (!mediaRecorder || recStopping) return;
+    if (loopMode > 0 && !video.paused) {
+      recStopping = true;
+      updateRecordButton();
+    } else {
+      finalizeRecording();
+    }
+  }
+
+  function finalizeRecording() {
     if (!mediaRecorder) return;
-    isRecording = false;
+    recStopping = false;
     mediaRecorder.stop();
-    updateRecordButton();
   }
 
   function toggleRecording() {
@@ -1121,11 +1313,31 @@
     else startRecording();
   }
 
+  function formatRecTime() {
+    const s = Math.floor((performance.now() - recStartTime) / 1000);
+    const m = Math.floor(s / 60);
+    const sec = s % 60;
+    return String(m).padStart(2, '0') + ':' + String(sec).padStart(2, '0');
+  }
+
   function updateRecordButton() {
     const btn = document.getElementById('recordBtn');
-    btn.textContent = isRecording ? 'Stop Rec' : 'Record';
-    btn.style.color = isRecording ? '#e94560' : '';
-    btn.style.borderColor = isRecording ? '#e94560' : '';
+    if (recStopping) {
+      btn.textContent = 'Stopping...';
+      btn.style.color = '#e94560';
+      btn.style.borderColor = '#e94560';
+      btn.style.animation = 'rec-flash 0.6s infinite';
+    } else if (isRecording) {
+      btn.textContent = 'REC ' + formatRecTime();
+      btn.style.color = '#e94560';
+      btn.style.borderColor = '#e94560';
+      btn.style.animation = '';
+    } else {
+      btn.textContent = 'Record';
+      btn.style.color = '';
+      btn.style.borderColor = '';
+      btn.style.animation = '';
+    }
   }
 
   function broadcastState(cmd) {
@@ -1313,6 +1525,7 @@
       view: plView.value,
       preset: parseInt(plPreset.value),
       duration: { type: plDurType.value, value: parseInt(plDurVal.value) || 5 },
+      loopMode: parseInt(document.getElementById('plLoopMode').value) || 1,
     });
     renderPlaylistEntries();
   }
@@ -1358,7 +1571,8 @@
 
       const infoSpan = document.createElement('span');
       infoSpan.className = 'pl-e-info';
-      infoSpan.textContent = vl + ' P' + e.preset + ' ' + dt;
+      const lm = e.loopMode === 2 ? ' B' : '';
+      infoSpan.textContent = vl + ' P' + e.preset + ' ' + dt + lm;
       div.appendChild(infoSpan);
 
       const delBtn = document.createElement('button');
@@ -1420,8 +1634,10 @@
     showVideo(entry.video);
     setConfig(entry.preset || 1);
 
-    looping = true;
-    loopBtn.textContent = 'Loop: On';
+    const entryLoop = entry.loopMode || 1;
+    loopMode = entryLoop;
+    bounceReversing = false;
+    loopBtn.textContent = LOOP_LABELS[loopMode];
     loopBtn.classList.add('active');
     video.play();
 
@@ -1461,6 +1677,130 @@
     clearTimeout(plTimer);
     plIndicator.style.display = 'none';
     renderPlaylistEntries();
+  }
+
+  // --- Auto-Generate Playlist ---
+  let autoSelectMode = false;
+
+  function toggleAutoGen() {
+    const form = document.getElementById('autoGenForm');
+    form.classList.toggle('open');
+    if (!form.classList.contains('open') && autoSelectMode) {
+      toggleAutoSelect();
+    }
+    document.getElementById('autoGenStatus').textContent = '';
+  }
+
+  function toggleAutoSelect() {
+    autoSelectMode = !autoSelectMode;
+    document.getElementById('autoSelectToggle').checked = autoSelectMode;
+    renderAutoSelectUI();
+  }
+
+  function renderAutoSelectUI() {
+    const bar = document.getElementById('autoSelectBar');
+    if (bar) bar.remove();
+    document.querySelectorAll('.library-item .auto-cb').forEach(cb => cb.remove());
+    if (!autoSelectMode) return;
+    const selectBar = document.createElement('div');
+    selectBar.className = 'auto-select-bar';
+    selectBar.id = 'autoSelectBar';
+    selectBar.innerHTML = '<span>Select videos for auto-playlist</span><button class="pl-btn" onclick="autoSelectAll(true)" style="padding:2px 8px;font-size:0.7rem">All</button><button class="pl-btn" onclick="autoSelectAll(false)" style="padding:2px 8px;font-size:0.7rem">None</button>';
+    libraryGrid.parentNode.insertBefore(selectBar, libraryGrid);
+    document.querySelectorAll('.library-item').forEach(item => {
+      const cb = document.createElement('input');
+      cb.type = 'checkbox';
+      cb.className = 'auto-cb';
+      cb.checked = true;
+      cb.dataset.filename = item.dataset.filename;
+      cb.onclick = (e) => e.stopPropagation();
+      item.appendChild(cb);
+    });
+  }
+
+  function autoSelectAll(val) {
+    document.querySelectorAll('.library-item .auto-cb').forEach(cb => cb.checked = val);
+  }
+
+  function getSelectedAutoVideos() {
+    if (!autoSelectMode) return videoListCache.map(v => v.filename);
+    const selected = [];
+    document.querySelectorAll('.library-item .auto-cb:checked').forEach(cb => {
+      selected.push(cb.dataset.filename);
+    });
+    return selected;
+  }
+
+  async function generatePlaylist() {
+    const targetMinutes = parseInt(document.getElementById('autoMinutes').value) || 30;
+    const targetSeconds = targetMinutes * 60;
+    const statusEl = document.getElementById('autoGenStatus');
+    const selectedFiles = getSelectedAutoVideos();
+
+    if (selectedFiles.length === 0) {
+      statusEl.textContent = 'No videos selected.';
+      return;
+    }
+
+    statusEl.textContent = 'Fetching video durations...';
+
+    const videosWithDuration = [];
+    for (const filename of selectedFiles) {
+      const meta = await getMetadata(filename);
+      if (meta && meta.duration && meta.duration > 0) {
+        videosWithDuration.push({ filename, duration: meta.duration });
+      }
+    }
+
+    if (videosWithDuration.length === 0) {
+      statusEl.textContent = 'No videos have duration metadata. Download some videos first.';
+      return;
+    }
+
+    const VIEW_MODES = ['single', 'dual', 'octo'];
+    const entries = [];
+    let totalTime = 0;
+
+    // Shuffle
+    for (let i = videosWithDuration.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [videosWithDuration[i], videosWithDuration[j]] = [videosWithDuration[j], videosWithDuration[i]];
+    }
+
+    let vidIdx = 0;
+    while (totalTime < targetSeconds) {
+      const v = videosWithDuration[vidIdx % videosWithDuration.length];
+      vidIdx++;
+
+      const view = VIEW_MODES[Math.floor(Math.random() * VIEW_MODES.length)];
+      let preset;
+      if (view === 'dual') preset = DUAL_PRESETS[Math.floor(Math.random() * DUAL_PRESETS.length)];
+      else if (view === 'octo') preset = OCTO_PRESETS[Math.floor(Math.random() * OCTO_PRESETS.length)];
+      else preset = 1;
+
+      const loops = Math.floor(Math.random() * 5) + 1;
+      const entryTime = v.duration * loops;
+
+      entries.push({
+        video: v.filename,
+        view: view,
+        preset: preset,
+        duration: { type: 'loops', value: loops },
+        loopMode: 1,
+      });
+
+      totalTime += entryTime;
+    }
+
+    const totalMin = Math.round(totalTime / 60);
+    plPlaylist = { name: 'Auto ' + targetMinutes + 'min', entries: entries };
+    plSlug = '';
+    plNameInput.value = plPlaylist.name;
+    renderPlaylistEntries();
+    statusEl.textContent = entries.length + ' entries, ~' + totalMin + ' minutes total.';
+
+    if (autoSelectMode) toggleAutoSelect();
+    document.getElementById('autoGenForm').classList.remove('open');
   }
 
   function updatePlIndicator() {

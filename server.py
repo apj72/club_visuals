@@ -118,7 +118,9 @@ class Handler(BaseHTTPRequestHandler):
             self.send_error(404)
 
     def do_DELETE(self):
-        if self.path.startswith("/api/playlist/"):
+        if self.path.startswith("/api/video/"):
+            self.delete_video()
+        elif self.path.startswith("/api/playlist/"):
             self.delete_playlist()
         else:
             self.send_error(404)
@@ -308,6 +310,23 @@ class Handler(BaseHTTPRequestHandler):
         data = json.loads(self.rfile.read(length))
         PLAYLIST_DIR.mkdir(exist_ok=True)
         (PLAYLIST_DIR / f"{safe}.json").write_text(json.dumps(data, indent=2))
+        self.send_json_response({"ok": True})
+
+    def delete_video(self):
+        filename = urllib.parse.unquote(self.path[len("/api/video/"):])
+        safe_name = Path(filename).name
+        dl = get_download_dir()
+        video_path = dl / safe_name
+        if not video_path.exists():
+            self.send_error(404, "Video not found")
+            return
+        video_path.unlink()
+        info_path = dl / (video_path.stem + ".info.json")
+        if info_path.exists():
+            info_path.unlink()
+        thumb_path = THUMB_DIR / (video_path.stem + ".jpg")
+        if thumb_path.exists():
+            thumb_path.unlink()
         self.send_json_response({"ok": True})
 
     def delete_playlist(self):

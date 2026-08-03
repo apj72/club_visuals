@@ -107,6 +107,46 @@ def test_html_endpoints():
         passed += 1
 
     total += 1
+    if check("HTML contains bounce loop mode", "loopMode" in html and "bounceReversing" in html):
+        passed += 1
+
+    total += 1
+    if check("HTML contains loop mode labels", "LOOP_LABELS" in html):
+        passed += 1
+
+    total += 1
+    if check("HTML contains showCaptionForVideo", "function showCaptionForVideo" in html):
+        passed += 1
+
+    total += 1
+    if check("HTML contains rec timer", "formatRecTime" in html):
+        passed += 1
+
+    total += 1
+    if check("Tabs are sticky", "position: sticky" in html and "tab-bar" in html):
+        passed += 1
+
+    total += 1
+    if check("HTML contains deleteVideo function", "function deleteVideo" in html):
+        passed += 1
+
+    total += 1
+    if check("HTML contains delete button class", "delete-btn" in html):
+        passed += 1
+
+    total += 1
+    if check("HTML contains generatePlaylist function", "async function generatePlaylist" in html):
+        passed += 1
+
+    total += 1
+    if check("HTML contains auto-gen form", 'id="autoGenForm"' in html):
+        passed += 1
+
+    total += 1
+    if check("HTML contains Auto button", "toggleAutoGen()" in html):
+        passed += 1
+
+    total += 1
     res = get("/output")
     output_html = res.read().decode()
     if check("GET /output returns 200", res.status == 200):
@@ -232,6 +272,64 @@ def test_api_endpoints():
     return passed, total
 
 
+def test_delete_video():
+    print("\n--- Delete Video ---")
+    passed = 0
+    total = 0
+
+    import tempfile
+    import server as srv
+    dl = srv.get_download_dir()
+    dl.mkdir(parents=True, exist_ok=True)
+
+    test_mp4 = dl / "test_delete_me.mp4"
+    test_info = dl / "test_delete_me.info.json"
+    test_thumb = srv.THUMB_DIR / "test_delete_me.jpg"
+    test_mp4.write_bytes(b"fake mp4")
+    test_info.write_text('{"channel":"tester"}')
+    srv.THUMB_DIR.mkdir(exist_ok=True)
+    test_thumb.write_bytes(b"fake jpg")
+
+    total += 1
+    try:
+        req = urllib.request.Request(
+            f"{BASE_URL}/api/video/{urllib.parse.quote('test_delete_me.mp4')}",
+            method="DELETE",
+        )
+        res = urllib.request.urlopen(req, timeout=5)
+        result = json.loads(res.read())
+        if check("DELETE /api/video returns ok", result.get("ok") is True):
+            passed += 1
+    except Exception as e:
+        check("DELETE /api/video responds", False, str(e))
+
+    total += 1
+    if check("Video file deleted", not test_mp4.exists()):
+        passed += 1
+
+    total += 1
+    if check("Info JSON deleted", not test_info.exists()):
+        passed += 1
+
+    total += 1
+    if check("Thumbnail deleted", not test_thumb.exists()):
+        passed += 1
+
+    total += 1
+    try:
+        req = urllib.request.Request(
+            f"{BASE_URL}/api/video/nonexistent.mp4",
+            method="DELETE",
+        )
+        urllib.request.urlopen(req, timeout=5)
+        check("DELETE nonexistent returns 404", False, "expected error")
+    except urllib.error.HTTPError as e:
+        if check("DELETE nonexistent returns 404", e.code == 404):
+            passed += 1
+
+    return passed, total
+
+
 def test_sse_state():
     print("\n--- SSE State Sync ---")
     passed = 0
@@ -345,6 +443,7 @@ def main():
         test_html_endpoints,
         test_view_mode_logic,
         test_api_endpoints,
+        test_delete_video,
         test_sse_state,
         test_recording_endpoint,
         test_cache_headers,
