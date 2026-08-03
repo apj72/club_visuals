@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Instagram Video Saver</title>
+<title>Club Visuals</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -538,7 +538,7 @@
 </head>
 <body>
 <div class="header">
-  <h1>Instagram Video Saver</h1>
+  <h1>Club Visuals</h1>
 
   <div class="input-row">
     <input type="text" id="url" placeholder="Paste Instagram URL here..." autofocus>
@@ -691,8 +691,10 @@
 
   let loopMode = 0; // 0=off, 1=loop, 2=bounce
   let bounceReversing = false;
-  let bounceTime = 0;
-  let lastBounceTs = 0;
+  let bounceFrames = [];
+  let bounceFrameIdx = 0;
+  let bounceFinishing = false;
+  let bounceOverlay = null;
   let hideTimer = null;
   let currentFilename = null;
   let captionEnabled = true;
@@ -746,16 +748,44 @@
     if (e.key === 'Enter') download();
   });
 
-  video.addEventListener('play', () => { playBtn.textContent = 'Pause'; });
+  video.addEventListener('play', () => {
+    playBtn.textContent = 'Pause';
+    if (loopMode === 2 && !rafId) startRenderLoop();
+  });
   video.addEventListener('pause', () => { playBtn.textContent = 'Play'; });
-  video.addEventListener('ended', () => {
-    if (loopMode === 2 && !bounceReversing) {
-      bounceReversing = true;
-      bounceTime = video.duration;
-      lastBounceTs = performance.now();
-      if (!rafId) startRenderLoop();
-      return;
+
+  function stopBounce() {
+    bounceReversing = false;
+    bounceFrameIdx = 0;
+    bounceFinishing = false;
+    bounceFrames.forEach(b => b.close());
+    bounceFrames = [];
+    if (bounceOverlay) {
+      bounceOverlay.style.display = 'none';
+      video.style.display = '';
     }
+  }
+
+  function startBounce() {
+    if (bounceFrames.length === 0) { video.currentTime = 0; video.play(); return; }
+    bounceReversing = true;
+    bounceFrameIdx = bounceFrames.length - 1;
+    video.pause();
+    if (!bounceOverlay) {
+      bounceOverlay = document.createElement('canvas');
+      bounceOverlay.id = 'bounceOverlay';
+      bounceOverlay.dataset.pos = '0';
+      bounceOverlay.style.display = 'none';
+      video.after(bounceOverlay);
+    }
+    bounceOverlay.style.display = 'block';
+    bounceOverlay.style.transform = video.style.transform;
+    video.style.display = 'none';
+    if (!rafId) startRenderLoop();
+  }
+
+  video.addEventListener('ended', () => {
+    if (loopMode === 2 && !bounceReversing) { startBounce(); return; }
     if (loopMode === 1) {
       video.currentTime = 0;
       video.play();
@@ -774,11 +804,7 @@
       video.play();
       onLoopComplete();
     } else if (loopMode === 2 && !bounceReversing && video.currentTime > video.duration - 0.15) {
-      bounceReversing = true;
-      bounceTime = video.duration;
-      lastBounceTs = performance.now();
-      video.pause();
-      if (!rafId) startRenderLoop();
+      startBounce();
     }
   });
 
@@ -853,19 +879,41 @@
   function startRenderLoop() {
     stopRenderLoop();
     function draw() {
-      if (clones.length === 0 && !isRecording && !obsOutputActive && !bounceReversing) return;
-      if (bounceReversing && video.duration) {
-        const now = performance.now();
-        const dt = (now - lastBounceTs) / 1000;
-        lastBounceTs = now;
-        bounceTime = Math.max(0, bounceTime - dt);
-        video.currentTime = bounceTime;
-        if (bounceTime <= 0.05) {
-          bounceReversing = false;
-          if (recStopping) { finalizeRecording(); }
-          else { video.currentTime = 0; video.play(); onLoopComplete(); }
+      if (clones.length === 0 && !isRecording && !obsOutputActive && !bounceReversing && loopMode !== 2) return;
+
+      if (bounceReversing && bounceFrames.length > 0) {
+        if (bounceFrameIdx > 0) bounceFrameIdx--;
+        if (bounceFrameIdx <= 0 && !bounceFinishing) {
+          bounceFinishing = true;
+          if (recStopping) { stopBounce(); finalizeRecording(); }
+          else {
+            video.currentTime = 0;
+            video.addEventListener('seeked', function onReady() {
+              video.removeEventListener('seeked', onReady);
+              stopBounce();
+              video.play();
+              onLoopComplete();
+            });
+          }
         }
+        const frame = bounceFrames[bounceFrameIdx];
+        if (frame) {
+          const fw = frame.width, fh = frame.height;
+          if (bounceOverlay) {
+            if (bounceOverlay.width !== fw || bounceOverlay.height !== fh) {
+              bounceOverlay.width = fw; bounceOverlay.height = fh;
+            }
+            bounceOverlay.getContext('2d').drawImage(frame, 0, 0);
+          }
+          clones.forEach(c => {
+            if (c.width !== fw || c.height !== fh) { c.width = fw; c.height = fh; }
+            c.getContext('2d').drawImage(frame, 0, 0, fw, fh);
+          });
+        }
+        rafId = requestAnimationFrame(draw);
+        return;
       }
+
       const vw = video.videoWidth, vh = video.videoHeight;
       if (vw && vh) {
         clones.forEach(c => {
@@ -876,6 +924,10 @@
           c.getContext('2d').drawImage(video, 0, 0, vw, vh);
         });
         if (isRecording || obsOutputActive) drawCompositeFrame();
+        if (loopMode === 2 && !video.paused) {
+          const idx = bounceFrames.length;
+          createImageBitmap(video).then(bmp => { bounceFrames[idx] = bmp; });
+        }
       }
       rafId = requestAnimationFrame(draw);
     }
@@ -962,7 +1014,7 @@
 
   function showVideo(filename) {
     currentFilename = filename;
-    bounceReversing = false;
+    stopBounce();
     const src = '/video/' + encodeURIComponent(filename);
     video.src = src;
     video.loop = false;
@@ -1020,6 +1072,12 @@
   }
 
   function togglePlay() {
+    if (bounceReversing) {
+      stopBounce();
+      video.pause();
+      broadcastState({ type: 'pause' });
+      return;
+    }
     if (video.paused || video.ended) { video.play(); broadcastState({ type: 'play' }); }
     else { video.pause(); broadcastState({ type: 'pause' }); }
   }
@@ -1027,11 +1085,12 @@
   const LOOP_LABELS = ['Loop', 'Loop', 'Bounce'];
   function toggleLoop() {
     loopMode = (loopMode + 1) % 3;
-    bounceReversing = false;
+    stopBounce();
     video.loop = false;
     loopBtn.textContent = LOOP_LABELS[loopMode];
     loopBtn.classList.toggle('active', loopMode > 0);
     if (loopMode === 0) video.playbackRate = 1;
+    if (loopMode === 2 && !video.paused && !rafId) startRenderLoop();
   }
 
   function toggleMute() {
@@ -1351,10 +1410,11 @@
   async function uploadRecording(blob) {
     setStatus('Converting recording to MP4...', '');
     try {
+      const buf = await blob.arrayBuffer();
       const res = await fetch('/api/convert', {
         method: 'POST',
         headers: { 'Content-Type': 'video/webm' },
-        body: blob,
+        body: buf,
       });
       const data = await res.json();
       if (data.ok) {
@@ -1636,7 +1696,7 @@
 
     const entryLoop = entry.loopMode || 1;
     loopMode = entryLoop;
-    bounceReversing = false;
+    stopBounce();
     loopBtn.textContent = LOOP_LABELS[loopMode];
     loopBtn.classList.add('active');
     video.play();

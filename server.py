@@ -411,7 +411,7 @@ class Handler(BaseHTTPRequestHandler):
             *cookie_args,
             "-f", "bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best",
             "--merge-output-format", "mp4",
-            "--write-infojson",
+            "--write-info-json",
             "-o", str(dl / "%(title).80s_%(id)s.%(ext)s"),
             "--print", "after_move:filename",
             url,
@@ -457,19 +457,21 @@ class Handler(BaseHTTPRequestHandler):
 
     def handle_convert(self):
         length = int(self.headers.get("Content-Length", 0))
+        if length == 0:
+            self.send_json_response({"ok": False, "error": "Empty recording received"})
+            return
+
         dl = get_download_dir()
         timestamp = time.strftime("%Y%m%d_%H%M%S")
         webm_path = dl / f"recording_{timestamp}.webm"
         mp4_path = dl / f"recording_{timestamp}.mp4"
 
-        with open(webm_path, "wb") as f:
-            remaining = length
-            while remaining > 0:
-                chunk = self.rfile.read(min(65536, remaining))
-                if not chunk:
-                    break
-                f.write(chunk)
-                remaining -= len(chunk)
+        body = self.rfile.read(length)
+        if len(body) == 0:
+            self.send_json_response({"ok": False, "error": "No data received"})
+            return
+
+        webm_path.write_bytes(body)
 
         try:
             result = subprocess.run([
