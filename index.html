@@ -101,6 +101,99 @@
     white-space: nowrap;
   }
 
+  .connection-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+
+  .conn-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .conn-dot.green { background: #4ecca3; }
+  .conn-dot.amber { background: #f0a500; }
+  .conn-dot.red { background: #e94560; }
+
+  .conn-label {
+    font-size: 0.8rem;
+    color: #999;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .conn-btn {
+    padding: 5px 12px;
+    font-size: 0.75rem;
+    border-radius: 6px;
+    background: #16213e;
+    color: #ccc;
+    border: 1px solid #333;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  .conn-btn:hover { border-color: #e94560; color: #fff; }
+
+  .conn-panel {
+    display: none;
+    background: #16213e;
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 14px;
+    margin-bottom: 12px;
+  }
+
+  .conn-panel.visible { display: block; }
+
+  .conn-panel p {
+    font-size: 0.8rem;
+    color: #999;
+    margin-bottom: 10px;
+    line-height: 1.4;
+  }
+
+  .conn-panel .input-row {
+    margin-bottom: 8px;
+  }
+
+  .conn-panel input[type="password"] {
+    flex: 1;
+    padding: 8px 12px;
+    border: 1px solid #333;
+    border-radius: 6px;
+    background: #1a1a2e;
+    color: #fff;
+    font-size: 0.85rem;
+    outline: none;
+  }
+
+  .conn-panel input[type="password"]:focus { border-color: #e94560; }
+
+  .conn-panel .conn-actions {
+    display: flex;
+    gap: 8px;
+  }
+
+  .conn-panel .conn-actions button {
+    padding: 7px 14px;
+    font-size: 0.8rem;
+    border-radius: 6px;
+  }
+
+  .conn-result {
+    font-size: 0.8rem;
+    margin-top: 8px;
+    min-height: 16px;
+  }
+
+  .conn-result.ok { color: #4ecca3; }
+  .conn-result.err { color: #e94560; }
+
   .status {
     font-size: 0.85rem;
     color: #888;
@@ -152,6 +245,26 @@
   .video-wrap.dual .video-stage canvas { width: 50%; height: 60vh; object-fit: cover; }
   .video-wrap.dual .video-stage .video-clone { display: block; }
 
+  /* Triple */
+  .video-wrap.triple .video-stage video,
+  .video-wrap.triple .video-stage canvas { width: 33.333%; height: 60vh; object-fit: cover; }
+  .video-wrap.triple .video-stage .video-clone { display: block; }
+
+  /* Quad */
+  .video-wrap.quad .video-stage {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+  }
+  .video-wrap.quad .video-stage video,
+  .video-wrap.quad .video-stage canvas {
+    width: 100%;
+    height: 30vh;
+    min-width: 0;
+    object-fit: cover;
+  }
+  .video-wrap.quad .video-stage .video-clone { display: block; }
+
   /* Octo */
   .video-wrap.octo .video-stage {
     display: grid;
@@ -162,6 +275,7 @@
   .video-wrap.octo .video-stage canvas {
     width: 100%;
     height: 30vh;
+    min-width: 0;
     object-fit: cover;
   }
   .video-wrap.octo .video-stage .video-clone { display: block; }
@@ -174,7 +288,7 @@
     object-fit: contain;
   }
 
-  /* Fullscreen — dual: fill each half, crop outer edges */
+  /* Fullscreen — dual */
   .video-wrap.dual:fullscreen .video-stage {
     height: 100vh;
   }
@@ -186,7 +300,32 @@
     object-position: center center;
   }
 
-  /* Fullscreen — octo: fill each cell, crop edges */
+  /* Fullscreen — triple */
+  .video-wrap.triple:fullscreen .video-stage {
+    height: 100vh;
+  }
+  .video-wrap.triple:fullscreen .video-stage video,
+  .video-wrap.triple:fullscreen .video-stage canvas {
+    height: 100vh;
+    max-height: 100vh;
+    object-fit: cover;
+    object-position: center center;
+  }
+
+  /* Fullscreen — quad */
+  .video-wrap.quad:fullscreen .video-stage {
+    height: 100vh;
+  }
+  .video-wrap.quad:fullscreen .video-stage video,
+  .video-wrap.quad:fullscreen .video-stage canvas {
+    height: 50vh;
+    max-height: 50vh;
+    min-width: 0;
+    object-fit: cover;
+    object-position: center center;
+  }
+
+  /* Fullscreen — octo */
   .video-wrap.octo:fullscreen .video-stage {
     height: 100vh;
   }
@@ -194,6 +333,7 @@
   .video-wrap.octo:fullscreen .video-stage canvas {
     height: 50vh;
     max-height: 50vh;
+    min-width: 0;
     object-fit: cover;
     object-position: center center;
   }
@@ -255,6 +395,12 @@
   .slider-wrap.visible { display: flex; }
   .config-slider { width: 140px; accent-color: #4ecca3; cursor: pointer; }
   .config-label { font-size: 0.75rem; color: #888; min-width: 20px; }
+  .zoom-wrap { display: none; align-items: center; gap: 6px; }
+  .zoom-wrap.visible { display: flex; }
+  .zoom-slider { width: 100px; accent-color: #4ecca3; cursor: pointer; }
+  .zoom-label { font-size: 0.75rem; color: #888; min-width: 28px; }
+  .zoom-reset { font-size: 0.65rem; padding: 3px 6px; border: 1px solid #333; background: #16213e; color: #888; border-radius: 4px; cursor: pointer; }
+  .zoom-reset:hover { color: #ccc; border-color: #555; }
   .preset-btn {
     background: #16213e; color: #888; border: 1px solid #333;
     padding: 4px 7px; font-size: 0.7rem; border-radius: 4px;
@@ -267,14 +413,36 @@
     border-color: #e94560 !important;
   }
 
-  .filename {
-    flex: 1;
-    font-size: 0.8rem;
-    color: #666;
-    text-align: right;
-    overflow: hidden;
-    text-overflow: ellipsis;
+  .popup-wrap { position: relative; display: inline-block; }
+  .popup-menu {
+    display: none;
+    position: absolute;
+    bottom: calc(100% + 6px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: #16213e;
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 4px;
+    z-index: 20;
     white-space: nowrap;
+  }
+  .popup-menu.open { display: flex; gap: 4px; }
+  .popup-menu .popup-opt {
+    background: transparent;
+    color: #888;
+    border: 1px solid transparent;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    transition: all 0.15s;
+  }
+  .popup-menu .popup-opt:hover { color: #ccc; border-color: #555; }
+  .popup-menu .popup-opt.active { color: #4ecca3; border-color: #4ecca3; }
+
+  .filename {
+    display: none;
   }
 
   /* --- Library --- */
@@ -334,8 +502,8 @@
   }
 
   .library-item img {
-    width: 80px;
-    height: 80px;
+    width: 96px;
+    height: 54px;
     object-fit: cover;
     display: block;
     background: #111;
@@ -551,6 +719,24 @@
 <div class="header">
   <h1>Club Visuals</h1>
 
+  <div class="connection-row">
+    <span class="conn-dot" id="connDot"></span>
+    <span class="conn-label" id="connLabel">Checking connection...</span>
+    <button class="conn-btn" id="connBtn" onclick="toggleConnPanel()">Connect</button>
+  </div>
+
+  <div class="conn-panel" id="connPanel">
+    <p>Enter your macOS login password to export cookies from Brave without the system dialog. The password is used once and never stored.</p>
+    <div class="input-row">
+      <input type="password" id="connPassword" placeholder="macOS login password (optional)">
+    </div>
+    <div class="conn-actions">
+      <button class="btn-download" onclick="refreshCookies(true)" id="connRefreshBtn">Refresh with password</button>
+      <button class="conn-btn" onclick="refreshCookies(false)">Refresh without password</button>
+    </div>
+    <div class="conn-result" id="connResult"></div>
+  </div>
+
   <div class="input-row">
     <input type="text" id="url" placeholder="Paste Instagram URL here..." autofocus>
     <button class="btn-download" id="downloadBtn" onclick="download()">Download</button>
@@ -577,14 +763,31 @@
         </div>
         <div class="controls" id="controls">
           <button class="btn-play" id="playBtn" onclick="togglePlay()">Play</button>
-          <button class="btn-ctrl" id="loopBtn" onclick="toggleLoop()">Loop</button>
+          <span class="popup-wrap">
+            <button class="btn-ctrl" id="loopBtn" onclick="togglePlaybackMenu(event)">Playback</button>
+            <div class="popup-menu" id="playbackMenu">
+              <button class="popup-opt active" data-mode="0" onclick="setLoopMode(0)">No Loop</button>
+              <button class="popup-opt" data-mode="1" onclick="setLoopMode(1)">Loop</button>
+              <button class="popup-opt" data-mode="2" onclick="setLoopMode(2)">Bounce</button>
+            </div>
+          </span>
           <button class="btn-ctrl" id="muteBtn" onclick="toggleMute()">Mute</button>
           <button class="btn-ctrl active" id="captionBtn" onclick="toggleCaption()">CC</button>
           <button class="btn-ctrl" onclick="refreshView()">&#8635;</button>
-          <button class="btn-ctrl" id="viewBtn" onclick="cycleView()">Dual</button>
+          <span class="popup-wrap">
+            <button class="btn-ctrl" id="viewBtn" onclick="toggleLayoutMenu(event)">Layout</button>
+            <div class="popup-menu" id="layoutMenu">
+              <button class="popup-opt active" data-mode="0" onclick="setLayout(0)">Single</button>
+              <button class="popup-opt" data-mode="1" onclick="setLayout(1)">Dual</button>
+              <button class="popup-opt" data-mode="2" onclick="setLayout(2)">3x</button>
+              <button class="popup-opt" data-mode="3" onclick="setLayout(3)">4x</button>
+              <button class="popup-opt" data-mode="4" onclick="setLayout(4)">8x</button>
+            </div>
+          </span>
+          <span class="zoom-wrap" id="zoomWrap"><span class="zoom-label">Zoom</span><input type="range" class="zoom-slider" id="zoomSlider" min="1.0" max="4.0" step="0.1" value="1.0"><span class="zoom-label" id="zoomValue">1.0x</span><button class="zoom-reset" onclick="resetZoom()">Reset</button><span class="zoom-label">X</span><input type="range" class="zoom-slider" id="panXSlider" min="-1.0" max="1.0" step="0.05" value="0"><span class="zoom-label" id="panXValue">0</span><span class="zoom-label">Y</span><input type="range" class="zoom-slider" id="panYSlider" min="-1.0" max="1.0" step="0.05" value="0"><span class="zoom-label" id="panYValue">0</span><button class="zoom-reset" onclick="resetPan()">Reset</button></span>
           <span class="slider-wrap" id="sliderWrap"><input type="range" class="config-slider" id="configSlider" min="1" max="32" value="1"><span class="config-label" id="configLabel">1</span><span id="presetContainer"></span></span>
+          <button class="btn-ctrl" id="fxBtn" onclick="openFxController()">FX</button>
           <button class="btn-ctrl btn-fullscreen" id="fsBtn" onclick="toggleFullscreen()">Fullscreen</button>
-          <span class="filename" id="filename"></span>
         </div>
       </div>
     </div>
@@ -622,6 +825,8 @@
           <select id="plView">
             <option value="single">Single</option>
             <option value="dual">Dual</option>
+            <option value="triple">3x</option>
+            <option value="quad">4x</option>
             <option value="octo">8x</option>
           </select>
           <select id="plPreset"></select>
@@ -716,15 +921,27 @@
   let captionTimer = null;
   const captionOverlay = document.getElementById('captionOverlay');
 
-  // View: 0=single, 1=dual, 2=octo
+  // View: 0=single, 1=dual, 2=triple, 3=quad, 4=octo
   let viewMode = 0;
-  const VIEW_NAMES = ['single', 'dual', 'octo'];
-  const VIEW_LABELS = ['Dual', '8x', 'Single'];
+  const VIEW_NAMES = ['single', 'dual', 'triple', 'quad', 'octo'];
 
   let configIdx = 0;
+  let tileZoom = 1.0;
+  let tilePanX = 0;
+  let tilePanY = 0;
   let clones = [];
   let videoListCache = [];
   let metadataCache = {};
+  let fxWindow = null;
+  let currentEffects = { hueRotate: 0, saturate: 100, contrast: 100, brightness: 100, blur: 0, invert: 0, sepia: 0 };
+  let trailsEnabled = false;
+  let trailAmount = 0.15;
+  let audioCtx = null;
+  let analyser = null;
+  let audioData = null;
+  let audioReactive = false;
+  let audioSensitivity = 1.0;
+  let audioFrameCount = 0;
 
   async function getMetadata(filename) {
     if (metadataCache[filename] !== undefined) return metadataCache[filename];
@@ -757,6 +974,107 @@
   }
 
 
+  // --- Connection / Cookies ---
+
+  async function checkCookieStatus() {
+    try {
+      const res = await fetch('/api/cookie-status');
+      const s = await res.json();
+      const dot = document.getElementById('connDot');
+      const label = document.getElementById('connLabel');
+      const btn = document.getElementById('connBtn');
+
+      if (s.fresh) {
+        dot.className = 'conn-dot green';
+        const age = s.age_hours < 1 ? 'less than 1 hour' :
+                    s.age_hours < 24 ? Math.round(s.age_hours) + ' hours' :
+                    Math.round(s.age_hours / 24) + ' days';
+        label.textContent = `Instagram connected (${age} ago)`;
+        btn.textContent = 'Refresh';
+      } else if (s.exists) {
+        dot.className = 'conn-dot amber';
+        label.textContent = 'Instagram cookies expired';
+        btn.textContent = 'Reconnect';
+      } else {
+        dot.className = 'conn-dot red';
+        label.textContent = 'Not connected to Instagram';
+        btn.textContent = 'Connect';
+      }
+    } catch {
+      document.getElementById('connDot').className = 'conn-dot red';
+      document.getElementById('connLabel').textContent = 'Server not reachable';
+    }
+  }
+
+  function toggleConnPanel() {
+    const panel = document.getElementById('connPanel');
+    panel.classList.toggle('visible');
+    if (panel.classList.contains('visible')) {
+      document.getElementById('connResult').textContent = '';
+    }
+  }
+
+  function showConnPanel() {
+    document.getElementById('connPanel').classList.add('visible');
+    document.getElementById('connResult').textContent = '';
+  }
+
+  async function refreshCookies(withPassword) {
+    const btn = document.getElementById('connRefreshBtn');
+    const result = document.getElementById('connResult');
+    const body = {};
+
+    if (withPassword) {
+      const pw = document.getElementById('connPassword').value;
+      if (!pw) {
+        result.textContent = 'Enter your macOS password above';
+        result.className = 'conn-result err';
+        return;
+      }
+      body.password = pw;
+    }
+
+    btn.disabled = true;
+    result.textContent = 'Refreshing cookies from Brave...';
+    result.className = 'conn-result';
+
+    try {
+      const res = await fetch('/api/refresh-cookies', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+      const data = await res.json();
+      document.getElementById('connPassword').value = '';
+
+      if (data.ok && data.fresh) {
+        result.textContent = 'Connected successfully!';
+        result.className = 'conn-result ok';
+        setTimeout(() => {
+          document.getElementById('connPanel').classList.remove('visible');
+        }, 1500);
+      } else if (data.ok) {
+        result.textContent = 'Cookies exported but may be stale. Try logging into Instagram in Brave first.';
+        result.className = 'conn-result err';
+      } else {
+        result.textContent = 'Failed to export cookies. Check that Brave is installed.';
+        result.className = 'conn-result err';
+      }
+      checkCookieStatus();
+    } catch (err) {
+      result.textContent = 'Error: ' + err.message;
+      result.className = 'conn-result err';
+    } finally {
+      btn.disabled = false;
+    }
+  }
+
+  document.getElementById('connPassword').addEventListener('keydown', e => {
+    if (e.key === 'Enter') refreshCookies(true);
+  });
+
+  checkCookieStatus();
+
   // --- Events ---
 
   document.getElementById('url').addEventListener('keydown', e => {
@@ -766,8 +1084,12 @@
   video.addEventListener('play', () => {
     playBtn.textContent = 'Pause';
     if (loopMode === 2 && !rafId) startRenderLoop();
+    syncFxTransport({ playing: true });
   });
-  video.addEventListener('pause', () => { playBtn.textContent = 'Play'; });
+  video.addEventListener('pause', () => {
+    playBtn.textContent = 'Play';
+    syncFxTransport({ playing: false });
+  });
 
   function stopBounce() {
     bounceReversing = false;
@@ -777,7 +1099,7 @@
     bounceFrames = [];
     if (bounceOverlay) {
       bounceOverlay.style.display = 'none';
-      video.style.display = '';
+      if (clones.length === 0) video.style.display = '';
     }
   }
 
@@ -881,15 +1203,16 @@
   function buildClones(count) {
     destroyClones();
     if (!video.src) return;
-    for (let i = 1; i <= count; i++) {
+    video.style.display = 'none';
+    for (let i = 0; i <= count; i++) {
       const c = document.createElement('canvas');
       c.className = 'video-clone';
-      c.dataset.pos = i;
+      c.dataset.pos = String(i);
       videoStage.appendChild(c);
       clones.push(c);
     }
-    video.dataset.pos = '0';
     applyTransforms();
+    applyEffectFilters();
     startRenderLoop();
   }
 
@@ -897,14 +1220,30 @@
     stopRenderLoop();
     clones.forEach(c => c.remove());
     clones = [];
-    delete video.dataset.pos;
+    if (bounceOverlay) {
+      bounceOverlay.remove();
+      bounceOverlay = null;
+    }
+    video.style.display = '';
     video.style.transform = '';
   }
 
   function startRenderLoop() {
     stopRenderLoop();
     function draw() {
-      if (clones.length === 0 && !isRecording && !obsOutputActive && !bounceReversing && loopMode !== 2) return;
+      if (clones.length === 0 && !isRecording && !obsOutputActive && !bounceReversing && loopMode !== 2 && !trailsEnabled && !audioReactive) return;
+
+      if (audioReactive && analyser) {
+        analyser.getByteFrequencyData(audioData);
+        const bass = avgBand(audioData, 0, 8) * audioSensitivity;
+        const mid = avgBand(audioData, 8, 40) * audioSensitivity;
+        const treble = avgBand(audioData, 40, 128) * audioSensitivity;
+        applyAudioReactiveEffects(bass, mid, treble);
+        audioFrameCount++;
+        if (audioFrameCount % 3 === 0) {
+          syncFxTransport({ audioLevels: { bass: Math.min(255, bass), mid: Math.min(255, mid), treble: Math.min(255, treble) } });
+        }
+      }
 
       if (bounceReversing && bounceFrames.length > 0) {
         if (bounceFrameIdx > 0) bounceFrameIdx--;
@@ -943,11 +1282,18 @@
       const vw = video.videoWidth, vh = video.videoHeight;
       if (vw && vh) {
         clones.forEach(c => {
-          if (c.width !== vw || c.height !== vh) {
-            c.width = vw;
-            c.height = vh;
+          const cw = c.clientWidth, ch = c.clientHeight;
+          if (!cw || !ch) return;
+          if (c.width !== cw || c.height !== ch) { c.width = cw; c.height = ch; }
+          const ctx = c.getContext('2d');
+          if (trailsEnabled) {
+            ctx.fillStyle = `rgba(0,0,0,${trailAmount})`;
+            ctx.fillRect(0, 0, cw, ch);
+          } else {
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0, 0, cw, ch);
           }
-          c.getContext('2d').drawImage(video, 0, 0, vw, vh);
+          drawZoomedTile(ctx, vw, vh, cw, ch);
         });
         if (isRecording || obsOutputActive) drawCompositeFrame();
         if (loopMode === 2 && !video.paused) {
@@ -964,16 +1310,138 @@
     if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
   }
 
+  const TRIPLE_POS_MAP = [0, 1, 2];
+  const QUAD_POS_MAP = [0, 1, 4, 5];
+
+  function drawZoomedTile(ctx, vw, vh, cw, ch) {
+    const coverScale = Math.max(cw / vw, ch / vh);
+    const es = coverScale * tileZoom;
+    const sw = Math.min(vw, cw / es);
+    const sh = Math.min(vh, ch / es);
+    const panRangeX = vw - sw;
+    const panRangeY = vh - sh;
+    const sx = panRangeX * (1 + tilePanX) / 2;
+    const sy = panRangeY * (1 - tilePanY) / 2;
+    ctx.drawImage(video, sx, sy, sw, sh, 0, 0, cw, ch);
+  }
+
   function applyTransforms() {
     if (viewMode === 0) { video.style.transform = ''; return; }
     const cfg = CONFIGS[configIdx];
     if (viewMode === 1) {
-      video.style.transform = cfg[0];
-      clones.forEach(c => { c.style.transform = cfg[3]; });
+      clones.forEach(c => {
+        const pos = parseInt(c.dataset.pos);
+        c.style.transform = pos === 0 ? cfg[0] : cfg[3];
+      });
+    } else if (viewMode === 2) {
+      clones.forEach(c => { c.style.transform = cfg[TRIPLE_POS_MAP[parseInt(c.dataset.pos)]]; });
+    } else if (viewMode === 3) {
+      clones.forEach(c => { c.style.transform = cfg[QUAD_POS_MAP[parseInt(c.dataset.pos)]]; });
     } else {
-      video.style.transform = cfg[0];
       clones.forEach(c => { c.style.transform = cfg[parseInt(c.dataset.pos)]; });
     }
+  }
+
+  function buildFilterString(e) {
+    const parts = [];
+    if (e.hueRotate !== 0) parts.push(`hue-rotate(${e.hueRotate}deg)`);
+    if (e.saturate !== 100) parts.push(`saturate(${e.saturate}%)`);
+    if (e.contrast !== 100) parts.push(`contrast(${e.contrast}%)`);
+    if (e.brightness !== 100) parts.push(`brightness(${e.brightness}%)`);
+    if (e.blur !== 0) parts.push(`blur(${e.blur}px)`);
+    if (e.invert !== 0) parts.push(`invert(${e.invert}%)`);
+    if (e.sepia !== 0) parts.push(`sepia(${e.sepia}%)`);
+    return parts.length > 0 ? parts.join(' ') : 'none';
+  }
+
+  function applyEffectFilters() {
+    const f = buildFilterString(currentEffects);
+    video.style.filter = f;
+    clones.forEach(c => { c.style.filter = f; });
+    if (bounceOverlay) bounceOverlay.style.filter = f;
+  }
+
+  function applyEffectsFromController(effects) {
+    currentEffects = { ...effects };
+    applyEffectFilters();
+    broadcastState({ type: 'setEffects', effects: currentEffects });
+  }
+
+  function openFxController() {
+    if (fxWindow && !fxWindow.closed) { fxWindow.focus(); return; }
+    fxWindow = window.open('/effects', 'fxController', 'width=400,height=650,resizable=yes');
+    document.getElementById('fxBtn').classList.add('active');
+    fxWindow.addEventListener('load', () => {
+      fxWindow.setEffectValues(currentEffects);
+      fxWindow.updateTransport({
+        playing: !video.paused,
+        loopMode: loopMode,
+        muted: video.muted,
+        filename: currentFilename || 'No video loaded'
+      });
+    });
+  }
+
+  function onFxWindowClosed() {
+    fxWindow = null;
+    document.getElementById('fxBtn').classList.remove('active');
+  }
+
+  function syncFxTransport(state) {
+    if (fxWindow && !fxWindow.closed) fxWindow.updateTransport(state);
+  }
+
+  function avgBand(data, from, to) {
+    let sum = 0;
+    for (let i = from; i < to; i++) sum += data[i];
+    return sum / (to - from);
+  }
+
+  function initAudio() {
+    if (audioCtx) return;
+    audioCtx = new AudioContext();
+    const source = audioCtx.createMediaElementSource(video);
+    analyser = audioCtx.createAnalyser();
+    analyser.fftSize = 256;
+    source.connect(analyser);
+    analyser.connect(audioCtx.destination);
+    audioData = new Uint8Array(analyser.frequencyBinCount);
+  }
+
+  function applyAudioReactiveEffects(bass, mid, treble) {
+    const e = { ...currentEffects };
+    e.brightness = Math.min(200, e.brightness + (bass / 255) * 50);
+    e.saturate = Math.min(300, e.saturate + (bass / 255) * 80);
+    e.hueRotate = (e.hueRotate + (mid / 255) * 30) % 360;
+    const f = buildFilterString(e);
+    video.style.filter = f;
+    clones.forEach(c => { c.style.filter = f; });
+    if (bounceOverlay) bounceOverlay.style.filter = f;
+    if (audioFrameCount % 6 === 0) {
+      broadcastState({ type: 'setEffects', effects: e });
+    }
+  }
+
+  function setTrailsEnabled(enabled) {
+    trailsEnabled = enabled;
+    broadcastState({ type: 'setTrails', enabled, amount: trailAmount });
+    if (trailsEnabled && !rafId) startRenderLoop();
+  }
+
+  function setTrailAmount(val) {
+    trailAmount = val;
+    broadcastState({ type: 'setTrails', enabled: trailsEnabled, amount: trailAmount });
+  }
+
+  function setAudioReactive(enabled) {
+    audioReactive = enabled;
+    if (enabled) initAudio();
+    if (enabled && !rafId) startRenderLoop();
+    if (!enabled) applyEffectFilters();
+  }
+
+  function setAudioSensitivity(val) {
+    audioSensitivity = val;
   }
 
   // --- Controls ---
@@ -1020,6 +1488,11 @@
               setStatus('Download complete!', 'success');
               showVideo(msg.filename);
               loadLibrary();
+              checkCookieStatus();
+            } else if (msg.status === 'need_cookies') {
+              setStatus(msg.message, 'error');
+              showConnPanel();
+              checkCookieStatus();
             } else if (msg.status === 'error') {
               setStatus(msg.message || 'Download failed.', 'error');
             }
@@ -1044,26 +1517,30 @@
     const src = '/video/' + encodeURIComponent(filename);
     video.src = src;
     video.loop = false;
-    filenameEl.textContent = filename;
+
     playerSection.classList.add('visible');
     video.load();
-    if (viewMode > 0) {
-      const count = viewMode === 1 ? 1 : 7;
-      buildClones(count);
-    }
+    video.addEventListener('loadeddata', function onLoaded() {
+      video.removeEventListener('loadeddata', onLoaded);
+      video.currentTime = 0.001;
+    });
+    const count = CLONE_COUNTS[viewMode];
+    if (count > 0) buildClones(count);
     document.querySelectorAll('.library-item').forEach(el => {
       el.classList.toggle('active', el.dataset.filename === filename);
     });
     showCaptionForVideo();
+    applyEffectFilters();
     broadcastState({ type: 'loadVideo', filename });
+    syncFxTransport({ filename });
   }
 
   function refreshView() {
     const wasPlaying = !video.paused;
     const t = video.currentTime;
     destroyClones();
-    if (viewMode === 1) buildClones(1);
-    else if (viewMode === 2) buildClones(7);
+    const count = CLONE_COUNTS[viewMode];
+    if (count > 0) buildClones(count);
     video.currentTime = t;
     if (wasPlaying) video.play();
   }
@@ -1108,51 +1585,87 @@
     else { video.pause(); broadcastState({ type: 'pause' }); }
   }
 
-  const LOOP_LABELS = ['Loop', 'Loop', 'Bounce'];
-  function toggleLoop() {
-    loopMode = (loopMode + 1) % 3;
+  function closeAllMenus() {
+    document.querySelectorAll('.popup-menu').forEach(m => m.classList.remove('open'));
+  }
+
+  function togglePlaybackMenu(e) {
+    e.stopPropagation();
+    const menu = document.getElementById('playbackMenu');
+    const wasOpen = menu.classList.contains('open');
+    closeAllMenus();
+    if (!wasOpen) menu.classList.add('open');
+  }
+
+  function setLoopMode(mode) {
+    loopMode = mode;
     stopBounce();
     video.loop = false;
-    loopBtn.textContent = LOOP_LABELS[loopMode];
     loopBtn.classList.toggle('active', loopMode > 0);
     if (loopMode === 0) video.playbackRate = 1;
     if (loopMode === 2 && !video.paused && !rafId) startRenderLoop();
+    document.querySelectorAll('#playbackMenu .popup-opt').forEach(b => {
+      b.classList.toggle('active', parseInt(b.dataset.mode) === mode);
+    });
+    closeAllMenus();
+    syncFxTransport({ loopMode });
   }
+
+  function toggleLoop() { setLoopMode((loopMode + 1) % 3); }
 
   function toggleMute() {
     video.muted = !video.muted;
     muteBtn.textContent = video.muted ? 'Unmute' : 'Mute';
     muteBtn.classList.toggle('active', video.muted);
+    syncFxTransport({ muted: video.muted });
   }
 
+  function toggleLayoutMenu(e) {
+    e.stopPropagation();
+    const menu = document.getElementById('layoutMenu');
+    const wasOpen = menu.classList.contains('open');
+    closeAllMenus();
+    if (!wasOpen) menu.classList.add('open');
+  }
+
+  function setLayout(mode) {
+    closeAllMenus();
+    setViewModeTo(mode);
+  }
+
+  const CLONE_COUNTS = [0, 1, 2, 3, 7];
+
   function setViewModeTo(mode) {
-    videoWrap.classList.remove('dual', 'octo');
+    videoWrap.classList.remove('dual', 'triple', 'quad', 'octo');
     destroyClones();
     viewMode = mode;
     const name = VIEW_NAMES[viewMode];
     if (name !== 'single') videoWrap.classList.add(name);
-    viewBtn.textContent = VIEW_LABELS[viewMode];
     viewBtn.classList.toggle('active', viewMode > 0);
     sliderWrap.classList.toggle('visible', viewMode > 0);
-    configSlider.style.display = viewMode === 1 ? 'none' : '';
-    configLabel.style.display = viewMode === 1 ? 'none' : '';
+    document.getElementById('zoomWrap').classList.toggle('visible', viewMode > 0);
+    const hideSlider = viewMode === 1 || viewMode === 2 || viewMode === 3;
+    configSlider.style.display = hideSlider ? 'none' : '';
+    configLabel.style.display = hideSlider ? 'none' : '';
     if (viewMode > 0) buildPresetButtons();
-    if (viewMode === 1 && video.src) buildClones(1);
-    else if (viewMode === 2 && video.src) buildClones(7);
+    const count = CLONE_COUNTS[viewMode];
+    if (count > 0 && video.src) buildClones(count);
+    document.querySelectorAll('#layoutMenu .popup-opt').forEach(b => {
+      b.classList.toggle('active', parseInt(b.dataset.mode) === mode);
+    });
     broadcastState({ type: 'setView', mode });
   }
 
-  function cycleView() {
-    setViewModeTo((viewMode + 1) % 3);
-  }
-
   const DUAL_PRESETS = [1, 3, 5, 7, 9, 11, 21, 23];
+  const TRIPLE_PRESETS = [1, 2, 3, 4, 5, 6, 7, 8];
+  const QUAD_PRESETS = [1, 2, 3, 4, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
   const OCTO_PRESETS = [1, 5, 6, 7, 21, 22, 23, 25, 26, 27, 30, 31];
   const presetContainer = document.getElementById('presetContainer');
 
   function buildPresetButtons() {
     presetContainer.innerHTML = '';
-    const presets = viewMode === 1 ? DUAL_PRESETS : OCTO_PRESETS;
+    const presetMap = { 1: DUAL_PRESETS, 2: TRIPLE_PRESETS, 3: QUAD_PRESETS, 4: OCTO_PRESETS };
+    const presets = presetMap[viewMode] || OCTO_PRESETS;
     presets.forEach(val => {
       const btn = document.createElement('button');
       btn.className = 'preset-btn' + (configIdx === val - 1 ? ' active' : '');
@@ -1162,6 +1675,8 @@
       presetContainer.appendChild(btn);
     });
   }
+
+  document.addEventListener('click', closeAllMenus);
 
   function setConfig(val) {
     configIdx = val - 1;
@@ -1175,6 +1690,47 @@
   configSlider.addEventListener('input', () => {
     setConfig(parseInt(configSlider.value));
   });
+
+  const zoomSlider = document.getElementById('zoomSlider');
+  const zoomValue = document.getElementById('zoomValue');
+
+  zoomSlider.addEventListener('input', () => {
+    tileZoom = parseFloat(zoomSlider.value);
+    zoomValue.textContent = tileZoom.toFixed(1) + 'x';
+    broadcastState({ type: 'setZoom', zoom: tileZoom });
+  });
+
+  function resetZoom() {
+    tileZoom = 1.0;
+    zoomSlider.value = '1.0';
+    zoomValue.textContent = '1.0x';
+    resetPan();
+    broadcastState({ type: 'setZoom', zoom: tileZoom });
+  }
+
+  const panXSlider = document.getElementById('panXSlider');
+  const panXValue = document.getElementById('panXValue');
+  const panYSlider = document.getElementById('panYSlider');
+  const panYValue = document.getElementById('panYValue');
+
+  panXSlider.addEventListener('input', () => {
+    tilePanX = parseFloat(panXSlider.value);
+    panXValue.textContent = tilePanX.toFixed(1);
+    broadcastState({ type: 'setPan', panX: tilePanX, panY: tilePanY });
+  });
+
+  panYSlider.addEventListener('input', () => {
+    tilePanY = parseFloat(panYSlider.value);
+    panYValue.textContent = tilePanY.toFixed(1);
+    broadcastState({ type: 'setPan', panX: tilePanX, panY: tilePanY });
+  });
+
+  function resetPan() {
+    tilePanX = 0; tilePanY = 0;
+    panXSlider.value = '0'; panXValue.textContent = '0';
+    panYSlider.value = '0'; panYValue.textContent = '0';
+    broadcastState({ type: 'setPan', panX: 0, panY: 0 });
+  }
 
   function toggleFullscreen() {
     if (document.fullscreenElement) document.exitFullscreen();
@@ -1270,6 +1826,8 @@
     let cols, rows;
     if (viewMode === 0) { cols = 1; rows = 1; }
     else if (viewMode === 1) { cols = 2; rows = 1; }
+    else if (viewMode === 2) { cols = 3; rows = 1; }
+    else if (viewMode === 3) { cols = 2; rows = 2; }
     else { cols = 4; rows = 2; }
 
     const tileW = cw / cols, tileH = ch / rows;
@@ -1278,7 +1836,8 @@
     for (let r = 0; r < rows; r++) {
       for (let c = 0; c < cols; c++) {
         const idx = r * cols + c;
-        const transform = cfg[idx] || '';
+        const cfgIdx = viewMode === 3 ? QUAD_POS_MAP[idx] : viewMode === 2 ? TRIPLE_POS_MAP[idx] : idx;
+        const transform = cfg[cfgIdx] || '';
         const flipH = transform.includes('scaleX(-1)');
         const flipV = transform.includes('scaleY(-1)');
 
@@ -1287,16 +1846,14 @@
         compCtx.translate(tx + tileW / 2, ty + tileH / 2);
         compCtx.scale(flipH ? -1 : 1, flipV ? -1 : 1);
 
-        const videoAspect = vw / vh;
-        const tileAspect = tileW / tileH;
-        let sw, sh, sx, sy;
-        if (videoAspect > tileAspect) {
-          sh = vh; sw = vh * tileAspect;
-          sx = (vw - sw) / 2; sy = 0;
-        } else {
-          sw = vw; sh = vw / tileAspect;
-          sx = 0; sy = (vh - sh) / 2;
-        }
+        const coverScale = Math.max(tileW / vw, tileH / vh);
+        const es = coverScale * tileZoom;
+        const sw = Math.min(vw, tileW / es);
+        const sh = Math.min(vh, tileH / es);
+        const panRangeX = vw - sw;
+        const panRangeY = vh - sh;
+        const sx = panRangeX * (1 + tilePanX) / 2;
+        const sy = panRangeY * (1 - tilePanY) / 2;
 
         compCtx.drawImage(video, sx, sy, sw, sh, -tileW / 2, -tileH / 2, tileW, tileH);
         compCtx.restore();
@@ -1645,7 +2202,7 @@
       div.className = cls;
       div.dataset.idx = i;
 
-      const vl = e.view === 'octo' ? '8x' : e.view === 'dual' ? 'Dual' : '1x';
+      const vl = e.view === 'octo' ? '8x' : e.view === 'quad' ? '4x' : e.view === 'triple' ? '3x' : e.view === 'dual' ? 'Dual' : '1x';
       const dt = e.duration.type === 'loops' ? e.duration.value + 'L' : e.duration.value + 's';
       const sn = e.video.replace(/\.[^.]+$/, '');
 
@@ -1723,8 +2280,10 @@
     const entryLoop = entry.loopMode || 1;
     loopMode = entryLoop;
     stopBounce();
-    loopBtn.textContent = LOOP_LABELS[loopMode];
     loopBtn.classList.add('active');
+    document.querySelectorAll('#playbackMenu .popup-opt').forEach(b => {
+      b.classList.toggle('active', parseInt(b.dataset.mode) === loopMode);
+    });
     video.play();
 
     if (entry.duration.type === 'seconds') {
@@ -1843,7 +2402,8 @@
       return;
     }
 
-    const VIEW_MODES = ['single', 'dual', 'octo'];
+    const VIEW_MODES = ['single', 'dual', 'triple', 'quad', 'octo'];
+    const PRESET_MAP = { dual: DUAL_PRESETS, triple: TRIPLE_PRESETS, quad: QUAD_PRESETS, octo: OCTO_PRESETS };
     const entries = [];
     let totalTime = 0;
 
@@ -1859,10 +2419,8 @@
       vidIdx++;
 
       const view = VIEW_MODES[Math.floor(Math.random() * VIEW_MODES.length)];
-      let preset;
-      if (view === 'dual') preset = DUAL_PRESETS[Math.floor(Math.random() * DUAL_PRESETS.length)];
-      else if (view === 'octo') preset = OCTO_PRESETS[Math.floor(Math.random() * OCTO_PRESETS.length)];
-      else preset = 1;
+      const viewPresets = PRESET_MAP[view];
+      const preset = viewPresets ? viewPresets[Math.floor(Math.random() * viewPresets.length)] : 1;
 
       const loops = Math.floor(Math.random() * 5) + 1;
       const entryTime = v.duration * loops;
@@ -1900,7 +2458,7 @@
     } else {
       dt = entry.duration.value + 's';
     }
-    const vl = entry.view === 'octo' ? '8x' : entry.view === 'dual' ? 'Dual' : 'Single';
+    const vl = entry.view === 'octo' ? '8x' : entry.view === 'quad' ? '4x' : entry.view === 'triple' ? '3x' : entry.view === 'dual' ? 'Dual' : 'Single';
     plIndicatorText.textContent = (plEntryIdx + 1) + '/' + total + ' • ' + vl + ' P' + entry.preset + ' • ' + dt;
   }
 

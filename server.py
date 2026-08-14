@@ -20,9 +20,11 @@ BASE_DIR = Path(__file__).parent
 THUMB_DIR = BASE_DIR / "thumbnails"
 PLAYLIST_DIR = BASE_DIR / "playlists"
 COOKIE_JAR = BASE_DIR / ".cookies.txt"
-COOKIE_MAX_AGE = 3600
+COOKIE_MAX_AGE = 7 * 24 * 3600
 HTML_FILE = BASE_DIR / "index.html"
 OUTPUT_FILE = BASE_DIR / "output.html"
+EFFECTS_FILE = BASE_DIR / "effects.html"
+TEST_FILE = BASE_DIR / "test_layouts.html"
 CONFIG_FILE = BASE_DIR / "config.json"
 STATE_CLIENTS = []
 STATE_LOCK = threading.Lock()
@@ -51,26 +53,42 @@ def get_download_dir():
     return p.resolve()
 
 
-def refresh_cookies():
+def refresh_cookies(password=None):
     try:
+        if password:
+            keychain = Path.home() / "Library" / "Keychains" / "login.keychain-db"
+            subprocess.run(
+                ["security", "unlock-keychain", "-p", password, str(keychain)],
+                capture_output=True, timeout=5,
+            )
         subprocess.run(
             ["yt-dlp", "--cookies-from-browser", "brave",
              "--cookies", str(COOKIE_JAR),
              "--skip-download", "https://www.instagram.com/"],
-            capture_output=True, timeout=15,
+            capture_output=True, timeout=30,
         )
+        return COOKIE_JAR.exists()
     except Exception as e:
         print(f"Cookie export failed: {e}")
+        return False
 
 
 def get_cookie_args():
-    if not COOKIE_JAR.exists() or (
-        time.time() - COOKIE_JAR.stat().st_mtime > COOKIE_MAX_AGE
-    ):
-        refresh_cookies()
     if COOKIE_JAR.exists():
-        return ["--cookies", str(COOKIE_JAR)]
-    return ["--cookies-from-browser", "brave"]
+        if time.time() - COOKIE_JAR.stat().st_mtime <= COOKIE_MAX_AGE:
+            return ["--cookies", str(COOKIE_JAR)]
+    return None
+
+
+def cookie_status():
+    if not COOKIE_JAR.exists():
+        return {"exists": False, "age_hours": None, "fresh": False}
+    age = time.time() - COOKIE_JAR.stat().st_mtime
+    return {
+        "exists": True,
+        "age_hours": round(age / 3600, 1),
+        "fresh": age <= COOKIE_MAX_AGE,
+    }
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -82,6 +100,10 @@ class Handler(BaseHTTPRequestHandler):
             self.serve_html()
         elif self.path == "/output":
             self.serve_output()
+        elif self.path == "/effects":
+            self.serve_effects()
+        elif self.path == "/test":
+            self.serve_test()
         elif self.path == "/api/state-stream":
             self.state_stream()
         elif self.path.startswith("/video/"):
@@ -92,6 +114,8 @@ class Handler(BaseHTTPRequestHandler):
             self.list_videos()
         elif self.path == "/api/playlists":
             self.list_playlists()
+        elif self.path == "/api/cookie-status":
+            self.get_cookie_status()
         elif self.path == "/api/config":
             self.get_config()
         elif self.path.startswith("/api/metadata/"):
@@ -106,6 +130,8 @@ class Handler(BaseHTTPRequestHandler):
     def do_POST(self):
         if self.path == "/api/state":
             self.update_state()
+        elif self.path == "/api/refresh-cookies":
+            self.handle_refresh_cookies()
         elif self.path == "/download":
             self.handle_download()
         elif self.path == "/api/config":
@@ -139,6 +165,30 @@ class Handler(BaseHTTPRequestHandler):
             self.send_error(404, "output.html not found")
             return
         content = OUTPUT_FILE.read_bytes()
+        self.send_response(200)
+        self.send_header("Content-Type", "text/html; charset=utf-8")
+        self.send_header("Content-Length", len(content))
+        self.send_header("Cache-Control", "no-cache")
+        self.end_headers()
+        self.wfile.write(content)
+
+    def serve_effects(self):
+        if not EFFECTS_FILE.exists():
+            self.send_error(404, "effects.html not found")
+            return
+        content = EFFECTS_FILE.read_bytes()
+        self.send_response(200)
+        self.send_header("Content-Type", "text/html; charset=utf-8")
+        self.send_header("Content-Length", len(content))
+        self.send_header("Cache-Control", "no-cache")
+        self.end_headers()
+        self.wfile.write(content)
+
+    def serve_test(self):
+        if not TEST_FILE.exists():
+            self.send_error(404, "test_layouts.html not found")
+            return
+        content = TEST_FILE.read_bytes()
         self.send_response(200)
         self.send_header("Content-Type", "text/html; charset=utf-8")
         self.send_header("Content-Length", len(content))
@@ -360,6 +410,18 @@ class Handler(BaseHTTPRequestHandler):
             "dirs": dirs,
         })
 
+    def get_cookie_status(self):
+        self.send_json_response(cookie_status())
+
+    def handle_refresh_cookies(self):
+        length = int(self.headers.get("Content-Length", 0))
+        body = json.loads(self.rfile.read(length)) if length else {}
+        password = body.get("password")
+        ok = refresh_cookies(password=password)
+        result = cookie_status()
+        result["ok"] = ok
+        self.send_json_response(result)
+
     def get_config(self):
         self.send_json_response(load_config())
 
@@ -401,9 +463,33 @@ class Handler(BaseHTTPRequestHandler):
         self.send_header("Connection", "close")
         self.end_headers()
 
-        self.send_sse({"status": "progress", "message": "Starting yt-dlp..."})
-
         cookie_args = get_cookie_args()
+        if not cookie_args:
+            self.send_sse({"status": "need_cookies",
+                           "message": "Instagram cookies expired. Refresh them in the connection panel."})
+            return
+
+        self.send_sse({"status": "progress", "message": "Starting yt-dlp..."})
+        result = self._run_ytdlp(url, dl, cookie_args)
+
+        if result == "auth_fail":
+            self.send_sse({"status": "progress", "message": "Session expired, refreshing cookies..."})
+            refresh_cookies()
+            cookie_args = get_cookie_args()
+            if cookie_args:
+                result = self._run_ytdlp(url, dl, cookie_args)
+
+        if result == "auth_fail":
+            self.send_sse({"status": "need_cookies",
+                           "message": "Instagram login required. Refresh cookies in the connection panel."})
+        elif isinstance(result, str) and result.startswith("error:"):
+            self.send_sse({"status": "error", "message": result[6:]})
+        elif result:
+            self.send_sse({"status": "done", "filename": result})
+        else:
+            self.send_sse({"status": "error", "message": "Download completed but no file found."})
+
+    def _run_ytdlp(self, url, dl, cookie_args):
         cmd = [
             "yt-dlp",
             "--no-warnings",
@@ -423,10 +509,12 @@ class Handler(BaseHTTPRequestHandler):
             )
 
             final_filename = None
+            output_lines = []
             for line in proc.stdout:
                 line = line.strip()
                 if not line:
                     continue
+                output_lines.append(line)
 
                 if line.startswith("[download]") and "%" in line:
                     match = re.search(r"(\d+\.?\d*)%", line)
@@ -439,21 +527,25 @@ class Handler(BaseHTTPRequestHandler):
 
             proc.wait()
 
+            full_output = "\n".join(output_lines).lower()
+            if proc.returncode != 0 and ("login" in full_output or "cookie" in full_output
+                                          or "unauthorized" in full_output or "403" in full_output):
+                return "auth_fail"
+
             if proc.returncode == 0 and final_filename:
-                self.send_sse({"status": "done", "filename": final_filename})
+                return final_filename
             elif proc.returncode == 0:
                 files = sorted(dl.glob("*.mp4"), key=os.path.getmtime, reverse=True)
                 if files:
-                    self.send_sse({"status": "done", "filename": files[0].name})
-                else:
-                    self.send_sse({"status": "error", "message": "Download completed but no file found."})
+                    return files[0].name
+                return None
             else:
-                self.send_sse({"status": "error", "message": "Download failed. The content may require login."})
+                return "error:Download failed. Check the URL and try again."
 
         except FileNotFoundError:
-            self.send_sse({"status": "error", "message": "yt-dlp not found. Install it with: brew install yt-dlp"})
+            return "error:yt-dlp not found. Install it with: brew install yt-dlp"
         except Exception as e:
-            self.send_sse({"status": "error", "message": str(e)})
+            return f"error:{e}"
 
     def handle_convert(self):
         length = int(self.headers.get("Content-Length", 0))
@@ -513,8 +605,6 @@ if __name__ == "__main__":
     get_download_dir().mkdir(parents=True, exist_ok=True)
     THUMB_DIR.mkdir(exist_ok=True)
     PLAYLIST_DIR.mkdir(exist_ok=True)
-    print("Exporting cookies from Brave...")
-    refresh_cookies()
     server = ThreadedHTTPServer(("127.0.0.1", PORT), Handler)
     print(f"Club Visuals running at http://localhost:{PORT}")
     try:
