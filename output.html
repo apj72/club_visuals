@@ -29,6 +29,26 @@
   .video-wrap.dual .video-stage canvas { width: 50%; }
   .video-wrap.dual .video-stage .video-clone { display: block; }
 
+  /* Triple */
+  .video-wrap.triple .video-stage video,
+  .video-wrap.triple .video-stage canvas { width: 33.333%; object-fit: cover; }
+  .video-wrap.triple .video-stage .video-clone { display: block; }
+
+  /* Quad */
+  .video-wrap.quad .video-stage {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+  }
+  .video-wrap.quad .video-stage video,
+  .video-wrap.quad .video-stage canvas {
+    width: 100%;
+    height: 50vh;
+    min-width: 0;
+    object-fit: cover;
+  }
+  .video-wrap.quad .video-stage .video-clone { display: block; }
+
   /* Octo */
   .video-wrap.octo .video-stage {
     display: grid;
@@ -39,6 +59,7 @@
   .video-wrap.octo .video-stage canvas {
     width: 100%;
     height: 50vh;
+    min-width: 0;
     object-fit: cover;
   }
   .video-wrap.octo .video-stage .video-clone { display: block; }
@@ -71,8 +92,15 @@
   let clones = [];
   let rafId = null;
   let looping = true;
+  let currentOutputEffects = null;
+  let tileZoom = 1.0;
+  let tilePanX = 0;
+  let tilePanY = 0;
+  let trailsEnabled = false;
+  let trailAmount = 0.15;
 
-  const VIEW_NAMES = ['single', 'dual', 'octo'];
+  const VIEW_NAMES = ['single', 'dual', 'triple', 'quad', 'octo'];
+  const CLONE_COUNTS = [0, 1, 2, 3, 7];
 
   const H_RULES = [
     [0,0,0,0], [0,0,1,1], [1,0,0,1], [0,1,1,0],
@@ -90,19 +118,22 @@
       CONFIGS.push(t);
     }
   }
+  const TRIPLE_POS_MAP = [0, 1, 2];
+  const QUAD_POS_MAP = [0, 1, 4, 5];
 
   function buildClones(count) {
     destroyClones();
     if (!video.src) return;
-    for (let i = 1; i <= count; i++) {
+    video.style.display = 'none';
+    for (let i = 0; i <= count; i++) {
       const c = document.createElement('canvas');
       c.className = 'video-clone';
-      c.dataset.pos = i;
+      c.dataset.pos = String(i);
       videoStage.appendChild(c);
       clones.push(c);
     }
-    video.dataset.pos = '0';
     applyTransforms();
+    applyOutputEffects();
     startRenderLoop();
   }
 
@@ -110,19 +141,41 @@
     stopRenderLoop();
     clones.forEach(c => c.remove());
     clones = [];
-    delete video.dataset.pos;
+    video.style.display = '';
     video.style.transform = '';
+  }
+
+  function drawZoomedTile(ctx, vw, vh, cw, ch) {
+    const coverScale = Math.max(cw / vw, ch / vh);
+    const es = coverScale * tileZoom;
+    const sw = Math.min(vw, cw / es);
+    const sh = Math.min(vh, ch / es);
+    const panRangeX = vw - sw;
+    const panRangeY = vh - sh;
+    const sx = panRangeX * (1 + tilePanX) / 2;
+    const sy = panRangeY * (1 - tilePanY) / 2;
+    ctx.drawImage(video, sx, sy, sw, sh, 0, 0, cw, ch);
   }
 
   function startRenderLoop() {
     stopRenderLoop();
     function draw() {
-      if (clones.length === 0) return;
+      if (clones.length === 0 && !trailsEnabled) return;
       const vw = video.videoWidth, vh = video.videoHeight;
       if (vw && vh && !video.paused) {
         clones.forEach(c => {
-          if (c.width !== vw || c.height !== vh) { c.width = vw; c.height = vh; }
-          c.getContext('2d').drawImage(video, 0, 0, vw, vh);
+          const cw = c.clientWidth, ch = c.clientHeight;
+          if (!cw || !ch) return;
+          if (c.width !== cw || c.height !== ch) { c.width = cw; c.height = ch; }
+          const ctx = c.getContext('2d');
+          if (trailsEnabled) {
+            ctx.fillStyle = `rgba(0,0,0,${trailAmount})`;
+            ctx.fillRect(0, 0, cw, ch);
+          } else {
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0, 0, cw, ch);
+          }
+          drawZoomedTile(ctx, vw, vh, cw, ch);
         });
       }
       rafId = requestAnimationFrame(draw);
@@ -138,10 +191,15 @@
     if (viewMode === 0) { video.style.transform = ''; return; }
     const cfg = CONFIGS[configIdx];
     if (viewMode === 1) {
-      video.style.transform = cfg[0];
-      clones.forEach(c => { c.style.transform = cfg[3]; });
+      clones.forEach(c => {
+        const pos = parseInt(c.dataset.pos);
+        c.style.transform = pos === 0 ? cfg[0] : cfg[3];
+      });
+    } else if (viewMode === 2) {
+      clones.forEach(c => { c.style.transform = cfg[TRIPLE_POS_MAP[parseInt(c.dataset.pos)]]; });
+    } else if (viewMode === 3) {
+      clones.forEach(c => { c.style.transform = cfg[QUAD_POS_MAP[parseInt(c.dataset.pos)]]; });
     } else {
-      video.style.transform = cfg[0];
       clones.forEach(c => { c.style.transform = cfg[parseInt(c.dataset.pos)]; });
     }
   }
@@ -149,19 +207,18 @@
   function showVideo(filename) {
     video.src = '/video/' + encodeURIComponent(filename);
     video.load();
-    if (viewMode > 0) {
-      buildClones(viewMode === 1 ? 1 : 7);
-    }
+    const count = CLONE_COUNTS[viewMode];
+    if (count > 0) buildClones(count);
   }
 
   function setViewModeTo(mode) {
-    videoWrap.classList.remove('dual', 'octo');
+    videoWrap.classList.remove('dual', 'triple', 'quad', 'octo');
     destroyClones();
     viewMode = mode;
     const name = VIEW_NAMES[viewMode];
     if (name !== 'single') videoWrap.classList.add(name);
-    if (viewMode === 1 && video.src) buildClones(1);
-    else if (viewMode === 2 && video.src) buildClones(7);
+    const count = CLONE_COUNTS[viewMode];
+    if (count > 0 && video.src) buildClones(count);
   }
 
   function setConfig(val) {
@@ -176,6 +233,22 @@
     } else {
       captionOverlay.classList.remove('visible');
     }
+  }
+
+  function applyOutputEffects() {
+    if (!currentOutputEffects) return;
+    const e = currentOutputEffects;
+    const parts = [];
+    if (e.hueRotate !== 0) parts.push(`hue-rotate(${e.hueRotate}deg)`);
+    if (e.saturate !== 100) parts.push(`saturate(${e.saturate}%)`);
+    if (e.contrast !== 100) parts.push(`contrast(${e.contrast}%)`);
+    if (e.brightness !== 100) parts.push(`brightness(${e.brightness}%)`);
+    if (e.blur !== 0) parts.push(`blur(${e.blur}px)`);
+    if (e.invert !== 0) parts.push(`invert(${e.invert}%)`);
+    if (e.sepia !== 0) parts.push(`sepia(${e.sepia}%)`);
+    const f = parts.length > 0 ? parts.join(' ') : 'none';
+    video.style.filter = f;
+    clones.forEach(c => { c.style.filter = f; });
   }
 
   video.addEventListener('timeupdate', () => {
@@ -207,6 +280,22 @@
         break;
       case 'setCaption':
         setCaptionText(cmd.text, cmd.visible);
+        break;
+      case 'setEffects':
+        currentOutputEffects = cmd.effects;
+        applyOutputEffects();
+        break;
+      case 'setZoom':
+        tileZoom = cmd.zoom;
+        break;
+      case 'setPan':
+        tilePanX = cmd.panX;
+        tilePanY = cmd.panY;
+        break;
+      case 'setTrails':
+        trailsEnabled = cmd.enabled;
+        trailAmount = cmd.amount;
+        if (trailsEnabled && !rafId) startRenderLoop();
         break;
     }
   };

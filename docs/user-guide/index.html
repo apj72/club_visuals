@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Club Visuals — User Guide</title>
+  <meta name="description" content="User guide for Club Visuals: download Instagram videos, build multi-screen DJ visuals with mirror effects, playlists, and live FX.">
+  <link rel="stylesheet" href="assets/guide.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="guide-shell">
+    <div class="guide-nav-wrap">
+      <div class="guide-nav-inner">
+        <a class="guide-brand" href="index.html">Club Visuals — User Guide</a>
+        <nav class="guide-nav" aria-label="Guide pages">
+          <a href="index.html" aria-current="page">Home</a>
+          <a href="install-and-setup.html">Install</a>
+          <a href="downloading.html">Downloading</a>
+          <a href="playback.html">Playback</a>
+          <a href="effects.html">Effects</a>
+          <a href="playlists.html">Playlists</a>
+          <a href="output-and-recording.html">Output &amp; Recording</a>
+          <a href="reference.html">Reference</a>
+        </nav>
+      </div>
+    </div>
+
+    <main id="main" class="guide-main">
+      <h1>Club Visuals — User Guide</h1>
+      <p class="lead">
+        Club Visuals is a browser-based tool for downloading Instagram videos and playing them back as multi-screen DJ visuals with mirror and kaleidoscope effects. It runs entirely on your machine using a lightweight Python server and a single HTML frontend — no cloud services, no subscriptions, no dependencies beyond the standard library.
+      </p>
+
+      <figure class="guide-figure">
+        <img src="../screenshots/01-main-overview.png" width="1400" height="850" alt="Club Visuals main window showing player, library, and controls">
+        <figcaption><span class="fig-label">Figure 1.</span> The main application window with a video playing, library sidebar, and the full controls bar (<code>01-main-overview.png</code>).</figcaption>
+      </figure>
+
+      <h2>Who this guide is for</h2>
+      <p>
+        This guide is for DJs and VJs who want to build visual sets from Instagram content — reels, edits, loops, and motion graphics — and play them back in clubs, at events, or through OBS for live streams. It assumes you are comfortable running a terminal command and using a web browser.
+      </p>
+
+      <h2>What Club Visuals does</h2>
+      <ul>
+        <li>Downloads Instagram reels and posts with a single URL paste</li>
+        <li>Manages a video library with thumbnail previews and metadata</li>
+        <li>Plays videos in five layout modes: Single, Dual, 3x, 4x, and 8x grid</li>
+        <li>Applies 32 mirror/kaleidoscope presets across tiles</li>
+        <li>Provides live FX control: hue, saturation, contrast, brightness, blur, invert, sepia, trails, and audio-reactive effects</li>
+        <li>Builds playlists with per-entry layout, preset, and duration settings</li>
+        <li>Auto-generates randomised playlists to a target duration</li>
+        <li>Records the composite output as MP4</li>
+        <li>Provides a clean output window for OBS capture or a second display</li>
+        <li>Runs gap-free fullscreen playback with auto-hiding controls</li>
+      </ul>
+
+      <h2>Contents</h2>
+      <div class="toc-grid">
+        <a class="toc-card" href="install-and-setup.html">
+          <h2>Install &amp; Setup</h2>
+          <p>macOS requirements, dependencies, starting and stopping the server.</p>
+        </a>
+        <a class="toc-card" href="downloading.html">
+          <h2>Downloading Videos</h2>
+          <p>Instagram connection, cookie management, downloading reels and posts.</p>
+        </a>
+        <a class="toc-card" href="playback.html">
+          <h2>Playback &amp; Views</h2>
+          <p>Library, view modes, mirror presets, zoom and pan, playback modes, fullscreen.</p>
+        </a>
+        <a class="toc-card" href="effects.html">
+          <h2>Effects &amp; Audio</h2>
+          <p>FX Controller, effect presets, motion trails, audio-reactive effects.</p>
+        </a>
+        <a class="toc-card" href="playlists.html">
+          <h2>Playlists</h2>
+          <p>Create, edit, reorder, auto-generate, and play back visual playlists.</p>
+        </a>
+        <a class="toc-card" href="output-and-recording.html">
+          <h2>Output &amp; Recording</h2>
+          <p>OBS output window, recording composite video, secondary display setup.</p>
+        </a>
+        <a class="toc-card" href="reference.html">
+          <h2>Reference</h2>
+          <p>File structure, API endpoints, configuration, keyboard shortcuts.</p>
+        </a>
+      </div>
+
+      <div class="callout">
+        <strong>Privacy.</strong> Club Visuals runs entirely on your machine. Video downloads go through yt-dlp using your own browser cookies. No data is sent to any external service beyond Instagram itself during downloads.
+      </div>
+    </main>
+
+    <footer class="guide-footer">
+      <p>Club Visuals user guide &middot; Modular HTML in <code>docs/user-guide/</code></p>
+    </footer>
+  </div>
+</body>
+</html>

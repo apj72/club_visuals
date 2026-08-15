@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Club Visuals - FX Controller</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #1a1a2e; color: #e0e0e0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    padding: 16px; min-height: 100vh;
+  }
+
+  .fx-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 12px; gap: 12px;
+  }
+  .fx-header h1 { font-size: 1.1rem; white-space: nowrap; }
+  .fx-filename {
+    font-size: 0.75rem; color: #888; overflow: hidden;
+    text-overflow: ellipsis; white-space: nowrap; text-align: right;
+  }
+
+  .fx-transport {
+    display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap;
+  }
+
+  button {
+    border: 1px solid #333; background: #16213e; color: #888;
+    padding: 6px 12px; border-radius: 8px; cursor: pointer;
+    font-size: 0.8rem; transition: all 0.15s;
+  }
+  button:hover { border-color: #555; color: #ccc; }
+  button:active { transform: scale(0.96); }
+  button.active { color: #4ecca3; border-color: #4ecca3; }
+  button.playing { background: #4ecca3; color: #1a1a2e; border-color: #4ecca3; }
+
+  .fx-section-label {
+    font-size: 0.7rem; color: #555; text-transform: uppercase;
+    letter-spacing: 1px; margin-bottom: 8px;
+  }
+
+  .fx-sliders { margin-bottom: 16px; }
+
+  .fx-row {
+    display: flex; align-items: center; gap: 8px;
+    margin-bottom: 10px;
+  }
+  .fx-label {
+    font-size: 0.8rem; color: #aaa; width: 80px;
+    flex-shrink: 0; text-align: right;
+  }
+  .fx-slider {
+    flex: 1; -webkit-appearance: none; appearance: none;
+    height: 4px; background: #333; border-radius: 2px; outline: none;
+  }
+  .fx-slider::-webkit-slider-thumb {
+    -webkit-appearance: none; appearance: none;
+    width: 14px; height: 14px; border-radius: 50%;
+    background: #4ecca3; cursor: pointer;
+  }
+  .fx-slider::-moz-range-thumb {
+    width: 14px; height: 14px; border-radius: 50%;
+    background: #4ecca3; cursor: pointer; border: none;
+  }
+  .fx-value {
+    font-size: 0.75rem; color: #888; width: 48px;
+    text-align: right; flex-shrink: 0;
+  }
+
+  .fx-presets {
+    margin-bottom: 12px;
+  }
+  .fx-preset-grid {
+    display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px;
+  }
+  .fx-preset-grid button { font-size: 0.75rem; padding: 5px 10px; }
+
+  .fx-toggle-row {
+    display: flex; align-items: center; gap: 8px; margin-bottom: 8px;
+  }
+  .fx-toggle-row button { min-width: 44px; }
+  .fx-toggle-row .fx-slider { flex: 1; }
+
+  .fx-meter {
+    display: flex; gap: 4px; margin-top: 6px; margin-bottom: 8px;
+  }
+  .fx-meter-bar {
+    flex: 1; height: 20px; background: #0d1117; border-radius: 4px;
+    overflow: hidden; position: relative;
+  }
+  .fx-meter-bar .fx-meter-fill {
+    height: 100%; width: 0%; background: #4ecca3;
+    border-radius: 4px; transition: width 0.05s linear;
+  }
+  .fx-meter-bar span {
+    position: absolute; top: 50%; left: 6px; transform: translateY(-50%);
+    font-size: 0.6rem; color: #888; z-index: 1;
+  }
+
+  .fx-reset {
+    width: 100%; padding: 8px; margin-top: 8px;
+    background: #16213e; border-color: #e94560; color: #e94560;
+    font-size: 0.8rem;
+  }
+  .fx-reset:hover { background: #e94560; color: #fff; }
+
+  .disconnected {
+    text-align: center; color: #e94560; font-size: 0.85rem;
+    padding: 20px; display: none;
+  }
+  .disconnected.visible { display: block; }
+</style>
+</head>
+<body>
+
+<div class="fx-header">
+  <h1>FX Controller</h1>
+  <span class="fx-filename" id="fxFilename">No video loaded</span>
+</div>
+
+<div class="disconnected" id="disconnected">Main window disconnected. Close and reopen from the main app.</div>
+
+<div class="fx-transport" id="fxTransport">
+  <button id="fxPlayBtn" onclick="sendTransport('togglePlay')">Play</button>
+  <button id="fxLoopBtn" onclick="sendTransport('toggleLoop')">Loop</button>
+  <button id="fxMuteBtn" onclick="sendTransport('toggleMute')">Mute</button>
+</div>
+
+<div class="fx-section-label">Effects</div>
+<div class="fx-sliders" id="fxSliders"></div>
+
+<div class="fx-presets">
+  <div class="fx-section-label">Presets</div>
+  <div class="fx-preset-grid" id="presetGrid"></div>
+</div>
+
+<div class="fx-section-label">Trails</div>
+<div class="fx-toggle-row">
+  <button id="trailBtn" onclick="toggleTrails()">Off</button>
+  <span class="fx-label" style="width:auto">Amount</span>
+  <input type="range" class="fx-slider" id="trailSlider" min="0.02" max="0.3" step="0.01" value="0.15">
+  <span class="fx-value" id="trailValue">0.15</span>
+</div>
+
+<div class="fx-section-label">Audio Reactive</div>
+<div class="fx-toggle-row">
+  <button id="audioBtn" onclick="toggleAudioReactive()">Off</button>
+  <span class="fx-label" style="width:auto">Sensitivity</span>
+  <input type="range" class="fx-slider" id="audioSlider" min="0.5" max="3.0" step="0.1" value="1.0">
+  <span class="fx-value" id="audioValue">1.0x</span>
+</div>
+<div class="fx-meter" id="audioMeter">
+  <div class="fx-meter-bar"><span>Bass</span><div class="fx-meter-fill" id="bassFill"></div></div>
+  <div class="fx-meter-bar"><span>Mid</span><div class="fx-meter-fill" id="midFill"></div></div>
+  <div class="fx-meter-bar"><span>Treble</span><div class="fx-meter-fill" id="trebleFill"></div></div>
+</div>
+
+<button class="fx-reset" onclick="resetAll()">Reset All</button>
+
+<script>
+  const EFFECTS = [
+    { key: 'hueRotate',  label: 'Hue',        min: 0,  max: 360, step: 1,   def: 0,   unit: 'deg' },
+    { key: 'saturate',   label: 'Saturate',    min: 0,  max: 300, step: 1,   def: 100, unit: '%'   },
+    { key: 'contrast',   label: 'Contrast',    min: 50, max: 200, step: 1,   def: 100, unit: '%'   },
+    { key: 'brightness', label: 'Brightness',  min: 50, max: 200, step: 1,   def: 100, unit: '%'   },
+    { key: 'blur',       label: 'Blur',        min: 0,  max: 10,  step: 0.1, def: 0,   unit: 'px'  },
+    { key: 'invert',     label: 'Invert',      min: 0,  max: 100, step: 1,   def: 0,   unit: '%'   },
+    { key: 'sepia',      label: 'Sepia',       min: 0,  max: 100, step: 1,   def: 0,   unit: '%'   },
+  ];
+
+  const PRESETS = {
+    'Neon':         { hueRotate: 0,   saturate: 250, contrast: 130, brightness: 110, blur: 0,   invert: 0,   sepia: 0  },
+    'Vintage':      { hueRotate: 30,  saturate: 60,  contrast: 110, brightness: 90,  blur: 0.5, invert: 0,   sepia: 60 },
+    'Acid':         { hueRotate: 180, saturate: 300, contrast: 150, brightness: 120, blur: 0,   invert: 0,   sepia: 0  },
+    'Night Vision': { hueRotate: 120, saturate: 150, contrast: 140, brightness: 130, blur: 0,   invert: 0,   sepia: 0  },
+    'Inverted':     { hueRotate: 0,   saturate: 100, contrast: 100, brightness: 100, blur: 0,   invert: 100, sepia: 0  },
+    'Dreamy':       { hueRotate: 0,   saturate: 80,  contrast: 80,  brightness: 120, blur: 2,   invert: 0,   sepia: 20 },
+  };
+
+  const sliders = {};
+  const values = {};
+  let activePreset = null;
+
+  const slidersEl = document.getElementById('fxSliders');
+  EFFECTS.forEach(ef => {
+    const row = document.createElement('div');
+    row.className = 'fx-row';
+
+    const label = document.createElement('span');
+    label.className = 'fx-label';
+    label.textContent = ef.label;
+
+    const slider = document.createElement('input');
+    slider.type = 'range';
+    slider.className = 'fx-slider';
+    slider.min = ef.min;
+    slider.max = ef.max;
+    slider.step = ef.step;
+    slider.value = ef.def;
+    slider.dataset.key = ef.key;
+
+    const val = document.createElement('span');
+    val.className = 'fx-value';
+    val.textContent = formatValue(ef.def, ef.unit);
+
+    slider.addEventListener('input', () => {
+      const v = parseFloat(slider.value);
+      val.textContent = formatValue(v, ef.unit);
+      clearPresetHighlight();
+      sendEffects();
+    });
+
+    row.appendChild(label);
+    row.appendChild(slider);
+    row.appendChild(val);
+    slidersEl.appendChild(row);
+
+    sliders[ef.key] = slider;
+    values[ef.key] = val;
+  });
+
+  const presetGrid = document.getElementById('presetGrid');
+  Object.keys(PRESETS).forEach(name => {
+    const btn = document.createElement('button');
+    btn.textContent = name;
+    btn.dataset.preset = name;
+    btn.addEventListener('click', () => applyPreset(name));
+    presetGrid.appendChild(btn);
+  });
+
+  function formatValue(v, unit) {
+    const display = unit === 'px' ? v.toFixed(1) : Math.round(v);
+    return display + unit;
+  }
+
+  function getEffects() {
+    const fx = {};
+    EFFECTS.forEach(ef => { fx[ef.key] = parseFloat(sliders[ef.key].value); });
+    return fx;
+  }
+
+  function sendEffects() {
+    if (window.opener && !window.opener.closed) {
+      window.opener.applyEffectsFromController(getEffects());
+    }
+  }
+
+  function sendTransport(fn) {
+    if (window.opener && !window.opener.closed) {
+      window.opener[fn]();
+    }
+  }
+
+  function applyPreset(name) {
+    const p = PRESETS[name];
+    if (!p) return;
+    EFFECTS.forEach(ef => {
+      const v = p[ef.key] !== undefined ? p[ef.key] : ef.def;
+      sliders[ef.key].value = v;
+      values[ef.key].textContent = formatValue(v, ef.unit);
+    });
+    highlightPreset(name);
+    sendEffects();
+  }
+
+  function highlightPreset(name) {
+    activePreset = name;
+    presetGrid.querySelectorAll('button').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.preset === name);
+    });
+  }
+
+  function clearPresetHighlight() {
+    activePreset = null;
+    presetGrid.querySelectorAll('button').forEach(btn => btn.classList.remove('active'));
+  }
+
+  function resetAll() {
+    EFFECTS.forEach(ef => {
+      sliders[ef.key].value = ef.def;
+      values[ef.key].textContent = formatValue(ef.def, ef.unit);
+    });
+    clearPresetHighlight();
+    sendEffects();
+  }
+
+  function setEffectValues(fx) {
+    EFFECTS.forEach(ef => {
+      if (fx[ef.key] !== undefined) {
+        sliders[ef.key].value = fx[ef.key];
+        values[ef.key].textContent = formatValue(fx[ef.key], ef.unit);
+      }
+    });
+    clearPresetHighlight();
+  }
+
+  function updateTransport(state) {
+    if (state.playing !== undefined) {
+      const btn = document.getElementById('fxPlayBtn');
+      btn.textContent = state.playing ? 'Pause' : 'Play';
+      btn.classList.toggle('playing', state.playing);
+    }
+    if (state.loopMode !== undefined) {
+      const btn = document.getElementById('fxLoopBtn');
+      const labels = ['Loop', 'Loop', 'Bounce'];
+      btn.textContent = labels[state.loopMode];
+      btn.classList.toggle('active', state.loopMode > 0);
+    }
+    if (state.muted !== undefined) {
+      const btn = document.getElementById('fxMuteBtn');
+      btn.textContent = state.muted ? 'Unmute' : 'Mute';
+      btn.classList.toggle('active', state.muted);
+    }
+    if (state.filename !== undefined) {
+      document.getElementById('fxFilename').textContent = state.filename || 'No video loaded';
+    }
+    if (state.audioLevels) {
+      const l = state.audioLevels;
+      document.getElementById('bassFill').style.width = (l.bass / 255 * 100) + '%';
+      document.getElementById('midFill').style.width = (l.mid / 255 * 100) + '%';
+      document.getElementById('trebleFill').style.width = (l.treble / 255 * 100) + '%';
+    }
+  }
+
+  let trailsOn = false;
+  let audioOn = false;
+
+  function toggleTrails() {
+    trailsOn = !trailsOn;
+    const btn = document.getElementById('trailBtn');
+    btn.textContent = trailsOn ? 'On' : 'Off';
+    btn.classList.toggle('active', trailsOn);
+    if (window.opener && !window.opener.closed) window.opener.setTrailsEnabled(trailsOn);
+  }
+
+  document.getElementById('trailSlider').addEventListener('input', function() {
+    document.getElementById('trailValue').textContent = this.value;
+    if (window.opener && !window.opener.closed) window.opener.setTrailAmount(parseFloat(this.value));
+  });
+
+  function toggleAudioReactive() {
+    audioOn = !audioOn;
+    const btn = document.getElementById('audioBtn');
+    btn.textContent = audioOn ? 'On' : 'Off';
+    btn.classList.toggle('active', audioOn);
+    if (window.opener && !window.opener.closed) window.opener.setAudioReactive(audioOn);
+  }
+
+  document.getElementById('audioSlider').addEventListener('input', function() {
+    document.getElementById('audioValue').textContent = parseFloat(this.value).toFixed(1) + 'x';
+    if (window.opener && !window.opener.closed) window.opener.setAudioSensitivity(parseFloat(this.value));
+  });
+
+  setInterval(() => {
+    const lost = !window.opener || window.opener.closed;
+    document.getElementById('disconnected').classList.toggle('visible', lost);
+  }, 1000);
+
+  window.addEventListener('beforeunload', () => {
+    if (window.opener && !window.opener.closed) {
+      window.opener.onFxWindowClosed();
+    }
+  });
+</script>
+</body>
+</html>

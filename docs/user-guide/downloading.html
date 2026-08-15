@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Downloading Videos — Club Visuals User Guide</title>
+  <link rel="stylesheet" href="assets/guide.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="guide-shell">
+    <div class="guide-nav-wrap">
+      <div class="guide-nav-inner">
+        <a class="guide-brand" href="index.html">Club Visuals — User Guide</a>
+        <nav class="guide-nav" aria-label="Guide pages">
+          <a href="index.html">Home</a>
+          <a href="install-and-setup.html">Install</a>
+          <a href="downloading.html" aria-current="page">Downloading</a>
+          <a href="playback.html">Playback</a>
+          <a href="effects.html">Effects</a>
+          <a href="playlists.html">Playlists</a>
+          <a href="output-and-recording.html">Output &amp; Recording</a>
+          <a href="reference.html">Reference</a>
+        </nav>
+      </div>
+    </div>
+
+    <main id="main" class="guide-main">
+      <p class="breadcrumb"><a href="index.html">Home</a> &rsaquo; Downloading Videos</p>
+      <h1>Downloading Videos</h1>
+      <p class="lead">
+        Club Visuals downloads Instagram reels and posts using yt-dlp with your browser's login cookies. This chapter covers the Instagram connection, cookie management, and the download workflow.
+      </p>
+
+      <h2>Instagram connection</h2>
+      <p>
+        The connection indicator at the top of the app shows whether Club Visuals can authenticate with Instagram:
+      </p>
+      <ul>
+        <li><strong>Green dot</strong> — connected, cookies are fresh (shows how long ago they were exported)</li>
+        <li><strong>Amber dot</strong> — cookies exist but have expired (older than 7 days)</li>
+        <li><strong>Red dot</strong> — no cookies found, connection needed</li>
+      </ul>
+
+      <figure class="guide-figure">
+        <img src="../screenshots/02-connection-panel.png" width="1400" height="850" alt="Connection panel expanded showing password field and refresh buttons">
+        <figcaption><span class="fig-label">Figure 2.</span> The connection panel with options to refresh cookies with or without a password (<code>02-connection-panel.png</code>).</figcaption>
+      </figure>
+
+      <h2>Refreshing cookies</h2>
+      <p>
+        Click the <strong>Connect</strong> / <strong>Refresh</strong> / <strong>Reconnect</strong> button (label changes based on state) to expand the connection panel. You have two options:
+      </p>
+
+      <h3>With password (recommended)</h3>
+      <ol>
+        <li>Enter your <strong>macOS login password</strong> in the password field</li>
+        <li>Click <strong>Refresh with password</strong></li>
+        <li>Club Visuals unlocks the macOS Keychain silently and exports cookies from Brave — no system dialog appears</li>
+        <li>The panel auto-closes on success and the connection dot turns green</li>
+      </ol>
+
+      <h3>Without password</h3>
+      <ol>
+        <li>Click <strong>Refresh without password</strong></li>
+        <li>macOS will show a system Keychain dialog asking for permission</li>
+        <li>Enter your password in the system dialog and click Allow</li>
+      </ol>
+
+      <div class="callout">
+        <strong>Security.</strong> Your macOS password is used once to unlock the Keychain and is never stored, logged, or sent anywhere. The cookie file is written locally to <code>.cookies.txt</code> and contains your Instagram session tokens.
+      </div>
+
+      <h2>Cookie lifetime</h2>
+      <p>
+        Exported cookies are cached for <strong>7 days</strong>. During that time, downloads use the cached cookie file without prompting for Keychain access. Instagram sessions typically last weeks, so a weekly refresh is usually sufficient.
+      </p>
+      <p>
+        If a download fails due to an expired Instagram session, Club Visuals will automatically attempt one silent cookie refresh and retry. If the retry also fails, the connection panel opens with a message asking you to refresh manually.
+      </p>
+
+      <h2>Downloading a video</h2>
+      <ol>
+        <li>Copy an Instagram reel or post URL from your browser or the Instagram app</li>
+        <li>Paste it into the <strong>URL input field</strong> at the top of the app</li>
+        <li>Click <strong>Download</strong> or press <strong>Enter</strong></li>
+        <li>Watch the progress: "Starting yt-dlp...", "Downloading... 45%", "Merging audio and video...", "Download complete!"</li>
+        <li>The video automatically loads in the player and appears in the library</li>
+      </ol>
+      <p>
+        Videos are saved as MP4 files in the download directory along with a <code>.info.json</code> metadata file containing the channel name, description, and upload date.
+      </p>
+
+      <h2>CLI download</h2>
+      <p>
+        You can also download from the command line:
+      </p>
+      <pre><code>./ig-save.sh https://www.instagram.com/reel/ABC123/</code></pre>
+      <p>
+        This uses the same cookie file and saves to the same download directory.
+      </p>
+
+      <h2>Troubleshooting</h2>
+      <div class="guide-table-wrap">
+        <table class="guide-table">
+          <thead>
+            <tr><th>Problem</th><th>Solution</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>"Instagram login required"</td>
+              <td>Open Brave, make sure you are logged into Instagram, then refresh cookies from the connection panel</td>
+            </tr>
+            <tr>
+              <td>"yt-dlp not found"</td>
+              <td>Install yt-dlp: <code>brew install yt-dlp</code></td>
+            </tr>
+            <tr>
+              <td>Red dot — "Server not reachable"</td>
+              <td>The server may not be running. Start it with <code>./start.sh</code></td>
+            </tr>
+            <tr>
+              <td>Download fails but cookies are green</td>
+              <td>The URL may be invalid, the post may be private, or Instagram may have changed their API. Try updating yt-dlp: <code>brew upgrade yt-dlp</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </main>
+
+    <footer class="guide-footer">
+      <p>Club Visuals user guide &middot; Modular HTML in <code>docs/user-guide/</code></p>
+    </footer>
+  </div>
+</body>
+</html>

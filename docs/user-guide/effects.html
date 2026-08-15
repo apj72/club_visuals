@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Effects &amp; Audio — Club Visuals User Guide</title>
+  <link rel="stylesheet" href="assets/guide.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="guide-shell">
+    <div class="guide-nav-wrap">
+      <div class="guide-nav-inner">
+        <a class="guide-brand" href="index.html">Club Visuals — User Guide</a>
+        <nav class="guide-nav" aria-label="Guide pages">
+          <a href="index.html">Home</a>
+          <a href="install-and-setup.html">Install</a>
+          <a href="downloading.html">Downloading</a>
+          <a href="playback.html">Playback</a>
+          <a href="effects.html" aria-current="page">Effects</a>
+          <a href="playlists.html">Playlists</a>
+          <a href="output-and-recording.html">Output &amp; Recording</a>
+          <a href="reference.html">Reference</a>
+        </nav>
+      </div>
+    </div>
+
+    <main id="main" class="guide-main">
+      <p class="breadcrumb"><a href="index.html">Home</a> &rsaquo; Effects &amp; Audio</p>
+      <h1>Effects &amp; Audio</h1>
+      <p class="lead">
+        The FX Controller is a popup window that gives you live control over visual effects, motion trails, and audio-reactive modulation. Open it by clicking <strong>FX</strong> in the controls bar.
+      </p>
+
+      <figure class="guide-figure">
+        <img src="../screenshots/11-effects-controller.png" width="420" height="700" alt="FX Controller window with sliders, presets, trails, and audio meters">
+        <figcaption><span class="fig-label">Figure 7.</span> The FX Controller window showing effect sliders, presets, trails toggle, and audio-reactive meters (<code>11-effects-controller.png</code>).</figcaption>
+      </figure>
+
+      <h2>Opening the FX Controller</h2>
+      <p>
+        Click the <strong>FX</strong> button in the main window's controls bar. A 400&times;650 popup window opens. The FX button highlights green to indicate the controller is active. When you close the popup, the button returns to its default state.
+      </p>
+      <p>
+        The controller communicates with the main window in real time — every slider change is applied instantly to the video and all tile clones.
+      </p>
+
+      <h2>Transport controls</h2>
+      <p>
+        The top of the FX Controller shows the current video filename and three transport buttons that mirror the main window controls:
+      </p>
+      <ul>
+        <li><strong>Play / Pause</strong> — toggles playback (green when playing)</li>
+        <li><strong>Loop / Bounce</strong> — cycles through playback modes</li>
+        <li><strong>Mute / Unmute</strong> — toggles audio</li>
+      </ul>
+      <p>
+        These buttons let you control playback without switching back to the main window — useful when the main window is fullscreen on a second display.
+      </p>
+
+      <h2>Effect sliders</h2>
+      <p>Seven CSS filter effects are available, each with a dedicated slider:</p>
+      <div class="guide-table-wrap">
+        <table class="guide-table">
+          <thead>
+            <tr><th>Effect</th><th>Range</th><th>Default</th><th>Description</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Hue</td><td>0 – 360&deg;</td><td>0</td><td>Rotates the colour wheel. 180&deg; inverts all colours.</td></tr>
+            <tr><td>Saturate</td><td>0 – 300%</td><td>100</td><td>0% is greyscale, 300% is hyper-saturated.</td></tr>
+            <tr><td>Contrast</td><td>50 – 200%</td><td>100</td><td>Lower values flatten, higher values punch.</td></tr>
+            <tr><td>Brightness</td><td>50 – 200%</td><td>100</td><td>Dims or brightens the image.</td></tr>
+            <tr><td>Blur</td><td>0 – 10 px</td><td>0</td><td>Gaussian blur. Subtle values (0.5–2) create a dreamy look.</td></tr>
+            <tr><td>Invert</td><td>0 – 100%</td><td>0</td><td>Inverts pixel colours. 100% is a full negative.</td></tr>
+            <tr><td>Sepia</td><td>0 – 100%</td><td>0</td><td>Warm vintage tone.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>
+        All effects are applied as CSS filters, so they render at full frame rate with no performance penalty. Effects are also applied to the <a href="output-and-recording.html">output window</a> and to recordings.
+      </p>
+
+      <h2>Effect presets</h2>
+      <p>Six named presets provide one-click starting points:</p>
+      <div class="guide-table-wrap">
+        <table class="guide-table">
+          <thead>
+            <tr><th>Preset</th><th>Character</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Neon</td><td>Hyper-saturated with boosted contrast — electric club look</td></tr>
+            <tr><td>Vintage</td><td>Desaturated sepia with slight blur — worn film aesthetic</td></tr>
+            <tr><td>Acid</td><td>180&deg; hue shift with max saturation — psychedelic</td></tr>
+            <tr><td>Night Vision</td><td>Green hue shift with high contrast and brightness</td></tr>
+            <tr><td>Inverted</td><td>Full colour inversion — negative image</td></tr>
+            <tr><td>Dreamy</td><td>Low contrast, slight blur, warm sepia tint</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>
+        Click a preset to apply it. The preset button highlights to show it is active. Moving any slider clears the preset highlight — the preset is a starting point, not a lock.
+      </p>
+
+      <h2>Reset All</h2>
+      <p>
+        The <strong>Reset All</strong> button at the bottom of the FX Controller returns every slider to its default value. This instantly removes all effects from the video.
+      </p>
+
+      <h2>Motion trails</h2>
+      <p>
+        The <strong>Trails</strong> section adds a ghosting/afterimage effect to all tiles. When enabled, each frame blends into the previous frames instead of replacing them.
+      </p>
+      <ul>
+        <li><strong>Toggle button</strong> — turns trails on or off</li>
+        <li><strong>Amount slider</strong> (0.02 – 0.30) — controls trail opacity. Lower values create longer, more transparent trails; higher values create shorter, more opaque trails.</li>
+      </ul>
+      <p>
+        Trails work with all view modes and mirror presets. They are particularly effective with bounce mode and slow-moving source material. Trails are also visible in the output window and in recordings.
+      </p>
+
+      <h2>Audio-reactive effects</h2>
+      <p>
+        The <strong>Audio Reactive</strong> section modulates visual effects in real time based on the video's audio:
+      </p>
+      <ul>
+        <li><strong>Toggle button</strong> — enables or disables audio reactivity</li>
+        <li><strong>Sensitivity slider</strong> (0.5x – 3.0x) — multiplier for how strongly audio drives the effects</li>
+        <li><strong>Audio meter</strong> — three horizontal bars showing real-time Bass, Mid, and Treble levels</li>
+      </ul>
+
+      <h3>How audio drives the visuals</h3>
+      <p>
+        The audio signal is split into three frequency bands using an FFT analyser:
+      </p>
+      <ul>
+        <li><strong>Bass</strong> drives brightness (up to +50%) and saturation (up to +80%)</li>
+        <li><strong>Mid</strong> drives hue rotation (up to +30&deg; per frame)</li>
+        <li><strong>Treble</strong> is displayed in the meter but does not currently drive effects</li>
+      </ul>
+      <p>
+        Audio-reactive modulation is applied on top of whatever effects you have set with the sliders, so you can use the sliders as a baseline and let the audio add energy on the beats.
+      </p>
+
+      <div class="callout">
+        <strong>Note.</strong> Audio reactivity requires the video to have an audio track and for the video to be unmuted. If the video is muted, the audio meter will show no signal.
+      </div>
+
+      <h2>Disconnection warning</h2>
+      <p>
+        If you close or reload the main window while the FX Controller is open, a warning banner appears: "Main window disconnected. Close and reopen from the main app." The controller checks every second whether the parent window is still alive.
+      </p>
+    </main>
+
+    <footer class="guide-footer">
+      <p>Club Visuals user guide &middot; Modular HTML in <code>docs/user-guide/</code></p>
+    </footer>
+  </div>
+</body>
+</html>

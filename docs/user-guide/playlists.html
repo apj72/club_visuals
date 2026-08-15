@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Playlists — Club Visuals User Guide</title>
+  <link rel="stylesheet" href="assets/guide.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="guide-shell">
+    <div class="guide-nav-wrap">
+      <div class="guide-nav-inner">
+        <a class="guide-brand" href="index.html">Club Visuals — User Guide</a>
+        <nav class="guide-nav" aria-label="Guide pages">
+          <a href="index.html">Home</a>
+          <a href="install-and-setup.html">Install</a>
+          <a href="downloading.html">Downloading</a>
+          <a href="playback.html">Playback</a>
+          <a href="effects.html">Effects</a>
+          <a href="playlists.html" aria-current="page">Playlists</a>
+          <a href="output-and-recording.html">Output &amp; Recording</a>
+          <a href="reference.html">Reference</a>
+        </nav>
+      </div>
+    </div>
+
+    <main id="main" class="guide-main">
+      <p class="breadcrumb"><a href="index.html">Home</a> &rsaquo; Playlists</p>
+      <h1>Playlists</h1>
+      <p class="lead">
+        Playlists let you build cue lists where each entry specifies a video, view mode, mirror preset, loop mode, and duration. Playlists auto-advance through entries and are saved as JSON for reuse across sessions.
+      </p>
+
+      <figure class="guide-figure">
+        <img src="../screenshots/08-playlist-tab.png" width="1400" height="850" alt="Playlist tab showing entries and add-entry form">
+        <figcaption><span class="fig-label">Figure 8.</span> The Playlist tab with entries, video picker, and layout controls (<code>08-playlist-tab.png</code>).</figcaption>
+      </figure>
+
+      <h2>Creating a playlist</h2>
+      <ol>
+        <li>Click the <strong>Playlist</strong> tab in the right sidebar</li>
+        <li>Click <strong>New</strong> to start a fresh playlist</li>
+        <li>Type a name in the playlist name field</li>
+      </ol>
+
+      <h2>Adding entries</h2>
+      <p>Each playlist entry defines a complete visual treatment. To add one:</p>
+      <ol>
+        <li>Click the <strong>video picker</strong> to open the dropdown and select a video (thumbnail previews are shown). The selected video also loads in the player so you can preview it.</li>
+        <li>Choose a <strong>view mode</strong>: Single, Dual, 3x, 4x, or 8x</li>
+        <li>Choose a <strong>preset</strong>: P1 through P32</li>
+        <li>Set the <strong>duration type</strong>: Loops (number of full video loops) or Seconds (wall-clock time)</li>
+        <li>Set the <strong>duration value</strong></li>
+        <li>Choose the <strong>loop mode</strong>: Loop or Bounce</li>
+        <li>Click <strong>Add</strong></li>
+      </ol>
+      <p>
+        Changing the view or preset selector immediately previews the change in the player, so you can see the treatment before adding it.
+      </p>
+      <p>
+        The same video can appear multiple times in a playlist with different treatments. For example:
+      </p>
+      <ul>
+        <li>Dual mode, preset 5, loop, 10 loops</li>
+        <li>8x mode, preset 22, loop, 30 seconds</li>
+        <li>8x mode, preset 7, bounce, 5 loops</li>
+      </ul>
+
+      <h2>Entry list</h2>
+      <p>
+        Each entry in the list shows the video name, a compact info string (e.g. "8x P5 3L B" = 8x view, preset 5, 3 loops, bounce), and a delete button.
+      </p>
+      <ul>
+        <li><strong>Drag and drop</strong> entries to reorder them — grab and drag an entry to a new position</li>
+        <li>Click an entry to <strong>preview</strong> it in the player (outlined in red while previewing)</li>
+        <li>Click the <strong>&times;</strong> button to remove an entry</li>
+      </ul>
+
+      <h2>Saving and loading</h2>
+      <ul>
+        <li>Click <strong>Save</strong> to persist the playlist to the server as a JSON file</li>
+        <li>Use the <strong>playlist dropdown</strong> at the top to load a previously saved playlist</li>
+        <li>Click <strong>Del</strong> to delete the current playlist (a confirmation dialog appears)</li>
+      </ul>
+      <p>
+        Playlists are saved in the <code>playlists/</code> directory as JSON files named by a slug derived from the playlist name. They survive server restarts and page reloads.
+      </p>
+
+      <h2>Playing a playlist</h2>
+      <ol>
+        <li>Click <strong>Play</strong> to start from the first entry</li>
+        <li>The <strong>playlist indicator bar</strong> appears above the video showing: current entry number, view/preset info, and loop progress</li>
+        <li>Entries auto-advance when their duration expires</li>
+        <li>Click <strong>Next</strong> in the indicator bar to skip to the next entry</li>
+        <li>Click <strong>Stop</strong> to exit playlist mode</li>
+      </ol>
+      <p>
+        During playback, the current entry is highlighted with a green border in the entry list.
+      </p>
+
+      <h3>Playlist looping</h3>
+      <p>
+        Click <strong>Loop: Off</strong> to toggle playlist looping. When on, the playlist restarts from the first entry after the last one completes. The button shows <strong>Loop: On</strong> when active.
+      </p>
+
+      <h2>Auto-generating playlists</h2>
+
+      <figure class="guide-figure">
+        <img src="../screenshots/09-playlist-autogen.png" width="1400" height="850" alt="Auto-generate form with duration and video selection">
+        <figcaption><span class="fig-label">Figure 9.</span> The auto-generate form for creating randomised playlists to a target duration (<code>09-playlist-autogen.png</code>).</figcaption>
+      </figure>
+
+      <p>
+        Click <strong>Auto</strong> to reveal the auto-generate form:
+      </p>
+      <ol>
+        <li>Set the target <strong>duration</strong> in minutes (1–480, default 30)</li>
+        <li>Optionally tick <strong>Select videos</strong> to choose which videos to include. An "All" / "None" bar appears with checkboxes on each library item.</li>
+        <li>Click <strong>Generate</strong></li>
+      </ol>
+      <p>
+        The generator:
+      </p>
+      <ul>
+        <li>Fetches duration metadata for the selected (or all) videos</li>
+        <li>Shuffles videos randomly</li>
+        <li>For each entry: picks a random view mode, a random preset from that mode's curated set, and 1–5 random loops</li>
+        <li>Fills entries until the total estimated time exceeds the target</li>
+        <li>Names the playlist "Auto <em>N</em>min"</li>
+      </ul>
+      <p>
+        A status message shows the result: e.g. "15 entries, ~32 minutes total". Click <strong>Save</strong> to keep the generated playlist.
+      </p>
+
+      <div class="callout">
+        <strong>Tip.</strong> Auto-generate is great for building a baseline set. Generate a 30-minute playlist, then manually edit individual entries — swap presets, adjust durations, reorder the sequence — to fine-tune the visual story.
+      </div>
+    </main>
+
+    <footer class="guide-footer">
+      <p>Club Visuals user guide &middot; Modular HTML in <code>docs/user-guide/</code></p>
+    </footer>
+  </div>
+</body>
+</html>

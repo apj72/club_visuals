@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Install &amp; Setup — Club Visuals User Guide</title>
+  <link rel="stylesheet" href="assets/guide.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="guide-shell">
+    <div class="guide-nav-wrap">
+      <div class="guide-nav-inner">
+        <a class="guide-brand" href="index.html">Club Visuals — User Guide</a>
+        <nav class="guide-nav" aria-label="Guide pages">
+          <a href="index.html">Home</a>
+          <a href="install-and-setup.html" aria-current="page">Install</a>
+          <a href="downloading.html">Downloading</a>
+          <a href="playback.html">Playback</a>
+          <a href="effects.html">Effects</a>
+          <a href="playlists.html">Playlists</a>
+          <a href="output-and-recording.html">Output &amp; Recording</a>
+          <a href="reference.html">Reference</a>
+        </nav>
+      </div>
+    </div>
+
+    <main id="main" class="guide-main">
+      <p class="breadcrumb"><a href="index.html">Home</a> &rsaquo; Install &amp; Setup</p>
+      <h1>Install &amp; Setup</h1>
+      <p class="lead">
+        Club Visuals runs as a local Python HTTP server with no external Python dependencies. You need Python, two CLI tools, and a Chromium browser with an active Instagram session.
+      </p>
+
+      <h2>Requirements</h2>
+      <ul>
+        <li><strong>Python 3.10+</strong> — ships with macOS or install via <code>brew install python</code></li>
+        <li><strong>yt-dlp</strong> — the download engine. Install: <code>brew install yt-dlp</code></li>
+        <li><strong>ffmpeg</strong> — used for thumbnail generation and recording conversion. Install: <code>brew install ffmpeg</code></li>
+        <li><strong>A Chromium browser</strong> (Brave, Chrome, Edge) with an active Instagram login — Club Visuals reads your browser cookies for authenticated downloads</li>
+      </ul>
+
+      <h2>Clone and run</h2>
+      <ol>
+        <li>Clone the repository:
+          <pre><code>git clone https://github.com/apj72/club_visuals.git
+cd club_visuals</code></pre>
+        </li>
+        <li>Start the server:
+          <pre><code>./start.sh</code></pre>
+          This launches the server at <code>http://localhost:8008</code> and opens it in your default browser.
+        </li>
+      </ol>
+
+      <p>No <code>pip install</code> or virtual environment is needed — the server uses only the Python standard library.</p>
+
+      <h2>Stopping the server</h2>
+      <pre><code>./stop.sh</code></pre>
+      <p>This kills the background server process. You can also press <code>Ctrl+C</code> if you started the server in the foreground with <code>python3 server.py</code>.</p>
+
+      <h2>Browser setup</h2>
+      <p>
+        By default Club Visuals reads cookies from <strong>Brave</strong> browser. If you use a different Chromium browser, edit the <code>--cookies-from-browser</code> value in <code>server.py</code> (search for <code>brave</code> and change it to <code>chrome</code>, <code>edge</code>, etc.).
+      </p>
+      <p>
+        You must be logged into Instagram in your chosen browser before downloading. Club Visuals exports your session cookies — it never stores your Instagram password.
+      </p>
+
+      <h2>Configuration</h2>
+      <p>
+        App configuration is stored in <code>config.json</code> in the project root. The only setting is the download directory:
+      </p>
+      <pre><code>{
+  "download_dir": "./downloads"
+}</code></pre>
+      <p>
+        You can change this to any absolute or relative path. The <a href="reference.html">Settings tab</a> in the app provides a visual directory browser for changing this without editing the file.
+      </p>
+
+      <h2>File locations</h2>
+      <div class="guide-table-wrap">
+        <table class="guide-table">
+          <thead>
+            <tr><th>Path</th><th>Purpose</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>downloads/</code></td><td>Downloaded videos (MP4) and metadata (JSON)</td></tr>
+            <tr><td><code>thumbnails/</code></td><td>Cached video thumbnails (auto-generated)</td></tr>
+            <tr><td><code>playlists/</code></td><td>Saved playlists as JSON files</td></tr>
+            <tr><td><code>.cookies.txt</code></td><td>Exported browser cookies (auto-managed)</td></tr>
+            <tr><td><code>config.json</code></td><td>App configuration</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout">
+        <strong>Tip.</strong> The <code>downloads/</code>, <code>thumbnails/</code>, and <code>playlists/</code> directories are gitignored. Your video library and playlists live only on your machine.
+      </div>
+    </main>
+
+    <footer class="guide-footer">
+      <p>Club Visuals user guide &middot; Modular HTML in <code>docs/user-guide/</code></p>
+    </footer>
+  </div>
+</body>
+</html>

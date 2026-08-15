@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Output &amp; Recording — Club Visuals User Guide</title>
+  <link rel="stylesheet" href="assets/guide.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="guide-shell">
+    <div class="guide-nav-wrap">
+      <div class="guide-nav-inner">
+        <a class="guide-brand" href="index.html">Club Visuals — User Guide</a>
+        <nav class="guide-nav" aria-label="Guide pages">
+          <a href="index.html">Home</a>
+          <a href="install-and-setup.html">Install</a>
+          <a href="downloading.html">Downloading</a>
+          <a href="playback.html">Playback</a>
+          <a href="effects.html">Effects</a>
+          <a href="playlists.html">Playlists</a>
+          <a href="output-and-recording.html" aria-current="page">Output &amp; Recording</a>
+          <a href="reference.html">Reference</a>
+        </nav>
+      </div>
+    </div>
+
+    <main id="main" class="guide-main">
+      <p class="breadcrumb"><a href="index.html">Home</a> &rsaquo; Output &amp; Recording</p>
+      <h1>Output &amp; Recording</h1>
+      <p class="lead">
+        Club Visuals provides two ways to get your visuals out of the browser: a dedicated output window for OBS capture or secondary displays, and a built-in recording feature that renders the composite output to MP4.
+      </p>
+
+      <h2>Output window</h2>
+      <p>
+        The output window is a clean, chrome-free display at <code>http://localhost:8008/output</code>. It mirrors everything the main window does — video, layout, mirror presets, effects, zoom, pan, trails, and captions — but with no controls, buttons, or UI elements.
+      </p>
+
+      <p>
+        The output window shows a full-viewport black canvas. When you load a video and change settings in the main window, the output window mirrors those changes in real time — same layout, same presets, same effects — with zero UI chrome.
+      </p>
+
+      <h3>How synchronisation works</h3>
+      <p>
+        The output window connects to the server via Server-Sent Events (SSE). Every action in the main window — loading a video, changing the layout, applying an effect preset, adjusting zoom — is broadcast to all connected output windows in real time. The output window maintains its own clone system and render loop, driven entirely by these state updates.
+      </p>
+
+      <h3>Using with OBS</h3>
+      <ol>
+        <li>Open the output window at <code>http://localhost:8008/output</code> in a browser</li>
+        <li>In OBS, add a <strong>Window Capture</strong> source pointing to the output window</li>
+        <li>Alternatively, use a <strong>Browser Source</strong> pointed at <code>http://localhost:8008/output</code></li>
+        <li>Control everything from the main window — the output follows automatically</li>
+      </ol>
+
+      <h3>Using with a second display</h3>
+      <ol>
+        <li>Open the output window in a second browser window</li>
+        <li>Drag it to your projector or secondary monitor</li>
+        <li>Press <strong>F11</strong> (or your browser's fullscreen shortcut) to go fullscreen on that display</li>
+        <li>Control everything from the main window on your primary display</li>
+      </ol>
+
+      <div class="callout">
+        <strong>Tip.</strong> The output window is muted by default and loops video automatically. This is intentional — audio should come from your DJ setup, not the visuals display. The output window does not have bounce mode, as it is designed for continuous playback.
+      </div>
+
+      <h2>Recording</h2>
+      <p>
+        The <strong>Record</strong> button in the Playlist tab captures the composite video output — all tiles, mirror presets, effects, and captions — as a single MP4 file.
+      </p>
+
+      <h3>Starting a recording</h3>
+      <ol>
+        <li>Set up your video, view mode, mirror preset, and effects</li>
+        <li>Switch to the <strong>Playlist</strong> tab</li>
+        <li>Click <strong>Record</strong></li>
+        <li>The button turns red and shows a timer: "REC 00:15"</li>
+        <li>Play back manually or start a playlist — everything is captured</li>
+      </ol>
+
+      <h3>Stopping a recording</h3>
+      <ol>
+        <li>Click the red <strong>REC</strong> button</li>
+        <li>If loop or bounce mode is active, the recording waits for the current cycle to complete for a clean ending</li>
+        <li>The button shows "Stopping..." while it finalises</li>
+        <li>The WebM capture is uploaded to the server, which converts it to MP4 using ffmpeg</li>
+        <li>The resulting MP4 appears in your library</li>
+      </ol>
+
+      <h3>Recording details</h3>
+      <div class="guide-table-wrap">
+        <table class="guide-table">
+          <thead>
+            <tr><th>Property</th><th>Value</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Resolution</td><td>1920 &times; 1080</td></tr>
+            <tr><td>Frame rate</td><td>30 fps</td></tr>
+            <tr><td>Capture codec</td><td>VP9 (WebM), 8 Mbps</td></tr>
+            <tr><td>Output codec</td><td>H.264 (MP4), CRF 23, AAC 128k</td></tr>
+            <tr><td>Filename</td><td><code>recording_YYYYMMDD_HHMMSS.mp4</code></td></tr>
+            <tr><td>Audio</td><td>Included if the video is not muted</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>
+        The recording captures the composite frame including all tile transforms, zoom, pan, and CSS filter effects. Caption overlays are also rendered into the recording.
+      </p>
+
+      <div class="callout warn">
+        <strong>Note.</strong> Recording uses the browser's MediaRecorder API. Long recordings produce large WebM files that must be uploaded to the server for conversion. Ensure you have sufficient disk space in your download directory.
+      </div>
+    </main>
+
+    <footer class="guide-footer">
+      <p>Club Visuals user guide &middot; Modular HTML in <code>docs/user-guide/</code></p>
+    </footer>
+  </div>
+</body>
+</html>

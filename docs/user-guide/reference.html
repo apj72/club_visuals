@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reference — Club Visuals User Guide</title>
+  <link rel="stylesheet" href="assets/guide.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="guide-shell">
+    <div class="guide-nav-wrap">
+      <div class="guide-nav-inner">
+        <a class="guide-brand" href="index.html">Club Visuals — User Guide</a>
+        <nav class="guide-nav" aria-label="Guide pages">
+          <a href="index.html">Home</a>
+          <a href="install-and-setup.html">Install</a>
+          <a href="downloading.html">Downloading</a>
+          <a href="playback.html">Playback</a>
+          <a href="effects.html">Effects</a>
+          <a href="playlists.html">Playlists</a>
+          <a href="output-and-recording.html">Output &amp; Recording</a>
+          <a href="reference.html" aria-current="page">Reference</a>
+        </nav>
+      </div>
+    </div>
+
+    <main id="main" class="guide-main">
+      <p class="breadcrumb"><a href="index.html">Home</a> &rsaquo; Reference</p>
+      <h1>Reference</h1>
+      <p class="lead">
+        Technical reference for Club Visuals: file structure, server API, configuration, settings, and view mode details.
+      </p>
+
+      <h2>File structure</h2>
+      <pre><code>club_visuals/
+├── server.py           # Python HTTP server (stdlib only)
+├── index.html          # Main frontend (single file)
+├── output.html         # Output window for OBS/secondary display
+├── effects.html        # FX Controller popup
+├── ig-save.sh          # CLI download script
+├── start.sh            # Start server + open browser
+├── stop.sh             # Stop server
+├── config.json         # App configuration
+├── .cookies.txt        # Exported browser cookies (auto-managed)
+├── downloads/          # Saved videos (.mp4) and metadata (.info.json)
+├── thumbnails/         # Cached video thumbnails (.jpg)
+├── playlists/          # Saved playlists (.json)
+└── docs/
+    ├── screenshots/    # Docshots output
+    └── user-guide/     # This guide</code></pre>
+
+      <h2>Configuration</h2>
+      <p>
+        The <code>config.json</code> file stores app settings. Currently there is one key:
+      </p>
+      <div class="guide-table-wrap">
+        <table class="guide-table">
+          <thead>
+            <tr><th>Key</th><th>Type</th><th>Default</th><th>Description</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>download_dir</code></td><td>string</td><td><code>./downloads</code></td><td>Path where videos are saved. Relative paths resolve from the project root.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>Settings tab</h2>
+
+      <figure class="guide-figure">
+        <img src="../screenshots/10-settings-tab.png" width="1400" height="850" alt="Settings tab with directory browser">
+        <figcaption><span class="fig-label">Figure 11.</span> The Settings tab with the download folder directory browser (<code>10-settings-tab.png</code>).</figcaption>
+      </figure>
+
+      <p>
+        The <strong>Settings</strong> tab in the right sidebar provides a visual directory browser for changing the download folder. Navigate to a directory and click <strong>Use this folder</strong> to save the selection. Hidden files and directories (starting with <code>.</code>) are filtered out.
+      </p>
+
+      <h2>API endpoints</h2>
+      <p>
+        The server exposes a JSON API on <code>http://localhost:8008</code>. All endpoints are local-only.
+      </p>
+
+      <h3>Pages</h3>
+      <div class="guide-table-wrap">
+        <table class="guide-table">
+          <thead>
+            <tr><th>Method</th><th>Path</th><th>Description</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>GET</td><td><code>/</code></td><td>Main application</td></tr>
+            <tr><td>GET</td><td><code>/output</code></td><td>Output window</td></tr>
+            <tr><td>GET</td><td><code>/effects</code></td><td>FX Controller</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Videos</h3>
+      <div class="guide-table-wrap">
+        <table class="guide-table">
+          <thead>
+            <tr><th>Method</th><th>Path</th><th>Description</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>GET</td><td><code>/api/videos</code></td><td>List all videos with size, date, and uploader</td></tr>
+            <tr><td>GET</td><td><code>/api/metadata/{filename}</code></td><td>Get video metadata (channel, description, upload date, duration)</td></tr>
+            <tr><td>GET</td><td><code>/video/{filename}</code></td><td>Serve video file</td></tr>
+            <tr><td>GET</td><td><code>/thumbnail/{filename}</code></td><td>Serve or generate thumbnail</td></tr>
+            <tr><td>DELETE</td><td><code>/api/video/{filename}</code></td><td>Delete video, metadata, and thumbnail</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Downloads</h3>
+      <div class="guide-table-wrap">
+        <table class="guide-table">
+          <thead>
+            <tr><th>Method</th><th>Path</th><th>Description</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>POST</td><td><code>/download</code></td><td>Download Instagram video (SSE progress stream)</td></tr>
+            <tr><td>POST</td><td><code>/api/convert</code></td><td>Convert WebM recording to MP4</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Connection</h3>
+      <div class="guide-table-wrap">
+        <table class="guide-table">
+          <thead>
+            <tr><th>Method</th><th>Path</th><th>Description</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>GET</td><td><code>/api/cookie-status</code></td><td>Returns <code>{exists, age_hours, fresh}</code></td></tr>
+            <tr><td>POST</td><td><code>/api/refresh-cookies</code></td><td>Export cookies from browser. Accepts optional <code>{password}</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Playlists</h3>
+      <div class="guide-table-wrap">
+        <table class="guide-table">
+          <thead>
+            <tr><th>Method</th><th>Path</th><th>Description</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>GET</td><td><code>/api/playlists</code></td><td>List all saved playlists</td></tr>
+            <tr><td>GET</td><td><code>/api/playlist/{slug}</code></td><td>Get a playlist by slug</td></tr>
+            <tr><td>POST</td><td><code>/api/playlist/{slug}</code></td><td>Save a playlist</td></tr>
+            <tr><td>DELETE</td><td><code>/api/playlist/{slug}</code></td><td>Delete a playlist</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Configuration and state</h3>
+      <div class="guide-table-wrap">
+        <table class="guide-table">
+          <thead>
+            <tr><th>Method</th><th>Path</th><th>Description</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>GET</td><td><code>/api/config</code></td><td>Get app configuration</td></tr>
+            <tr><td>POST</td><td><code>/api/config</code></td><td>Update app configuration</td></tr>
+            <tr><td>GET</td><td><code>/api/state-stream</code></td><td>SSE stream for output window synchronisation</td></tr>
+            <tr><td>POST</td><td><code>/api/state</code></td><td>Broadcast state to all SSE clients</td></tr>
+            <tr><td>GET</td><td><code>/api/browse?path=</code></td><td>Browse directories for settings</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>View modes detail</h2>
+      <div class="guide-table-wrap">
+        <table class="guide-table">
+          <thead>
+            <tr><th>Mode</th><th>Tiles</th><th>CSS layout</th><th>Preset count</th><th>Object fit</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Single</td><td>1</td><td>Flex row, 100% width</td><td>None</td><td>contain</td></tr>
+            <tr><td>Dual</td><td>2</td><td>Flex row, 50% each</td><td>8</td><td>cover</td></tr>
+            <tr><td>3x</td><td>3</td><td>Flex row, 33.3% each</td><td>8</td><td>cover</td></tr>
+            <tr><td>4x</td><td>4</td><td>2&times;2 CSS grid</td><td>16</td><td>cover</td></tr>
+            <tr><td>8x</td><td>8</td><td>4&times;2 CSS grid</td><td>12 (+ slider for 32)</td><td>cover</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>Mirror preset system</h2>
+      <p>
+        The 32 mirror configurations are generated from a combination of 8 horizontal flip rules and 4 vertical flip rules. Each tile in a multi-tile layout can be independently flipped horizontally, vertically, both, or neither. The curated presets per view mode are subsets chosen for visual impact.
+      </p>
+
+      <h2>SSE state commands</h2>
+      <p>
+        The output window receives these commands via the <code>/api/state-stream</code> SSE connection:
+      </p>
+      <div class="guide-table-wrap">
+        <table class="guide-table">
+          <thead>
+            <tr><th>Command</th><th>Payload</th><th>Effect</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>loadVideo</code></td><td>filename</td><td>Loads and auto-plays the video</td></tr>
+            <tr><td><code>play</code></td><td>—</td><td>Resumes playback</td></tr>
+            <tr><td><code>pause</code></td><td>—</td><td>Pauses playback</td></tr>
+            <tr><td><code>setView</code></td><td>mode number</td><td>Changes layout mode</td></tr>
+            <tr><td><code>setConfig</code></td><td>preset value</td><td>Changes mirror preset</td></tr>
+            <tr><td><code>setCaption</code></td><td>text, visible</td><td>Shows or hides caption text</td></tr>
+            <tr><td><code>setEffects</code></td><td>effects object</td><td>Applies CSS filter effects</td></tr>
+            <tr><td><code>setZoom</code></td><td>zoom level</td><td>Updates tile zoom</td></tr>
+            <tr><td><code>setPan</code></td><td>panX, panY</td><td>Updates tile pan offset</td></tr>
+            <tr><td><code>setTrails</code></td><td>enabled, amount</td><td>Enables/disables trails</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>Playlist JSON format</h2>
+      <p>
+        Playlists are saved as JSON files in the <code>playlists/</code> directory:
+      </p>
+      <pre><code>{
+  "name": "My Set",
+  "entries": [
+    {
+      "video": "Video by chillgrid_DbmDImXM8p1.mp4",
+      "view": 4,
+      "preset": 5,
+      "durType": "loops",
+      "durVal": 3,
+      "loopMode": 1
+    }
+  ]
+}</code></pre>
+      <div class="guide-table-wrap">
+        <table class="guide-table">
+          <thead>
+            <tr><th>Field</th><th>Type</th><th>Description</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>video</code></td><td>string</td><td>Filename of the video in the download directory</td></tr>
+            <tr><td><code>view</code></td><td>number</td><td>View mode: 0=Single, 1=Dual, 2=3x, 3=4x, 4=8x</td></tr>
+            <tr><td><code>preset</code></td><td>number</td><td>Mirror preset number (1–32)</td></tr>
+            <tr><td><code>durType</code></td><td>string</td><td><code>"loops"</code> or <code>"seconds"</code></td></tr>
+            <tr><td><code>durVal</code></td><td>number</td><td>Duration value</td></tr>
+            <tr><td><code>loopMode</code></td><td>number</td><td>1 = Loop, 2 = Bounce</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>Cookie file</h2>
+      <p>
+        The <code>.cookies.txt</code> file is a Netscape-format cookie jar exported by yt-dlp from your browser. It is cached for 7 days before expiring. The cookie status API endpoint reports:
+      </p>
+      <ul>
+        <li><code>exists</code> — whether the file exists</li>
+        <li><code>age_hours</code> — how many hours since the last export</li>
+        <li><code>fresh</code> — whether the cookies are within the 7-day validity window</li>
+      </ul>
+    </main>
+
+    <footer class="guide-footer">
+      <p>Club Visuals user guide &middot; Modular HTML in <code>docs/user-guide/</code></p>
+    </footer>
+  </div>
+</body>
+</html>

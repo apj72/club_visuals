@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Club Visuals - Layout Tests</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #1a1a2e; color: #e0e0e0; font-family: monospace; padding: 20px; }
+  .pass { color: #4ecca3; }
+  .fail { color: #e94560; }
+  .suite { margin-bottom: 16px; }
+  .suite-title { font-size: 1.1rem; margin-bottom: 4px; color: #aaa; }
+  .result { padding: 2px 0; padding-left: 16px; font-size: 0.85rem; }
+  #summary { margin-top: 20px; font-size: 1.2rem; padding: 12px; border-radius: 8px; }
+  #summary.all-pass { background: #0a2e1a; border: 1px solid #4ecca3; }
+  #summary.has-fail { background: #2e0a0a; border: 1px solid #e94560; }
+
+  /* Replicate layout CSS from index.html */
+  .video-stage { display: flex; width: 100%; }
+  .video-stage video, .video-stage canvas {
+    width: 100%; height: 60vh; display: block; background: #000; object-fit: contain;
+  }
+  .video-stage .video-clone { display: none; }
+
+  .video-wrap.dual .video-stage video,
+  .video-wrap.dual .video-stage canvas { width: 50%; height: 60vh; object-fit: cover; }
+  .video-wrap.dual .video-stage .video-clone { display: block; }
+
+  .video-wrap.triple .video-stage video,
+  .video-wrap.triple .video-stage canvas { width: 33.333%; height: 60vh; object-fit: cover; }
+  .video-wrap.triple .video-stage .video-clone { display: block; }
+
+  .video-wrap.quad .video-stage {
+    display: grid; grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(2, 1fr);
+  }
+  .video-wrap.quad .video-stage video,
+  .video-wrap.quad .video-stage canvas {
+    width: 100%; height: 30vh; min-width: 0; object-fit: cover;
+  }
+  .video-wrap.quad .video-stage .video-clone { display: block; }
+
+  .video-wrap.octo .video-stage {
+    display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(2, 1fr);
+  }
+  .video-wrap.octo .video-stage video,
+  .video-wrap.octo .video-stage canvas {
+    width: 100%; height: 30vh; min-width: 0; object-fit: cover;
+  }
+  .video-wrap.octo .video-stage .video-clone { display: block; }
+</style>
+</head>
+<body>
+<h1 style="margin-bottom:16px">Layout & Orientation Tests</h1>
+<div id="output"></div>
+<div id="summary"></div>
+
+<div id="testStage" style="position:absolute;left:-9999px;width:800px;height:600px;">
+  <div class="video-wrap" id="videoWrap">
+    <div class="video-stage" id="videoStage">
+      <video id="video" playsinline muted loop></video>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ---- Replicate core logic from index.html ----
+
+  const VIEW_NAMES = ['single', 'dual', 'triple', 'quad', 'octo'];
+  const CLONE_COUNTS = [0, 1, 2, 3, 7];
+  const TRIPLE_POS_MAP = [0, 1, 2];
+  const QUAD_POS_MAP = [0, 1, 4, 5];
+
+  const H_RULES = [
+    [0,0,0,0], [0,0,1,1], [1,0,0,1], [0,1,1,0],
+    [1,1,1,1], [1,1,0,0], [0,1,0,1], [1,0,1,0],
+  ];
+  const V_RULES = [[0,0], [0,1], [1,0], [1,1]];
+  const CONFIGS = [];
+  for (let h = 0; h < 8; h++) {
+    for (let v = 0; v < 4; v++) {
+      const t = [];
+      for (let i = 0; i < 8; i++) {
+        const fh = H_RULES[h][i % 4], fv = V_RULES[v][i >> 2];
+        t.push(fh && fv ? 'scaleX(-1) scaleY(-1)' : fh ? 'scaleX(-1)' : fv ? 'scaleY(-1)' : '');
+      }
+      CONFIGS.push(t);
+    }
+  }
+
+  // ---- DOM references ----
+  const videoStage = document.getElementById('videoStage');
+  const videoWrap = document.getElementById('videoWrap');
+  const video = document.getElementById('video');
+
+  let viewMode = 0;
+  let configIdx = 0;
+  let clones = [];
+  let bounceOverlay = null;
+
+  function buildClones(count) {
+    destroyClones();
+    video.style.display = 'none';
+    for (let i = 0; i <= count; i++) {
+      const c = document.createElement('canvas');
+      c.className = 'video-clone';
+      c.dataset.pos = String(i);
+      videoStage.appendChild(c);
+      clones.push(c);
+    }
+    applyTransforms();
+  }
+
+  function destroyClones() {
+    clones.forEach(c => c.remove());
+    clones = [];
+    if (bounceOverlay) {
+      bounceOverlay.remove();
+      bounceOverlay = null;
+    }
+    video.style.display = '';
+    video.style.transform = '';
+  }
+
+  function setViewModeTo(mode) {
+    videoWrap.classList.remove('dual', 'triple', 'quad', 'octo');
+    destroyClones();
+    viewMode = mode;
+    const name = VIEW_NAMES[viewMode];
+    if (name !== 'single') videoWrap.classList.add(name);
+    const count = CLONE_COUNTS[viewMode];
+    if (count > 0) buildClones(count);
+  }
+
+  function applyTransforms() {
+    if (viewMode === 0) { video.style.transform = ''; return; }
+    const cfg = CONFIGS[configIdx];
+    if (viewMode === 1) {
+      clones.forEach(c => {
+        const pos = parseInt(c.dataset.pos);
+        c.style.transform = pos === 0 ? cfg[0] : cfg[3];
+      });
+    } else if (viewMode === 2) {
+      clones.forEach(c => { c.style.transform = cfg[TRIPLE_POS_MAP[parseInt(c.dataset.pos)]]; });
+    } else if (viewMode === 3) {
+      clones.forEach(c => { c.style.transform = cfg[QUAD_POS_MAP[parseInt(c.dataset.pos)]]; });
+    } else {
+      clones.forEach(c => { c.style.transform = cfg[parseInt(c.dataset.pos)]; });
+    }
+  }
+
+  function createBounceOverlay() {
+    if (!bounceOverlay) {
+      bounceOverlay = document.createElement('canvas');
+      bounceOverlay.id = 'bounceOverlay';
+      bounceOverlay.dataset.pos = '0';
+      bounceOverlay.style.display = 'none';
+      video.after(bounceOverlay);
+    }
+  }
+
+  function stopBounce() {
+    if (bounceOverlay) {
+      bounceOverlay.style.display = 'none';
+      if (clones.length === 0) video.style.display = '';
+    }
+  }
+
+  // ---- Test runner ----
+
+  let totalPass = 0, totalFail = 0;
+  const output = document.getElementById('output');
+
+  function suite(name) {
+    const div = document.createElement('div');
+    div.className = 'suite';
+    const title = document.createElement('div');
+    title.className = 'suite-title';
+    title.textContent = name;
+    div.appendChild(title);
+    output.appendChild(div);
+    return div;
+  }
+
+  function assert(suiteEl, desc, condition) {
+    const el = document.createElement('div');
+    el.className = 'result ' + (condition ? 'pass' : 'fail');
+    el.textContent = (condition ? '✓ ' : '✗ ') + desc;
+    suiteEl.appendChild(el);
+    if (condition) totalPass++; else totalFail++;
+  }
+
+  function getVisibleChildren() {
+    return Array.from(videoStage.children).filter(el => {
+      return el.style.display !== 'none' && getComputedStyle(el).display !== 'none';
+    });
+  }
+
+  // ---- Tests ----
+
+  // Suite 1: Constants consistency
+  (function testConstants() {
+    const s = suite('Constants');
+    assert(s, 'VIEW_NAMES has 5 entries', VIEW_NAMES.length === 5);
+    assert(s, 'CLONE_COUNTS has 5 entries', CLONE_COUNTS.length === 5);
+    assert(s, 'VIEW_NAMES matches expected order',
+      VIEW_NAMES.join(',') === 'single,dual,triple,quad,octo');
+    assert(s, 'CLONE_COUNTS matches expected values',
+      CLONE_COUNTS.join(',') === '0,1,2,3,7');
+    assert(s, 'QUAD_POS_MAP has 4 entries', QUAD_POS_MAP.length === 4);
+    assert(s, 'TRIPLE_POS_MAP has 3 entries', TRIPLE_POS_MAP.length === 3);
+    assert(s, 'CONFIGS has 32 entries (8 H × 4 V)', CONFIGS.length === 32);
+    assert(s, 'Each CONFIG has 8 transforms', CONFIGS.every(c => c.length === 8));
+  })();
+
+  // Suite 2: Clone counts per layout
+  (function testCloneCounts() {
+    const s = suite('Clone counts per layout');
+    const expected = {
+      single: { clones: 0, visible: 1 },
+      dual:   { clones: 2, visible: 2 },
+      triple: { clones: 3, visible: 3 },
+      quad:   { clones: 4, visible: 4 },
+      octo:   { clones: 8, visible: 8 },
+    };
+    VIEW_NAMES.forEach((name, idx) => {
+      setViewModeTo(idx);
+      const exp = expected[name];
+      assert(s, `${name}: clones array has ${exp.clones} elements`,
+        clones.length === exp.clones);
+      assert(s, `${name}: videoStage has ${exp.visible} visible children`,
+        getVisibleChildren().length === exp.visible);
+      if (idx > 0) {
+        assert(s, `${name}: video element is hidden`,
+          video.style.display === 'none');
+      } else {
+        assert(s, `${name}: video element is visible`,
+          video.style.display !== 'none');
+      }
+    });
+  })();
+
+  // Suite 3: CSS class management
+  (function testCSSClasses() {
+    const s = suite('CSS class on videoWrap');
+    VIEW_NAMES.forEach((name, idx) => {
+      setViewModeTo(idx);
+      if (name === 'single') {
+        assert(s, 'single: no layout class on videoWrap',
+          !videoWrap.classList.contains('dual') &&
+          !videoWrap.classList.contains('triple') &&
+          !videoWrap.classList.contains('quad') &&
+          !videoWrap.classList.contains('octo'));
+      } else {
+        assert(s, `${name}: videoWrap has class "${name}"`,
+          videoWrap.classList.contains(name));
+        const others = VIEW_NAMES.filter(n => n !== 'single' && n !== name);
+        const noOthers = others.every(n => !videoWrap.classList.contains(n));
+        assert(s, `${name}: no other layout classes present`, noOthers);
+      }
+    });
+  })();
+
+  // Suite 4: No stale clones when switching layouts
+  (function testLayoutSwitching() {
+    const s = suite('Layout switching cleanup');
+    const transitions = [
+      [0, 3], [3, 1], [1, 4], [4, 2], [2, 0],
+      [0, 4], [4, 3], [3, 2], [2, 1], [1, 0],
+    ];
+    const expected = { 0: 1, 1: 2, 2: 3, 3: 4, 4: 8 };
+    transitions.forEach(([from, to]) => {
+      setViewModeTo(from);
+      setViewModeTo(to);
+      const vis = getVisibleChildren().length;
+      const fromName = VIEW_NAMES[from];
+      const toName = VIEW_NAMES[to];
+      assert(s, `${fromName} → ${toName}: ${expected[to]} visible (got ${vis})`,
+        vis === expected[to]);
+    });
+  })();
+
+  // Suite 5: Clone positions (data-pos attribute)
+  (function testClonePositions() {
+    const s = suite('Clone position attributes');
+    VIEW_NAMES.forEach((name, idx) => {
+      if (idx === 0) return;
+      setViewModeTo(idx);
+      const positions = clones.map(c => parseInt(c.dataset.pos)).sort((a, b) => a - b);
+      const count = CLONE_COUNTS[idx];
+      const expectedPositions = Array.from({ length: count + 1 }, (_, i) => i);
+      assert(s, `${name}: positions are [${expectedPositions.join(',')}]`,
+        positions.join(',') === expectedPositions.join(','));
+    });
+  })();
+
+  // Suite 6: Transform mapping correctness
+  (function testTransformMapping() {
+    const s = suite('Transform mapping per layout');
+
+    // Test config 0 (all identity for H_RULES[0]=[0,0,0,0], V_RULES[0]=[0,0])
+    configIdx = 0;
+
+    // Dual: pos 0 → cfg[0], pos 1 → cfg[3]
+    setViewModeTo(1);
+    applyTransforms();
+    const dualP0 = clones.find(c => c.dataset.pos === '0');
+    const dualP1 = clones.find(c => c.dataset.pos === '1');
+    assert(s, 'dual: pos 0 uses cfg[0]', dualP0.style.transform === CONFIGS[0][0]);
+    assert(s, 'dual: pos 1 uses cfg[3]', dualP1.style.transform === CONFIGS[0][3]);
+
+    // Triple: pos N → cfg[TRIPLE_POS_MAP[N]]
+    setViewModeTo(2);
+    applyTransforms();
+    for (let i = 0; i < 3; i++) {
+      const c = clones.find(c => c.dataset.pos === String(i));
+      const expected = CONFIGS[0][TRIPLE_POS_MAP[i]];
+      assert(s, `triple: pos ${i} uses cfg[${TRIPLE_POS_MAP[i]}]`,
+        c.style.transform === expected);
+    }
+
+    // Quad: pos N → cfg[QUAD_POS_MAP[N]]
+    setViewModeTo(3);
+    applyTransforms();
+    for (let i = 0; i < 4; i++) {
+      const c = clones.find(c => c.dataset.pos === String(i));
+      const expected = CONFIGS[0][QUAD_POS_MAP[i]];
+      assert(s, `quad: pos ${i} uses cfg[${QUAD_POS_MAP[i]}]`,
+        c.style.transform === expected);
+    }
+
+    // Octo: pos N → cfg[N] directly
+    setViewModeTo(4);
+    applyTransforms();
+    for (let i = 0; i < 8; i++) {
+      const c = clones.find(c => c.dataset.pos === String(i));
+      const expected = CONFIGS[0][i];
+      assert(s, `octo: pos ${i} uses cfg[${i}]`,
+        c.style.transform === expected);
+    }
+  })();
+
+  // Suite 7: All 32 configs are unique and use only valid flips
+  (function testConfigUniqueness() {
+    const s = suite('32 configs are unique and valid');
+    const validTransforms = new Set(['', 'scaleX(-1)', 'scaleY(-1)', 'scaleX(-1) scaleY(-1)']);
+
+    let allValid = true;
+    CONFIGS.forEach((cfg, idx) => {
+      cfg.forEach((t, pos) => {
+        if (!validTransforms.has(t)) {
+          assert(s, `Config ${idx + 1} pos ${pos}: "${t}" is a valid flip`, false);
+          allValid = false;
+        }
+      });
+    });
+    if (allValid) assert(s, 'All transforms use valid flip combinations', true);
+
+    const signatures = CONFIGS.map(c => c.join('|'));
+    const unique = new Set(signatures);
+    assert(s, `All 32 configs are distinct (got ${unique.size} unique)`, unique.size === 32);
+
+    const identityCfg = CONFIGS.find(c => c.every(t => t === ''));
+    assert(s, 'Config 1 is identity (no flips)', identityCfg === CONFIGS[0]);
+  })();
+
+  // Suite 8: Quad position mapping covers correct grid cells
+  (function testQuadGridMapping() {
+    const s = suite('Quad position mapping (2×2 grid from 4×2 config)');
+    // QUAD_POS_MAP = [0, 1, 4, 5] maps quad tiles to octo positions:
+    // Quad tile 0 (top-left)  → octo pos 0 (row 0, col 0)
+    // Quad tile 1 (top-right) → octo pos 1 (row 0, col 1)
+    // Quad tile 2 (bot-left)  → octo pos 4 (row 1, col 0)
+    // Quad tile 3 (bot-right) → octo pos 5 (row 1, col 1)
+
+    assert(s, 'Tile 0 → octo pos 0 (top-left)', QUAD_POS_MAP[0] === 0);
+    assert(s, 'Tile 1 → octo pos 1 (top-right)', QUAD_POS_MAP[1] === 1);
+    assert(s, 'Tile 2 → octo pos 4 (bot-left)', QUAD_POS_MAP[2] === 4);
+    assert(s, 'Tile 3 → octo pos 5 (bot-right)', QUAD_POS_MAP[3] === 5);
+
+    // Use config 9: H_RULES[2]=[1,0,0,1], V_RULES[1]=[0,1]
+    // QUAD_POS_MAP=[0,1,4,5] → cfg[0], cfg[1], cfg[4], cfg[5]
+    // pos 0 (i=0): fh=1, fv=0 → 'scaleX(-1)'
+    // pos 1 (i=1): fh=0, fv=0 → ''
+    // pos 4 (i=4): fh=1, fv=1 → 'scaleX(-1) scaleY(-1)'
+    // pos 5 (i=5): fh=0, fv=1 → 'scaleY(-1)'
+    configIdx = 9;
+    setViewModeTo(3);
+    applyTransforms();
+    const q0 = clones.find(c => c.dataset.pos === '0');
+    const q1 = clones.find(c => c.dataset.pos === '1');
+    const q2 = clones.find(c => c.dataset.pos === '2');
+    const q3 = clones.find(c => c.dataset.pos === '3');
+    assert(s, 'Config 10: top-left H-flipped', q0.style.transform === 'scaleX(-1)');
+    assert(s, 'Config 10: top-right not flipped', q1.style.transform === '');
+    assert(s, 'Config 10: bot-left H+V flipped', q2.style.transform === 'scaleX(-1) scaleY(-1)');
+    assert(s, 'Config 10: bot-right V-flipped', q3.style.transform === 'scaleY(-1)');
+    configIdx = 0;
+  })();
+
+  // Suite 9: BounceOverlay cleanup
+  (function testBounceOverlayCleanup() {
+    const s = suite('BounceOverlay does not create extra panels');
+
+    // Simulate bounce overlay creation
+    setViewModeTo(3); // quad
+    createBounceOverlay();
+    assert(s, 'bounceOverlay exists in DOM after creation',
+      document.getElementById('bounceOverlay') !== null);
+    assert(s, 'bounceOverlay is hidden (display:none)',
+      bounceOverlay.style.display === 'none');
+
+    // Visible children should still be 4 (bounceOverlay hidden)
+    const vis1 = getVisibleChildren().length;
+    assert(s, `quad with hidden bounceOverlay: 4 visible (got ${vis1})`, vis1 === 4);
+
+    // stopBounce should NOT make video visible when clones exist
+    stopBounce();
+    assert(s, 'stopBounce with clones: video stays hidden',
+      video.style.display === 'none');
+    const vis2 = getVisibleChildren().length;
+    assert(s, `after stopBounce with clones: still 4 visible (got ${vis2})`, vis2 === 4);
+
+    // Switch layout should clean up bounceOverlay
+    setViewModeTo(1); // dual
+    assert(s, 'bounceOverlay removed from DOM after layout switch',
+      document.getElementById('bounceOverlay') === null);
+    assert(s, 'bounceOverlay variable is null', bounceOverlay === null);
+
+    // Back to single
+    setViewModeTo(0);
+    createBounceOverlay();
+    stopBounce();
+    assert(s, 'stopBounce without clones: video visible',
+      video.style.display !== 'none');
+  })();
+
+  // Suite 10: Rapid layout switching stress test
+  (function testRapidSwitching() {
+    const s = suite('Rapid layout switching (no leaked elements)');
+    const expected = { 0: 1, 1: 2, 2: 3, 3: 4, 4: 8 };
+
+    for (let i = 0; i < 50; i++) {
+      const mode = Math.floor(Math.random() * 5);
+      setViewModeTo(mode);
+    }
+
+    // After 50 random switches, validate final state
+    for (let mode = 0; mode < 5; mode++) {
+      setViewModeTo(mode);
+      const vis = getVisibleChildren().length;
+      const name = VIEW_NAMES[mode];
+      assert(s, `after stress: ${name} has ${expected[mode]} visible (got ${vis})`,
+        vis === expected[mode]);
+
+      // Check no orphaned canvases
+      const allCanvases = videoStage.querySelectorAll('canvas');
+      const expectedCanvases = mode === 0 ? 0 : CLONE_COUNTS[mode] + 1;
+      assert(s, `after stress: ${name} has ${expectedCanvases} canvas elements (got ${allCanvases.length})`,
+        allCanvases.length === expectedCanvases);
+    }
+  })();
+
+  // Suite 11: drawCompositeFrame grid dimensions
+  (function testCompositeGridDimensions() {
+    const s = suite('Composite frame grid dimensions');
+
+    const gridFor = (mode) => {
+      if (mode === 0) return { cols: 1, rows: 1 };
+      if (mode === 1) return { cols: 2, rows: 1 };
+      if (mode === 2) return { cols: 3, rows: 1 };
+      if (mode === 3) return { cols: 2, rows: 2 };
+      return { cols: 4, rows: 2 };
+    };
+
+    const expectedTiles = { 0: 1, 1: 2, 2: 3, 3: 4, 4: 8 };
+
+    VIEW_NAMES.forEach((name, idx) => {
+      const g = gridFor(idx);
+      const tiles = g.cols * g.rows;
+      assert(s, `${name}: ${g.cols}×${g.rows} = ${tiles} tiles`,
+        tiles === expectedTiles[idx]);
+    });
+  })();
+
+  // Suite 12: Cover-based drawing fills tile (no black bars)
+  (function testCoverDrawing() {
+    const s = suite('Cover-based drawing (no black bars)');
+
+    function computeSourceRect(vw, vh, cw, ch, zoom, panX, panY) {
+      const coverScale = Math.max(cw / vw, ch / vh);
+      const es = coverScale * zoom;
+      const sw = Math.min(vw, cw / es);
+      const sh = Math.min(vh, ch / es);
+      const panRangeX = vw - sw;
+      const panRangeY = vh - sh;
+      const sx = panRangeX * (1 + panX) / 2;
+      const sy = panRangeY * (1 - panY) / 2;
+      return { sx, sy, sw, sh };
+    }
+
+    // Portrait video (1080×1920) in landscape tile (400×300)
+    // Cover: width fills exactly, height is cropped
+    const r1 = computeSourceRect(1080, 1920, 400, 300, 1.0, 0, 0);
+    assert(s, 'Portrait in landscape: source width = video width (width-limited)',
+      Math.abs(r1.sw - 1080) < 0.01);
+    assert(s, 'Portrait in landscape: source height < video height (cropped)',
+      r1.sh < 1920);
+    assert(s, 'Portrait in landscape: source rect is non-zero',
+      r1.sw > 0 && r1.sh > 0);
+
+    // Landscape video (1920×1080) in portrait tile (300×400)
+    // Cover: height fills exactly, width is cropped
+    const r2 = computeSourceRect(1920, 1080, 300, 400, 1.0, 0, 0);
+    assert(s, 'Landscape in portrait: source width < video width (cropped)',
+      r2.sw < 1920);
+    assert(s, 'Landscape in portrait: source height = video height (height-limited)',
+      Math.abs(r2.sh - 1080) < 0.01);
+
+    // Zoom 2.0: source rectangle should be smaller (more cropped)
+    const r3 = computeSourceRect(1080, 1920, 400, 300, 2.0, 0, 0);
+    assert(s, 'Zoom 2.0: source rect smaller than zoom 1.0',
+      r3.sw < r1.sw || r3.sh < r1.sh);
+
+    // Pan Y moves source on portrait-in-landscape (vertical pan range exists)
+    const rT = computeSourceRect(1080, 1920, 400, 300, 1.0, 0, -1);
+    const rB = computeSourceRect(1080, 1920, 400, 300, 1.0, 0, 1);
+    assert(s, 'Pan Y=-1 vs Y=+1: different vertical offsets',
+      Math.abs(rT.sy - rB.sy) > 0.01);
+
+    // Pan X moves source on landscape-in-portrait (horizontal pan range exists)
+    const rL = computeSourceRect(1920, 1080, 300, 400, 1.0, -1, 0);
+    const rR = computeSourceRect(1920, 1080, 300, 400, 1.0, 1, 0);
+    assert(s, 'Pan X=-1 vs X=+1: different horizontal offsets',
+      Math.abs(rL.sx - rR.sx) > 0.01);
+
+    // Source rect never exceeds video bounds
+    for (const px of [-1, 0, 1]) {
+      for (const py of [-1, 0, 1]) {
+        const r = computeSourceRect(1080, 1920, 400, 300, 2.0, px, py);
+        const inBounds = r.sx >= -0.01 && r.sy >= -0.01 &&
+                         r.sx + r.sw <= 1080 + 0.01 && r.sy + r.sh <= 1920 + 0.01;
+        assert(s, `Pan(${px},${py}) zoom 2.0: source within video bounds`, inBounds);
+      }
+    }
+  })();
+
+  // Clean up
+  setViewModeTo(0);
+
+  // Summary
+  const summaryEl = document.getElementById('summary');
+  summaryEl.className = totalFail === 0 ? 'all-pass' : 'has-fail';
+  summaryEl.textContent = `${totalPass} passed, ${totalFail} failed out of ${totalPass + totalFail} tests`;
+</script>
+</body>
+</html>

@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Playback &amp; Views — Club Visuals User Guide</title>
+  <link rel="stylesheet" href="assets/guide.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="guide-shell">
+    <div class="guide-nav-wrap">
+      <div class="guide-nav-inner">
+        <a class="guide-brand" href="index.html">Club Visuals — User Guide</a>
+        <nav class="guide-nav" aria-label="Guide pages">
+          <a href="index.html">Home</a>
+          <a href="install-and-setup.html">Install</a>
+          <a href="downloading.html">Downloading</a>
+          <a href="playback.html" aria-current="page">Playback</a>
+          <a href="effects.html">Effects</a>
+          <a href="playlists.html">Playlists</a>
+          <a href="output-and-recording.html">Output &amp; Recording</a>
+          <a href="reference.html">Reference</a>
+        </nav>
+      </div>
+    </div>
+
+    <main id="main" class="guide-main">
+      <p class="breadcrumb"><a href="index.html">Home</a> &rsaquo; Playback &amp; Views</p>
+      <h1>Playback &amp; Views</h1>
+      <p class="lead">
+        The player section is the core of Club Visuals. Load a video from the library, choose a view mode and mirror preset, and control playback with the controls bar.
+      </p>
+
+      <h2>Video library</h2>
+      <p>
+        The right sidebar shows the <strong>Library</strong> tab by default. Every downloaded video appears as a thumbnail with its filename and Instagram channel name (prefixed with <code>@</code>).
+      </p>
+
+      <figure class="guide-figure">
+        <img src="../screenshots/03-library-grid.png" width="280" height="850" alt="Library sidebar showing video thumbnails">
+        <figcaption><span class="fig-label">Figure 3.</span> The library sidebar with video thumbnails and channel names (<code>03-library-grid.png</code>).</figcaption>
+      </figure>
+
+      <ul>
+        <li>Click a video to load and play it</li>
+        <li>The currently playing video is highlighted with a green border</li>
+        <li>Hover over a video to reveal the <strong>delete button</strong> (red "x" in the corner)</li>
+        <li>Deleting removes the video, its metadata file, and its cached thumbnail</li>
+      </ul>
+
+      <h2>View modes</h2>
+      <p>
+        Click the <strong>Layout</strong> button in the controls bar to choose from five view modes:
+      </p>
+
+      <div class="guide-table-wrap">
+        <table class="guide-table">
+          <thead>
+            <tr><th>Mode</th><th>Layout</th><th>Description</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Single</td><td>1 tile</td><td>Full-width video with <code>object-fit: contain</code>. No mirror presets.</td></tr>
+            <tr><td>Dual</td><td>2 tiles side by side</td><td>50% width each, cropped to fill. 8 mirror presets.</td></tr>
+            <tr><td>3x</td><td>3 tiles side by side</td><td>33% width each, cropped to fill. 8 mirror presets.</td></tr>
+            <tr><td>4x</td><td>2&times;2 grid</td><td>Four tiles in a square grid. 16 mirror presets.</td></tr>
+            <tr><td>8x</td><td>4&times;2 grid</td><td>Eight tiles in a wide grid. 12 mirror presets, plus the full 32 via slider.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <figure class="guide-figure">
+        <img src="../screenshots/05-view-dual.png" width="1400" height="850" alt="Dual view with two mirrored tiles">
+        <figcaption><span class="fig-label">Figure 4.</span> Dual view mode with a mirrored pair (<code>05-view-dual.png</code>).</figcaption>
+      </figure>
+
+      <figure class="guide-figure">
+        <img src="../screenshots/06-view-octo.png" width="1400" height="850" alt="8x view with kaleidoscope mirror preset">
+        <figcaption><span class="fig-label">Figure 5.</span> 8x view mode with a kaleidoscope mirror preset applied (<code>06-view-octo.png</code>).</figcaption>
+      </figure>
+
+      <h2>Mirror presets</h2>
+      <p>
+        When in any multi-tile view mode, the controls bar shows numbered <strong>preset buttons</strong>. Each preset defines a unique combination of horizontal and vertical flips across all tiles, creating mirror and kaleidoscope effects.
+      </p>
+      <p>
+        The number of presets depends on the view mode — curated subsets of the 32 possible configurations are shown as quick-access buttons. In 8x mode, a <strong>slider</strong> gives access to all 32 configurations.
+      </p>
+      <p>
+        All tiles share a single decoded video stream via <code>captureStream()</code>, so there is no performance penalty for more tiles.
+      </p>
+
+      <h2>Zoom and pan</h2>
+      <p>
+        In multi-tile modes, zoom and pan controls appear in the controls bar:
+      </p>
+      <ul>
+        <li><strong>Zoom slider</strong> (1.0x – 4.0x) — enlarges the video within each tile, cropping edges for a tighter frame</li>
+        <li><strong>Pan X and Y sliders</strong> (-1.0 to 1.0) — shift the visible portion of the video horizontally and vertically</li>
+        <li><strong>Reset buttons</strong> — return zoom to 1.0x or pan to centre</li>
+      </ul>
+      <p>
+        Zoom and pan are applied uniformly to all tiles. Combined with mirror presets, zooming into a detail can create striking kaleidoscope patterns from source material that was not designed for it.
+      </p>
+
+      <h2>Controls bar</h2>
+
+      <figure class="guide-figure">
+        <img src="../screenshots/07-controls-bar.png" width="1400" height="60" alt="Controls bar with all buttons visible">
+        <figcaption><span class="fig-label">Figure 6.</span> The full controls bar in 8x view mode (<code>07-controls-bar.png</code>).</figcaption>
+      </figure>
+
+      <p>From left to right, the controls bar contains:</p>
+      <ol>
+        <li><strong>Play / Pause</strong> — green button, toggles playback</li>
+        <li><strong>Playback</strong> — popup menu with three modes:
+          <ul>
+            <li><strong>No Loop</strong> — video plays once and stops</li>
+            <li><strong>Loop</strong> — seamless looping with an invisible reset near the end</li>
+            <li><strong>Bounce</strong> — plays forward, then reverses frame-by-frame, then loops</li>
+          </ul>
+        </li>
+        <li><strong>Mute</strong> — toggle audio on/off</li>
+        <li><strong>CC</strong> — toggle the caption overlay that shows the <code>@channel</code> attribution for 10 seconds on video load</li>
+        <li><strong>Refresh</strong> (&#8635;) — rebuild tile clones while preserving playback position</li>
+        <li><strong>Layout</strong> — popup menu for view mode selection</li>
+        <li><strong>Zoom / Pan sliders</strong> — shown in multi-tile modes</li>
+        <li><strong>Mirror presets</strong> — shown in multi-tile modes</li>
+        <li><strong>FX</strong> — opens the <a href="effects.html">FX Controller</a> popup window</li>
+        <li><strong>Fullscreen</strong> — fills the entire screen</li>
+      </ol>
+
+      <h2>Playback modes</h2>
+
+      <h3>No Loop</h3>
+      <p>The video plays from start to end and stops. The Play button resets to "Play" so you can restart manually.</p>
+
+      <h3>Loop</h3>
+      <p>The video loops seamlessly. The reset happens within 0.15 seconds of the end, making the loop point nearly invisible. This is the mode to use during DJ sets for continuous visuals.</p>
+
+      <h3>Bounce</h3>
+      <p>
+        The video plays forward while capturing frames. When it reaches the end, it pauses the video and plays the captured frames in reverse, creating a smooth ping-pong effect. After the reverse pass completes, it starts a new forward pass. Bounce mode works with all view modes and mirror presets.
+      </p>
+
+      <h2>Fullscreen</h2>
+      <p>
+        Click <strong>Fullscreen</strong> (or the button turns red and says "Exit Fullscreen" when active). In fullscreen mode:
+      </p>
+      <ul>
+        <li>The video fills the entire screen edge-to-edge with no gaps</li>
+        <li>Controls auto-hide after 1.5 seconds of no mouse movement</li>
+        <li>The cursor disappears when controls are hidden</li>
+        <li>Move the mouse or click anywhere to show controls again</li>
+        <li>The progress bar is hidden — seek using the playlist controls or keyboard</li>
+        <li>The playlist indicator bar (if active) appears at the top and also auto-hides</li>
+      </ul>
+
+      <h2>Caption overlay</h2>
+      <p>
+        When you load a video that has channel metadata, the <code>@channel</code> name appears briefly in the bottom-left corner. The <strong>CC</strong> button in the controls bar toggles this feature on or off.
+      </p>
+
+      <h2>Progress bar</h2>
+      <p>
+        Below the video, a thin green progress bar shows playback position. Click anywhere on it to seek to that position. The progress bar is hidden in fullscreen mode.
+      </p>
+    </main>
+
+    <footer class="guide-footer">
+      <p>Club Visuals user guide &middot; Modular HTML in <code>docs/user-guide/</code></p>
+    </footer>
+  </div>
+</body>
+</html>
