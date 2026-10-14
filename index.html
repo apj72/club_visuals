@@ -265,7 +265,27 @@
   #videoPresetList { max-height: 190px; overflow-y: auto; }
   .video-presets button { padding: 7px 10px; border: 1px solid #4ecca3; border-radius: 5px; color: #c7ffeb; background: #183a3a; cursor: pointer; }
   .saved-preset-row span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.75rem; }
+  .saved-preset-row { cursor: context-menu; }
+  .video-presets .saved-preset-row .preset-menu-trigger { padding: 7px 9px; }
   .video-presets .preset-status { margin-top: 8px; min-height: 16px; color: #a9ffe7; font-size: 0.72rem; }
+  .layout-context-menu { position: fixed; z-index: 1000; padding: 4px; background: #111b32; border: 1px solid #4ecca3; border-radius: 6px; box-shadow: 0 8px 24px #0009; }
+  .layout-context-menu[hidden] { display: none; }
+  .layout-context-menu button { display: block; width: 100%; padding: 8px 12px; text-align: left; background: none; border: 0; color: #e5fff4; cursor: pointer; }
+  .layout-context-menu button:hover, .layout-context-menu button:focus { background: #20443e; }
+  .preset-playlist-dialog { width: min(420px, calc(100vw - 32px)); padding: 20px; color: #e7eef5; background: #152039; border: 1px solid #4ecca3; border-radius: 10px; box-shadow: 0 18px 50px #000a; }
+  .preset-playlist-dialog::backdrop { background: #0009; }
+  .preset-playlist-dialog h3 { margin: 0 0 8px; color: #4ecca3; }
+  .preset-playlist-dialog p { margin: 0 0 16px; color: #aab6c4; font-size: 0.82rem; }
+  .preset-playlist-dialog label { display: block; margin: 12px 0; color: #c5d2df; font-size: 0.78rem; }
+  .preset-playlist-dialog input, .preset-playlist-dialog select { width: 100%; margin-top: 5px; padding: 9px; background: #0d1628; border: 1px solid #46536c; border-radius: 5px; color: #fff; font: inherit; }
+  .preset-playlist-duration { display: flex; gap: 10px; }
+  .preset-playlist-duration label { flex: 1; min-width: 0; }
+  .preset-playlist-dialog .dialog-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; }
+  .preset-playlist-dialog button { padding: 9px 12px; color: #e7eef5; background: #1d3150; border: 1px solid #46536c; border-radius: 5px; cursor: pointer; }
+  .preset-playlist-dialog .dialog-primary { color: #0d1720; background: #4ecca3; border-color: #4ecca3; font-weight: 700; }
+  .preset-playlist-dialog .dialog-primary:disabled { opacity: .6; cursor: wait; }
+  .preset-playlist-dialog .dialog-status { min-height: 18px; margin: 8px 0 0; color: #ffc9c9; }
+  .preset-playlist-dialog [hidden] { display: none; }
   .capture-panel.visible { display: block; }
   .capture-panel h3 { margin: 0 0 7px; color: #4ecca3; font-size: 0.95rem; }
   .capture-panel p { margin: 0 0 12px; color: #a9b3c5; font-size: 0.78rem; line-height: 1.45; }
@@ -608,9 +628,11 @@
   .pl-entry.active { outline: 2px solid #4ecca3; }
   .pl-entry.previewing { background: #1f2b4d; border-left: 3px solid #e94560; }
   .pl-entry.drag-over { border-top: 2px solid #4ecca3; margin-top: -2px; }
-  .pl-entry .pl-e-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .pl-entry .pl-e-thumb { width: 56px; height: 42px; flex: 0 0 56px; object-fit: cover; background: #0d1628; border-radius: 4px; }
+  .pl-entry .pl-e-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+  .pl-entry .pl-e-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #d7e3ed; }
   .pl-entry .pl-e-info {
-    font-size: 0.65rem; color: #888; white-space: nowrap;
+    font-size: 0.65rem; color: #9aa7b8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   }
   .pl-entry .pl-e-btn {
     background: none; border: none; color: #666; font-size: 0.8rem;
@@ -871,6 +893,24 @@
         <div id="videoPresetList"></div>
         <div class="preset-status" id="videoPresetStatus" role="status"></div>
       </div>
+      <div class="layout-context-menu" id="layoutContextMenu" role="menu" hidden>
+        <button type="button" role="menuitem" id="layoutAddToPlaylist">Add to playlist…</button>
+      </div>
+      <dialog class="preset-playlist-dialog" id="presetPlaylistDialog" aria-labelledby="presetPlaylistTitle">
+        <h3 id="presetPlaylistTitle">Add layout to playlist</h3>
+        <p id="presetPlaylistDescription"></p>
+        <label>Playlist<select id="presetPlaylistSelect" onchange="updatePresetPlaylistChoice()"></select></label>
+        <label id="presetNewPlaylistField">New playlist name<input id="presetNewPlaylistName" type="text" maxlength="80" placeholder="Playlist name"></label>
+        <div class="preset-playlist-duration">
+          <label>Duration<select id="presetPlaylistDurationType"><option value="loops">Loops</option><option value="seconds">Seconds</option></select></label>
+          <label>Amount<input id="presetPlaylistDurationValue" type="number" min="1" max="9999" step="1" value="5"></label>
+        </div>
+        <p class="dialog-status" id="presetPlaylistStatus" role="status"></p>
+        <div class="dialog-actions">
+          <button type="button" onclick="closePresetPlaylistDialog()">Cancel</button>
+          <button type="button" class="dialog-primary" id="presetPlaylistAddButton" onclick="addPresetToPlaylist()">Add to playlist</button>
+        </div>
+      </dialog>
       <div class="capture-panel" id="capturePanel">
         <h3>Instagram background clip</h3>
         <p>Drag or resize the green box to choose the visible area. The result is a silent MP4 with the selected layout and effects, ready for a video layer in Instagram Video Studio.</p>
@@ -2125,6 +2165,7 @@
   function renderVideoPresetList() {
     const list = document.getElementById('videoPresetList');
     list.replaceChildren();
+    const filename = currentFilename;
     const presets = videoPresetCache.get(currentFilename) || [];
     if (!presets.length) {
       const empty = document.createElement('p');
@@ -2135,21 +2176,158 @@
     for (const preset of presets) {
       const row = document.createElement('div');
       row.className = 'saved-preset-row';
+      row.tabIndex = 0;
+      row.title = 'Right-click for playlist actions';
       const label = document.createElement('span');
       label.textContent = preset.name + ' · ' + preset.view + ' P' + preset.preset + ' · ' + preset.zoom.toFixed(1) + 'x · ' + (preset.speed ?? 1) + '× speed';
       const load = document.createElement('button');
       load.textContent = 'Load';
       load.onclick = () => {
         applyLayoutConfiguration(preset);
-        selectVideo(currentFilename, false, preset.id);
+        selectVideo(filename, false, preset.id);
         fillPlaylistLayoutFields(preset);
+      };
+      const more = document.createElement('button');
+      more.className = 'preset-menu-trigger';
+      more.type = 'button';
+      more.textContent = '⋯';
+      more.setAttribute('aria-label', 'Actions for ' + preset.name);
+      more.onclick = () => {
+        const rect = more.getBoundingClientRect();
+        openLayoutContextMenu(rect.left, rect.bottom, filename, preset);
       };
       const remove = document.createElement('button');
       remove.textContent = 'Delete';
       remove.onclick = () => deleteVideoPreset(preset.id);
-      row.append(label, load, remove);
+      row.addEventListener('contextmenu', event => {
+        event.preventDefault();
+        openLayoutContextMenu(event.clientX, event.clientY, filename, preset);
+      });
+      row.addEventListener('keydown', event => {
+        if (event.key !== 'ContextMenu' && !(event.shiftKey && event.key === 'F10')) return;
+        event.preventDefault();
+        const rect = row.getBoundingClientRect();
+        openLayoutContextMenu(rect.left + 16, rect.bottom, filename, preset);
+      });
+      row.append(label, load, more, remove);
       list.appendChild(row);
     }
+  }
+
+  let presetPlaylistTarget = null;
+  const layoutContextMenu = document.getElementById('layoutContextMenu');
+  const presetPlaylistDialog = document.getElementById('presetPlaylistDialog');
+  const presetPlaylistSelect = document.getElementById('presetPlaylistSelect');
+  const presetPlaylistStatus = document.getElementById('presetPlaylistStatus');
+  const presetPlaylistAddButton = document.getElementById('presetPlaylistAddButton');
+
+  function closeLayoutContextMenu() { layoutContextMenu.hidden = true; }
+
+  function openLayoutContextMenu(x, y, filename, preset) {
+    presetPlaylistTarget = { filename, preset };
+    layoutContextMenu.hidden = false;
+    layoutContextMenu.style.left = Math.max(8, Math.min(x, innerWidth - layoutContextMenu.offsetWidth - 8)) + 'px';
+    layoutContextMenu.style.top = Math.max(8, Math.min(y, innerHeight - layoutContextMenu.offsetHeight - 8)) + 'px';
+    layoutContextMenu.querySelector('button').focus();
+  }
+
+  document.getElementById('layoutAddToPlaylist').addEventListener('click', () => {
+    closeLayoutContextMenu();
+    if (presetPlaylistTarget) openPresetPlaylistDialog();
+  });
+  document.addEventListener('click', event => {
+    if (!event.target.closest('#layoutContextMenu, .preset-menu-trigger')) closeLayoutContextMenu();
+  });
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape') closeLayoutContextMenu();
+  });
+
+  function updatePresetPlaylistChoice() {
+    document.getElementById('presetNewPlaylistField').hidden = !!presetPlaylistSelect.value;
+    if (!presetPlaylistSelect.value) document.getElementById('presetNewPlaylistName').focus();
+  }
+
+  async function openPresetPlaylistDialog() {
+    const target = presetPlaylistTarget;
+    const { filename, preset } = target;
+    document.getElementById('presetPlaylistDescription').textContent = preset.name + ' · ' + playlistVideoName(filename);
+    document.getElementById('presetNewPlaylistName').value = '';
+    document.getElementById('presetPlaylistDurationType').value = 'loops';
+    document.getElementById('presetPlaylistDurationValue').value = '5';
+    presetPlaylistStatus.textContent = 'Loading playlists…';
+    presetPlaylistAddButton.disabled = true;
+    presetPlaylistDialog.showModal();
+    try {
+      const response = await fetch('/api/playlists');
+      if (!response.ok) throw new Error('Could not load playlists.');
+      const playlists = await response.json();
+      if (!presetPlaylistDialog.open || target !== presetPlaylistTarget) return;
+      presetPlaylistSelect.replaceChildren(new Option('Create new playlist', ''));
+      for (const playlist of playlists) presetPlaylistSelect.add(new Option(playlist.name, playlist.slug));
+      presetPlaylistSelect.value = playlists.some(playlist => playlist.slug === plSlug) ? plSlug : '';
+      updatePresetPlaylistChoice();
+      presetPlaylistStatus.textContent = '';
+      presetPlaylistAddButton.disabled = false;
+    } catch (error) { presetPlaylistStatus.textContent = error.message; }
+  }
+
+  function closePresetPlaylistDialog() { presetPlaylistDialog.close(); presetPlaylistTarget = null; }
+
+  async function addPresetToPlaylist() {
+    if (!presetPlaylistTarget || presetPlaylistAddButton.disabled) return;
+    const { filename, preset } = presetPlaylistTarget;
+    const type = document.getElementById('presetPlaylistDurationType').value;
+    const value = Number(document.getElementById('presetPlaylistDurationValue').value);
+    if (!Number.isInteger(value) || value < 1 || value > 9999) {
+      presetPlaylistStatus.textContent = 'Enter a duration from 1 to 9999.';
+      return;
+    }
+    let slug = presetPlaylistSelect.value;
+    let playlist;
+    presetPlaylistAddButton.disabled = true;
+    presetPlaylistStatus.textContent = 'Adding layout…';
+    try {
+      if (slug) {
+        if (slug === plSlug) playlist = { ...plPlaylist, entries: [...plPlaylist.entries] };
+        else {
+          const response = await fetch('/api/playlist/' + encodeURIComponent(slug));
+          if (!response.ok) throw new Error('Could not load the selected playlist.');
+          playlist = await response.json();
+        }
+      } else {
+        const name = document.getElementById('presetNewPlaylistName').value.trim();
+        if (!name) throw new Error('Enter a name for the new playlist.');
+        slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/-+$/, '');
+        if (!slug) throw new Error('Use letters or numbers in the playlist name.');
+        const response = await fetch('/api/playlists');
+        if (!response.ok) throw new Error('Could not check existing playlists.');
+        const existing = await response.json();
+        if (existing.some(item => item.slug === slug)) throw new Error('A playlist with that name already exists. Select it above.');
+        playlist = { name, entries: [] };
+      }
+      if (!Array.isArray(playlist.entries)) throw new Error('The selected playlist is invalid.');
+      playlist.entries.push({
+        video: filename, view: preset.view, preset: preset.preset,
+        loopMode: preset.loopMode, speed: preset.speed ?? 1,
+        zoom: preset.zoom, panX: preset.panX, panY: preset.panY,
+        duration: { type, value }, layoutPresetId: preset.id, layoutPresetName: preset.name
+      });
+      const response = await fetch('/api/playlist/' + encodeURIComponent(slug), {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(playlist)
+      });
+      if (!response.ok) throw new Error('Could not save the playlist.');
+      if (plSlug === slug) { plPlaylist = playlist; renderPlaylistEntries(); }
+      await loadPlaylists();
+      presetPlaylistDialog.close();
+      presetPlaylistTarget = null;
+      const status = document.getElementById('videoPresetStatus');
+      const open = document.createElement('button');
+      open.type = 'button';
+      open.textContent = 'Open playlist';
+      open.onclick = async () => { switchTab('playlist'); await loadPlaylistBySlug(slug); };
+      status.replaceChildren(document.createTextNode('Added “' + preset.name + '” to “' + playlist.name + '”. '), open);
+    } catch (error) { presetPlaylistStatus.textContent = error.message; }
+    finally { presetPlaylistAddButton.disabled = false; }
   }
 
   async function persistVideoPresets(filename, presets) {
@@ -2755,6 +2933,11 @@
 
   // --- Playlist ---
 
+  function playlistVideoName(filename) {
+    const stem = String(filename || '').replace(/\.[^.]+$/, '');
+    return stem.replace(/^Video by\b[\s:–—-]*/i, '').trim() || stem;
+  }
+
   let plPlaylist = { name: '', entries: [] };
   let plPlaying = false;
   let plEntryIdx = 0;
@@ -2866,12 +3049,13 @@
     videoListCache.forEach(v => {
       const div = document.createElement('div');
       div.className = 'pl-video-option' + (v.filename === plSelectedVideo ? ' selected' : '');
+      div.dataset.filename = v.filename;
       const img = document.createElement('img');
       img.src = '/thumbnail/' + encodeURIComponent(v.filename);
       img.alt = '';
       const span = document.createElement('span');
       span.className = 'pl-vo-name';
-      span.textContent = v.filename.replace(/\.[^.]+$/, '');
+      span.textContent = playlistVideoName(v.filename);
       div.appendChild(img);
       div.appendChild(span);
       div.addEventListener('click', () => selectVideo(v.filename));
@@ -2885,14 +3069,19 @@
     plSavedLayout.value = '';
     refreshPlaylistSavedLayouts(filename, preferredPresetId);
     const thumb = '/thumbnail/' + encodeURIComponent(filename);
-    const name = filename.replace(/\.[^.]+$/, '');
-    plVideoSelected.innerHTML =
-      '<img src="' + thumb + '" alt="">' +
-      '<span class="pl-vs-name">' + name + '</span>' +
-      '<span class="pl-vs-arrow">▼</span>';
+    const img = document.createElement('img');
+    img.src = thumb;
+    img.alt = '';
+    const name = document.createElement('span');
+    name.className = 'pl-vs-name';
+    name.textContent = playlistVideoName(filename);
+    const arrow = document.createElement('span');
+    arrow.className = 'pl-vs-arrow';
+    arrow.textContent = '▼';
+    plVideoSelected.replaceChildren(img, name, arrow);
     plVideoDropdown.classList.remove('open');
     plVideoDropdown.querySelectorAll('.pl-video-option').forEach(el => {
-      el.classList.toggle('selected', el.querySelector('.pl-vo-name').textContent === name);
+      el.classList.toggle('selected', el.dataset.filename === filename);
     });
     if (preview) {
       showVideo(filename);
@@ -2924,12 +3113,15 @@
   }
 
   async function loadPlaylistBySlug(slug) {
-    if (!slug) { plPlaylist = { name: '', entries: [] }; plSlug = ''; plNameInput.value = ''; renderPlaylistEntries(); return; }
+    if (!slug) { plPlaylist = { name: '', entries: [] }; plSlug = ''; plNameInput.value = ''; plPreviewIdx = -1; renderPlaylistEntries(); return; }
     try {
       const res = await fetch('/api/playlist/' + encodeURIComponent(slug));
+      if (!res.ok) throw new Error('Could not load playlist');
       plPlaylist = await res.json();
       plSlug = slug;
+      plSelect.value = slug;
       plNameInput.value = plPlaylist.name || '';
+      plPreviewIdx = -1;
       renderPlaylistEntries();
     } catch {}
   }
@@ -3020,20 +3212,32 @@
 
       const vl = e.view === 'octo' ? '8x' : e.view === 'quad' ? '4x' : e.view === 'triple' ? '3x' : e.view === 'dual' ? 'Dual' : '1x';
       const dt = e.duration.type === 'loops' ? e.duration.value + 'L' : e.duration.value + 's';
-      const sn = e.video.replace(/\.[^.]+$/, '');
+      const sn = playlistVideoName(e.video);
+
+      const thumb = document.createElement('img');
+      thumb.className = 'pl-e-thumb';
+      thumb.src = '/thumbnail/' + encodeURIComponent(e.video);
+      thumb.alt = '';
+      thumb.loading = 'lazy';
+      thumb.onerror = () => { thumb.style.visibility = 'hidden'; };
+      div.appendChild(thumb);
+
+      const body = document.createElement('div');
+      body.className = 'pl-e-body';
 
       const nameSpan = document.createElement('span');
       nameSpan.className = 'pl-e-name';
       nameSpan.title = e.video;
       nameSpan.textContent = sn;
-      div.appendChild(nameSpan);
+      body.appendChild(nameSpan);
 
       const infoSpan = document.createElement('span');
       infoSpan.className = 'pl-e-info';
       const lm = e.loopMode === 2 ? ' B' : '';
       infoSpan.textContent = (e.layoutPresetName ? e.layoutPresetName + ' · ' : '')
         + vl + ' P' + e.preset + ' ' + dt + lm + (Number(e.speed ?? 1) !== 1 ? ' · ' + e.speed + '×' : '');
-      div.appendChild(infoSpan);
+      body.appendChild(infoSpan);
+      div.appendChild(body);
 
       const delBtn = document.createElement('button');
       delBtn.className = 'pl-e-btn';

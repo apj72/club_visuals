@@ -79,6 +79,8 @@ Click **3D Logo** for a solid object built from the Version1 SVG, or **3D Text**
 
 Select a video from the Library, then set its layout, Playback mode, speed (0.25×–2× in 0.25× steps), panel orientation, zoom and X/Y position in the player. The suggested name in **Saved layouts for this video** updates as you change settings; edit it if you like, then click **Save layout**. You can save several layouts for the same video, load any of them to preview it, or delete one. In the Playlist tab, select that video and choose one of its saved layouts from the **Saved layout** dropdown before adding an entry. The entry stores a copy of the values, so later changes to the saved layout do not change existing playlists.
 
+Right-click a saved layout (or click its **⋯** button) and choose **Add to playlist…**. Select an existing playlist or create a new one, set the duration, and click **Add to playlist**. This saves the entry immediately. Loaded playlists show a video thumbnail beside each entry and omit a leading “Video by” from the displayed video name.
+
 ### Playlist / DJ mode
 
 1. Switch to the **Playlist** tab in the right panel
