@@ -149,7 +149,8 @@
   }
 
   function createBounceOverlay() {
-    if (!bounceOverlay) {
+    // Multi-panel views already render reversing frames in their clones.
+    if (clones.length === 0 && !bounceOverlay) {
       bounceOverlay = document.createElement('canvas');
       bounceOverlay.id = 'bounceOverlay';
       bounceOverlay.dataset.pos = '0';
@@ -397,38 +398,34 @@
     configIdx = 0;
   })();
 
-  // Suite 9: BounceOverlay cleanup
+  // Suite 9: Bounce overlay must not become an extra panel
   (function testBounceOverlayCleanup() {
-    const s = suite('BounceOverlay does not create extra panels');
+    const s = suite('Bounce overlay does not create extra panels');
 
-    // Simulate bounce overlay creation
-    setViewModeTo(3); // quad
-    createBounceOverlay();
-    assert(s, 'bounceOverlay exists in DOM after creation',
-      document.getElementById('bounceOverlay') !== null);
-    assert(s, 'bounceOverlay is hidden (display:none)',
-      bounceOverlay.style.display === 'none');
+    // Multi-panel views already have clone canvases for reverse playback.
+    const bounceLayouts = { 1: 2, 2: 3, 3: 4, 4: 8 };
+    Object.entries(bounceLayouts).forEach(([mode, expected]) => {
+      setViewModeTo(Number(mode));
+      createBounceOverlay();
+      const name = VIEW_NAMES[mode];
+      assert(s, `${name} does not create a bounce overlay`,
+        document.getElementById('bounceOverlay') === null);
+      assert(s, `${name} has ${expected} visible panels during bounce (got ${getVisibleChildren().length})`,
+        getVisibleChildren().length === expected);
+    });
 
-    // Visible children should still be 4 (bounceOverlay hidden)
-    const vis1 = getVisibleChildren().length;
-    assert(s, `quad with hidden bounceOverlay: 4 visible (got ${vis1})`, vis1 === 4);
-
-    // stopBounce should NOT make video visible when clones exist
+    // stopBounce should not make the source video visible when clones exist.
     stopBounce();
     assert(s, 'stopBounce with clones: video stays hidden',
       video.style.display === 'none');
     const vis2 = getVisibleChildren().length;
-    assert(s, `after stopBounce with clones: still 4 visible (got ${vis2})`, vis2 === 4);
+    assert(s, `after stopBounce with clones: still 8 visible (got ${vis2})`, vis2 === 8);
 
-    // Switch layout should clean up bounceOverlay
-    setViewModeTo(1); // dual
-    assert(s, 'bounceOverlay removed from DOM after layout switch',
-      document.getElementById('bounceOverlay') === null);
-    assert(s, 'bounceOverlay variable is null', bounceOverlay === null);
-
-    // Back to single
+    // Single view still needs its canvas overlay.
     setViewModeTo(0);
     createBounceOverlay();
+    assert(s, 'single creates a bounce overlay',
+      document.getElementById('bounceOverlay') !== null);
     stopBounce();
     assert(s, 'stopBounce without clones: video visible',
       video.style.display !== 'none');

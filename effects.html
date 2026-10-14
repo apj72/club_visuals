@@ -144,19 +144,6 @@
   <span class="fx-value" id="trailValue">0.15</span>
 </div>
 
-<div class="fx-section-label">Audio Reactive</div>
-<div class="fx-toggle-row">
-  <button id="audioBtn" onclick="toggleAudioReactive()">Off</button>
-  <span class="fx-label" style="width:auto">Sensitivity</span>
-  <input type="range" class="fx-slider" id="audioSlider" min="0.5" max="3.0" step="0.1" value="1.0">
-  <span class="fx-value" id="audioValue">1.0x</span>
-</div>
-<div class="fx-meter" id="audioMeter">
-  <div class="fx-meter-bar"><span>Bass</span><div class="fx-meter-fill" id="bassFill"></div></div>
-  <div class="fx-meter-bar"><span>Mid</span><div class="fx-meter-fill" id="midFill"></div></div>
-  <div class="fx-meter-bar"><span>Treble</span><div class="fx-meter-fill" id="trebleFill"></div></div>
-</div>
-
 <button class="fx-reset" onclick="resetAll()">Reset All</button>
 
 <script>
@@ -316,16 +303,9 @@
     if (state.filename !== undefined) {
       document.getElementById('fxFilename').textContent = state.filename || 'No video loaded';
     }
-    if (state.audioLevels) {
-      const l = state.audioLevels;
-      document.getElementById('bassFill').style.width = (l.bass / 255 * 100) + '%';
-      document.getElementById('midFill').style.width = (l.mid / 255 * 100) + '%';
-      document.getElementById('trebleFill').style.width = (l.treble / 255 * 100) + '%';
-    }
   }
 
   let trailsOn = false;
-  let audioOn = false;
 
   function toggleTrails() {
     trailsOn = !trailsOn;
@@ -338,19 +318,6 @@
   document.getElementById('trailSlider').addEventListener('input', function() {
     document.getElementById('trailValue').textContent = this.value;
     if (window.opener && !window.opener.closed) window.opener.setTrailAmount(parseFloat(this.value));
-  });
-
-  function toggleAudioReactive() {
-    audioOn = !audioOn;
-    const btn = document.getElementById('audioBtn');
-    btn.textContent = audioOn ? 'On' : 'Off';
-    btn.classList.toggle('active', audioOn);
-    if (window.opener && !window.opener.closed) window.opener.setAudioReactive(audioOn);
-  }
-
-  document.getElementById('audioSlider').addEventListener('input', function() {
-    document.getElementById('audioValue').textContent = parseFloat(this.value).toFixed(1) + 'x';
-    if (window.opener && !window.opener.closed) window.opener.setAudioSensitivity(parseFloat(this.value));
   });
 
   setInterval(() => {

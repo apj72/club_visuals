@@ -29,13 +29,8 @@
       <p class="breadcrumb"><a href="index.html">Home</a> &rsaquo; Effects &amp; Audio</p>
       <h1>Effects &amp; Audio</h1>
       <p class="lead">
-        The FX Controller is a popup window that gives you live control over visual effects, motion trails, and audio-reactive modulation. Open it by clicking <strong>FX</strong> in the controls bar.
+        The FX Controller is a popup window for colour effects and motion trails. Open it with <strong>FX</strong>. The separate <strong>VFX</strong> button opens live GPU scenes, including reflective text and logo shapes.
       </p>
-
-      <figure class="guide-figure">
-        <img src="../screenshots/11-effects-controller.png" width="420" height="700" alt="FX Controller window with sliders, presets, trails, and audio meters">
-        <figcaption><span class="fig-label">Figure 7.</span> The FX Controller window showing effect sliders, presets, trails toggle, and audio-reactive meters (<code>11-effects-controller.png</code>).</figcaption>
-      </figure>
 
       <h2>Opening the FX Controller</h2>
       <p>
@@ -118,32 +113,20 @@
         Trails work with all view modes and mirror presets. They are particularly effective with bounce mode and slow-moving source material. Trails are also visible in the output window and in recordings.
       </p>
 
-      <h2>Audio-reactive effects</h2>
-      <p>
-        The <strong>Audio Reactive</strong> section modulates visual effects in real time based on the video's audio:
-      </p>
-      <ul>
-        <li><strong>Toggle button</strong> — enables or disables audio reactivity</li>
-        <li><strong>Sensitivity slider</strong> (0.5x – 3.0x) — multiplier for how strongly audio drives the effects</li>
-        <li><strong>Audio meter</strong> — three horizontal bars showing real-time Bass, Mid, and Treble levels</li>
-      </ul>
+      <h2>Live VFX on the full output</h2>
+      <p>Click <strong>VFX</strong> in the player to open its own pop-out controller. Turn GPU effects on or off while the main app keeps playing. VFX processes the complete current layout, including playlist changes and mirror presets. Choose Liquid ripple, Image smear, Video ribbons, Mirror sculpture, Kaleidoscope tunnel, Prism fracture, or 3D Version1 logo, then adjust Intensity and Feedback. With the controller focused, keys 1–7 switch scenes and Space fires a pulse.</p>
+      <p>The main fullscreen player, the clean output window, and recordings use the active VFX scene. Captions stay above the effects so they remain readable.</p>
 
-      <h3>How audio drives the visuals</h3>
-      <p>
-        The audio signal is split into three frequency bands using an FFT analyser:
-      </p>
-      <ul>
-        <li><strong>Bass</strong> drives brightness (up to +50%) and saturation (up to +80%)</li>
-        <li><strong>Mid</strong> drives hue rotation (up to +30&deg; per frame)</li>
-        <li><strong>Treble</strong> is displayed in the meter but does not currently drive effects</li>
-      </ul>
-      <p>
-        Audio-reactive modulation is applied on top of whatever effects you have set with the sliders, so you can use the sliders as a baseline and let the audio add energy on the beats.
-      </p>
+      <h2>Reflective text and branding</h2>
+      <p>After loading a video, click <strong>Mirror 3D</strong> in the player controls to turn on Mirror sculpture and open its controller. Type a title or Instagram ID, or click <strong>Use current video's @ID</strong> to use the playing video's metadata. Click <strong>Use Version1 logo</strong> for the bundled mark, or choose <strong>Transparent image</strong> and load another PNG or WebP file under 1 MB. Transparent pixels remain open; opaque pixels become the mirror surface.</p>
+      <p>Position and Size place the shape over the video. Reflection depth bends the image inside and around it; Edge glow highlights its outline. 3D angle, Extrusion, and Motion give the silhouette apparent depth and gentle movement. The live video remains the reflected material, so the branding changes with every clip. These controls create an extruded silhouette effect, not an imported 3D mesh.</p>
 
-      <div class="callout">
-        <strong>Note.</strong> Audio reactivity requires the video to have an audio track and for the video to be unmuted. If the video is muted, the audio meter will show no signal.
-      </div>
+      <h2>3D branding</h2>
+      <p>Click <strong>3D Logo</strong> for a solid object extruded from the Version1 SVG, or <strong>3D Text</strong> for an editable Instagram ID. The text starts as <strong>@tonyt.dj</strong> in the Version1 Bungee font, with a red @ and white handle. In the controller, choose Logo or Instagram ID, type new text, and adjust Horizontal position, Vertical position, Size, Depth, and Rotate X/Y/Z. Choose the Auto rotation axis and its start and end angles to make the object sweep within a limited range. Set Auto rotate to zero to hold the manual angle. Both objects are lit, reflect the playing video, and appear in the player, output, and recordings.</p>
+
+      <h2>Venue audio input</h2>
+      <p>Select a microphone or USB audio interface in the VFX controller and click <strong>Connect</strong>. The input meter shows live bass energy. Bass drives distortion and sharp rises launch ripples or smears. Adjust Sensitivity for the venue level.</p>
+      <p>The app analyses the selected live input without playing it through the browser. The video soundtrack does not drive VFX.</p>
 
       <h2>Disconnection warning</h2>
       <p>

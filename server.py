@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 
 import json
+import hashlib
+import math
 import os
 import re
 import subprocess
@@ -19,15 +21,22 @@ PORT = 8008
 BASE_DIR = Path(__file__).parent
 THUMB_DIR = BASE_DIR / "thumbnails"
 PLAYLIST_DIR = BASE_DIR / "playlists"
+VIDEO_PRESET_DIR = BASE_DIR / "video_presets"
 COOKIE_JAR = BASE_DIR / ".cookies.txt"
 COOKIE_MAX_AGE = 7 * 24 * 3600
 HTML_FILE = BASE_DIR / "index.html"
 OUTPUT_FILE = BASE_DIR / "output.html"
 EFFECTS_FILE = BASE_DIR / "effects.html"
+VFX_CONTROLLER_FILE = BASE_DIR / "vfx.html"
+VFX_ENGINE_FILE = BASE_DIR / "vfx_engine.js"
+VERSION1_LOGO_FILE = BASE_DIR / "assets" / "version1-logo.png"
+VERSION1_HERO_FILE = BASE_DIR / "assets" / "version1-hero.svg"
+VERSION1_BUNGEE_FILE = BASE_DIR / "assets" / "Bungee-Regular.ttf"
 TEST_FILE = BASE_DIR / "test_layouts.html"
 CONFIG_FILE = BASE_DIR / "config.json"
 STATE_CLIENTS = []
 STATE_LOCK = threading.Lock()
+STATE_SNAPSHOT = {}
 
 
 def load_config():
@@ -51,6 +60,43 @@ def get_download_dir():
     if not p.is_absolute():
         p = BASE_DIR / p
     return p.resolve()
+
+
+def get_instagram_clip_dir():
+    raw = load_config().get("instagram_clip_dir", "")
+    if not raw:
+        return get_download_dir()
+    path = Path(raw).expanduser()
+    if not path.is_absolute():
+        path = BASE_DIR / path
+    return path.resolve()
+
+
+def resolve_video_path(filename):
+    safe_name = Path(filename).name
+    if safe_name.startswith("instagram_"):
+        clip_path = get_instagram_clip_dir() / safe_name
+        if clip_path.is_file():
+            return clip_path
+    return get_download_dir() / safe_name
+
+
+def video_preset_path(filename):
+    safe_name = Path(filename).name
+    digest = hashlib.sha256(safe_name.encode("utf-8")).hexdigest()
+    return VIDEO_PRESET_DIR / f"{digest}.json"
+
+
+def find_working_ffmpeg():
+    candidates = [os.environ.get("FFMPEG_PATH"), "ffmpeg", "/opt/homebrew/opt/ffmpeg-full/bin/ffmpeg"]
+    for candidate in filter(None, candidates):
+        try:
+            result = subprocess.run([candidate, "-version"], capture_output=True, timeout=5)
+            if result.returncode == 0:
+                return candidate
+        except (OSError, subprocess.TimeoutExpired):
+            continue
+    return None
 
 
 def refresh_cookies(password=None):
@@ -102,10 +148,24 @@ class Handler(BaseHTTPRequestHandler):
             self.serve_output()
         elif self.path == "/effects":
             self.serve_effects()
+        elif self.path == "/vfx":
+            self.serve_vfx_controller()
+        elif self.path == "/vfx_engine.js":
+            self.serve_vfx_engine()
+        elif self.path == "/assets/version1-logo.png":
+            self.serve_version1_logo()
+        elif self.path == "/assets/version1-hero.svg":
+            self.serve_version1_hero()
+        elif self.path == "/assets/Bungee-Regular.ttf":
+            self.serve_version1_bungee()
         elif self.path == "/test":
             self.serve_test()
         elif self.path == "/api/state-stream":
             self.state_stream()
+        elif self.path == "/api/state-snapshot":
+            with STATE_LOCK:
+                snapshot = list(STATE_SNAPSHOT.values())
+            self.send_json_response(snapshot)
         elif self.path.startswith("/video/"):
             self.serve_video()
         elif self.path.startswith("/thumbnail/"):
@@ -124,6 +184,8 @@ class Handler(BaseHTTPRequestHandler):
             self.browse_dirs()
         elif self.path.startswith("/api/playlist/"):
             self.get_playlist()
+        elif self.path.startswith("/api/video-presets/"):
+            self.get_video_presets()
         else:
             self.send_error(404)
 
@@ -140,6 +202,8 @@ class Handler(BaseHTTPRequestHandler):
             self.handle_convert()
         elif self.path.startswith("/api/playlist/"):
             self.save_playlist()
+        elif self.path.startswith("/api/video-presets/"):
+            self.save_video_presets()
         else:
             self.send_error(404)
 
@@ -184,6 +248,65 @@ class Handler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(content)
 
+    def serve_vfx_controller(self):
+        if not VFX_CONTROLLER_FILE.exists():
+            self.send_error(404, "vfx.html not found")
+            return
+        content = VFX_CONTROLLER_FILE.read_bytes()
+        self.send_response(200)
+        self.send_header("Content-Type", "text/html; charset=utf-8")
+        self.send_header("Content-Length", len(content))
+        self.send_header("Cache-Control", "no-cache")
+        self.end_headers()
+        self.wfile.write(content)
+
+    def serve_vfx_engine(self):
+        if not VFX_ENGINE_FILE.exists():
+            self.send_error(404, "vfx_engine.js not found")
+            return
+        content = VFX_ENGINE_FILE.read_bytes()
+        self.send_response(200)
+        self.send_header("Content-Type", "text/javascript; charset=utf-8")
+        self.send_header("Content-Length", len(content))
+        self.send_header("Cache-Control", "no-cache")
+        self.end_headers()
+        self.wfile.write(content)
+
+    def serve_version1_logo(self):
+        if not VERSION1_LOGO_FILE.exists():
+            self.send_error(404, "Version1 logo not found")
+            return
+        content = VERSION1_LOGO_FILE.read_bytes()
+        self.send_response(200)
+        self.send_header("Content-Type", "image/png")
+        self.send_header("Content-Length", len(content))
+        self.end_headers()
+        self.wfile.write(content)
+
+    def serve_version1_hero(self):
+        if not VERSION1_HERO_FILE.exists():
+            self.send_error(404, "Version1 3D source not found")
+            return
+        content = VERSION1_HERO_FILE.read_bytes()
+        self.send_response(200)
+        self.send_header("Content-Type", "image/svg+xml")
+        self.send_header("Content-Length", len(content))
+        self.send_header("Cache-Control", "no-cache")
+        self.end_headers()
+        self.wfile.write(content)
+
+    def serve_version1_bungee(self):
+        if not VERSION1_BUNGEE_FILE.exists():
+            self.send_error(404, "Version1 font not found")
+            return
+        content = VERSION1_BUNGEE_FILE.read_bytes()
+        self.send_response(200)
+        self.send_header("Content-Type", "font/ttf")
+        self.send_header("Content-Length", len(content))
+        self.send_header("Cache-Control", "no-cache")
+        self.end_headers()
+        self.wfile.write(content)
+
     def serve_test(self):
         if not TEST_FILE.exists():
             self.send_error(404, "test_layouts.html not found")
@@ -223,6 +346,8 @@ class Handler(BaseHTTPRequestHandler):
         msg = f"data: {json.dumps(data)}\n\n".encode()
         dead = []
         with STATE_LOCK:
+            if data.get("type") != "vfxPulse":
+                STATE_SNAPSHOT[data.get("type")] = data
             for client in STATE_CLIENTS:
                 try:
                     client.write(msg)
@@ -236,7 +361,7 @@ class Handler(BaseHTTPRequestHandler):
     def serve_video(self):
         filename = urllib.parse.unquote(self.path[len("/video/"):])
         safe_name = Path(filename).name
-        filepath = get_download_dir() / safe_name
+        filepath = resolve_video_path(safe_name)
 
         if not filepath.exists():
             self.send_error(404, "Video not found")
@@ -257,7 +382,9 @@ class Handler(BaseHTTPRequestHandler):
         dl = get_download_dir()
         dl.mkdir(parents=True, exist_ok=True)
         videos = []
-        for f in sorted(dl.glob("*.mp4"), key=os.path.getmtime, reverse=True):
+        # Instagram exports are background assets, not source visuals.
+        source_files = (f for f in dl.glob("*.mp4") if not f.name.startswith("instagram_"))
+        for f in sorted(source_files, key=os.path.getmtime, reverse=True):
             stat = f.stat()
             entry = {
                 "filename": f.name,
@@ -298,7 +425,7 @@ class Handler(BaseHTTPRequestHandler):
     def serve_thumbnail(self):
         filename = urllib.parse.unquote(self.path[len("/thumbnail/"):])
         safe_name = Path(filename).name
-        video_path = get_download_dir() / safe_name
+        video_path = resolve_video_path(safe_name)
 
         if not video_path.exists():
             self.send_error(404, "Video not found")
@@ -308,20 +435,27 @@ class Handler(BaseHTTPRequestHandler):
         thumb_name = video_path.stem + ".jpg"
         thumb_path = THUMB_DIR / thumb_name
 
-        if not thumb_path.exists():
+        if not thumb_path.exists() or thumb_path.stat().st_size == 0:
+            ffmpeg = find_working_ffmpeg()
+            if not ffmpeg:
+                self.send_error(500, "No working FFmpeg found for thumbnail generation")
+                return
             try:
-                subprocess.run([
-                    "ffmpeg", "-y", "-i", str(video_path),
+                result = subprocess.run([
+                    ffmpeg, "-y", "-i", str(video_path),
                     "-vframes", "1", "-ss", "0.5",
                     "-vf", "scale=320:-1",
                     "-q:v", "4",
                     str(thumb_path),
                 ], capture_output=True, timeout=10)
-            except Exception:
+            except (OSError, subprocess.TimeoutExpired):
+                self.send_error(500, "Thumbnail generation failed")
+                return
+            if result.returncode != 0:
                 self.send_error(500, "Thumbnail generation failed")
                 return
 
-        if not thumb_path.exists():
+        if not thumb_path.exists() or thumb_path.stat().st_size == 0:
             self.send_error(500, "Thumbnail generation failed")
             return
 
@@ -362,16 +496,73 @@ class Handler(BaseHTTPRequestHandler):
         (PLAYLIST_DIR / f"{safe}.json").write_text(json.dumps(data, indent=2))
         self.send_json_response({"ok": True})
 
+    def get_video_presets(self):
+        filename = Path(urllib.parse.unquote(self.path[len("/api/video-presets/"):])).name
+        path = video_preset_path(filename)
+        if not path.exists():
+            self.send_json_response({"video": filename, "presets": []})
+            return
+        self.send_json_response(json.loads(path.read_text()))
+
+    def save_video_presets(self):
+        filename = Path(urllib.parse.unquote(self.path[len("/api/video-presets/"):])).name
+        if not resolve_video_path(filename).is_file():
+            self.send_error(404, "Video not found")
+            return
+        length = int(self.headers.get("Content-Length", 0))
+        if length < 1 or length > 100_000:
+            self.send_error(400, "Invalid preset data")
+            return
+        try:
+            data = json.loads(self.rfile.read(length))
+            presets = data["presets"]
+            if not isinstance(presets, list) or len(presets) > 100:
+                raise ValueError("Invalid preset list")
+            validated = []
+            ids = set()
+            for preset in presets:
+                preset_id = str(preset["id"])
+                name = str(preset["name"]).strip()
+                view = preset["view"]
+                panel = int(preset["preset"])
+                loop_mode = int(preset["loopMode"])
+                speed = float(preset.get("speed", 1))
+                zoom = float(preset["zoom"])
+                pan_x = float(preset["panX"])
+                pan_y = float(preset["panY"])
+                if (not preset_id or len(preset_id) > 80 or preset_id in ids
+                    or not name or len(name) > 80
+                    or view not in {"single", "dual", "triple", "quad", "octo"}
+                    or not 1 <= panel <= 32 or not 0 <= loop_mode <= 2
+                    or not math.isfinite(speed) or not 0.25 <= speed <= 2
+                    or speed * 4 != int(speed * 4)
+                    or not math.isfinite(zoom) or not 1 <= zoom <= 4
+                    or not math.isfinite(pan_x) or not -1 <= pan_x <= 1
+                    or not math.isfinite(pan_y) or not -1 <= pan_y <= 1):
+                    raise ValueError("Invalid preset")
+                ids.add(preset_id)
+                validated.append({"id": preset_id, "name": name, "view": view,
+                                  "preset": panel, "loopMode": loop_mode,
+                                  "speed": speed, "zoom": zoom, "panX": pan_x, "panY": pan_y})
+        except (KeyError, TypeError, ValueError, json.JSONDecodeError):
+            self.send_error(400, "Invalid preset data")
+            return
+        VIDEO_PRESET_DIR.mkdir(exist_ok=True)
+        video_preset_path(filename).write_text(json.dumps({"video": filename, "presets": validated}, indent=2))
+        self.send_json_response({"ok": True, "presets": validated})
+
     def delete_video(self):
         filename = urllib.parse.unquote(self.path[len("/api/video/"):])
         safe_name = Path(filename).name
-        dl = get_download_dir()
-        video_path = dl / safe_name
+        video_path = resolve_video_path(safe_name)
         if not video_path.exists():
             self.send_error(404, "Video not found")
             return
         video_path.unlink()
-        info_path = dl / (video_path.stem + ".info.json")
+        preset_path = video_preset_path(safe_name)
+        if preset_path.exists():
+            preset_path.unlink()
+        info_path = video_path.parent / (video_path.stem + ".info.json")
         if info_path.exists():
             info_path.unlink()
         thumb_path = THUMB_DIR / (video_path.stem + ".jpg")
@@ -435,10 +626,29 @@ class Handler(BaseHTTPRequestHandler):
                 self.send_json_response({"ok": False, "error": "Path cannot be empty"})
                 return
             config["download_dir"] = raw
+        if "instagram_clip_dir" in data:
+            raw = data["instagram_clip_dir"]
+            if not isinstance(raw, str):
+                self.send_json_response({"ok": False, "error": "Clip folder must be a path"})
+                return
+            raw = raw.strip()
+            if raw:
+                folder = Path(raw).expanduser()
+                if not folder.is_absolute():
+                    folder = BASE_DIR / folder
+                try:
+                    folder.mkdir(parents=True, exist_ok=True)
+                except OSError as error:
+                    self.send_json_response({"ok": False, "error": f"Cannot use clip folder: {error}"})
+                    return
+            config["instagram_clip_dir"] = raw
         save_config(config)
         dl = get_download_dir()
         dl.mkdir(parents=True, exist_ok=True)
-        self.send_json_response({"ok": True, "resolved": str(dl)})
+        clip_dir = get_instagram_clip_dir()
+        clip_dir.mkdir(parents=True, exist_ok=True)
+        selected = clip_dir if "instagram_clip_dir" in data else dl
+        self.send_json_response({"ok": True, "resolved": str(selected)})
 
     def handle_download(self):
         length = int(self.headers.get("Content-Length", 0))
@@ -553,10 +763,26 @@ class Handler(BaseHTTPRequestHandler):
             self.send_json_response({"ok": False, "error": "Empty recording received"})
             return
 
-        dl = get_download_dir()
+        profile = self.headers.get("X-Recording-Profile", "")
+        instagram = profile in {"instagram_4x5", "instagram_9x16", "instagram_1x1"}
+        dl = get_instagram_clip_dir() if instagram else get_download_dir()
+        dl.mkdir(parents=True, exist_ok=True)
+        prefix = profile if instagram else "recording"
         timestamp = time.strftime("%Y%m%d_%H%M%S")
-        webm_path = dl / f"recording_{timestamp}.webm"
-        mp4_path = dl / f"recording_{timestamp}.mp4"
+        if instagram:
+            timestamp += f"_{time.time_ns() % 1_000_000_000:09d}"
+        webm_path = dl / f"{prefix}_{timestamp}.webm"
+        mp4_path = dl / f"{prefix}_{timestamp}.mp4"
+
+        duration = None
+        if instagram:
+            try:
+                duration = float(self.headers.get("X-Recording-Duration", ""))
+                if not 0.1 <= duration <= 600 or not math.isfinite(duration):
+                    raise ValueError()
+            except ValueError:
+                self.send_json_response({"ok": False, "error": "Invalid clip length"})
+                return
 
         body = self.rfile.read(length)
         if len(body) == 0:
@@ -566,18 +792,24 @@ class Handler(BaseHTTPRequestHandler):
         webm_path.write_bytes(body)
 
         try:
-            result = subprocess.run([
-                "ffmpeg", "-y", "-i", str(webm_path),
-                "-c:v", "libx264", "-preset", "fast",
-                "-crf", "23", "-pix_fmt", "yuv420p",
-                "-c:a", "aac", "-b:a", "128k",
-                str(mp4_path),
-            ], capture_output=True, timeout=600)
+            ffmpeg = find_working_ffmpeg()
+            if not ffmpeg:
+                raise RuntimeError("No working FFmpeg found for recording conversion")
+            command = [ffmpeg, "-y", "-i", str(webm_path)]
+            if instagram:
+                command += ["-vf", f"fps=30,tpad=stop_mode=clone:stop_duration=1,trim=duration={duration:.3f},setpts=PTS-STARTPTS"]
+            command += ["-c:v", "libx264", "-preset", "fast", "-crf", "23", "-pix_fmt", "yuv420p"]
+            if instagram:
+                command += ["-an", "-movflags", "+faststart"]
+            else:
+                command += ["-c:a", "aac", "-b:a", "128k"]
+            command.append(str(mp4_path))
+            result = subprocess.run(command, capture_output=True, timeout=600)
 
             webm_path.unlink(missing_ok=True)
 
             if result.returncode == 0 and mp4_path.exists():
-                self.send_json_response({"ok": True, "filename": mp4_path.name})
+                self.send_json_response({"ok": True, "filename": mp4_path.name, "folder": str(dl)})
             else:
                 err = result.stderr.decode()[-200:] if result.stderr else "unknown"
                 self.send_json_response({"ok": False, "error": f"ffmpeg failed: {err}"})
@@ -605,7 +837,8 @@ if __name__ == "__main__":
     get_download_dir().mkdir(parents=True, exist_ok=True)
     THUMB_DIR.mkdir(exist_ok=True)
     PLAYLIST_DIR.mkdir(exist_ok=True)
-    server = ThreadedHTTPServer(("127.0.0.1", PORT), Handler)
+    VIDEO_PRESET_DIR.mkdir(exist_ok=True)
+    server = ThreadedHTTPServer(("0.0.0.0", PORT), Handler)
     print(f"Club Visuals running at http://localhost:{PORT}")
     try:
         server.serve_forever()

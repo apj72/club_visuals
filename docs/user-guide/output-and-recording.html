@@ -113,6 +113,18 @@
       <div class="callout warn">
         <strong>Note.</strong> Recording uses the browser's MediaRecorder API. Long recordings produce large WebM files that must be uploaded to the server for conversion. Ensure you have sufficient disk space in your download directory.
       </div>
+
+      <h2>Capture an Instagram background clip</h2>
+      <p>The <strong>Instagram clip</strong> button under the player opens a crop box and timing controls. This is useful for taking a short piece of the current Club Visuals composition into Instagram Video Studio.</p>
+      <ol>
+        <li>Load a Library video and choose the layout, mirror preset, zoom, and effects you want.</li>
+        <li>Click <strong>Instagram clip</strong>. Pick Feed (4:5, 1080 &times; 1350), Story (9:16, 1080 &times; 1920), or Square (1:1, 1080 &times; 1080).</li>
+        <li>Drag the green box to position the crop. Drag its lower-right handle to change its size without changing its aspect ratio.</li>
+        <li>Enter a start timecode in seconds, <code>mm:ss.sss</code>, or <code>hh:mm:ss.sss</code>. Enter the clip length in seconds, up to 600. <strong>Use current time</strong> copies the player's current position.</li>
+        <li>Click <strong>Capture MP4</strong>. The source seeks to the specified point and plays for the requested length. The result is saved in the configured Instagram clip folder as a silent H.264 MP4. Click <strong>Download clip</strong> to save another copy.</li>
+      </ol>
+      <p>Choose the save location in <strong>Settings &rarr; Instagram clip folder</strong>. Browse to a folder and click <strong>Use this folder</strong>; <strong>Use download folder</strong> restores the default. Instagram captures do not appear in the Club Visuals Library, even when they are saved in the regular download folder.</p>
+      <p>If the clip would pass the source video's end, turn on <strong>Playback &rarr; Loop</strong> or <strong>Bounce</strong> first, or choose a shorter length. Bounce captures the forward playback and its reverse frames inside the crop. Stop a playlist or full recording before capturing a clip. The crop includes the visual layout and effects but excludes the green guide box and player controls. To use the file in Instagram Video Studio, add it as a Video layer, click <strong>Fill canvas</strong> in its properties, move the layer below your foreground elements, and add audio there if needed.</p>
     </main>
 
     <footer class="guide-footer">

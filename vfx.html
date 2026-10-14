@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Club Visuals — Live VFX</title>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; padding: 18px; background: #1a1a2e; color: #e0e0e0; font: 14px system-ui, sans-serif; }
+  h1 { font-size: 18px; margin: 0 0 5px; }
+  h2 { color: #8fa7b9; font-size: 11px; letter-spacing: .1em; text-transform: uppercase; margin: 22px 0 9px; }
+  p { margin: 0 0 14px; color: #aab6c4; line-height: 1.4; }
+  label { display: block; margin: 14px 0; }
+  label span { display: flex; justify-content: space-between; margin-bottom: 5px; }
+  button, select { padding: 8px 10px; border-radius: 6px; border: 1px solid #3c5261; background: #16213e; color: #e0e0e0; font: inherit; }
+  button { cursor: pointer; }
+  button.active { border-color: #4ecca3; color: #4ecca3; }
+  select { width: 100%; }
+  input[type=range] { width: 100%; accent-color: #4ecca3; }
+  .row { display: flex; gap: 8px; align-items: center; }
+  .row > * { flex: 1; min-width: 0; }
+  .row button { flex: 0 0 auto; }
+  .wide { width: 100%; }
+  .meter { height: 14px; background: #0d1117; border-radius: 6px; overflow: hidden; margin: 12px 0; }
+  .meter > div { width: 0; height: 100%; background: #4ecca3; }
+  .status { min-height: 30px; font-size: 12px; color: #aab6c4; }
+  .disconnected { display: none; color: #e94560; margin-top: 15px; }
+  .disconnected.visible { display: block; }
+  .shape-controls, .logo3d-controls { display: none; border-top: 1px solid #3c5261; margin-top: 18px; padding-top: 2px; }
+  .shape-controls.visible, .logo3d-controls.visible { display: block; }
+  input[type=text], input[type=file] { width: 100%; color: #e0e0e0; }
+  input[type=text] { padding: 9px; border: 1px solid #3c5261; border-radius: 6px; background: #0d1117; font: inherit; }
+  .hint { font-size: 12px; }
+  #logo3dTextField { display: none; }
+</style>
+</head>
+<body>
+<h1>Live VFX</h1>
+<p id="filename">The current player, layout and playlist supply the image.</p>
+<div class="row"><button id="enableBtn" onclick="toggleVfx()">VFX Off</button><button onclick="sendPulse()">Fire ripple / smear</button></div>
+<p class="hint">Performance keys: 1–7 switch scenes; Space fires a pulse when this window has focus.</p>
+<label><span>Scene</span><select id="scene" onchange="sendSettings()"><option value="0">Liquid ripple</option><option value="1">Image smear</option><option value="2">Video ribbons</option><option value="3">Mirror sculpture</option><option value="4">Kaleidoscope tunnel</option><option value="5">Prism fracture</option><option value="6">3D Version1 logo</option></select></label>
+<label><span>Intensity <output id="intensityValue">0.70</output></span><input id="intensity" type="range" min="0" max="2" step="0.01" value="0.7" oninput="sendSettings()"></label>
+<label><span>Feedback trails <output id="feedbackValue">0.72</output></span><input id="feedback" type="range" min="0" max="0.96" step="0.01" value="0.72" oninput="sendSettings()"></label>
+<section class="shape-controls" id="shapeControls">
+  <h2>Mirror sculpture</h2>
+  <button class="wide" onclick="useVersion1Logo()">Use Version1 logo</button>
+  <label><span>Shape source</span><select id="shapeKind" onchange="sendShape()"><option value="text">Text</option><option value="image">Transparent image</option></select></label>
+  <label id="textField"><span>Text</span><input id="shapeText" type="text" maxlength="40" value="CLUB" oninput="sendShape()"></label>
+  <button class="wide" id="currentIdBtn" onclick="useCurrentInstagramId()">Use current video's @ID</button>
+  <label id="imageField" style="display:none"><span>PNG or WebP silhouette</span><input id="shapeFile" type="file" accept="image/png,image/webp" onchange="loadShapeFile()"></label>
+  <p class="hint" id="shapeStatus">The video is reflected inside the shape and bends around its edges.</p>
+  <label><span>Horizontal position <output id="shapeXValue">50%</output></span><input id="shapeX" type="range" min="0" max="1" step="0.01" value="0.5" oninput="sendShape()"></label>
+  <label><span>Vertical position <output id="shapeYValue">50%</output></span><input id="shapeY" type="range" min="0" max="1" step="0.01" value="0.5" oninput="sendShape()"></label>
+  <label><span>Size <output id="shapeScaleValue">70%</output></span><input id="shapeScale" type="range" min="0.1" max="1.5" step="0.01" value="0.7" oninput="sendShape()"></label>
+  <label><span>Reflection depth <output id="shapeDepthValue">1.00</output></span><input id="shapeDepth" type="range" min="0" max="3" step="0.01" value="1" oninput="sendShape()"></label>
+  <label><span>Edge glow <output id="shapeEdgeValue">0.70</output></span><input id="shapeEdge" type="range" min="0" max="2" step="0.01" value="0.7" oninput="sendShape()"></label>
+  <label><span>3D angle <output id="shapeTiltValue">0.00</output></span><input id="shapeTilt" type="range" min="-1" max="1" step="0.01" value="0" oninput="sendShape()"></label>
+  <label><span>Extrusion <output id="shapeThicknessValue">0.80</output></span><input id="shapeThickness" type="range" min="0" max="2" step="0.01" value="0.8" oninput="sendShape()"></label>
+  <label><span>Motion <output id="shapeSpinValue">0.30</output></span><input id="shapeSpin" type="range" min="0" max="1" step="0.01" value="0.3" oninput="sendShape()"></label>
+</section>
+<section class="logo3d-controls" id="logo3dControls">
+  <h2>3D branding</h2>
+  <p class="hint">Render the Version1 logo or type a solid Bungee ID. The @ is red and the handle is white.</p>
+  <label><span>Object</span><select id="logo3dKind" onchange="sendLogo3d()"><option value="logo">Version1 logo</option><option value="text">Instagram ID</option></select></label>
+  <label id="logo3dTextField"><span>Instagram ID</span><input id="logo3dText" type="text" maxlength="40" value="@tonyt.dj" oninput="sendLogo3d()" spellcheck="false" autocomplete="off"></label>
+  <label><span>Horizontal position <output id="logo3dXValue">50%</output></span><input id="logo3dX" type="range" min="0" max="1" step="0.01" value="0.5" oninput="sendLogo3d()"></label>
+  <label><span>Vertical position <output id="logo3dYValue">50%</output></span><input id="logo3dY" type="range" min="0" max="1" step="0.01" value="0.5" oninput="sendLogo3d()"></label>
+  <label><span>Size <output id="logo3dScaleValue">48%</output></span><input id="logo3dScale" type="range" min="0.1" max="1.5" step="0.01" value="0.48" oninput="sendLogo3d()"></label>
+  <label><span>Depth <output id="logo3dDepthValue">0.45</output></span><input id="logo3dDepth" type="range" min="0.08" max="1.2" step="0.01" value="0.45" oninput="sendLogo3d()"></label>
+  <label><span>Rotate X <output id="logo3dRotXValue">0°</output></span><input id="logo3dRotX" type="range" min="-180" max="180" step="1" value="0" oninput="sendLogo3d()"></label>
+  <label><span>Rotate Y <output id="logo3dRotYValue">-20°</output></span><input id="logo3dRotY" type="range" min="-180" max="180" step="1" value="-20" oninput="sendLogo3d()"></label>
+  <label><span>Rotate Z <output id="logo3dRotZValue">0°</output></span><input id="logo3dRotZ" type="range" min="-180" max="180" step="1" value="0" oninput="sendLogo3d()"></label>
+  <label><span>Auto rotate <output id="logo3dMotionValue">0.25</output></span><input id="logo3dMotion" type="range" min="0" max="2" step="0.01" value="0.25" oninput="sendLogo3d()"></label>
+  <label><span>Auto rotation axis</span><select id="logo3dAxis" onchange="sendLogo3d()"><option value="x">X — tip</option><option value="y" selected>Y — turn</option><option value="z">Z — spin</option></select></label>
+  <label><span>Start angle <output id="logo3dStartAngleValue">-45°</output></span><input id="logo3dStartAngle" type="range" min="-180" max="180" step="1" value="-45" oninput="sendLogo3d()"></label>
+  <label><span>End angle <output id="logo3dEndAngleValue">45°</output></span><input id="logo3dEndAngle" type="range" min="-180" max="180" step="1" value="45" oninput="sendLogo3d()"></label>
+</section>
+<h2>Venue sound</h2>
+<div class="row"><select id="audioDevice" aria-label="Audio input"><option value="">Default microphone</option></select><button id="audioBtn" onclick="toggleAudio()">Connect</button></div>
+<div class="meter"><div id="bassFill"></div></div>
+<label><span>Input sensitivity <output id="sensitivityValue">1.0x</output></span><input id="sensitivity" type="range" min="0.2" max="4" step="0.1" value="1" oninput="sendSensitivity()"></label>
+<p class="status" id="audioStatus">The selected microphone or USB input is analysed only. Video audio does not drive VFX.</p>
+<div class="disconnected" id="disconnected">Main window disconnected. Reopen VFX from the player.</div>
+<script>
+  window.CLUB_VISUALS_VFX_UI_VERSION = 4;
+  let enabled = false;
+  let audioConnected = false;
+  let shapeImage = '';
+  const $ = id => document.getElementById(id);
+
+  function updateVfxStatus(state) {
+    if (state.filename !== undefined) $('filename').textContent = state.filename || 'No video loaded';
+    if (state.vfxState) {
+      const vfx = state.vfxState;
+      enabled = !!vfx.enabled;
+      $('enableBtn').textContent = enabled ? 'VFX On' : 'VFX Off';
+      $('enableBtn').classList.toggle('active', enabled);
+      $('scene').value = vfx.scene;
+      $('shapeControls').classList.toggle('visible', Number(vfx.scene) === 3);
+      $('logo3dControls').classList.toggle('visible', Number(vfx.scene) === 6);
+      $('intensity').value = vfx.intensity;
+      $('feedback').value = vfx.feedback;
+      $('intensityValue').textContent = Number(vfx.intensity).toFixed(2);
+      $('feedbackValue').textContent = Number(vfx.feedback).toFixed(2);
+      if (vfx.shape) {
+        const shape = vfx.shape;
+        shapeImage = shape.image || '';
+        $('shapeKind').value = shape.kind;
+        if (document.activeElement !== $('shapeText')) $('shapeText').value = shape.text || '';
+        for (const [id, key] of [['shapeX', 'x'], ['shapeY', 'y'], ['shapeScale', 'scale'], ['shapeDepth', 'depth'], ['shapeEdge', 'edge'], ['shapeTilt', 'tilt'], ['shapeThickness', 'thickness'], ['shapeSpin', 'spin']]) $(id).value = shape[key];
+        updateShapeLabels();
+      }
+      if (vfx.logo3d) {
+        $('logo3dKind').value = vfx.logo3d.kind || 'logo';
+        if (document.activeElement !== $('logo3dText')) $('logo3dText').value = vfx.logo3d.text || '@tonyt.dj';
+        $('logo3dAxis').value = vfx.logo3d.axis || 'y';
+        for (const [key, id] of [['x', 'logo3dX'], ['y', 'logo3dY'], ['scale', 'logo3dScale'], ['depth', 'logo3dDepth'], ['rotX', 'logo3dRotX'], ['rotY', 'logo3dRotY'], ['rotZ', 'logo3dRotZ'], ['motion', 'logo3dMotion'], ['startAngle', 'logo3dStartAngle'], ['endAngle', 'logo3dEndAngle']]) $(id).value = vfx.logo3d[key];
+        updateLogo3dLabels();
+      }
+      if (vfx.sensitivity !== undefined) {
+        $('sensitivity').value = vfx.sensitivity;
+        $('sensitivityValue').textContent = Number(vfx.sensitivity).toFixed(1) + 'x';
+      }
+      if (vfx.audioConnected !== undefined) {
+        audioConnected = vfx.audioConnected;
+        $('audioBtn').textContent = audioConnected ? 'Disconnect' : 'Connect';
+      }
+    }
+    if (state.vfxAudioStatus) $('audioStatus').textContent = state.vfxAudioStatus;
+    if (state.vfxError) $('audioStatus').textContent = state.vfxError;
+    if (state.vfxBass !== undefined) $('bassFill').style.width = Math.min(100, state.vfxBass * 100) + '%';
+  }
+
+  function sendSettings() {
+    $('intensityValue').textContent = Number($('intensity').value).toFixed(2);
+    $('feedbackValue').textContent = Number($('feedback').value).toFixed(2);
+    $('shapeControls').classList.toggle('visible', Number($('scene').value) === 3);
+    $('logo3dControls').classList.toggle('visible', Number($('scene').value) === 6);
+    if (window.opener && !window.opener.closed) window.opener.setVfxState({
+      enabled, scene: Number($('scene').value),
+      intensity: Number($('intensity').value), feedback: Number($('feedback').value)
+    });
+  }
+  function updateShapeLabels() {
+    $('textField').style.display = $('shapeKind').value === 'text' ? '' : 'none';
+    $('currentIdBtn').style.display = $('shapeKind').value === 'text' ? '' : 'none';
+    $('imageField').style.display = $('shapeKind').value === 'image' ? '' : 'none';
+    for (const id of ['shapeX', 'shapeY', 'shapeScale']) $(id + 'Value').textContent = Math.round(Number($(id).value) * 100) + '%';
+    for (const id of ['shapeDepth', 'shapeEdge', 'shapeTilt', 'shapeThickness', 'shapeSpin']) $(id + 'Value').textContent = Number($(id).value).toFixed(2);
+  }
+  function sendShape() {
+    updateShapeLabels();
+    if (window.opener && !window.opener.closed) window.opener.setVfxShape({
+      kind: $('shapeKind').value, text: $('shapeText').value, image: shapeImage,
+      x: Number($('shapeX').value), y: Number($('shapeY').value),
+      scale: Number($('shapeScale').value), depth: Number($('shapeDepth').value), edge: Number($('shapeEdge').value),
+      tilt: Number($('shapeTilt').value), thickness: Number($('shapeThickness').value), spin: Number($('shapeSpin').value)
+    });
+  }
+  function updateLogo3dLabels() {
+    $('logo3dTextField').style.display = $('logo3dKind').value === 'text' ? 'block' : 'none';
+    for (const id of ['logo3dX', 'logo3dY', 'logo3dScale']) $(id + 'Value').textContent = Math.round(Number($(id).value) * 100) + '%';
+    for (const id of ['logo3dRotX', 'logo3dRotY', 'logo3dRotZ', 'logo3dStartAngle', 'logo3dEndAngle']) $(id + 'Value').textContent = $(id).value + '°';
+    for (const id of ['logo3dDepth', 'logo3dMotion']) $(id + 'Value').textContent = Number($(id).value).toFixed(2);
+  }
+  function sendLogo3d() {
+    updateLogo3dLabels();
+    if (window.opener && !window.opener.closed) window.opener.setVfxLogo3d({
+      kind: $('logo3dKind').value, text: $('logo3dText').value, axis: $('logo3dAxis').value,
+      x: Number($('logo3dX').value), y: Number($('logo3dY').value),
+      scale: Number($('logo3dScale').value), depth: Number($('logo3dDepth').value),
+      rotX: Number($('logo3dRotX').value), rotY: Number($('logo3dRotY').value),
+      rotZ: Number($('logo3dRotZ').value), motion: Number($('logo3dMotion').value),
+      startAngle: Number($('logo3dStartAngle').value), endAngle: Number($('logo3dEndAngle').value)
+    });
+  }
+  async function useCurrentInstagramId() {
+    if (!window.opener || window.opener.closed) return;
+    const handle = await window.opener.getCurrentVfxInstagramId();
+    if (!handle) { $('shapeStatus').textContent = 'This video has no Instagram ID in its metadata.'; return; }
+    $('shapeKind').value = 'text';
+    $('shapeText').value = handle;
+    $('shapeStatus').textContent = handle + ' loaded as reflective text.';
+    sendShape();
+  }
+  async function useVersion1Logo() {
+    try {
+      const response = await fetch('/assets/version1-logo.png');
+      if (!response.ok) throw new Error('Logo unavailable');
+      const blob = await response.blob();
+      shapeImage = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = () => reject(reader.error);
+        reader.readAsDataURL(blob);
+      });
+      $('shapeKind').value = 'image';
+      $('shapeStatus').textContent = 'Version1 logo loaded as a reflective object.';
+      sendShape();
+    } catch {
+      $('shapeStatus').textContent = 'Could not load the Version1 logo.';
+    }
+  }
+  async function loadShapeFile() {
+    const file = $('shapeFile').files[0];
+    if (!file) return;
+    if (!['image/png', 'image/webp'].includes(file.type) || file.size > 1024 * 1024) {
+      $('shapeStatus').textContent = 'Choose a PNG or WebP image smaller than 1 MB.';
+      $('shapeFile').value = '';
+      return;
+    }
+    try {
+      shapeImage = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = () => reject(reader.error);
+        reader.readAsDataURL(file);
+      });
+      $('shapeStatus').textContent = file.name + ' loaded. Transparent areas reveal the video.';
+      sendShape();
+    } catch {
+      $('shapeStatus').textContent = 'Could not read that image.';
+    }
+  }
+  function toggleVfx() { enabled = !enabled; sendSettings(); }
+  function sendPulse() { if (window.opener && !window.opener.closed) window.opener.triggerVfxPulse(); }
+  function sendSensitivity() {
+    const value = Number($('sensitivity').value);
+    $('sensitivityValue').textContent = value.toFixed(1) + 'x';
+    if (window.opener && !window.opener.closed) window.opener.setVfxSensitivity(value);
+  }
+  async function loadDevices() {
+    if (!window.opener || window.opener.closed) return;
+    try {
+      const devices = await window.opener.listVfxAudioDevices();
+      const previous = $('audioDevice').value;
+      $('audioDevice').replaceChildren(new Option('Default microphone', ''));
+      devices.forEach(device => $('audioDevice').add(new Option(device.label, device.id)));
+      $('audioDevice').value = previous;
+    } catch (error) { $('audioStatus').textContent = error.message; }
+  }
+  async function toggleAudio() {
+    if (!window.opener || window.opener.closed) return;
+    if (audioConnected) {
+      window.opener.disconnectVfxAudio();
+      audioConnected = false;
+    } else {
+      try {
+        await window.opener.connectVfxAudio($('audioDevice').value);
+        audioConnected = true;
+        await loadDevices();
+      } catch { audioConnected = false; }
+    }
+    $('audioBtn').textContent = audioConnected ? 'Disconnect' : 'Connect';
+  }
+  if (window.opener && !window.opener.closed) {
+    updateVfxStatus({ vfxState: window.opener.getVfxState() });
+  }
+  window.addEventListener('keydown', event => {
+    if (event.target.matches('input, select, textarea')) return;
+    if (/^[1-7]$/.test(event.key)) {
+      $('scene').value = Number(event.key) - 1;
+      sendSettings();
+    } else if (event.code === 'Space' && !event.target.matches('button')) {
+      event.preventDefault();
+      sendPulse();
+    }
+  });
+  loadDevices();
+  setInterval(() => $('disconnected').classList.toggle('visible', !window.opener || window.opener.closed), 1000);
+  window.addEventListener('beforeunload', () => {
+    if (window.opener && !window.opener.closed) window.opener.onVfxWindowClosed();
+  });
+</script>
+</body>
+</html>

@@ -1,6 +1,8 @@
 downloads/
 thumbnails/
 playlists/
+video_presets/
+.playwright-mcp/
 config.json
 .cookies.txt
 .server.pid

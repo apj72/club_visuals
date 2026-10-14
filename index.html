@@ -228,7 +228,55 @@
   .video-stage {
     display: flex;
     width: 100%;
+    position: relative;
   }
+  #vfxCanvas {
+    display: none;
+    position: absolute;
+    inset: 0;
+    z-index: 8;
+    width: 100%;
+    height: 100%;
+    max-height: none;
+    object-fit: fill;
+    pointer-events: none;
+  }
+  .vfx-active #vfxCanvas { display: block; }
+
+  .capture-box {
+    display: none;
+    position: absolute;
+    z-index: 12;
+    border: 2px solid #4ecca3;
+    box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.4), inset 0 0 0 1px rgba(0, 0, 0, 0.65);
+    cursor: move;
+    touch-action: none;
+  }
+  .capture-box.visible { display: block; }
+  .capture-box-label { position: absolute; top: 6px; left: 8px; padding: 3px 6px; border-radius: 4px; background: #142b36; color: #a9ffe7; font-size: 11px; font-weight: 700; pointer-events: none; }
+  .capture-box-handle { position: absolute; right: -7px; bottom: -7px; width: 16px; height: 16px; border: 2px solid #142b36; border-radius: 3px; background: #4ecca3; cursor: nwse-resize; }
+  .capture-panel { display: none; margin-top: 12px; padding: 14px; border: 1px solid #35635c; border-radius: 8px; background: #16213e; }
+  .video-presets { display: none; margin-top: 10px; padding: 12px; border: 1px solid #344b59; border-radius: 8px; background: #152039; }
+  .video-presets.visible { display: block; }
+  .video-presets h3 { margin: 0 0 7px; font-size: 0.86rem; color: #4ecca3; }
+  .video-presets p { margin: 0 0 10px; color: #aab3c5; font-size: 0.72rem; }
+  .video-presets .preset-save-row, .video-presets .saved-preset-row { display: flex; gap: 6px; align-items: center; margin-top: 6px; }
+  .video-presets input { flex: 1; min-width: 0; padding: 7px; background: #111b32; color: #fff; border: 1px solid #46536c; border-radius: 5px; }
+  #videoPresetList { max-height: 190px; overflow-y: auto; }
+  .video-presets button { padding: 7px 10px; border: 1px solid #4ecca3; border-radius: 5px; color: #c7ffeb; background: #183a3a; cursor: pointer; }
+  .saved-preset-row span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.75rem; }
+  .video-presets .preset-status { margin-top: 8px; min-height: 16px; color: #a9ffe7; font-size: 0.72rem; }
+  .capture-panel.visible { display: block; }
+  .capture-panel h3 { margin: 0 0 7px; color: #4ecca3; font-size: 0.95rem; }
+  .capture-panel p { margin: 0 0 12px; color: #a9b3c5; font-size: 0.78rem; line-height: 1.45; }
+  .capture-fields { display: flex; gap: 10px; flex-wrap: wrap; align-items: end; }
+  .capture-fields label { display: grid; gap: 5px; color: #b8c3d3; font-size: 0.75rem; }
+  .capture-fields input, .capture-fields select { width: 125px; padding: 8px; border: 1px solid #46536c; border-radius: 5px; background: #111b32; color: #fff; font: inherit; }
+  .capture-fields select { width: 145px; }
+  .capture-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; align-items: center; }
+  .capture-actions button, .capture-actions a { padding: 8px 11px; border: 1px solid #4ecca3; border-radius: 5px; background: #183a3a; color: #c7ffeb; font-size: 0.78rem; font-weight: 700; text-decoration: none; cursor: pointer; }
+  .capture-actions button:disabled { opacity: .5; cursor: not-allowed; }
+  .capture-status { margin-top: 10px; min-height: 20px; color: #c7ffeb; font-size: .78rem; }
 
   .video-stage video, .video-stage canvas {
     width: 100%;
@@ -390,6 +438,11 @@
     color: #4ecca3;
     border-color: #4ecca3;
   }
+
+  .speed-control { display: inline-flex; align-items: center; gap: 4px; color: #aab3c5; font-size: 0.75rem; }
+  .speed-control button { padding: 6px 9px; border: 1px solid #333; border-radius: 4px; background: #16213e; color: #fff; cursor: pointer; }
+  .speed-control button:disabled { opacity: 0.4; cursor: default; }
+  .speed-control output { min-width: 38px; text-align: center; color: #4ecca3; font-weight: 600; }
 
   .slider-wrap { display: none; align-items: center; gap: 6px; flex-wrap: wrap; }
   .slider-wrap.visible { display: flex; }
@@ -599,6 +652,9 @@
     background: #16213e; color: #fff; border: 1px solid #333; border-radius: 4px;
     box-sizing: border-box;
   }
+  .pl-add-row label { flex: 1; min-width: 0; color: #9aa7b8; font-size: 0.67rem; }
+  .pl-add-row label input { width: 100%; margin-top: 3px; }
+  .pl-add-row label select { width: 100%; margin-top: 3px; }
   .pl-btn {
     padding: 6px 10px; font-size: 0.75rem; font-weight: 600;
     background: #16213e; color: #888; border: 1px solid #333; border-radius: 6px;
@@ -713,6 +769,9 @@
   .settings-status { font-size: 0.8rem; margin-top: 8px; min-height: 20px; }
   .settings-status.ok { color: #4ecca3; }
   .settings-status.err { color: #e94560; }
+  .settings-clip { margin-top: 24px; padding-top: 18px; border-top: 1px solid #333; }
+  .settings-clip-actions { display: flex; gap: 8px; margin-top: 8px; }
+  .settings-clip-actions button { flex: 1; padding: 8px; font-size: 0.72rem; }
 </style>
 </head>
 <body>
@@ -756,6 +815,11 @@
         </div>
         <div class="video-stage" id="videoStage">
           <video id="video" playsinline></video>
+          <canvas id="vfxCanvas" aria-label="Live VFX output"></canvas>
+          <div class="capture-box" id="captureBox" aria-label="Instagram capture area">
+            <span class="capture-box-label" id="captureBoxLabel">4:5</span>
+            <span class="capture-box-handle" id="captureBoxHandle" aria-label="Resize capture area"></span>
+          </div>
         </div>
         <div class="caption-overlay" id="captionOverlay"></div>
         <div class="progress-bar" id="progressBar" onclick="seekToPosition(event)">
@@ -771,6 +835,7 @@
               <button class="popup-opt" data-mode="2" onclick="setLoopMode(2)">Bounce</button>
             </div>
           </span>
+          <span class="speed-control" aria-label="Playback speed"><span>Speed</span><button type="button" id="speedDown" onclick="changePlaybackSpeed(-0.25)" aria-label="Decrease playback speed">−</button><output id="speedValue">1×</output><button type="button" id="speedUp" onclick="changePlaybackSpeed(0.25)" aria-label="Increase playback speed">+</button></span>
           <button class="btn-ctrl" id="muteBtn" onclick="toggleMute()">Mute</button>
           <button class="btn-ctrl active" id="captionBtn" onclick="toggleCaption()">CC</button>
           <button class="btn-ctrl" onclick="refreshView()">&#8635;</button>
@@ -786,9 +851,44 @@
           </span>
           <span class="zoom-wrap" id="zoomWrap"><span class="zoom-label">Zoom</span><input type="range" class="zoom-slider" id="zoomSlider" min="1.0" max="4.0" step="0.1" value="1.0"><span class="zoom-label" id="zoomValue">1.0x</span><button class="zoom-reset" onclick="resetZoom()">Reset</button><span class="zoom-label">X</span><input type="range" class="zoom-slider" id="panXSlider" min="-1.0" max="1.0" step="0.05" value="0"><span class="zoom-label" id="panXValue">0</span><span class="zoom-label">Y</span><input type="range" class="zoom-slider" id="panYSlider" min="-1.0" max="1.0" step="0.05" value="0"><span class="zoom-label" id="panYValue">0</span><button class="zoom-reset" onclick="resetPan()">Reset</button></span>
           <span class="slider-wrap" id="sliderWrap"><input type="range" class="config-slider" id="configSlider" min="1" max="32" value="1"><span class="config-label" id="configLabel">1</span><span id="presetContainer"></span></span>
+          <button type="button" class="btn-ctrl" id="resetControlsBtn" onclick="resetPlayerControls()" title="Single layout, preset 1, 1× speed, no loop, centred zoom and pan">Reset controls</button>
           <button class="btn-ctrl" id="fxBtn" onclick="openFxController()">FX</button>
+          <button class="btn-ctrl" id="vfxBtn" onclick="openVfxController()">VFX</button>
+          <button class="btn-ctrl" id="mirrorBtn" onclick="activateMirrorSculpture()" title="Open reflective text and logo controls">Mirror 3D</button>
+          <button class="btn-ctrl" id="logo3dBtn" onclick="activateLogo3d()" title="Show the rotatable Version1 logo">3D Logo</button>
+          <button class="btn-ctrl" id="text3dBtn" onclick="activateText3d()" title="Show editable 3D Instagram text">3D Text</button>
+          <button class="btn-ctrl" id="captureToggle" onclick="toggleInstagramCapturePanel()">Instagram clip</button>
           <button class="btn-ctrl btn-fullscreen" id="fsBtn" onclick="toggleFullscreen()">Fullscreen</button>
         </div>
+      </div>
+      <div class="video-presets" id="videoPresetPanel">
+        <h3>Saved layouts for this video</h3>
+        <p>Save the current layout, playback method, speed, panel orientation, zoom and X/Y position.</p>
+        <div class="preset-save-row">
+          <input type="text" id="videoPresetName" maxlength="80" placeholder="Layout name (generated from current settings)">
+          <button type="button" onclick="saveCurrentVideoPreset()">Save layout</button>
+        </div>
+        <div id="videoPresetList"></div>
+        <div class="preset-status" id="videoPresetStatus" role="status"></div>
+      </div>
+      <div class="capture-panel" id="capturePanel">
+        <h3>Instagram background clip</h3>
+        <p>Drag or resize the green box to choose the visible area. The result is a silent MP4 with the selected layout and effects, ready for a video layer in Instagram Video Studio.</p>
+        <div class="capture-fields">
+          <label>Format <select id="captureFormat" onchange="updateCaptureBox()">
+            <option value="4x5">Feed · 4:5 · 1080 × 1350</option>
+            <option value="9x16">Story · 9:16 · 1080 × 1920</option>
+            <option value="1x1">Square · 1:1 · 1080 × 1080</option>
+          </select></label>
+          <label>Start timecode <input id="captureStart" type="text" value="00:00" placeholder="mm:ss.sss" inputmode="decimal"></label>
+          <label>Length (seconds) <input id="captureDuration" type="number" min="0.1" max="600" step="0.1" value="10"></label>
+        </div>
+        <div class="capture-actions">
+          <button type="button" onclick="useCurrentCaptureTime()">Use current time</button>
+          <button type="button" id="captureAction" onclick="toggleInstagramCapture()">Capture MP4</button>
+          <a id="captureDownload" style="display:none" download>Download clip</a>
+        </div>
+        <div class="capture-status" id="captureStatus" role="status" aria-live="polite"></div>
       </div>
     </div>
   </div>
@@ -821,15 +921,16 @@
           </div>
           <div class="pl-video-dropdown" id="plVideoDropdown"></div>
         </div>
+        <div class="pl-add-row"><label>Saved layout<select id="plSavedLayout" aria-label="Saved layout for selected video"><option value="">Current player layout</option></select></label></div>
         <div class="pl-add-row">
-          <select id="plView">
+          <select id="plView" aria-label="Layout" title="Layout">
             <option value="single">Single</option>
             <option value="dual">Dual</option>
             <option value="triple">3x</option>
             <option value="quad">4x</option>
             <option value="octo">8x</option>
           </select>
-          <select id="plPreset"></select>
+          <select id="plPreset" aria-label="Panel orientation" title="Panel orientation"></select>
         </div>
         <div class="pl-add-row">
           <select id="plDurType">
@@ -838,9 +939,20 @@
           </select>
           <input type="number" id="plDurVal" min="1" value="5">
           <select id="plLoopMode">
+            <option value="0">No Loop</option>
             <option value="1">Loop</option>
             <option value="2">Bounce</option>
           </select>
+        </div>
+        <div class="pl-add-row"><label>Playback speed<select id="plSpeed">
+          <option value="0.25">0.25×</option><option value="0.5">0.5×</option><option value="0.75">0.75×</option>
+          <option value="1" selected>1×</option><option value="1.25">1.25×</option><option value="1.5">1.5×</option>
+          <option value="1.75">1.75×</option><option value="2">2×</option>
+        </select></label></div>
+        <div class="pl-add-row">
+          <label>Zoom<input type="number" id="plZoom" min="1" max="4" step="0.1" value="1"></label>
+          <label>X position<input type="number" id="plPanX" min="-1" max="1" step="0.05" value="0"></label>
+          <label>Y position<input type="number" id="plPanY" min="-1" max="1" step="0.05" value="0"></label>
         </div>
         <button class="pl-btn pl-btn-add" onclick="addEntry()">Add</button>
       </div>
@@ -885,11 +997,25 @@
         </div>
         <button class="pl-btn pl-btn-save" onclick="selectFolder()" style="width:100%">Use this folder</button>
         <div class="settings-status" id="settingsStatus"></div>
+        <div class="settings-clip">
+          <label class="settings-label">Instagram clip folder</label>
+          <div class="settings-current"><span class="sc-label">Current:</span> <span id="clipFolderCurrent">Same as download folder</span></div>
+          <div class="dir-browser">
+            <div class="dir-path" id="clipDirPath"></div>
+            <div class="dir-list" id="clipDirList"></div>
+          </div>
+          <div class="settings-clip-actions">
+            <button class="pl-btn pl-btn-save" onclick="selectFolder('clips')">Use this folder</button>
+            <button class="pl-btn" onclick="resetClipFolder()">Use download folder</button>
+          </div>
+          <div class="settings-status" id="clipFolderStatus"></div>
+        </div>
       </div>
     </div>
   </div>
 </div>
 
+<script src="/vfx_engine.js"></script>
 <script>
   const videoStage = document.getElementById('videoStage');
   const videoWrap = document.getElementById('videoWrap');
@@ -910,6 +1036,7 @@
   const libraryGrid = document.getElementById('libraryGrid');
 
   let loopMode = 0; // 0=off, 1=loop, 2=bounce
+  let playbackSpeed = 1;
   let bounceReversing = false;
   let bounceFrames = [];
   let bounceFrameIdx = 0;
@@ -932,16 +1059,30 @@
   let clones = [];
   let videoListCache = [];
   let metadataCache = {};
+  const videoPresetCache = new Map();
   let fxWindow = null;
+  let vfxWindow = null;
   let currentEffects = { hueRotate: 0, saturate: 100, contrast: 100, brightness: 100, blur: 0, invert: 0, sepia: 0 };
   let trailsEnabled = false;
   let trailAmount = 0.15;
-  let audioCtx = null;
-  let analyser = null;
-  let audioData = null;
-  let audioReactive = false;
-  let audioSensitivity = 1.0;
-  let audioFrameCount = 0;
+  const vfxCanvas = document.getElementById('vfxCanvas');
+  const vfxSource = document.createElement('canvas');
+  const vfxSourceCtx = vfxSource.getContext('2d');
+  const vfxState = { enabled: false, scene: 0, intensity: 0.7, feedback: 0.72, bass: 0, hit: 0,
+    logo3d: { kind: 'logo', text: '@tonyt.dj', x: 0.5, y: 0.5, scale: 0.48, depth: 0.45,
+      rotX: 0, rotY: -20, rotZ: 0, motion: 0.25, axis: 'y', startAngle: -45, endAngle: 45 },
+    shape: { kind: 'text', text: 'CLUB', image: '', x: 0.5, y: 0.5, scale: 0.7, depth: 1, edge: 0.7, tilt: 0, thickness: 0.8, spin: 0.3 } };
+  let vfxEngine = null;
+  let vfxFrameReady = false;
+  let vfxAudioStream = null;
+  let vfxAudioContext = null;
+  let vfxAnalyser = null;
+  let vfxSpectrum = null;
+  let vfxSensitivity = 1;
+  let vfxAverageBass = 0;
+  let vfxPreviousBass = 0;
+  let vfxLastPulse = 0;
+  let vfxLastBroadcast = 0;
 
   async function getMetadata(filename) {
     if (metadataCache[filename] !== undefined) return metadataCache[filename];
@@ -1108,15 +1249,19 @@
     bounceReversing = true;
     bounceFrameIdx = bounceFrames.length - 1;
     video.pause();
-    if (!bounceOverlay) {
+    // Multi-panel views draw the reversing frame into each clone, so an
+    // overlay would become an extra tile in the stage.
+    if (clones.length === 0 && !bounceOverlay) {
       bounceOverlay = document.createElement('canvas');
       bounceOverlay.id = 'bounceOverlay';
       bounceOverlay.dataset.pos = '0';
       bounceOverlay.style.display = 'none';
       video.after(bounceOverlay);
     }
-    bounceOverlay.style.display = 'block';
-    bounceOverlay.style.transform = video.style.transform;
+    if (bounceOverlay) {
+      bounceOverlay.style.display = clones.length === 0 ? 'block' : 'none';
+      bounceOverlay.style.transform = video.style.transform;
+    }
     video.style.display = 'none';
     if (!rafId) startRenderLoop();
   }
@@ -1130,6 +1275,7 @@
       return;
     }
     playBtn.textContent = 'Play';
+    if (plPlaying && plPlaylist.entries[plEntryIdx]?.duration.type === 'loops') onEntryComplete();
   });
 
   video.addEventListener('timeupdate', () => {
@@ -1231,19 +1377,7 @@
   function startRenderLoop() {
     stopRenderLoop();
     function draw() {
-      if (clones.length === 0 && !isRecording && !obsOutputActive && !bounceReversing && loopMode !== 2 && !trailsEnabled && !audioReactive) return;
-
-      if (audioReactive && analyser) {
-        analyser.getByteFrequencyData(audioData);
-        const bass = avgBand(audioData, 0, 8) * audioSensitivity;
-        const mid = avgBand(audioData, 8, 40) * audioSensitivity;
-        const treble = avgBand(audioData, 40, 128) * audioSensitivity;
-        applyAudioReactiveEffects(bass, mid, treble);
-        audioFrameCount++;
-        if (audioFrameCount % 3 === 0) {
-          syncFxTransport({ audioLevels: { bass: Math.min(255, bass), mid: Math.min(255, mid), treble: Math.min(255, treble) } });
-        }
-      }
+      if (clones.length === 0 && !isRecording && !obsOutputActive && !bounceReversing && loopMode !== 2 && !trailsEnabled && !vfxState.enabled) return;
 
       if (bounceReversing && bounceFrames.length > 0) {
         if (bounceFrameIdx > 0) bounceFrameIdx--;
@@ -1271,10 +1405,17 @@
             bounceOverlay.getContext('2d').drawImage(frame, 0, 0);
           }
           clones.forEach(c => {
-            if (c.width !== fw || c.height !== fh) { c.width = fw; c.height = fh; }
-            c.getContext('2d').drawImage(frame, 0, 0, fw, fh);
+            const cw = c.clientWidth, ch = c.clientHeight;
+            if (!cw || !ch) return;
+            if (c.width !== cw || c.height !== ch) { c.width = cw; c.height = ch; }
+            const ctx = c.getContext('2d');
+            ctx.fillStyle = trailsEnabled ? `rgba(0,0,0,${trailAmount})` : '#000';
+            ctx.fillRect(0, 0, cw, ch);
+            drawZoomedTile(ctx, fw, fh, cw, ch, frame);
           });
         }
+        if (vfxState.enabled) renderVfxFrame();
+        if (isRecording || obsOutputActive) drawCompositeFrame();
         rafId = requestAnimationFrame(draw);
         return;
       }
@@ -1295,6 +1436,7 @@
           }
           drawZoomedTile(ctx, vw, vh, cw, ch);
         });
+        if (vfxState.enabled) renderVfxFrame();
         if (isRecording || obsOutputActive) drawCompositeFrame();
         if (loopMode === 2 && !video.paused) {
           const idx = bounceFrames.length;
@@ -1310,10 +1452,11 @@
     if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
   }
 
+  const DUAL_POS_MAP = [0, 3];
   const TRIPLE_POS_MAP = [0, 1, 2];
   const QUAD_POS_MAP = [0, 1, 4, 5];
 
-  function drawZoomedTile(ctx, vw, vh, cw, ch) {
+  function drawZoomedTile(ctx, vw, vh, cw, ch, source = video) {
     const coverScale = Math.max(cw / vw, ch / vh);
     const es = coverScale * tileZoom;
     const sw = Math.min(vw, cw / es);
@@ -1322,7 +1465,7 @@
     const panRangeY = vh - sh;
     const sx = panRangeX * (1 + tilePanX) / 2;
     const sy = panRangeY * (1 - tilePanY) / 2;
-    ctx.drawImage(video, sx, sy, sw, sh, 0, 0, cw, ch);
+    ctx.drawImage(source, sx, sy, sw, sh, 0, 0, cw, ch);
   }
 
   function applyTransforms() {
@@ -1331,7 +1474,7 @@
     if (viewMode === 1) {
       clones.forEach(c => {
         const pos = parseInt(c.dataset.pos);
-        c.style.transform = pos === 0 ? cfg[0] : cfg[3];
+        c.style.transform = cfg[DUAL_POS_MAP[pos]];
       });
     } else if (viewMode === 2) {
       clones.forEach(c => { c.style.transform = cfg[TRIPLE_POS_MAP[parseInt(c.dataset.pos)]]; });
@@ -1389,37 +1532,43 @@
 
   function syncFxTransport(state) {
     if (fxWindow && !fxWindow.closed) fxWindow.updateTransport(state);
+    if (vfxWindow && !vfxWindow.closed && typeof vfxWindow.updateVfxStatus === 'function') vfxWindow.updateVfxStatus(state);
   }
 
-  function avgBand(data, from, to) {
-    let sum = 0;
-    for (let i = from; i < to; i++) sum += data[i];
-    return sum / (to - from);
-  }
-
-  function initAudio() {
-    if (audioCtx) return;
-    audioCtx = new AudioContext();
-    const source = audioCtx.createMediaElementSource(video);
-    analyser = audioCtx.createAnalyser();
-    analyser.fftSize = 256;
-    source.connect(analyser);
-    analyser.connect(audioCtx.destination);
-    audioData = new Uint8Array(analyser.frequencyBinCount);
-  }
-
-  function applyAudioReactiveEffects(bass, mid, treble) {
-    const e = { ...currentEffects };
-    e.brightness = Math.min(200, e.brightness + (bass / 255) * 50);
-    e.saturate = Math.min(300, e.saturate + (bass / 255) * 80);
-    e.hueRotate = (e.hueRotate + (mid / 255) * 30) % 360;
-    const f = buildFilterString(e);
-    video.style.filter = f;
-    clones.forEach(c => { c.style.filter = f; });
-    if (bounceOverlay) bounceOverlay.style.filter = f;
-    if (audioFrameCount % 6 === 0) {
-      broadcastState({ type: 'setEffects', effects: e });
+  function openVfxController() {
+    if (vfxWindow && !vfxWindow.closed) {
+      if (vfxWindow.CLUB_VISUALS_VFX_UI_VERSION !== 4) vfxWindow.location.replace('/vfx');
+      vfxWindow.focus();
+      return;
     }
+    vfxWindow = window.open('/vfx', 'vfxController', 'width=360,height=560,resizable=yes');
+    if (!vfxWindow) return;
+    document.getElementById('vfxBtn').classList.add('active');
+    vfxWindow.addEventListener('load', () => {
+      vfxWindow.updateVfxStatus({ filename: currentFilename, vfxState: getVfxState() });
+    });
+  }
+
+  function activateMirrorSculpture() {
+    setVfxState({ enabled: true, scene: 3 });
+    openVfxController();
+  }
+
+  function activateLogo3d() {
+    setVfxLogo3d({ kind: 'logo' });
+    setVfxState({ enabled: true, scene: 6 });
+    openVfxController();
+  }
+
+  function activateText3d() {
+    setVfxLogo3d({ kind: 'text' });
+    setVfxState({ enabled: true, scene: 6 });
+    openVfxController();
+  }
+
+  function onVfxWindowClosed() {
+    vfxWindow = null;
+    document.getElementById('vfxBtn').classList.remove('active');
   }
 
   function setTrailsEnabled(enabled) {
@@ -1433,15 +1582,157 @@
     broadcastState({ type: 'setTrails', enabled: trailsEnabled, amount: trailAmount });
   }
 
-  function setAudioReactive(enabled) {
-    audioReactive = enabled;
-    if (enabled) initAudio();
-    if (enabled && !rafId) startRenderLoop();
-    if (!enabled) applyEffectFilters();
+  function setVfxState(update) {
+    Object.assign(vfxState, update);
+    videoWrap.classList.toggle('vfx-active', vfxState.enabled);
+    document.getElementById('mirrorBtn').classList.toggle('active', vfxState.enabled && vfxState.scene === 3);
+    document.getElementById('logo3dBtn').classList.toggle('active', vfxState.enabled && vfxState.scene === 6 && vfxState.logo3d.kind === 'logo');
+    document.getElementById('text3dBtn').classList.toggle('active', vfxState.enabled && vfxState.scene === 6 && vfxState.logo3d.kind === 'text');
+    if (vfxState.enabled) {
+      try {
+        if (!vfxEngine) {
+          vfxEngine = new VfxEngine(vfxCanvas);
+          vfxEngine.setShape(vfxState.shape);
+          vfxEngine.setLogo3d(vfxState.logo3d);
+        }
+        if (!rafId) startRenderLoop();
+      } catch (error) {
+        vfxState.enabled = false;
+        videoWrap.classList.remove('vfx-active');
+        syncFxTransport({ vfxError: error.message });
+      }
+    } else vfxFrameReady = false;
+    broadcastState({ type: 'setVfx', settings: {
+      enabled: vfxState.enabled, scene: vfxState.scene,
+      intensity: vfxState.intensity, feedback: vfxState.feedback
+    } });
+    syncFxTransport({ vfxState: { ...vfxState } });
   }
 
-  function setAudioSensitivity(val) {
-    audioSensitivity = val;
+  function setVfxShape(update) {
+    const imageChanged = update.image !== undefined && update.image !== vfxState.shape.image;
+    vfxState.shape = { ...vfxState.shape, ...update };
+    if (vfxEngine) vfxEngine.setShape(vfxState.shape);
+    if (imageChanged) broadcastState({ type: 'vfxShapeImage', image: vfxState.shape.image });
+    const { image, ...shapeSettings } = vfxState.shape;
+    broadcastState({ type: 'vfxShape', shape: shapeSettings });
+    syncFxTransport({ vfxState: getVfxState() });
+  }
+
+  function setVfxLogo3d(update) {
+    vfxState.logo3d = { ...vfxState.logo3d, ...update };
+    if (vfxEngine) vfxEngine.setLogo3d(vfxState.logo3d);
+    document.getElementById('logo3dBtn').classList.toggle('active', vfxState.enabled && vfxState.scene === 6 && vfxState.logo3d.kind === 'logo');
+    document.getElementById('text3dBtn').classList.toggle('active', vfxState.enabled && vfxState.scene === 6 && vfxState.logo3d.kind === 'text');
+    broadcastState({ type: 'vfxLogo3d', settings: vfxState.logo3d });
+    syncFxTransport({ vfxState: getVfxState() });
+  }
+
+  async function getCurrentVfxInstagramId() {
+    if (!currentFilename) return '';
+    const meta = await getMetadata(currentFilename);
+    return meta?.channel ? '@' + meta.channel : '';
+  }
+
+  async function listVfxAudioDevices() {
+    if (!navigator.mediaDevices) return [];
+    const devices = await navigator.mediaDevices.enumerateDevices();
+    return devices.filter(device => device.kind === 'audioinput')
+      .map(device => ({ id: device.deviceId, label: device.label || 'Audio input' }));
+  }
+
+  async function connectVfxAudio(deviceId = '') {
+    disconnectVfxAudio();
+    try {
+      vfxAudioStream = await navigator.mediaDevices.getUserMedia({
+        audio: {
+          ...(deviceId ? { deviceId: { exact: deviceId } } : {}),
+          echoCancellation: false, noiseSuppression: false, autoGainControl: false
+        },
+        video: false
+      });
+      vfxAudioContext = new AudioContext();
+      await vfxAudioContext.resume();
+      const source = vfxAudioContext.createMediaStreamSource(vfxAudioStream);
+      vfxAnalyser = vfxAudioContext.createAnalyser();
+      vfxAnalyser.fftSize = 2048;
+      vfxAnalyser.smoothingTimeConstant = 0.45;
+      source.connect(vfxAnalyser);
+      vfxSpectrum = new Uint8Array(vfxAnalyser.frequencyBinCount);
+      const label = vfxAudioStream.getAudioTracks()[0].label || 'Audio input';
+      syncFxTransport({ vfxAudioStatus: 'Listening: ' + label });
+      return { label, devices: await listVfxAudioDevices() };
+    } catch (error) {
+      disconnectVfxAudio();
+      syncFxTransport({ vfxAudioStatus: error.message });
+      throw error;
+    }
+  }
+
+  function disconnectVfxAudio() {
+    if (vfxAudioStream) vfxAudioStream.getTracks().forEach(track => track.stop());
+    if (vfxAudioContext) vfxAudioContext.close();
+    vfxAudioStream = null;
+    vfxAudioContext = null;
+    vfxAnalyser = null;
+    vfxSpectrum = null;
+    vfxState.bass = 0;
+    vfxState.hit = 0;
+    broadcastState({ type: 'vfxAudio', bass: 0, hit: 0 });
+    syncFxTransport({ vfxAudioStatus: 'Audio input disconnected.' });
+  }
+
+  function setVfxSensitivity(value) { vfxSensitivity = value; }
+
+  function getVfxState() {
+    return { ...vfxState, sensitivity: vfxSensitivity, audioConnected: !!vfxAnalyser };
+  }
+
+  function triggerVfxPulse() {
+    if (!vfxState.enabled || !vfxEngine) return;
+    vfxEngine.pulse();
+    vfxState.hit = 1;
+    broadcastState({ type: 'vfxPulse', point: vfxEngine.point });
+  }
+
+  function renderVfxFrame() {
+    if (!vfxEngine || !video.videoWidth) return;
+    const width = Math.max(1, Math.round(videoStage.clientWidth * Math.min(devicePixelRatio, 1.5)));
+    const height = Math.max(1, Math.round(videoStage.clientHeight * Math.min(devicePixelRatio, 1.5)));
+    if (vfxSource.width !== width || vfxSource.height !== height) {
+      vfxSource.width = width;
+      vfxSource.height = height;
+    }
+    drawCompositeFrame(vfxSource, vfxSourceCtx, false, false);
+    const now = performance.now() / 1000;
+    if (vfxAnalyser) {
+      vfxAnalyser.getByteFrequencyData(vfxSpectrum);
+      const hz = vfxAudioContext.sampleRate / vfxAnalyser.fftSize;
+      const start = Math.max(1, Math.floor(35 / hz));
+      const end = Math.min(vfxSpectrum.length, Math.ceil(180 / hz));
+      let sum = 0;
+      for (let i = start; i < end; i++) sum += vfxSpectrum[i];
+      const level = Math.min(1.5, sum / Math.max(1, end - start) / 255 * vfxSensitivity);
+      vfxState.bass += (level - vfxState.bass) * (level > vfxState.bass ? 0.38 : 0.08);
+      vfxAverageBass += (vfxState.bass - vfxAverageBass) * 0.012;
+      if (vfxState.bass > Math.max(0.14, vfxAverageBass * 1.3)
+          && vfxState.bass - vfxPreviousBass > 0.035 && now - vfxLastPulse > 0.25) {
+        triggerVfxPulse();
+        vfxLastPulse = now;
+      }
+      vfxPreviousBass = vfxState.bass;
+      vfxState.hit *= 0.86;
+      if (now - vfxLastBroadcast > 0.07) {
+        broadcastState({ type: 'vfxAudio', bass: vfxState.bass, hit: vfxState.hit });
+        syncFxTransport({ vfxBass: vfxState.bass });
+        vfxLastBroadcast = now;
+      }
+    } else {
+      vfxState.bass *= 0.9;
+      vfxState.hit *= 0.85;
+    }
+    vfxEngine.render(vfxSource, vfxState);
+    vfxFrameReady = true;
   }
 
   // --- Controls ---
@@ -1517,8 +1808,16 @@
     const src = '/video/' + encodeURIComponent(filename);
     video.src = src;
     video.loop = false;
+    video.playbackRate = playbackSpeed;
 
     playerSection.classList.add('visible');
+    document.getElementById('videoPresetPanel').classList.add('visible');
+    const presetNameInput = document.getElementById('videoPresetName');
+    presetNameInput.dataset.manual = 'false';
+    refreshAutoVideoPresetName();
+    loadVideoPresets(filename).then(() => {
+      if (currentFilename === filename) renderVideoPresetList();
+    });
     video.load();
     video.addEventListener('loadeddata', function onLoaded() {
       video.removeEventListener('loadeddata', onLoaded);
@@ -1526,6 +1825,7 @@
     });
     const count = CLONE_COUNTS[viewMode];
     if (count > 0) buildClones(count);
+    else if (vfxState.enabled && !rafId) startRenderLoop();
     document.querySelectorAll('.library-item').forEach(el => {
       el.classList.toggle('active', el.dataset.filename === filename);
     });
@@ -1602,16 +1902,30 @@
     stopBounce();
     video.loop = false;
     loopBtn.classList.toggle('active', loopMode > 0);
-    if (loopMode === 0) video.playbackRate = 1;
     if (loopMode === 2 && !video.paused && !rafId) startRenderLoop();
     document.querySelectorAll('#playbackMenu .popup-opt').forEach(b => {
       b.classList.toggle('active', parseInt(b.dataset.mode) === mode);
     });
     closeAllMenus();
     syncFxTransport({ loopMode });
+    broadcastState({ type: 'setPlaybackMode', mode: loopMode });
+    refreshAutoVideoPresetName();
   }
 
   function toggleLoop() { setLoopMode((loopMode + 1) % 3); }
+
+  function setPlaybackSpeed(speed) {
+    const value = Number(speed);
+    playbackSpeed = Number.isFinite(value) ? Math.max(0.25, Math.min(2, Math.round(value * 4) / 4)) : 1;
+    video.playbackRate = playbackSpeed;
+    document.getElementById('speedValue').textContent = playbackSpeed + '×';
+    document.getElementById('speedDown').disabled = playbackSpeed <= 0.25;
+    document.getElementById('speedUp').disabled = playbackSpeed >= 2;
+    broadcastState({ type: 'setSpeed', speed: playbackSpeed });
+    refreshAutoVideoPresetName();
+  }
+
+  function changePlaybackSpeed(delta) { setPlaybackSpeed(playbackSpeed + delta); }
 
   function toggleMute() {
     video.muted = !video.muted;
@@ -1650,10 +1964,12 @@
     if (viewMode > 0) buildPresetButtons();
     const count = CLONE_COUNTS[viewMode];
     if (count > 0 && video.src) buildClones(count);
+    else if (vfxState.enabled && !rafId) startRenderLoop();
     document.querySelectorAll('#layoutMenu .popup-opt').forEach(b => {
       b.classList.toggle('active', parseInt(b.dataset.mode) === mode);
     });
     broadcastState({ type: 'setView', mode });
+    refreshAutoVideoPresetName();
   }
 
   const DUAL_PRESETS = [1, 3, 5, 7, 9, 11, 21, 23];
@@ -1685,6 +2001,7 @@
     document.querySelectorAll('.preset-btn').forEach(b => b.classList.toggle('active', parseInt(b.dataset.preset) === val));
     applyTransforms();
     broadcastState({ type: 'setConfig', value: val });
+    refreshAutoVideoPresetName();
   }
 
   configSlider.addEventListener('input', () => {
@@ -1698,6 +2015,7 @@
     tileZoom = parseFloat(zoomSlider.value);
     zoomValue.textContent = tileZoom.toFixed(1) + 'x';
     broadcastState({ type: 'setZoom', zoom: tileZoom });
+    refreshAutoVideoPresetName();
   });
 
   function resetZoom() {
@@ -1706,6 +2024,7 @@
     zoomValue.textContent = '1.0x';
     resetPan();
     broadcastState({ type: 'setZoom', zoom: tileZoom });
+    refreshAutoVideoPresetName();
   }
 
   const panXSlider = document.getElementById('panXSlider');
@@ -1717,12 +2036,14 @@
     tilePanX = parseFloat(panXSlider.value);
     panXValue.textContent = tilePanX.toFixed(1);
     broadcastState({ type: 'setPan', panX: tilePanX, panY: tilePanY });
+    refreshAutoVideoPresetName();
   });
 
   panYSlider.addEventListener('input', () => {
     tilePanY = parseFloat(panYSlider.value);
     panYValue.textContent = tilePanY.toFixed(1);
     broadcastState({ type: 'setPan', panX: tilePanX, panY: tilePanY });
+    refreshAutoVideoPresetName();
   });
 
   function resetPan() {
@@ -1730,6 +2051,169 @@
     panXSlider.value = '0'; panXValue.textContent = '0';
     panYSlider.value = '0'; panYValue.textContent = '0';
     broadcastState({ type: 'setPan', panX: 0, panY: 0 });
+    refreshAutoVideoPresetName();
+  }
+
+  function applyZoomPan(zoom, panX, panY) {
+    tileZoom = Math.max(1, Math.min(4, Number(zoom) || 1));
+    tilePanX = Math.max(-1, Math.min(1, Number(panX) || 0));
+    tilePanY = Math.max(-1, Math.min(1, Number(panY) || 0));
+    zoomSlider.value = tileZoom;
+    zoomValue.textContent = tileZoom.toFixed(1) + 'x';
+    panXSlider.value = tilePanX;
+    panXValue.textContent = tilePanX.toFixed(1);
+    panYSlider.value = tilePanY;
+    panYValue.textContent = tilePanY.toFixed(1);
+    broadcastState({ type: 'setZoom', zoom: tileZoom });
+    broadcastState({ type: 'setPan', panX: tilePanX, panY: tilePanY });
+    refreshAutoVideoPresetName();
+  }
+
+  function resetPlayerControls() {
+    setLoopMode(0);
+    setPlaybackSpeed(1);
+    setViewModeTo(0);
+    setConfig(1);
+    applyZoomPan(1, 0, 0);
+  }
+
+  function applyLayoutConfiguration(config) {
+    document.getElementById('videoPresetName').dataset.manual = 'false';
+    const mode = VIEW_NAMES.indexOf(config.view);
+    setViewModeTo(mode >= 0 ? mode : 0);
+    setConfig(Number(config.preset) || 1);
+    setLoopMode(config.loopMode ?? 1);
+    setPlaybackSpeed(config.speed ?? 1);
+    applyZoomPan(config.zoom ?? 1, config.panX ?? 0, config.panY ?? 0);
+  }
+
+  function suggestedVideoPresetName() {
+    const playback = ['once', 'loop', 'bounce'][loopMode] || 'once';
+    const layout = ['1x', '2x', '3x', '4x', '8x'][viewMode] || '1x';
+    const parts = [playback, 'zoom' + tileZoom.toFixed(1), layout];
+    if (viewMode > 0) parts.push('P' + (configIdx + 1));
+    if (playbackSpeed !== 1) parts.push('speed' + playbackSpeed);
+    if (tilePanX !== 0) parts.push('X' + (tilePanX > 0 ? '+' : '') + tilePanX.toFixed(2));
+    if (tilePanY !== 0) parts.push('Y' + (tilePanY > 0 ? '+' : '') + tilePanY.toFixed(2));
+    return parts.join('-');
+  }
+
+  function refreshAutoVideoPresetName() {
+    const input = document.getElementById('videoPresetName');
+    if (currentFilename && input.dataset.manual !== 'true') input.value = suggestedVideoPresetName();
+  }
+
+  document.getElementById('videoPresetName').addEventListener('input', event => {
+    event.target.dataset.manual = event.target.value.trim() ? 'true' : 'false';
+    refreshAutoVideoPresetName();
+  });
+
+  async function loadVideoPresets(filename, refresh = false) {
+    if (!refresh && videoPresetCache.has(filename)) return videoPresetCache.get(filename);
+    try {
+      const response = await fetch('/api/video-presets/' + encodeURIComponent(filename));
+      if (!response.ok) throw new Error('Could not load saved layouts');
+      const data = await response.json();
+      videoPresetCache.set(filename, data.presets || []);
+      return data.presets || [];
+    } catch (error) {
+      document.getElementById('videoPresetStatus').textContent = error.message;
+      return [];
+    }
+  }
+
+  function renderVideoPresetList() {
+    const list = document.getElementById('videoPresetList');
+    list.replaceChildren();
+    const presets = videoPresetCache.get(currentFilename) || [];
+    if (!presets.length) {
+      const empty = document.createElement('p');
+      empty.textContent = 'No saved layouts for this video yet.';
+      list.appendChild(empty);
+      return;
+    }
+    for (const preset of presets) {
+      const row = document.createElement('div');
+      row.className = 'saved-preset-row';
+      const label = document.createElement('span');
+      label.textContent = preset.name + ' · ' + preset.view + ' P' + preset.preset + ' · ' + preset.zoom.toFixed(1) + 'x · ' + (preset.speed ?? 1) + '× speed';
+      const load = document.createElement('button');
+      load.textContent = 'Load';
+      load.onclick = () => {
+        applyLayoutConfiguration(preset);
+        selectVideo(currentFilename, false, preset.id);
+        fillPlaylistLayoutFields(preset);
+      };
+      const remove = document.createElement('button');
+      remove.textContent = 'Delete';
+      remove.onclick = () => deleteVideoPreset(preset.id);
+      row.append(label, load, remove);
+      list.appendChild(row);
+    }
+  }
+
+  async function persistVideoPresets(filename, presets) {
+    const response = await fetch('/api/video-presets/' + encodeURIComponent(filename), {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ presets })
+    });
+    if (!response.ok) throw new Error('Could not save layouts');
+    const data = await response.json();
+    videoPresetCache.set(filename, data.presets);
+    if (currentFilename === filename) renderVideoPresetList();
+    if (plSelectedVideo === filename) refreshPlaylistSavedLayouts(filename);
+  }
+
+  async function saveCurrentVideoPreset() {
+    if (!currentFilename) return;
+    const nameInput = document.getElementById('videoPresetName');
+    const initialInputValue = nameInput.value;
+    let name = nameInput.value.trim() || suggestedVideoPresetName();
+    const autoNamed = nameInput.dataset.manual !== 'true';
+    const status = document.getElementById('videoPresetStatus');
+    const filename = currentFilename;
+    const preset = {
+      id: Date.now().toString(36) + '-' + Math.random().toString(36).slice(2),
+      name, view: VIEW_NAMES[viewMode], preset: configIdx + 1,
+      loopMode, speed: playbackSpeed, zoom: tileZoom, panX: tilePanX, panY: tilePanY
+    };
+    const presets = await loadVideoPresets(filename);
+    if (!videoPresetCache.has(filename)) return;
+    const usedNames = new Set(presets.map(item => item.name.toLowerCase()));
+    if (usedNames.has(name.toLowerCase())) {
+      if (!autoNamed) {
+        status.textContent = 'That name is already used for this video.';
+        return;
+      }
+      const baseName = name;
+      let suffix = 2;
+      do {
+        const ending = '-' + suffix++;
+        name = baseName.slice(0, 80 - ending.length) + ending;
+      } while (usedNames.has(name.toLowerCase()));
+    }
+    preset.name = name;
+    try {
+      await persistVideoPresets(filename, [...presets, preset]);
+      if (currentFilename === filename && nameInput.value === initialInputValue) {
+        nameInput.dataset.manual = 'false';
+        refreshAutoVideoPresetName();
+      }
+      status.textContent = 'Saved “' + name + '”.';
+    } catch (error) { status.textContent = error.message; }
+  }
+
+  async function deleteVideoPreset(id) {
+    if (!currentFilename) return;
+    const filename = currentFilename;
+    const presets = await loadVideoPresets(filename);
+    if (!videoPresetCache.has(filename)) return;
+    const preset = presets.find(item => item.id === id);
+    if (!preset || !confirm('Delete saved layout “' + preset.name + '”?')) return;
+    try {
+      await persistVideoPresets(filename, presets.filter(item => item.id !== id));
+      document.getElementById('videoPresetStatus').textContent = 'Deleted “' + preset.name + '”.';
+    } catch (error) { document.getElementById('videoPresetStatus').textContent = error.message; }
   }
 
   function toggleFullscreen() {
@@ -1798,11 +2282,245 @@
           video.src = '';
           video.load();
           destroyClones();
+          currentFilename = null;
+          document.getElementById('videoPresetPanel').classList.remove('visible');
         }
+        videoPresetCache.delete(filename);
         loadLibrary();
       } catch {}
     };
     itemEl.appendChild(overlay);
+  }
+
+  // --- Instagram background clip capture ---
+
+  const CAPTURE_FORMATS = {
+    '4x5': { width: 1080, height: 1350, label: '4:5' },
+    '9x16': { width: 1080, height: 1920, label: '9:16' },
+    '1x1': { width: 1080, height: 1080, label: '1:1' },
+  };
+  const captureBox = document.getElementById('captureBox');
+  const capturePanel = document.getElementById('capturePanel');
+  const captureFormat = document.getElementById('captureFormat');
+  const captureAction = document.getElementById('captureAction');
+  const captureDownload = document.getElementById('captureDownload');
+  const captureState = { x: 0.5, y: 0.5, scale: 0.78 };
+  let instagramRecorder = null;
+  let instagramFrame = null;
+  let instagramTimer = null;
+  let instagramStarted = 0;
+  let instagramStopped = false;
+
+  function setCaptureStatus(message) {
+    document.getElementById('captureStatus').textContent = message;
+  }
+
+  function toggleInstagramCapturePanel() {
+    if (instagramRecorder) return;
+    const visible = !capturePanel.classList.contains('visible');
+    capturePanel.classList.toggle('visible', visible);
+    captureBox.classList.toggle('visible', visible);
+    document.getElementById('captureToggle').classList.toggle('active', visible);
+    if (visible) updateCaptureBox();
+  }
+
+  function captureRect() {
+    const stageW = videoStage.clientWidth, stageH = videoStage.clientHeight;
+    const format = CAPTURE_FORMATS[captureFormat.value];
+    if (!stageW || !stageH) return null;
+    const maxW = Math.min(stageW, stageH * format.width / format.height);
+    const width = maxW * captureState.scale;
+    const height = width * format.height / format.width;
+    captureState.x = Math.max(width / stageW / 2, Math.min(1 - width / stageW / 2, captureState.x));
+    captureState.y = Math.max(height / stageH / 2, Math.min(1 - height / stageH / 2, captureState.y));
+    return { left: captureState.x * stageW - width / 2, top: captureState.y * stageH - height / 2, width, height, stageW, stageH, maxW };
+  }
+
+  function updateCaptureBox() {
+    const rect = captureRect();
+    if (!rect) return;
+    captureBox.style.left = rect.left + 'px';
+    captureBox.style.top = rect.top + 'px';
+    captureBox.style.width = rect.width + 'px';
+    captureBox.style.height = rect.height + 'px';
+    document.getElementById('captureBoxLabel').textContent = CAPTURE_FORMATS[captureFormat.value].label;
+  }
+
+  captureBox.addEventListener('pointerdown', event => {
+    if (instagramRecorder) return;
+    event.preventDefault();
+    const resizing = event.target.id === 'captureBoxHandle';
+    const original = captureRect();
+    if (!original) return;
+    const startX = event.clientX, startY = event.clientY;
+    const centreX = captureState.x, centreY = captureState.y, scale = captureState.scale;
+    captureBox.setPointerCapture(event.pointerId);
+    const move = point => {
+      const dx = point.clientX - startX, dy = point.clientY - startY;
+      if (resizing) {
+        const ratio = CAPTURE_FORMATS[captureFormat.value].width / CAPTURE_FORMATS[captureFormat.value].height;
+        const delta = Math.abs(dx) > Math.abs(dy) ? dx : dy * ratio;
+        captureState.scale = Math.max(0.15, Math.min(1, scale + delta / original.maxW));
+        const newWidth = original.maxW * captureState.scale;
+        const newHeight = newWidth / ratio;
+        captureState.x = (original.left + newWidth / 2) / original.stageW;
+        captureState.y = (original.top + newHeight / 2) / original.stageH;
+      } else {
+        captureState.x = centreX + dx / original.stageW;
+        captureState.y = centreY + dy / original.stageH;
+      }
+      updateCaptureBox();
+    };
+    const end = () => {
+      captureBox.removeEventListener('pointermove', move);
+      captureBox.removeEventListener('pointerup', end);
+      captureBox.removeEventListener('pointercancel', end);
+    };
+    captureBox.addEventListener('pointermove', move);
+    captureBox.addEventListener('pointerup', end);
+    captureBox.addEventListener('pointercancel', end);
+  });
+  new ResizeObserver(updateCaptureBox).observe(videoStage);
+
+  function parseCaptureTimecode(value) {
+    const parts = value.trim().split(':');
+    if (parts.length < 1 || parts.length > 3 || parts.some(part => !/^\d+(?:\.\d+)?$/.test(part))) return NaN;
+    const nums = parts.map(Number);
+    if (parts.length === 1) return nums[0];
+    if (nums.at(-1) >= 60 || (parts.length === 3 && nums[1] >= 60)) return NaN;
+    return parts.length === 2 ? nums[0] * 60 + nums[1] : nums[0] * 3600 + nums[1] * 60 + nums[2];
+  }
+
+  function useCurrentCaptureTime() {
+    const seconds = Math.max(0, video.currentTime || 0);
+    const mins = Math.floor(seconds / 60);
+    document.getElementById('captureStart').value = String(mins).padStart(2, '0') + ':' + (seconds % 60).toFixed(3).padStart(6, '0');
+  }
+
+  function waitForCaptureSeek(time) {
+    return new Promise((resolve, reject) => {
+      const timeout = setTimeout(() => { cleanup(); reject(new Error('Seeking to the start time timed out.')); }, 8000);
+      const ready = () => { cleanup(); resolve(); };
+      const cleanup = () => { clearTimeout(timeout); video.removeEventListener('seeked', ready); };
+      video.addEventListener('seeked', ready, { once: true });
+      video.currentTime = time;
+      if (!video.seeking && Math.abs(video.currentTime - time) < 0.02) ready();
+    });
+  }
+
+  async function toggleInstagramCapture() {
+    if (instagramRecorder) { stopInstagramCapture(); return; }
+    if (!currentFilename || !video.videoWidth || !Number.isFinite(video.duration)) {
+      setCaptureStatus('Load a video from the Library first.'); return;
+    }
+    if (isRecording || plPlaying) {
+      setCaptureStatus('Stop the playlist or full recording before capturing a clip.'); return;
+    }
+    const start = parseCaptureTimecode(document.getElementById('captureStart').value);
+    const duration = Number(document.getElementById('captureDuration').value);
+    if (!Number.isFinite(start) || start < 0 || start >= video.duration) {
+      setCaptureStatus('Enter a start timecode within the loaded video.'); return;
+    }
+    if (!Number.isFinite(duration) || duration < 0.1 || duration > 600) {
+      setCaptureStatus('Enter a length between 0.1 and 600 seconds.'); return;
+    }
+    if (loopMode === 0 && start + duration * playbackSpeed > video.duration + 0.02) {
+      setCaptureStatus('The clip runs past the source video. Choose Playback → Loop or Bounce, or shorten it.'); return;
+    }
+    const rect = captureRect();
+    if (!rect) { setCaptureStatus('The playback stage is not ready.'); return; }
+
+    const formatKey = captureFormat.value;
+    const format = CAPTURE_FORMATS[formatKey];
+    const source = document.createElement('canvas');
+    source.width = 1920;
+    source.height = Math.round(1920 * rect.stageH / rect.stageW);
+    const sourceCtx = source.getContext('2d');
+    const output = document.createElement('canvas');
+    output.width = format.width;
+    output.height = format.height;
+    const outputCtx = output.getContext('2d');
+    const draw = () => {
+      drawCompositeFrame(source, sourceCtx);
+      outputCtx.drawImage(source,
+        rect.left / rect.stageW * source.width, rect.top / rect.stageH * source.height,
+        rect.width / rect.stageW * source.width, rect.height / rect.stageH * source.height,
+        0, 0, output.width, output.height);
+      instagramFrame = requestAnimationFrame(draw);
+    };
+
+    captureDownload.style.display = 'none';
+    captureAction.disabled = true;
+    captureFormat.disabled = true;
+    setCaptureStatus('Seeking to ' + document.getElementById('captureStart').value + '…');
+    try {
+      video.pause();
+      stopBounce();
+      await waitForCaptureSeek(start);
+      draw();
+      const stream = output.captureStream(30);
+      const mimeType = ['video/webm;codecs=vp9', 'video/webm;codecs=vp8', 'video/webm'].find(type => MediaRecorder.isTypeSupported(type));
+      if (!mimeType) throw new Error('This browser does not support WebM recording.');
+      const recorder = new MediaRecorder(stream, { mimeType, videoBitsPerSecond: 8000000 });
+      const chunks = [];
+      recorder.ondataavailable = event => { if (event.data.size) chunks.push(event.data); };
+      recorder.onstop = async () => {
+        cancelAnimationFrame(instagramFrame);
+        stream.getTracks().forEach(track => track.stop());
+        const clipLength = Math.min(duration, Math.max(0.1, (performance.now() - instagramStarted) / 1000));
+        instagramRecorder = null;
+        captureAction.disabled = false;
+        captureAction.textContent = 'Capture MP4';
+        captureFormat.disabled = false;
+        if (!chunks.length) { setCaptureStatus('No frames were captured.'); return; }
+        setCaptureStatus('Converting the clip to MP4…');
+        try {
+          const response = await fetch('/api/convert', {
+            method: 'POST',
+            headers: { 'Content-Type': mimeType, 'X-Recording-Profile': 'instagram_' + formatKey, 'X-Recording-Duration': String(clipLength) },
+            body: new Blob(chunks, { type: mimeType }),
+          });
+          const result = await response.json();
+          if (!result.ok) throw new Error(result.error || 'Conversion failed');
+          setCaptureStatus('Saved ' + result.filename + ' to ' + (result.folder || 'the clip folder') + '.');
+          captureDownload.href = '/video/' + encodeURIComponent(result.filename);
+          captureDownload.download = result.filename;
+          captureDownload.style.display = '';
+        } catch (error) { setCaptureStatus('Capture failed: ' + error.message); }
+      };
+      recorder.start(250);
+      instagramRecorder = recorder;
+      instagramStopped = false;
+      instagramStarted = performance.now();
+      captureAction.disabled = false;
+      captureAction.textContent = 'Stop capture';
+      setCaptureStatus('Recording ' + format.label + ' clip for ' + duration + ' seconds…');
+      await video.play();
+      instagramTimer = setTimeout(stopInstagramCapture, duration * 1000);
+    } catch (error) {
+      clearTimeout(instagramTimer);
+      cancelAnimationFrame(instagramFrame);
+      if (instagramRecorder && instagramRecorder.state !== 'inactive') {
+        instagramRecorder.onstop = null;
+        instagramRecorder.stop();
+      }
+      instagramRecorder = null;
+      captureAction.disabled = false;
+      captureAction.textContent = 'Capture MP4';
+      captureFormat.disabled = false;
+      setCaptureStatus('Capture failed: ' + error.message);
+    }
+  }
+
+  function stopInstagramCapture() {
+    if (!instagramRecorder || instagramStopped) return;
+    instagramStopped = true;
+    clearTimeout(instagramTimer);
+    video.pause();
+    captureAction.disabled = true;
+    setCaptureStatus('Finishing clip…');
+    instagramRecorder.stop();
+    if (bounceReversing) stopBounce();
   }
 
   // --- Recording ---
@@ -1814,14 +2532,22 @@
   let recordedChunks = [];
   let obsOutputActive = false;
 
-  function drawCompositeFrame() {
-    if (!compCanvas || !compCtx) return;
-    const vw = video.videoWidth, vh = video.videoHeight;
+  function drawCompositeFrame(targetCanvas = compCanvas, targetCtx = compCtx, useVfx = true, includeCaption = true) {
+    if (!targetCanvas || !targetCtx) return;
+    if (useVfx && vfxState.enabled && vfxFrameReady) {
+      targetCtx.drawImage(vfxCanvas, 0, 0, targetCanvas.width, targetCanvas.height);
+      if (includeCaption) drawCompositeCaption(targetCanvas, targetCtx);
+      return;
+    }
+    const reverseFrame = bounceReversing ? bounceFrames[bounceFrameIdx] : null;
+    const frameSource = reverseFrame || video;
+    const vw = reverseFrame ? reverseFrame.width : video.videoWidth;
+    const vh = reverseFrame ? reverseFrame.height : video.videoHeight;
     if (!vw || !vh) return;
 
-    const cw = compCanvas.width, ch = compCanvas.height;
-    compCtx.fillStyle = '#000';
-    compCtx.fillRect(0, 0, cw, ch);
+    const cw = targetCanvas.width, ch = targetCanvas.height;
+    targetCtx.fillStyle = '#000';
+    targetCtx.fillRect(0, 0, cw, ch);
 
     let cols, rows;
     if (viewMode === 0) { cols = 1; rows = 1; }
@@ -1836,44 +2562,60 @@
     for (let r = 0; r < rows; r++) {
       for (let c = 0; c < cols; c++) {
         const idx = r * cols + c;
-        const cfgIdx = viewMode === 3 ? QUAD_POS_MAP[idx] : viewMode === 2 ? TRIPLE_POS_MAP[idx] : idx;
+        const cfgIdx = viewMode === 1 ? DUAL_POS_MAP[idx]
+          : viewMode === 3 ? QUAD_POS_MAP[idx] : viewMode === 2 ? TRIPLE_POS_MAP[idx] : idx;
         const transform = cfg[cfgIdx] || '';
         const flipH = transform.includes('scaleX(-1)');
         const flipV = transform.includes('scaleY(-1)');
 
         const tx = c * tileW, ty = r * tileH;
-        compCtx.save();
-        compCtx.translate(tx + tileW / 2, ty + tileH / 2);
-        compCtx.scale(flipH ? -1 : 1, flipV ? -1 : 1);
+        targetCtx.save();
+        targetCtx.translate(tx + tileW / 2, ty + tileH / 2);
+        targetCtx.scale(flipH ? -1 : 1, flipV ? -1 : 1);
 
-        const coverScale = Math.max(tileW / vw, tileH / vh);
-        const es = coverScale * tileZoom;
-        const sw = Math.min(vw, tileW / es);
-        const sh = Math.min(vh, tileH / es);
-        const panRangeX = vw - sw;
-        const panRangeY = vh - sh;
-        const sx = panRangeX * (1 + tilePanX) / 2;
-        const sy = panRangeY * (1 - tilePanY) / 2;
-
-        compCtx.drawImage(video, sx, sy, sw, sh, -tileW / 2, -tileH / 2, tileW, tileH);
-        compCtx.restore();
+        targetCtx.filter = buildFilterString(currentEffects);
+        if (trailsEnabled && viewMode > 0 && clones[idx] && clones[idx].width) {
+          targetCtx.drawImage(clones[idx], -tileW / 2, -tileH / 2, tileW, tileH);
+        } else if (viewMode === 0) {
+          // Single view uses object-fit: contain in the player.
+          const scale = Math.min(tileW / vw, tileH / vh);
+          const dw = vw * scale, dh = vh * scale;
+          targetCtx.drawImage(frameSource, -dw / 2, -dh / 2, dw, dh);
+        } else {
+          const coverScale = Math.max(tileW / vw, tileH / vh);
+          const es = coverScale * tileZoom;
+          const sw = Math.min(vw, tileW / es);
+          const sh = Math.min(vh, tileH / es);
+          const panRangeX = vw - sw;
+          const panRangeY = vh - sh;
+          const sx = panRangeX * (1 + tilePanX) / 2;
+          const sy = panRangeY * (1 - tilePanY) / 2;
+          targetCtx.drawImage(frameSource, sx, sy, sw, sh, -tileW / 2, -tileH / 2, tileW, tileH);
+        }
+        targetCtx.filter = 'none';
+        targetCtx.restore();
       }
     }
 
+    if (includeCaption) drawCompositeCaption(targetCanvas, targetCtx);
+  }
+
+  function drawCompositeCaption(targetCanvas, targetCtx) {
+    const cw = targetCanvas.width, ch = targetCanvas.height;
     if (captionEnabled && captionOverlay.classList.contains('visible')) {
       const text = captionOverlay.textContent;
       if (text) {
         const fontSize = Math.round(cw / 50);
-        compCtx.font = `600 ${fontSize}px -apple-system, BlinkMacSystemFont, sans-serif`;
-        const metrics = compCtx.measureText(text);
+        targetCtx.font = `600 ${fontSize}px -apple-system, BlinkMacSystemFont, sans-serif`;
+        const metrics = targetCtx.measureText(text);
         const padX = fontSize * 0.6, padY = fontSize * 0.4;
         const bx = 20, by = ch - 80;
-        compCtx.fillStyle = 'rgba(0,0,0,0.5)';
-        compCtx.beginPath();
-        compCtx.roundRect(bx, by - fontSize - padY, metrics.width + padX * 2, fontSize + padY * 2, 6);
-        compCtx.fill();
-        compCtx.fillStyle = 'rgba(255,255,255,0.85)';
-        compCtx.fillText(text, bx + padX, by);
+        targetCtx.fillStyle = 'rgba(0,0,0,0.5)';
+        targetCtx.beginPath();
+        targetCtx.roundRect(bx, by - fontSize - padY, metrics.width + padX * 2, fontSize + padY * 2, 6);
+        targetCtx.fill();
+        targetCtx.fillStyle = 'rgba(255,255,255,0.85)';
+        targetCtx.fillText(text, bx + padX, by);
       }
     }
   }
@@ -2031,6 +2773,12 @@
   let plSelectedVideo = '';
   const plView = document.getElementById('plView');
   const plPreset = document.getElementById('plPreset');
+  const plSavedLayout = document.getElementById('plSavedLayout');
+  const plLoopMode = document.getElementById('plLoopMode');
+  const plSpeed = document.getElementById('plSpeed');
+  const plZoom = document.getElementById('plZoom');
+  const plPanX = document.getElementById('plPanX');
+  const plPanY = document.getElementById('plPanY');
   const plDurType = document.getElementById('plDurType');
   const plDurVal = document.getElementById('plDurVal');
 
@@ -2046,10 +2794,62 @@
     if (modeIdx < 0) return;
     setViewModeTo(modeIdx);
     setConfig(parseInt(plPreset.value) || 1);
+    setLoopMode(Number(plLoopMode.value));
+    setPlaybackSpeed(Number(plSpeed.value));
+    applyZoomPan(plZoom.value, plPanX.value, plPanY.value);
+    plZoom.value = tileZoom;
+    plPanX.value = tilePanX;
+    plPanY.value = tilePanY;
   }
 
-  plView.addEventListener('change', updatePlayerPreview);
-  plPreset.addEventListener('change', updatePlayerPreview);
+  function currentPlayerLayout() {
+    return {
+      view: VIEW_NAMES[viewMode], preset: configIdx + 1,
+      loopMode, speed: playbackSpeed, zoom: tileZoom, panX: tilePanX, panY: tilePanY,
+    };
+  }
+
+  function fillPlaylistLayoutFields(layout) {
+    plView.value = layout.view;
+    plPreset.value = layout.preset;
+    plLoopMode.value = layout.loopMode;
+    plSpeed.value = layout.speed ?? 1;
+    plZoom.value = layout.zoom;
+    plPanX.value = layout.panX;
+    plPanY.value = layout.panY;
+  }
+
+  function sameLayout(a, b) {
+    return a.view === b.view && Number(a.preset) === Number(b.preset)
+      && Number(a.loopMode) === Number(b.loopMode)
+      && Number(a.speed ?? 1) === Number(b.speed ?? 1)
+      && Number(a.zoom) === Number(b.zoom)
+      && Number(a.panX) === Number(b.panX)
+      && Number(a.panY) === Number(b.panY);
+  }
+
+  function manualPlaylistConfigChanged() {
+    plSavedLayout.value = '';
+    updatePlayerPreview();
+  }
+  [plView, plPreset, plLoopMode, plSpeed, plZoom, plPanX, plPanY]
+    .forEach(control => control.addEventListener('change', manualPlaylistConfigChanged));
+
+  async function refreshPlaylistSavedLayouts(filename, preferredPresetId = '') {
+    const presets = await loadVideoPresets(filename);
+    if (plSelectedVideo !== filename) return;
+    const previous = preferredPresetId || plSavedLayout.value;
+    plSavedLayout.replaceChildren(new Option('Current player layout', ''));
+    for (const preset of presets) plSavedLayout.add(new Option(preset.name, preset.id));
+    plSavedLayout.value = presets.some(preset => preset.id === previous) ? previous : '';
+  }
+
+  plSavedLayout.addEventListener('change', () => {
+    const preset = (videoPresetCache.get(plSelectedVideo) || []).find(item => item.id === plSavedLayout.value);
+    if (!preset) return;
+    fillPlaylistLayoutFields(preset);
+    updatePlayerPreview();
+  });
 
   const TABS = ['library', 'playlist', 'settings'];
   function switchTab(tab) {
@@ -2080,8 +2880,10 @@
     if (!plSelectedVideo && videoListCache.length) selectVideo(videoListCache[0].filename);
   }
 
-  function selectVideo(filename) {
+  function selectVideo(filename, preview = true, preferredPresetId = '') {
     plSelectedVideo = filename;
+    plSavedLayout.value = '';
+    refreshPlaylistSavedLayouts(filename, preferredPresetId);
     const thumb = '/thumbnail/' + encodeURIComponent(filename);
     const name = filename.replace(/\.[^.]+$/, '');
     plVideoSelected.innerHTML =
@@ -2092,8 +2894,10 @@
     plVideoDropdown.querySelectorAll('.pl-video-option').forEach(el => {
       el.classList.toggle('selected', el.querySelector('.pl-vo-name').textContent === name);
     });
-    showVideo(filename);
-    updatePlayerPreview();
+    if (preview) {
+      showVideo(filename);
+      updatePlayerPreview();
+    }
   }
 
   function toggleVideoDropdown() {
@@ -2163,12 +2967,26 @@
   function addEntry() {
     const vid = plSelectedVideo;
     if (!vid) return;
+    // The player may have been changed after the playlist form was filled.
+    // Capture what is actually on screen for the selected video.
+    if (currentFilename === vid) fillPlaylistLayoutFields(currentPlayerLayout());
+    const layout = {
+      view: plView.value, preset: parseInt(plPreset.value),
+      loopMode: Number(plLoopMode.value),
+      speed: Number(plSpeed.value),
+      zoom: Math.max(1, Math.min(4, Number(plZoom.value) || 1)),
+      panX: Math.max(-1, Math.min(1, Number(plPanX.value) || 0)),
+      panY: Math.max(-1, Math.min(1, Number(plPanY.value) || 0)),
+    };
+    const selectedPreset = (videoPresetCache.get(vid) || []).find(item => item.id === plSavedLayout.value);
+    const matchingPreset = selectedPreset && sameLayout(layout, selectedPreset) ? selectedPreset : null;
+    if (!matchingPreset) plSavedLayout.value = '';
     plPlaylist.entries.push({
       video: vid,
-      view: plView.value,
-      preset: parseInt(plPreset.value),
+      ...layout,
       duration: { type: plDurType.value, value: parseInt(plDurVal.value) || 5 },
-      loopMode: parseInt(document.getElementById('plLoopMode').value) || 1,
+      layoutPresetId: matchingPreset?.id || null,
+      layoutPresetName: matchingPreset?.name || null,
     });
     renderPlaylistEntries();
   }
@@ -2186,9 +3004,7 @@
     if (!e) return;
     plPreviewIdx = idx;
     showVideo(e.video);
-    const modeIdx = VIEW_NAMES.indexOf(e.view);
-    setViewModeTo(modeIdx >= 0 ? modeIdx : 0);
-    setConfig(e.preset || 1);
+    applyLayoutConfiguration(e);
     renderPlaylistEntries();
   }
 
@@ -2215,7 +3031,8 @@
       const infoSpan = document.createElement('span');
       infoSpan.className = 'pl-e-info';
       const lm = e.loopMode === 2 ? ' B' : '';
-      infoSpan.textContent = vl + ' P' + e.preset + ' ' + dt + lm;
+      infoSpan.textContent = (e.layoutPresetName ? e.layoutPresetName + ' · ' : '')
+        + vl + ' P' + e.preset + ' ' + dt + lm + (Number(e.speed ?? 1) !== 1 ? ' · ' + e.speed + '×' : '');
       div.appendChild(infoSpan);
 
       const delBtn = document.createElement('button');
@@ -2272,18 +3089,8 @@
     plLoopCount = 0;
     clearTimeout(plTimer);
 
-    const vi = VIEW_NAMES.indexOf(entry.view);
-    setViewModeTo(vi >= 0 ? vi : 0);
     showVideo(entry.video);
-    setConfig(entry.preset || 1);
-
-    const entryLoop = entry.loopMode || 1;
-    loopMode = entryLoop;
-    stopBounce();
-    loopBtn.classList.add('active');
-    document.querySelectorAll('#playbackMenu .popup-opt').forEach(b => {
-      b.classList.toggle('active', parseInt(b.dataset.mode) === loopMode);
-    });
+    applyLayoutConfiguration(entry);
     video.play();
 
     if (entry.duration.type === 'seconds') {
@@ -2431,6 +3238,7 @@
         preset: preset,
         duration: { type: 'loops', value: loops },
         loopMode: 1,
+        speed: 1,
       });
 
       totalTime += entryTime;
@@ -2465,7 +3273,8 @@
   loadPlaylists();
 
   // --- Settings ---
-  let browsePath = '';
+  const browsePaths = { download: '', clips: '' };
+  let clipInheritsDownload = true;
 
   async function loadSettings() {
     try {
@@ -2473,23 +3282,27 @@
       const config = await res.json();
       document.getElementById('settingsCurrentPath').textContent = config.download_dir || './downloads';
       document.getElementById('settingsStatus').textContent = '';
-      browseDir(config.download_dir || '~');
+      clipInheritsDownload = !config.instagram_clip_dir;
+      document.getElementById('clipFolderCurrent').textContent = config.instagram_clip_dir || 'Same as download folder (' + (config.download_dir || './downloads') + ')';
+      document.getElementById('clipFolderStatus').textContent = '';
+      browseDir(config.download_dir || '~', 'download');
+      browseDir(config.instagram_clip_dir || config.download_dir || '~', 'clips');
     } catch {}
   }
 
-  async function browseDir(path) {
+  async function browseDir(path, kind = 'download') {
     try {
       const res = await fetch('/api/browse?path=' + encodeURIComponent(path));
       const data = await res.json();
-      browsePath = data.current;
-      document.getElementById('dirPath').textContent = data.current;
-      const list = document.getElementById('dirList');
+      browsePaths[kind] = data.current;
+      document.getElementById(kind === 'clips' ? 'clipDirPath' : 'dirPath').textContent = data.current;
+      const list = document.getElementById(kind === 'clips' ? 'clipDirList' : 'dirList');
       list.innerHTML = '';
       if (data.parent) {
         const up = document.createElement('div');
         up.className = 'dir-item dir-up';
         up.innerHTML = '<span class="dir-icon">&#8593;</span><span class="dir-name">..</span>';
-        up.addEventListener('click', () => browseDir(data.parent));
+        up.addEventListener('click', () => browseDir(data.parent, kind));
         list.appendChild(up);
       }
       data.dirs.forEach(name => {
@@ -2497,32 +3310,58 @@
         item.className = 'dir-item';
         item.innerHTML = '<span class="dir-icon">&#128193;</span><span class="dir-name">' +
           name.replace(/</g, '&lt;') + '</span>';
-        item.addEventListener('click', () => browseDir(data.current + '/' + name));
+        item.addEventListener('click', () => browseDir(data.current + '/' + name, kind));
         list.appendChild(item);
       });
     } catch {}
   }
 
-  async function selectFolder() {
-    if (!browsePath) return;
-    const statusEl = document.getElementById('settingsStatus');
+  async function selectFolder(kind = 'download') {
+    const path = browsePaths[kind];
+    if (!path) return;
+    const statusEl = document.getElementById(kind === 'clips' ? 'clipFolderStatus' : 'settingsStatus');
+    const field = kind === 'clips' ? 'instagram_clip_dir' : 'download_dir';
     try {
       const res = await fetch('/api/config', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ download_dir: browsePath }),
+        body: JSON.stringify({ [field]: path }),
       });
       const data = await res.json();
       if (data.ok) {
         statusEl.textContent = 'Saved';
         statusEl.className = 'settings-status ok';
-        document.getElementById('settingsCurrentPath').textContent = data.resolved || browsePath;
+        document.getElementById(kind === 'clips' ? 'clipFolderCurrent' : 'settingsCurrentPath').textContent = data.resolved || path;
+        if (kind === 'clips') clipInheritsDownload = false;
+        if (kind === 'download' && clipInheritsDownload) {
+          document.getElementById('clipFolderCurrent').textContent = 'Same as download folder (' + (data.resolved || path) + ')';
+        }
       } else {
         statusEl.textContent = data.error || 'Save failed';
         statusEl.className = 'settings-status err';
       }
     } catch (e) {
       statusEl.textContent = 'Error: ' + e.message;
+      statusEl.className = 'settings-status err';
+    }
+  }
+
+  async function resetClipFolder() {
+    const statusEl = document.getElementById('clipFolderStatus');
+    try {
+      const res = await fetch('/api/config', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ instagram_clip_dir: '' }),
+      });
+      const data = await res.json();
+      if (!data.ok) throw new Error(data.error || 'Save failed');
+      clipInheritsDownload = true;
+      statusEl.textContent = 'Using download folder';
+      statusEl.className = 'settings-status ok';
+      document.getElementById('clipFolderCurrent').textContent = 'Same as download folder (' + data.resolved + ')';
+      browseDir(data.resolved, 'clips');
+    } catch (error) {
+      statusEl.textContent = error.message;
       statusEl.className = 'settings-status err';
     }
   }

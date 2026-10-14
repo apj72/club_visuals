@@ -12,7 +12,10 @@
     display: flex;
     width: 100%;
     height: 100vh;
+    position: relative;
   }
+  #vfxCanvas { display: none; position: absolute; inset: 0; z-index: 4; width: 100%; height: 100%; object-fit: fill; }
+  .vfx-active #vfxCanvas { display: block; }
 
   .video-stage video, .video-stage canvas {
     width: 100%;
@@ -77,10 +80,12 @@
 <div class="video-wrap" id="videoWrap">
   <div class="video-stage" id="videoStage">
     <video id="video" playsinline muted loop></video>
+    <canvas id="vfxCanvas" aria-label="Live VFX output"></canvas>
   </div>
   <div class="caption-overlay" id="captionOverlay"></div>
 </div>
 
+<script src="/vfx_engine.js"></script>
 <script>
   const videoStage = document.getElementById('videoStage');
   const videoWrap = document.getElementById('videoWrap');
@@ -92,12 +97,21 @@
   let clones = [];
   let rafId = null;
   let looping = true;
+  let playbackSpeed = 1;
   let currentOutputEffects = null;
   let tileZoom = 1.0;
   let tilePanX = 0;
   let tilePanY = 0;
   let trailsEnabled = false;
   let trailAmount = 0.15;
+  const vfxCanvas = document.getElementById('vfxCanvas');
+  const vfxSource = document.createElement('canvas');
+  const vfxSourceCtx = vfxSource.getContext('2d');
+  const vfxState = { enabled: false, scene: 0, intensity: 0.7, feedback: 0.72, bass: 0, hit: 0,
+    logo3d: { kind: 'logo', text: '@tonyt.dj', x: 0.5, y: 0.5, scale: 0.48, depth: 0.45,
+      rotX: 0, rotY: -20, rotZ: 0, motion: 0.25, axis: 'y', startAngle: -45, endAngle: 45 },
+    shape: { kind: 'text', text: 'CLUB', image: '', x: 0.5, y: 0.5, scale: 0.7, depth: 1, edge: 0.7, tilt: 0, thickness: 0.8, spin: 0.3 } };
+  let vfxEngine = null;
 
   const VIEW_NAMES = ['single', 'dual', 'triple', 'quad', 'octo'];
   const CLONE_COUNTS = [0, 1, 2, 3, 7];
@@ -160,7 +174,7 @@
   function startRenderLoop() {
     stopRenderLoop();
     function draw() {
-      if (clones.length === 0 && !trailsEnabled) return;
+      if (clones.length === 0 && !trailsEnabled && !vfxState.enabled) return;
       const vw = video.videoWidth, vh = video.videoHeight;
       if (vw && vh && !video.paused) {
         clones.forEach(c => {
@@ -177,6 +191,7 @@
           }
           drawZoomedTile(ctx, vw, vh, cw, ch);
         });
+        if (vfxState.enabled) renderOutputVfx();
       }
       rafId = requestAnimationFrame(draw);
     }
@@ -206,9 +221,11 @@
 
   function showVideo(filename) {
     video.src = '/video/' + encodeURIComponent(filename);
+    video.playbackRate = playbackSpeed;
     video.load();
     const count = CLONE_COUNTS[viewMode];
     if (count > 0) buildClones(count);
+    else if (vfxState.enabled && !rafId) startRenderLoop();
   }
 
   function setViewModeTo(mode) {
@@ -219,6 +236,7 @@
     if (name !== 'single') videoWrap.classList.add(name);
     const count = CLONE_COUNTS[viewMode];
     if (count > 0 && video.src) buildClones(count);
+    else if (vfxState.enabled && !rafId) startRenderLoop();
   }
 
   function setConfig(val) {
@@ -251,6 +269,49 @@
     clones.forEach(c => { c.style.filter = f; });
   }
 
+  function renderOutputVfx() {
+    if (!vfxEngine || !video.videoWidth) return;
+    const width = Math.max(1, Math.round(videoStage.clientWidth * Math.min(devicePixelRatio, 1.5)));
+    const height = Math.max(1, Math.round(videoStage.clientHeight * Math.min(devicePixelRatio, 1.5)));
+    if (vfxSource.width !== width || vfxSource.height !== height) {
+      vfxSource.width = width;
+      vfxSource.height = height;
+    }
+    const vw = video.videoWidth, vh = video.videoHeight;
+    const cw = vfxSource.width, ch = vfxSource.height;
+    vfxSourceCtx.fillStyle = '#000';
+    vfxSourceCtx.fillRect(0, 0, cw, ch);
+    const cols = [1, 2, 3, 2, 4][viewMode];
+    const rows = [1, 1, 1, 2, 2][viewMode];
+    const tileW = cw / cols, tileH = ch / rows;
+    const cfg = CONFIGS[configIdx];
+    for (let row = 0; row < rows; row++) {
+      for (let col = 0; col < cols; col++) {
+        const index = row * cols + col;
+        const configPosition = viewMode === 1 ? (index === 0 ? 0 : 3)
+          : viewMode === 2 ? TRIPLE_POS_MAP[index] : viewMode === 3 ? QUAD_POS_MAP[index] : index;
+        const transform = cfg[configPosition] || '';
+        vfxSourceCtx.save();
+        vfxSourceCtx.translate((col + 0.5) * tileW, (row + 0.5) * tileH);
+        vfxSourceCtx.scale(transform.includes('scaleX(-1)') ? -1 : 1,
+          transform.includes('scaleY(-1)') ? -1 : 1);
+        vfxSourceCtx.filter = video.style.filter || 'none';
+        if (trailsEnabled && clones[index] && clones[index].width) {
+          vfxSourceCtx.drawImage(clones[index], -tileW / 2, -tileH / 2, tileW, tileH);
+        } else {
+          const cover = Math.max(tileW / vw, tileH / vh) * tileZoom;
+          const sw = Math.min(vw, tileW / cover), sh = Math.min(vh, tileH / cover);
+          const sx = (vw - sw) * (1 + tilePanX) / 2;
+          const sy = (vh - sh) * (1 - tilePanY) / 2;
+          vfxSourceCtx.drawImage(video, sx, sy, sw, sh, -tileW / 2, -tileH / 2, tileW, tileH);
+        }
+        vfxSourceCtx.restore();
+      }
+    }
+    vfxEngine.render(vfxSource, vfxState);
+    vfxState.hit *= 0.88;
+  }
+
   video.addEventListener('timeupdate', () => {
     if (looping && video.duration && video.currentTime > video.duration - 0.15) {
       video.currentTime = 0;
@@ -259,8 +320,14 @@
   });
 
   const evtSource = new EventSource('/api/state-stream');
-  evtSource.onmessage = (e) => {
-    const cmd = JSON.parse(e.data);
+  evtSource.onopen = async () => {
+    try {
+      const response = await fetch('/api/state-snapshot');
+      if (response.ok) (await response.json()).forEach(handleOutputCommand);
+    } catch (error) { console.warn('Could not restore output state:', error); }
+  };
+  evtSource.onmessage = (e) => handleOutputCommand(JSON.parse(e.data));
+  function handleOutputCommand(cmd) {
     switch (cmd.type) {
       case 'loadVideo':
         showVideo(cmd.filename);
@@ -274,6 +341,14 @@
         break;
       case 'setView':
         setViewModeTo(cmd.mode);
+        break;
+      case 'setPlaybackMode':
+        looping = cmd.mode !== 0;
+        video.loop = looping;
+        break;
+      case 'setSpeed':
+        playbackSpeed = cmd.speed;
+        video.playbackRate = playbackSpeed;
         break;
       case 'setConfig':
         setConfig(cmd.value);
@@ -297,8 +372,43 @@
         trailAmount = cmd.amount;
         if (trailsEnabled && !rafId) startRenderLoop();
         break;
+      case 'setVfx':
+        Object.assign(vfxState, cmd.settings);
+        videoWrap.classList.toggle('vfx-active', vfxState.enabled);
+        if (vfxState.enabled) {
+          try {
+            if (!vfxEngine) vfxEngine = new VfxEngine(vfxCanvas);
+            vfxEngine.setShape(vfxState.shape);
+            vfxEngine.setLogo3d(vfxState.logo3d);
+            if (!rafId) startRenderLoop();
+          } catch (error) {
+            vfxState.enabled = false;
+            videoWrap.classList.remove('vfx-active');
+            console.error('VFX unavailable:', error);
+          }
+        }
+        break;
+      case 'vfxShape':
+        vfxState.shape = { ...vfxState.shape, ...cmd.shape };
+        if (vfxEngine) vfxEngine.setShape(vfxState.shape);
+        break;
+      case 'vfxShapeImage':
+        vfxState.shape.image = cmd.image;
+        if (vfxEngine) vfxEngine.setShape(vfxState.shape);
+        break;
+      case 'vfxLogo3d':
+        vfxState.logo3d = { ...vfxState.logo3d, ...cmd.settings };
+        if (vfxEngine) vfxEngine.setLogo3d(vfxState.logo3d);
+        break;
+      case 'vfxAudio':
+        vfxState.bass = cmd.bass;
+        vfxState.hit = cmd.hit;
+        break;
+      case 'vfxPulse':
+        if (vfxEngine) vfxEngine.pulse(cmd.point[0], cmd.point[1]);
+        break;
     }
-  };
+  }
 </script>
 </body>
 </html>
