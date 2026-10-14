@@ -22,6 +22,8 @@ BASE_DIR = Path(__file__).parent
 THUMB_DIR = BASE_DIR / "thumbnails"
 PLAYLIST_DIR = BASE_DIR / "playlists"
 VIDEO_PRESET_DIR = BASE_DIR / "video_presets"
+LIBRARY_ORDER_FILE = BASE_DIR / "library_order.json"
+LIBRARY_ORDER_LOCK = threading.Lock()
 COOKIE_JAR = BASE_DIR / ".cookies.txt"
 COOKIE_MAX_AGE = 7 * 24 * 3600
 HTML_FILE = BASE_DIR / "index.html"
@@ -60,6 +62,31 @@ def get_download_dir():
     if not p.is_absolute():
         p = BASE_DIR / p
     return p.resolve()
+
+
+def source_video_files():
+    dl = get_download_dir()
+    dl.mkdir(parents=True, exist_ok=True)
+    return sorted(
+        (f for f in dl.glob("*.mp4") if not f.name.startswith("instagram_")),
+        key=lambda f: f.stat().st_mtime, reverse=True,
+    )
+
+
+def read_library_order():
+    try:
+        order = json.loads(LIBRARY_ORDER_FILE.read_text())
+        if isinstance(order, list) and all(isinstance(name, str) for name in order):
+            return order
+    except (OSError, ValueError):
+        pass
+    return []
+
+
+def write_library_order(order):
+    temp_path = LIBRARY_ORDER_FILE.with_suffix(".json.tmp")
+    temp_path.write_text(json.dumps(order, indent=2))
+    temp_path.replace(LIBRARY_ORDER_FILE)
 
 
 def get_instagram_clip_dir():
@@ -198,6 +225,8 @@ class Handler(BaseHTTPRequestHandler):
             self.handle_download()
         elif self.path == "/api/config":
             self.update_config()
+        elif self.path == "/api/library-order":
+            self.save_library_order()
         elif self.path == "/api/convert":
             self.handle_convert()
         elif self.path.startswith("/api/playlist/"):
@@ -380,11 +409,14 @@ class Handler(BaseHTTPRequestHandler):
 
     def list_videos(self):
         dl = get_download_dir()
-        dl.mkdir(parents=True, exist_ok=True)
+        with LIBRARY_ORDER_LOCK:
+            saved_order = read_library_order()
+        order_positions = {name: index for index, name in enumerate(saved_order)}
+        files = source_video_files()
+        files.sort(key=lambda f: order_positions.get(f.name, len(saved_order)))
         videos = []
         # Instagram exports are background assets, not source visuals.
-        source_files = (f for f in dl.glob("*.mp4") if not f.name.startswith("instagram_"))
-        for f in sorted(source_files, key=os.path.getmtime, reverse=True):
+        for f in files:
             stat = f.stat()
             entry = {
                 "filename": f.name,
@@ -400,6 +432,30 @@ class Handler(BaseHTTPRequestHandler):
                     pass
             videos.append(entry)
         self.send_json_response(videos)
+
+    def save_library_order(self):
+        try:
+            length = int(self.headers.get("Content-Length", 0))
+            if length < 1 or length > 100_000:
+                raise ValueError("Invalid library order")
+            data = json.loads(self.rfile.read(length))
+            order = data["order"]
+            if (not isinstance(order, list)
+                or not all(isinstance(name, str) for name in order)
+                or len(order) != len(set(order))):
+                raise ValueError("Invalid library order")
+            with LIBRARY_ORDER_LOCK:
+                files = source_video_files()
+                existing = {f.name for f in files}
+                if not set(order).issubset(existing):
+                    raise ValueError("Unknown video in library order")
+                # A download may finish while the browser is reordering.
+                full_order = order + [f.name for f in files if f.name not in order]
+                write_library_order(full_order)
+        except (KeyError, TypeError, ValueError, json.JSONDecodeError):
+            self.send_error(400, "Invalid library order")
+            return
+        self.send_json_response({"ok": True, "order": full_order})
 
     def get_metadata(self):
         filename = urllib.parse.unquote(self.path[len("/api/metadata/"):])
@@ -559,6 +615,10 @@ class Handler(BaseHTTPRequestHandler):
             self.send_error(404, "Video not found")
             return
         video_path.unlink()
+        with LIBRARY_ORDER_LOCK:
+            order = read_library_order()
+            if safe_name in order:
+                write_library_order([name for name in order if name != safe_name])
         preset_path = video_preset_path(safe_name)
         if preset_path.exists():
             preset_path.unlink()

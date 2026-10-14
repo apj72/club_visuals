@@ -5,7 +5,7 @@ A browser-based tool for downloading Instagram videos and playing them back as m
 ## Features
 
 - **Download** Instagram reels and posts via URL
-- **Video library** with thumbnail previews
+- **Video library** with thumbnail previews and saved drag-and-drop ordering
 - **Multi-screen display** — Single, Dual (2-up), or 8x (4x2 grid) layouts
 - **32 mirror presets** — horizontal and vertical flip combinations across all screens, controlled by a slider and quick-access preset buttons
 - **Playlist / DJ mode** — build cue lists where each entry specifies a video, view mode, mirror preset, and duration (loop count or seconds). Playlists auto-advance and are saved as JSON for reuse across sessions

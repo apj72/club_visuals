@@ -2,6 +2,7 @@ downloads/
 thumbnails/
 playlists/
 video_presets/
+library_order.json
 .playwright-mcp/
 config.json
 .cookies.txt

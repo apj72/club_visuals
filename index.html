@@ -532,6 +532,15 @@
     gap: 10px;
   }
 
+  .library-order-hint { color: #888; font-size: 0.7rem; margin: 0 0 9px; }
+  .library-order-status { color: #e89595; font-size: 0.7rem; margin: 6px 0; }
+  .library-item.dragging { opacity: 0.45; }
+  .library-drag-handle {
+    flex: 0 0 18px; color: #8090a8; cursor: grab; font-size: 1rem;
+    text-align: center; user-select: none; line-height: 1;
+  }
+  .library-drag-handle:focus-visible { outline: 2px solid #4ecca3; border-radius: 3px; }
+
   .library-item {
     display: flex;
     align-items: center;
@@ -941,6 +950,8 @@
     </div>
     <div class="tab-content active" id="libraryTab">
       <div class="library" id="librarySection" style="display:none">
+        <p class="library-order-hint">Drag videos to change their order. Use arrow keys on the drag handle for precise moves.</p>
+        <div class="library-order-status" id="libraryOrderStatus" role="status" aria-live="polite"></div>
         <div class="library-grid" id="libraryGrid"></div>
       </div>
     </div>
@@ -2404,8 +2415,11 @@
       const res = await fetch('/api/videos');
       const videos = await res.json();
       videoListCache = videos;
+      document.getElementById('libraryOrderStatus').textContent = '';
       if (videos.length === 0) {
         librarySection.style.display = 'none';
+        libraryGrid.innerHTML = '';
+        populateVideoDropdown();
         return;
       }
       librarySection.style.display = 'block';
@@ -2414,7 +2428,20 @@
         const item = document.createElement('div');
         item.className = 'library-item' + (v.filename === currentFilename ? ' active' : '');
         item.dataset.filename = v.filename;
-        item.onclick = () => showVideo(v.filename);
+        item.draggable = true;
+        item.onclick = () => { if (!suppressLibraryClick) showVideo(v.filename); };
+        item.addEventListener('dragstart', startLibraryDrag);
+        item.addEventListener('dragend', endLibraryDrag);
+
+        const handle = document.createElement('span');
+        handle.className = 'library-drag-handle';
+        handle.textContent = '⠿';
+        handle.tabIndex = 0;
+        handle.setAttribute('role', 'button');
+        handle.setAttribute('aria-label', 'Move ' + v.filename + ' up or down');
+        handle.title = 'Drag to reorder; use Up/Down arrow keys';
+        handle.addEventListener('keydown', moveLibraryItemWithKeys);
+        handle.onclick = (e) => e.stopPropagation();
 
         const img = document.createElement('img');
         img.src = '/thumbnail/' + encodeURIComponent(v.filename);
@@ -2437,13 +2464,100 @@
         del.title = 'Delete video';
         del.onclick = (e) => { e.stopPropagation(); deleteVideo(v.filename, item); };
 
+        item.appendChild(handle);
         item.appendChild(img);
         item.appendChild(label);
         item.appendChild(del);
         libraryGrid.appendChild(item);
       });
       populateVideoDropdown();
+      if (autoSelectMode) renderAutoSelectUI();
     } catch {}
+  }
+
+  let draggedLibraryItem = null;
+  let dragOriginalOrder = [];
+  let libraryDropCompleted = false;
+  let suppressLibraryClick = false;
+  let libraryOrderSave = Promise.resolve();
+  let libraryOrderRevision = 0;
+
+  function libraryFilenames() {
+    return Array.from(libraryGrid.children, item => item.dataset.filename);
+  }
+
+  function updateLibraryOrder() {
+    const order = libraryFilenames();
+    const positions = new Map(order.map((name, index) => [name, index]));
+    videoListCache.sort((a, b) => positions.get(a.filename) - positions.get(b.filename));
+    populateVideoDropdown();
+    const revision = ++libraryOrderRevision;
+    const status = document.getElementById('libraryOrderStatus');
+    status.textContent = 'Saving order…';
+    libraryOrderSave = libraryOrderSave.catch(() => {}).then(async () => {
+      const response = await fetch('/api/library-order', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ order }),
+      });
+      if (!response.ok) throw new Error('Could not save video order.');
+      if (revision === libraryOrderRevision) status.textContent = '';
+    }).catch(async error => {
+      if (revision === libraryOrderRevision) {
+        await loadLibrary();
+        status.textContent = error.message;
+      }
+    });
+  }
+
+  function startLibraryDrag(event) {
+    if (event.target.closest('.delete-btn, .confirm-delete, .auto-cb')) {
+      event.preventDefault();
+      return;
+    }
+    draggedLibraryItem = event.currentTarget;
+    dragOriginalOrder = libraryFilenames();
+    libraryDropCompleted = false;
+    event.dataTransfer.effectAllowed = 'move';
+    event.dataTransfer.setData('text/plain', draggedLibraryItem.dataset.filename);
+    requestAnimationFrame(() => draggedLibraryItem?.classList.add('dragging'));
+  }
+
+  libraryGrid.addEventListener('dragover', event => {
+    if (!draggedLibraryItem) return;
+    event.preventDefault();
+    const target = event.target.closest('.library-item');
+    if (!target || target === draggedLibraryItem) return;
+    const before = event.clientY < target.getBoundingClientRect().top + target.offsetHeight / 2;
+    libraryGrid.insertBefore(draggedLibraryItem, before ? target : target.nextSibling);
+  });
+
+  libraryGrid.addEventListener('drop', event => {
+    if (!draggedLibraryItem) return;
+    event.preventDefault();
+    libraryDropCompleted = true;
+    if (libraryFilenames().some((name, index) => name !== dragOriginalOrder[index])) updateLibraryOrder();
+  });
+
+  function endLibraryDrag() {
+    if (!draggedLibraryItem) return;
+    draggedLibraryItem.classList.remove('dragging');
+    if (!libraryDropCompleted) {
+      const items = new Map(Array.from(libraryGrid.children, item => [item.dataset.filename, item]));
+      dragOriginalOrder.forEach(name => libraryGrid.appendChild(items.get(name)));
+    }
+    draggedLibraryItem = null;
+    suppressLibraryClick = true;
+    setTimeout(() => { suppressLibraryClick = false; }, 0);
+  }
+
+  function moveLibraryItemWithKeys(event) {
+    if (event.key !== 'ArrowUp' && event.key !== 'ArrowDown') return;
+    event.preventDefault();
+    const item = event.currentTarget.parentElement;
+    const sibling = event.key === 'ArrowUp' ? item.previousElementSibling : item.nextElementSibling;
+    if (!sibling) return;
+    libraryGrid.insertBefore(item, event.key === 'ArrowUp' ? sibling : sibling.nextSibling);
+    updateLibraryOrder();
   }
   function deleteVideo(filename, itemEl) {
     if (itemEl.querySelector('.confirm-delete')) return;
