@@ -79,7 +79,7 @@ Click **3D Logo** for a solid object built from the Version1 SVG, or **3D Text**
 
 Select a video from the Library, then set its layout, Playback mode, speed (0.25×–2× in 0.25× steps), panel orientation, zoom and X/Y position in the player. The suggested name in **Saved layouts for this video** updates as you change settings; edit it if you like, then click **Save layout**. You can save several layouts for the same video, load any of them to preview it, or delete one. In the Playlist tab, select that video and choose one of its saved layouts from the **Saved layout** dropdown before adding an entry. The entry stores a copy of the values, so later changes to the saved layout do not change existing playlists.
 
-Right-click a saved layout (or click its **⋯** button) and choose **Add to playlist…**. Select an existing playlist or create a new one, set the duration, and click **Add to playlist**. This saves the entry immediately. Loaded playlists show a video thumbnail beside each entry and omit a leading “Video by” from the displayed video name.
+Right-click a saved layout (or click its **⋯** button) and choose **Add to playlist…**. You can also click **+ Playlist** on any video in the Library sidebar, or right-click that video. Select an existing playlist or create a new one, set the duration and transition, and click **Add to playlist**. The entry is saved immediately. A Library video uses its current player layout when selected, or a Single layout when it is not selected.
 
 ### Playlist / DJ mode
 
@@ -91,7 +91,7 @@ Right-click a saved layout (or click its **⋯** button) and choose **Add to pla
    - **Preset** — mirror configuration (P1–P32)
    - **Duration** — number of loops or seconds
    - **Transition in** — Cut, Fade In, Fade Out/In, Cross Dissolve, Wipe, Zoom / Spin, or Whip Pan, with a duration from 0.15 to 5 seconds
-4. Drag entries to reorder them, use ✦ to edit a transition, or × to remove an entry
+4. Drag the visual transition icons into the slots between video cards. Click a slot to adjust its type or duration. Drag video cards to reorder them, or use × to remove one.
 5. Click **Save** to persist the playlist (survives page reloads)
 6. Click **Play** to start — the indicator bar shows current entry and progress
 7. Use **Next** to skip ahead, **Stop** to exit playlist mode
@@ -102,6 +102,8 @@ The same video can appear multiple times with different treatments, e.g.:
 - 8x mode, preset 7, for 5 loops
 
 Use **Transition** beside Playback to choose the effect and duration when selecting a video manually. Playlist entries have their own incoming transitions, including when you press **Next**. Transitions appear in fullscreen, clean output, and recordings.
+
+The timeline shows a thumbnail, layout, and configured run time beside every video, plus an estimated playlist total. A loop-based run time accounts for source length, loop count, playback speed, and Bounce playback. Seconds-based entries show their specified slot length.
 
 ### Capture an Instagram background clip
 

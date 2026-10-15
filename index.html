@@ -16,14 +16,14 @@
   }
 
   .header {
-    max-width: 1100px;
+    max-width: 1200px;
     margin: 0 auto 20px;
   }
 
   .main-layout {
     display: flex;
     gap: 24px;
-    max-width: 1100px;
+    max-width: 1200px;
     margin: 0 auto;
     align-items: flex-start;
   }
@@ -36,7 +36,7 @@
   }
 
   .right-col {
-    width: 280px;
+    width: 350px;
     flex-shrink: 0;
     max-height: calc(100vh - 40px);
     overflow-y: auto;
@@ -539,6 +539,7 @@
 
   .library-order-hint { color: #888; font-size: 0.7rem; margin: 0 0 9px; }
   .library-order-status { color: #e89595; font-size: 0.7rem; margin: 6px 0; }
+  .library-playlist-status { color: #4ecca3; }
   .library-item.dragging { opacity: 0.45; }
   .library-drag-handle {
     flex: 0 0 18px; color: #8090a8; cursor: grab; font-size: 1rem;
@@ -560,6 +561,12 @@
   }
 
   .library-item:hover { background: #1f2b4d; }
+  .library-item .library-playlist-btn {
+    position: absolute; right: 6px; bottom: 6px; z-index: 2;
+    padding: 4px 7px; border: 1px solid #4ecca3; border-radius: 5px;
+    background: #102936; color: #b8ffe6; font-size: 0.68rem;
+  }
+  .library-item .library-playlist-btn:hover { background: #1b5446; }
   .library-item .delete-btn {
     position: absolute; top: 4px; right: 4px;
     width: 22px; height: 22px; border-radius: 50%;
@@ -601,10 +608,11 @@
   .library-item .label {
     font-size: 0.75rem;
     color: #999;
+    flex: 1; min-width: 0; align-self: flex-start; margin-top: 2px;
     overflow: hidden;
     text-overflow: ellipsis;
     display: -webkit-box;
-    -webkit-line-clamp: 3;
+    -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     word-break: break-word;
   }
@@ -632,9 +640,46 @@
   }
   .pl-header .pl-select { flex: 1; margin-bottom: 0; }
   .pl-entries { margin-bottom: 12px; min-height: 20px; }
+  .pl-timeline-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin: 6px 0 8px; }
+  .pl-timeline-head h3 { font-size: 0.79rem; color: #e7eef5; }
+  .pl-timeline-total { font-size: 0.72rem; color: #4ecca3; font-variant-numeric: tabular-nums; }
+  .pl-palette-title { font-size: 0.7rem; color: #9aa7b8; margin: 8px 0 6px; }
+  .pl-transition-palette { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 5px; margin-bottom: 10px; }
+  .pl-transition-tool {
+    min-width: 0; padding: 6px 3px; border: 1px solid #34445e; border-radius: 7px;
+    background: #101a2b; color: #b9c6d8; cursor: grab; font-size: 0.62rem;
+    display: flex; flex-direction: column; align-items: center; gap: 3px;
+  }
+  .pl-transition-tool svg { width: 31px; height: 25px; color: #e59cb2; }
+  .pl-transition-tool span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; }
+  .pl-transition-tool:hover, .pl-transition-tool.selected { border-color: #4ecca3; color: #fff; background: #183044; }
+  .pl-transition-tool:active { cursor: grabbing; }
+  .pl-timeline-empty { padding: 18px 10px; border: 1px dashed #46536c; border-radius: 8px; color: #9aa7b8; font-size: 0.76rem; text-align: center; }
+  .pl-transition-slot {
+    margin: 4px 0 5px 18px; min-height: 39px; border: 1px dashed #4d617d;
+    border-radius: 7px; background: #101a2b; color: #aabbd1;
+  }
+  .pl-transition-slot.drag-over { border: 2px solid #4ecca3; background: #214333; }
+  .pl-entries.palette-armed .pl-transition-slot { border-color: #4ecca3; }
+  .pl-transition-slot-main {
+    display: flex; align-items: center; gap: 7px; width: 100%; padding: 5px 8px;
+    background: transparent; color: inherit; text-align: left; font-size: 0.72rem;
+  }
+  .pl-transition-slot-main:hover { color: #fff; }
+  .pl-transition-slot-main svg { width: 27px; height: 23px; flex: 0 0 27px; color: #e59cb2; }
+  .pl-transition-slot-main strong { color: #e7eef5; font-weight: 600; }
+  .pl-transition-slot-main small { margin-left: auto; color: #9aa7b8; font-variant-numeric: tabular-nums; }
+  .pl-transition-slot-edit { display: flex; gap: 5px; padding: 0 7px 7px; }
+  .pl-transition-slot-edit[hidden] { display: none; }
+  .pl-transition-slot-edit select, .pl-transition-slot-edit input {
+    min-width: 0; padding: 5px; color: #fff; background: #0d1628;
+    border: 1px solid #46536c; border-radius: 4px; font-size: 0.7rem;
+  }
+  .pl-transition-slot-edit select { flex: 1; }
+  .pl-transition-slot-edit input { width: 57px; }
   .pl-entry {
     display: flex; align-items: center; gap: 6px;
-    padding: 6px 8px; margin-bottom: 4px;
+    padding: 7px 8px; margin-bottom: 8px;
     background: #16213e; border-radius: 6px; font-size: 0.72rem; color: #aaa;
     cursor: grab; user-select: none;
   }
@@ -642,20 +687,16 @@
   .pl-entry.active { outline: 2px solid #4ecca3; }
   .pl-entry.previewing { background: #1f2b4d; border-left: 3px solid #e94560; }
   .pl-entry.drag-over { border-top: 2px solid #4ecca3; margin-top: -2px; }
-  .pl-entry .pl-e-thumb { width: 56px; height: 42px; flex: 0 0 56px; object-fit: cover; background: #0d1628; border-radius: 4px; }
+  .pl-entry .pl-e-thumb { width: 72px; height: 54px; flex: 0 0 72px; object-fit: cover; background: #0d1628; border-radius: 4px; }
   .pl-entry .pl-e-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
   .pl-entry .pl-e-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #d7e3ed; }
   .pl-entry .pl-e-info {
     font-size: 0.65rem; color: #9aa7b8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   }
-  .pl-e-transition-edit { display: flex; gap: 5px; margin-top: 4px; }
-  .pl-e-transition-edit[hidden] { display: none; }
-  .pl-e-transition-edit select, .pl-e-transition-edit input {
-    min-width: 0; padding: 4px; color: #fff; background: #0d1628;
-    border: 1px solid #46536c; border-radius: 4px; font-size: 0.7rem;
-  }
-  .pl-e-transition-edit select { flex: 1; }
-  .pl-e-transition-edit input { width: 54px; }
+  .pl-entry .pl-e-name { font-size: 0.78rem; font-weight: 600; }
+  .pl-e-index { color: #4ecca3; font-size: 0.67rem; font-weight: 700; }
+  .pl-e-runtime { color: #4ecca3; font-size: 0.72rem; font-variant-numeric: tabular-nums; font-weight: 700; white-space: nowrap; }
+  .pl-e-runtime-detail { color: #8ea3b9; font-size: 0.64rem; }
   .pl-entry .pl-e-btn {
     background: none; border: none; color: #666; font-size: 0.8rem;
     cursor: pointer; padding: 0 3px; line-height: 1;
@@ -816,6 +857,11 @@
   .settings-clip { margin-top: 24px; padding-top: 18px; border-top: 1px solid #333; }
   .settings-clip-actions { display: flex; gap: 8px; margin-top: 8px; }
   .settings-clip-actions button { flex: 1; padding: 8px; font-size: 0.72rem; }
+  @media (max-width: 850px) {
+    .main-layout { flex-direction: column; }
+    .left-col { position: static; width: 100%; }
+    .right-col { width: 100%; max-height: none; }
+  }
 </style>
 </head>
 <body>
@@ -986,8 +1032,9 @@
     </div>
     <div class="tab-content active" id="libraryTab">
       <div class="library" id="librarySection" style="display:none">
-        <p class="library-order-hint">Drag videos to change their order. Use arrow keys on the drag handle for precise moves.</p>
+        <p class="library-order-hint">Drag videos to change their order. Use arrow keys on the drag handle for precise moves. Click + Playlist on any video to add it to a playlist.</p>
         <div class="library-order-status" id="libraryOrderStatus" role="status" aria-live="polite"></div>
+        <div class="library-order-status library-playlist-status" id="libraryPlaylistStatus" role="status" aria-live="polite"></div>
         <div class="library-grid" id="libraryGrid"></div>
       </div>
     </div>
@@ -998,6 +1045,9 @@
         <button class="pl-btn" onclick="deletePlaylistConfirm()">Del</button>
       </div>
       <input type="text" class="pl-name-input" id="plName" placeholder="Playlist name...">
+      <div class="pl-palette-title">Drag an effect between videos, or select one and click a transition slot.</div>
+      <div class="pl-transition-palette" id="plTransitionPalette" aria-label="Transition effects"></div>
+      <div class="pl-timeline-head"><h3>Playlist timeline</h3><span class="pl-timeline-total" id="plTimelineTotal">0 videos</span></div>
       <div class="pl-entries" id="plEntries"></div>
       <div class="pl-add-form">
         <h3>Add Entry</h3>
@@ -1383,7 +1433,10 @@
       return;
     }
     playBtn.textContent = 'Play';
-    if (plPlaying && plPlaylist.entries[plEntryIdx]?.duration.type === 'loops') onEntryComplete();
+    if (plPlaying && plPlaylist.entries[plEntryIdx]?.duration.type === 'loops') {
+      const completed = onLoopComplete();
+      if (!completed) { video.currentTime = 0; video.play(); }
+    }
   });
 
   video.addEventListener('timeupdate', () => {
@@ -1416,8 +1469,10 @@
       const entry = plPlaylist.entries[plEntryIdx];
       if (entry && entry.duration.type === 'loops' && plLoopCount >= entry.duration.value) {
         onEntryComplete();
+        return true;
       }
     }
+    return false;
   }
 
   videoWrap.addEventListener('mousemove', showControls);
@@ -2342,6 +2397,19 @@
     layoutContextMenu.querySelector('button').focus();
   }
 
+  function openLibraryPlaylistDialog(filename) {
+    const isCurrent = currentFilename === filename;
+    const layout = isCurrent ? currentPlayerLayout() : {
+      view: 'single', preset: 1, loopMode: 1, speed: 1, zoom: 1, panX: 0, panY: 0,
+    };
+    presetPlaylistTarget = {
+      filename,
+      source: 'library',
+      preset: { ...layout, id: null, name: isCurrent ? 'Current player layout' : 'Single · default layout' },
+    };
+    openPresetPlaylistDialog();
+  }
+
   document.getElementById('layoutAddToPlaylist').addEventListener('click', () => {
     closeLayoutContextMenu();
     if (presetPlaylistTarget) openPresetPlaylistDialog();
@@ -2361,6 +2429,8 @@
   async function openPresetPlaylistDialog() {
     const target = presetPlaylistTarget;
     const { filename, preset } = target;
+    document.getElementById('presetPlaylistTitle').textContent = target.source === 'library'
+      ? 'Add video to playlist' : 'Add layout to playlist';
     document.getElementById('presetPlaylistDescription').textContent = preset.name + ' · ' + playlistVideoName(filename);
     document.getElementById('presetNewPlaylistName').value = '';
     document.getElementById('presetPlaylistDurationType').value = 'loops';
@@ -2386,7 +2456,7 @@
 
   async function addPresetToPlaylist() {
     if (!presetPlaylistTarget || presetPlaylistAddButton.disabled) return;
-    const { filename, preset } = presetPlaylistTarget;
+    const { filename, preset, source } = presetPlaylistTarget;
     const type = document.getElementById('presetPlaylistDurationType').value;
     const value = Number(document.getElementById('presetPlaylistDurationValue').value);
     if (!Number.isInteger(value) || value < 1 || value > 9999) {
@@ -2396,7 +2466,7 @@
     let slug = presetPlaylistSelect.value;
     let playlist;
     presetPlaylistAddButton.disabled = true;
-    presetPlaylistStatus.textContent = 'Adding layout…';
+    presetPlaylistStatus.textContent = source === 'library' ? 'Adding video…' : 'Adding layout…';
     try {
       if (slug) {
         if (slug === plSlug) playlist = { ...plPlaylist, entries: [...plPlaylist.entries] };
@@ -2426,7 +2496,7 @@
           type: document.getElementById('presetPlaylistTransitionType').value,
           duration: document.getElementById('presetPlaylistTransitionDuration').value,
         }),
-        layoutPresetId: preset.id, layoutPresetName: preset.name
+        layoutPresetId: preset.id, layoutPresetName: preset.id ? preset.name : null
       });
       const response = await fetch('/api/playlist/' + encodeURIComponent(slug), {
         method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(playlist)
@@ -2436,12 +2506,12 @@
       await loadPlaylists();
       presetPlaylistDialog.close();
       presetPlaylistTarget = null;
-      const status = document.getElementById('videoPresetStatus');
+      const status = document.getElementById(source === 'library' ? 'libraryPlaylistStatus' : 'videoPresetStatus');
       const open = document.createElement('button');
       open.type = 'button';
       open.textContent = 'Open playlist';
       open.onclick = async () => { switchTab('playlist'); await loadPlaylistBySlug(slug); };
-      status.replaceChildren(document.createTextNode('Added “' + preset.name + '” to “' + playlist.name + '”. '), open);
+      status.replaceChildren(document.createTextNode('Added “' + (source === 'library' ? playlistVideoName(filename) : preset.name) + '” to “' + playlist.name + '”. '), open);
     } catch (error) { presetPlaylistStatus.textContent = error.message; }
     finally { presetPlaylistAddButton.disabled = false; }
   }
@@ -2535,6 +2605,10 @@
         item.dataset.filename = v.filename;
         item.draggable = true;
         item.onclick = () => { if (!suppressLibraryClick) showVideo(v.filename); };
+        item.addEventListener('contextmenu', event => {
+          event.preventDefault();
+          openLibraryPlaylistDialog(v.filename);
+        });
         item.addEventListener('dragstart', startLibraryDrag);
         item.addEventListener('dragend', endLibraryDrag);
 
@@ -2569,9 +2643,17 @@
         del.title = 'Delete video';
         del.onclick = (e) => { e.stopPropagation(); deleteVideo(v.filename, item); };
 
+        const addToPlaylist = document.createElement('button');
+        addToPlaylist.type = 'button';
+        addToPlaylist.className = 'library-playlist-btn';
+        addToPlaylist.textContent = '+ Playlist';
+        addToPlaylist.setAttribute('aria-label', 'Add ' + playlistVideoName(v.filename) + ' to playlist');
+        addToPlaylist.onclick = event => { event.stopPropagation(); openLibraryPlaylistDialog(v.filename); };
+
         item.appendChild(handle);
         item.appendChild(img);
         item.appendChild(label);
+        item.appendChild(addToPlaylist);
         item.appendChild(del);
         libraryGrid.appendChild(item);
       });
@@ -2615,7 +2697,7 @@
   }
 
   function startLibraryDrag(event) {
-    if (event.target.closest('.delete-btn, .confirm-delete, .auto-cb')) {
+    if (event.target.closest('.delete-btn, .confirm-delete, .auto-cb, .library-playlist-btn')) {
       event.preventDefault();
       return;
     }
@@ -3198,6 +3280,129 @@
     'cross-dissolve': 'Cross Dissolve', 'wipe': 'Wipe',
     'zoom-spin': 'Zoom / Spin', 'whip-pan': 'Whip Pan',
   };
+  const TRANSITION_ART = {
+    'cut': '<path d="M5 4v24M43 4v24M20 4v24M28 4v24"/><path d="M20 16h8" stroke-dasharray="2 3"/>',
+    'fade-in': '<rect x="5" y="6" width="10" height="20" fill="currentColor" opacity=".25"/><rect x="18" y="6" width="10" height="20" fill="currentColor" opacity=".55"/><rect x="31" y="6" width="12" height="20" fill="currentColor"/>',
+    'fade-out': '<rect x="5" y="6" width="10" height="20" fill="currentColor"/><rect x="18" y="6" width="10" height="20" fill="currentColor" opacity=".45"/><rect x="31" y="6" width="12" height="20" fill="currentColor" opacity=".12"/>',
+    'cross-dissolve': '<rect x="5" y="5" width="23" height="20" rx="2" fill="currentColor" opacity=".32"/><rect x="19" y="7" width="24" height="20" rx="2" fill="currentColor" opacity=".55"/>',
+    'wipe': '<rect x="5" y="5" width="38" height="22" rx="2"/><path d="M25 5v22M16 16h18m-5-5 5 5-5 5"/>',
+    'zoom-spin': '<circle cx="24" cy="16" r="12"/><circle cx="24" cy="16" r="5"/><path d="M29 4a14 14 0 0 1 9 12m0 0-4-4m4 4 3-4"/>',
+    'whip-pan': '<path d="M3 8h25M9 16h30M3 24h25M28 8l8 8-8 8"/>',
+  };
+  function transitionIcon(type) {
+    return `<svg viewBox="0 0 48 32" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${TRANSITION_ART[type] || TRANSITION_ART.cut}</svg>`;
+  }
+  const plPalette = document.getElementById('plTransitionPalette');
+  const plTimelineTotal = document.getElementById('plTimelineTotal');
+  let plPaletteType = 'cross-dissolve';
+  let plPaletteArmed = false;
+  let plRenderVersion = 0;
+  const plSourceDurationCache = new Map();
+
+  function renderTransitionPalette() {
+    plPalette.replaceChildren();
+    plEntriesEl.classList.toggle('palette-armed', plPaletteArmed);
+    for (const [type, name] of Object.entries(TRANSITION_NAMES)) {
+      const tool = document.createElement('button');
+      tool.type = 'button'; tool.className = 'pl-transition-tool';
+      tool.classList.toggle('selected', plPaletteArmed && plPaletteType === type);
+      tool.draggable = true; tool.title = 'Drag ' + name + ' between videos';
+      tool.setAttribute('aria-label', 'Select ' + name + ' transition');
+      tool.innerHTML = transitionIcon(type) + '<span>' + name + '</span>';
+      tool.addEventListener('click', () => {
+        plPaletteType = type;
+        plPaletteArmed = true;
+        plTransitionType.value = type;
+        renderTransitionPalette();
+      });
+      tool.addEventListener('dragstart', event => {
+        plPaletteType = type;
+        plDraggingTransitionType = type;
+        event.dataTransfer.effectAllowed = 'copy';
+        event.dataTransfer.setData('application/x-club-transition', type);
+        event.dataTransfer.setData('text/plain', name);
+      });
+      tool.addEventListener('dragend', () => { plDraggingTransitionType = ''; });
+      plPalette.appendChild(tool);
+    }
+  }
+  renderTransitionPalette();
+
+  function formatPlaylistTime(seconds) {
+    const whole = Math.max(0, Math.round(seconds));
+    const hours = Math.floor(whole / 3600);
+    const minutes = Math.floor(whole % 3600 / 60);
+    const secs = whole % 60;
+    return hours ? `${hours}:${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`
+      : `${minutes}:${String(secs).padStart(2, '0')}`;
+  }
+
+  function playlistEntrySeconds(entry, sourceSeconds) {
+    if (entry.duration?.type === 'seconds') return Math.max(0, Number(entry.duration.value) || 0);
+    if (!Number.isFinite(sourceSeconds) || sourceSeconds <= 0) return null;
+    const loops = Math.max(1, Number(entry.duration?.value) || 1);
+    const speed = Math.max(0.25, Number(entry.speed) || 1);
+    return sourceSeconds * loops * (Number(entry.loopMode) === 2 ? 2 : 1) / speed;
+  }
+
+  function playlistSourceSeconds(filename) {
+    if (plSourceDurationCache.has(filename)) return plSourceDurationCache.get(filename);
+    const pending = (async () => {
+      const metadata = await getMetadata(filename);
+      const seconds = Number(metadata?.duration);
+      if (Number.isFinite(seconds) && seconds > 0) return seconds;
+      if (currentFilename === filename && Number.isFinite(video.duration) && video.duration > 0) return video.duration;
+      return new Promise(resolve => {
+        const probe = document.createElement('video');
+        probe.preload = 'metadata';
+        let settled = false;
+        const timeout = setTimeout(() => finish(null), 7000);
+        function finish(value) {
+          if (settled) return;
+          settled = true;
+          clearTimeout(timeout);
+          probe.removeAttribute('src');
+          probe.load();
+          resolve(value);
+        }
+        probe.addEventListener('loadedmetadata', () => finish(Number.isFinite(probe.duration) ? probe.duration : null), { once: true });
+        probe.addEventListener('error', () => finish(null), { once: true });
+        probe.src = '/video/' + encodeURIComponent(filename);
+      });
+    })();
+    plSourceDurationCache.set(filename, pending);
+    return pending;
+  }
+
+  async function updatePlaylistRunTimes(version) {
+    const entries = plPlaylist.entries;
+    const filenames = [...new Set(entries.filter(entry => entry.duration?.type !== 'seconds').map(entry => entry.video))];
+    const lengths = filenames.length
+      ? new Map(await Promise.all(filenames.map(async filename => [filename, await playlistSourceSeconds(filename)])))
+      : new Map();
+    if (version !== plRenderVersion) return;
+    let total = 0, unknown = 0;
+    entries.forEach((entry, index) => {
+      const seconds = playlistEntrySeconds(entry, lengths.get(entry.video));
+      const card = plEntriesEl.querySelector(`.pl-entry[data-idx="${index}"]`);
+      if (!card) return;
+      const runtime = card.querySelector('.pl-e-runtime');
+      const detail = card.querySelector('.pl-e-runtime-detail');
+      if (seconds === null) {
+        unknown++;
+        runtime.textContent = 'Time unknown';
+        detail.textContent = 'Source duration unavailable';
+      } else {
+        total += seconds;
+        runtime.textContent = formatPlaylistTime(seconds);
+        detail.textContent = entry.duration.type === 'seconds'
+          ? `${entry.duration.value}s slot${Number(entry.speed || 1) !== 1 ? ' · ' + entry.speed + '× speed' : ''}`
+          : `${entry.duration.value} loop${Number(entry.duration.value) === 1 ? '' : 's'} · ${Number(entry.speed || 1)}×${Number(entry.loopMode) === 2 ? ' · Bounce' : ''}`;
+      }
+    });
+    plTimelineTotal.textContent = entries.length + ' video' + (entries.length === 1 ? '' : 's')
+      + (unknown === entries.length ? ' · time unavailable' : ' · ' + (unknown ? '≥' : '~') + formatPlaylistTime(total));
+  }
 
   for (let i = 1; i <= 32; i++) {
     const opt = document.createElement('option');
@@ -3425,6 +3630,7 @@
 
   let plPreviewIdx = -1;
   let plDragIdx = -1;
+  let plDraggingTransitionType = '';
 
   function previewEntry(idx) {
     const e = plPlaylist.entries[idx];
@@ -3438,112 +3644,142 @@
     renderPlaylistEntries();
   }
 
-  function renderPlaylistEntries() {
-    plEntriesEl.innerHTML = '';
-    plPlaylist.entries.forEach((e, i) => {
-      const div = document.createElement('div');
-      let cls = 'pl-entry';
-      if (plPlaying && i === plEntryIdx) cls += ' active';
-      if (!plPlaying && i === plPreviewIdx) cls += ' previewing';
-      div.className = cls;
-      div.dataset.idx = i;
+  function setEntryTransition(index, type, duration) {
+    const entry = plPlaylist.entries[index];
+    if (!entry || !TRANSITION_NAMES[type]) return;
+    entry.transition = normaliseTransition({ type, duration });
+    plPaletteArmed = false;
+    renderTransitionPalette();
+    renderPlaylistEntries();
+  }
 
-      const vl = e.view === 'octo' ? '8x' : e.view === 'quad' ? '4x' : e.view === 'triple' ? '3x' : e.view === 'dual' ? 'Dual' : '1x';
-      const dt = e.duration.type === 'loops' ? e.duration.value + 'L' : e.duration.value + 's';
-      const sn = playlistVideoName(e.video);
+  function makeTransitionSlot(entry, index) {
+    const transition = normaliseTransition(entry.transition);
+    const slot = document.createElement('div');
+    slot.className = 'pl-transition-slot';
+    slot.dataset.idx = index;
+    const main = document.createElement('button');
+    main.type = 'button'; main.className = 'pl-transition-slot-main';
+    main.setAttribute('aria-label', (index ? 'Transition before video ' + (index + 1) : 'Opening transition') + ': ' + TRANSITION_NAMES[transition.type]);
+    main.innerHTML = transitionIcon(transition.type) + '<span>' + (index ? 'Between clips' : 'Opening')
+      + ' · <strong>' + TRANSITION_NAMES[transition.type] + '</strong></span><small>'
+      + (transition.type === 'cut' ? 'instant' : transition.duration + 's') + '</small>';
+    const edit = document.createElement('div');
+    edit.className = 'pl-transition-slot-edit'; edit.hidden = true;
+    const select = plTransitionType.cloneNode(true);
+    select.removeAttribute('id'); select.value = transition.type;
+    select.setAttribute('aria-label', 'Transition type before video ' + (index + 1));
+    const duration = document.createElement('input');
+    duration.type = 'number'; duration.min = '0.15'; duration.max = '5'; duration.step = '0.05';
+    duration.value = transition.duration;
+    duration.setAttribute('aria-label', 'Transition duration in seconds');
+    select.addEventListener('change', () => setEntryTransition(index, select.value, duration.value));
+    duration.addEventListener('change', () => setEntryTransition(index, select.value, duration.value));
+    edit.append(select, duration);
+    main.addEventListener('click', () => {
+      if (plPaletteArmed) setEntryTransition(index, plPaletteType, transition.duration);
+      else edit.hidden = !edit.hidden;
+    });
+    slot.addEventListener('dragover', event => {
+      if (!plDraggingTransitionType) return;
+      event.preventDefault(); event.stopPropagation();
+      event.dataTransfer.dropEffect = 'copy';
+      slot.classList.add('drag-over');
+    });
+    slot.addEventListener('dragleave', () => slot.classList.remove('drag-over'));
+    slot.addEventListener('drop', event => {
+      const type = event.dataTransfer.getData('application/x-club-transition') || plDraggingTransitionType;
+      if (!TRANSITION_NAMES[type]) return;
+      event.preventDefault(); event.stopPropagation();
+      plDraggingTransitionType = '';
+      setEntryTransition(index, type, transition.duration);
+    });
+    slot.append(main, edit);
+    return slot;
+  }
+
+  function renderPlaylistEntries() {
+    const version = ++plRenderVersion;
+    plEntriesEl.replaceChildren();
+    if (!plPlaylist.entries.length) {
+      const empty = document.createElement('div');
+      empty.className = 'pl-timeline-empty';
+      empty.textContent = 'Add a video below or from the Library to start your timeline.';
+      plEntriesEl.appendChild(empty);
+      plTimelineTotal.textContent = '0 videos';
+      return;
+    }
+    plPlaylist.entries.forEach((entry, index) => {
+      plEntriesEl.appendChild(makeTransitionSlot(entry, index));
+      const card = document.createElement('div');
+      card.className = 'pl-entry';
+      if (plPlaying && index === plEntryIdx) card.classList.add('active');
+      if (!plPlaying && index === plPreviewIdx) card.classList.add('previewing');
+      card.dataset.idx = index;
+      card.draggable = true;
 
       const thumb = document.createElement('img');
       thumb.className = 'pl-e-thumb';
-      thumb.src = '/thumbnail/' + encodeURIComponent(e.video);
-      thumb.alt = '';
-      thumb.loading = 'lazy';
+      thumb.src = '/thumbnail/' + encodeURIComponent(entry.video);
+      thumb.alt = ''; thumb.loading = 'lazy';
       thumb.onerror = () => { thumb.style.visibility = 'hidden'; };
-      div.appendChild(thumb);
-
       const body = document.createElement('div');
       body.className = 'pl-e-body';
-
-      const nameSpan = document.createElement('span');
-      nameSpan.className = 'pl-e-name';
-      nameSpan.title = e.video;
-      nameSpan.textContent = sn;
-      body.appendChild(nameSpan);
-
-      const infoSpan = document.createElement('span');
-      infoSpan.className = 'pl-e-info';
-      const lm = e.loopMode === 2 ? ' B' : '';
-      infoSpan.textContent = (e.layoutPresetName ? e.layoutPresetName + ' · ' : '')
-        + vl + ' P' + e.preset + ' ' + dt + lm + (Number(e.speed ?? 1) !== 1 ? ' · ' + e.speed + '×' : '')
-        + ' · ' + TRANSITION_NAMES[normaliseTransition(e.transition).type];
-      body.appendChild(infoSpan);
-      const edit = document.createElement('div');
-      edit.className = 'pl-e-transition-edit';
-      edit.hidden = true;
-      edit.addEventListener('click', ev => ev.stopPropagation());
-      const typeSelect = plTransitionType.cloneNode(true);
-      typeSelect.removeAttribute('id');
-      typeSelect.value = normaliseTransition(e.transition).type;
-      typeSelect.setAttribute('aria-label', 'Transition into ' + sn);
-      const durationInput = document.createElement('input');
-      durationInput.type = 'number'; durationInput.min = '0.15'; durationInput.max = '5'; durationInput.step = '0.05';
-      durationInput.value = normaliseTransition(e.transition).duration;
-      durationInput.setAttribute('aria-label', 'Transition seconds');
-      const updateTransition = () => {
-        e.transition = normaliseTransition({ type: typeSelect.value, duration: durationInput.value });
-        durationInput.value = e.transition.duration;
-        infoSpan.textContent = infoSpan.textContent.replace(/ · (Cut|Fade In|Fade Out\/In|Cross Dissolve|Wipe|Zoom \/ Spin|Whip Pan)$/, ' · ' + TRANSITION_NAMES[e.transition.type]);
-      };
-      typeSelect.addEventListener('change', updateTransition);
-      durationInput.addEventListener('change', updateTransition);
-      edit.append(typeSelect, durationInput);
-      body.appendChild(edit);
-      div.appendChild(body);
-
-      const editBtn = document.createElement('button');
-      editBtn.className = 'pl-e-btn'; editBtn.type = 'button'; editBtn.textContent = '✦';
-      editBtn.title = 'Edit transition'; editBtn.setAttribute('aria-label', 'Edit transition for ' + sn);
-      editBtn.addEventListener('click', ev => { ev.stopPropagation(); edit.hidden = !edit.hidden; });
-      div.appendChild(editBtn);
-
-      const delBtn = document.createElement('button');
-      delBtn.className = 'pl-e-btn';
-      delBtn.textContent = '×';
-      delBtn.addEventListener('click', (ev) => { ev.stopPropagation(); removeEntry(i); });
-      div.appendChild(delBtn);
-
-      div.addEventListener('click', () => previewEntry(i));
-
-      div.draggable = true;
-      div.addEventListener('dragstart', (ev) => {
-        plDragIdx = i;
-        ev.dataTransfer.effectAllowed = 'move';
-        div.style.opacity = '0.4';
+      const number = document.createElement('span');
+      number.className = 'pl-e-index'; number.textContent = 'VIDEO ' + (index + 1);
+      const name = document.createElement('span');
+      name.className = 'pl-e-name'; name.title = entry.video;
+      name.textContent = playlistVideoName(entry.video);
+      const info = document.createElement('span');
+      info.className = 'pl-e-info';
+      const view = entry.view === 'octo' ? '8x' : entry.view === 'quad' ? '4x'
+        : entry.view === 'triple' ? '3x' : entry.view === 'dual' ? 'Dual' : 'Single';
+      info.textContent = (entry.layoutPresetName ? entry.layoutPresetName + ' · ' : '')
+        + view + ' · P' + (entry.preset || 1);
+      const detail = document.createElement('span');
+      detail.className = 'pl-e-runtime-detail'; detail.textContent = 'Calculating run time…';
+      body.append(number, name, info, detail);
+      const runtime = document.createElement('span');
+      runtime.className = 'pl-e-runtime'; runtime.textContent = '…';
+      runtime.title = 'Configured playlist run time';
+      const remove = document.createElement('button');
+      remove.className = 'pl-e-btn'; remove.type = 'button';
+      remove.textContent = '×'; remove.title = 'Remove video';
+      remove.setAttribute('aria-label', 'Remove ' + playlistVideoName(entry.video));
+      remove.addEventListener('click', event => { event.stopPropagation(); removeEntry(index); });
+      card.append(thumb, body, runtime, remove);
+      card.addEventListener('click', () => previewEntry(index));
+      card.addEventListener('dragstart', event => {
+        plDragIdx = index;
+        event.dataTransfer.effectAllowed = 'move';
+        event.dataTransfer.setData('text/plain', 'playlist-entry:' + index);
+        card.style.opacity = '0.4';
       });
-      div.addEventListener('dragend', () => {
-        plDragIdx = -1;
-        div.style.opacity = '';
-        plEntriesEl.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
+      card.addEventListener('dragend', () => {
+        plDragIdx = -1; card.style.opacity = '';
+        plEntriesEl.querySelectorAll('.drag-over').forEach(item => item.classList.remove('drag-over'));
       });
-      div.addEventListener('dragover', (ev) => {
-        ev.preventDefault();
-        ev.dataTransfer.dropEffect = 'move';
-        plEntriesEl.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
-        if (i !== plDragIdx) div.classList.add('drag-over');
+      card.addEventListener('dragover', event => {
+        if (plDragIdx < 0) return;
+        event.preventDefault(); event.dataTransfer.dropEffect = 'move';
+        if (index !== plDragIdx) card.classList.add('drag-over');
       });
-      div.addEventListener('dragleave', () => div.classList.remove('drag-over'));
-      div.addEventListener('drop', (ev) => {
-        ev.preventDefault();
-        div.classList.remove('drag-over');
-        if (plDragIdx < 0 || plDragIdx === i) return;
+      card.addEventListener('dragleave', () => card.classList.remove('drag-over'));
+      card.addEventListener('drop', event => {
+        if (plDragIdx < 0) return;
+        event.preventDefault(); card.classList.remove('drag-over');
+        if (plDragIdx === index) return;
         const moved = plPlaylist.entries.splice(plDragIdx, 1)[0];
-        plPlaylist.entries.splice(i, 0, moved);
-        if (plPreviewIdx === plDragIdx) plPreviewIdx = i;
+        plPlaylist.entries.splice(index, 0, moved);
+        if (plPreviewIdx === plDragIdx) plPreviewIdx = index;
         plDragIdx = -1;
         renderPlaylistEntries();
       });
-
-      plEntriesEl.appendChild(div);
+      plEntriesEl.appendChild(card);
     });
+    plTimelineTotal.textContent = plPlaylist.entries.length + ' video'
+      + (plPlaylist.entries.length === 1 ? '' : 's') + ' · calculating…';
+    updatePlaylistRunTimes(version);
   }
 
   function startPlaylist() {

@@ -46,7 +46,7 @@
 
       <h2>Adding entries</h2>
       <p>To reuse a layout you developed for a video, select that video and choose one of its named saved layouts. The form fills in layout, panel orientation, playback method, speed, zoom, and X/Y position. You can also load a saved layout below the main player; this selects the same video and layout in the playlist form. <strong>Add</strong> captures the visible player layout for the selected video, including any changes made after loading it. The playlist entry stores those values, so it keeps its look even if you later change or delete the saved layout.</p>
-      <p>For a quicker route, right-click a saved layout below the player (or click its <strong>⋯</strong> button) and choose <strong>Add to playlist…</strong>. Select an existing playlist or create a new one, choose a duration, then click <strong>Add to playlist</strong>. The entry is saved immediately; <strong>Open playlist</strong> takes you to the result.</p>
+      <p>For a quicker route, right-click a saved layout below the player (or click its <strong>⋯</strong> button) and choose <strong>Add to playlist…</strong>. You can also click <strong>+ Playlist</strong> on any video in the Library sidebar, or right-click that video. Select an existing playlist or create a new one, choose a duration and transition, then click <strong>Add to playlist</strong>. The entry is saved immediately; <strong>Open playlist</strong> takes you to the result. A Library video uses its current player layout if selected, or a Single layout otherwise.</p>
       <p>Each playlist entry defines a complete visual treatment. To add one:</p>
       <ol>
         <li>Click the <strong>video picker</strong> to open the dropdown and select a video (thumbnail previews are shown). The selected video also loads in the player so you can preview it.</li>
@@ -73,12 +73,13 @@
 
       <h2>Entry list</h2>
       <p>
-        Each entry in the list shows a video thumbnail, its name, a compact info string (e.g. "8x P5 3L B" = 8x view, preset 5, 3 loops, bounce), and a delete button. A leading "Video by" is hidden from the displayed name.
+        The timeline shows each video's thumbnail, name, layout, configured run time, and a remove button. A leading "Video by" is hidden from the displayed name. The total at the top estimates the full playlist length. For loop-based entries, the estimate uses source duration, loop count, speed, and Bounce playback; seconds-based entries use their specified slot length. If source duration is unavailable, the card says so and the total shows the known minimum.
       </p>
       <ul>
-        <li><strong>Drag and drop</strong> entries to reorder them — grab and drag an entry to a new position</li>
+        <li><strong>Drag and drop</strong> video cards to reorder them</li>
+        <li>Drag an effect icon from the palette into a transition slot between cards, or select an icon and click a slot</li>
         <li>Click an entry to <strong>preview</strong> it in the player (outlined in red while previewing)</li>
-        <li>Click <strong>✦</strong> to edit that entry's incoming transition and duration, then click <strong>Save</strong> to keep the change</li>
+        <li>Click a transition slot to edit its incoming effect and duration, then click <strong>Save</strong> to keep the change</li>
         <li>Click the <strong>&times;</strong> button to remove an entry</li>
       </ul>
 
