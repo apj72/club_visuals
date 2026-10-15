@@ -1593,7 +1593,7 @@
 
   function openVfxController() {
     if (vfxWindow && !vfxWindow.closed) {
-      if (vfxWindow.CLUB_VISUALS_VFX_UI_VERSION !== 4) vfxWindow.location.replace('/vfx');
+      if (vfxWindow.CLUB_VISUALS_VFX_UI_VERSION !== 5) vfxWindow.location.replace('/vfx');
       vfxWindow.focus();
       return;
     }
@@ -1613,14 +1613,14 @@
 
   function activateLogo3d() {
     if (vfxState.enabled && vfxState.scene === 6 && vfxState.logo3d.kind === 'logo') { deactivateVfxObject(); return; }
-    setVfxLogo3d({ kind: 'logo' });
+    setVfxLogo3d({ kind: 'logo' }, true);
     setVfxState({ enabled: true, scene: 6 });
     openVfxController();
   }
 
   function activateText3d() {
     if (vfxState.enabled && vfxState.scene === 6 && vfxState.logo3d.kind === 'text') { deactivateVfxObject(); return; }
-    setVfxLogo3d({ kind: 'text' });
+    setVfxLogo3d({ kind: 'text' }, true);
     setVfxState({ enabled: true, scene: 6 });
     openVfxController();
   }
@@ -1678,6 +1678,7 @@
   }
 
   function setVfxShape(update) {
+    if (update.kind === 'text') update = { ...update, image: '' };
     const imageChanged = update.image !== undefined && update.image !== vfxState.shape.image;
     vfxState.shape = { ...vfxState.shape, ...update };
     if (vfxEngine) vfxEngine.setShape(vfxState.shape);
@@ -1687,13 +1688,24 @@
     syncFxTransport({ vfxState: getVfxState() });
   }
 
-  function setVfxLogo3d(update) {
+  function setVfxLogo3d(update, syncMirror = false) {
+    const objectChanged = (update.kind !== undefined && update.kind !== vfxState.logo3d.kind)
+      || (update.text !== undefined && update.text !== vfxState.logo3d.text);
     vfxState.logo3d = { ...vfxState.logo3d, ...update };
     if (vfxEngine) vfxEngine.setLogo3d(vfxState.logo3d);
+    if (objectChanged || syncMirror) syncMirrorShapeFromBranding();
     document.getElementById('logo3dBtn').classList.toggle('active', vfxState.enabled && vfxState.scene === 6 && vfxState.logo3d.kind === 'logo');
     document.getElementById('text3dBtn').classList.toggle('active', vfxState.enabled && vfxState.scene === 6 && vfxState.logo3d.kind === 'text');
     broadcastState({ type: 'vfxLogo3d', settings: vfxState.logo3d });
     syncFxTransport({ vfxState: getVfxState() });
+  }
+
+  function syncMirrorShapeFromBranding() {
+    if (vfxState.logo3d.kind === 'text') {
+      setVfxShape({ kind: 'text', text: vfxState.logo3d.text });
+    } else {
+      setVfxShape({ kind: 'image', image: '/assets/version1-logo.png' });
+    }
   }
 
   async function getCurrentVfxInstagramId() {

@@ -255,12 +255,17 @@
       const previousImage = this.shape.image;
       this.shape = { ...this.shape, ...shape };
       this.maskDirty = true;
+      if (this.shape.kind !== 'image') {
+        this.shapeImage = null;
+        return;
+      }
       if (this.shape.kind === 'image' && this.shape.image && (this.shape.image !== previousImage || !this.shapeImage)) {
         this.shapeImage = null;
+        const requestedImage = this.shape.image;
         const image = new Image();
-        image.onload = () => { if (this.shape.image === image.src) { this.shapeImage = image; this.maskDirty = true; } };
-        image.onerror = () => { if (this.shape.image === image.src) { this.shapeImage = null; this.maskDirty = true; } };
-        image.src = this.shape.image;
+        image.onload = () => { if (this.shape.kind === 'image' && this.shape.image === requestedImage) { this.shapeImage = image; this.maskDirty = true; } };
+        image.onerror = () => { if (this.shape.kind === 'image' && this.shape.image === requestedImage) { this.shapeImage = null; this.maskDirty = true; } };
+        image.src = requestedImage;
       }
     }
 

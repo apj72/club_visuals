@@ -73,7 +73,7 @@ While a video or playlist is playing, click **VFX** in the main player to open i
 
 After loading a video, click **Mirror 3D** in the player controls to switch straight to Mirror sculpture and open its controller. Click the active button again to turn the effect off and close the controller.
 
-Click **3D Logo** for a solid object built from the Version1 SVG, or **3D Text** for an editable Instagram ID. Click the active button again to turn it off and close the controller. The text starts as `@tonyt.dj` in the bundled Bungee font, with a red @ and white handle. In the controller, switch between the two objects, type another ID, move and resize it, adjust depth and X/Y/Z rotation, and choose an auto rotation axis with start and end angles. Auto rotate at zero holds the chosen manual angle. The surface reflects the live video. The object appears in the main player, clean output, and recordings.
+Click **3D Logo** for a solid object built from the Version1 SVG, or **3D Text** for an editable Instagram ID. Click the active button again to turn it off and close the controller. The text starts as `@tonyt.dj` in the bundled Bungee font, with a red @ and white handle. In the controller, switch between the two objects, type another ID, move and resize it, adjust depth and X/Y/Z rotation, and choose an auto rotation axis with start and end angles. The selected logo or text also becomes the shape used when you switch to Mirror 3D. Auto rotate at zero holds the chosen manual angle. The surface reflects the live video. The object appears in the main player, clean output, and recordings.
 
 ### Save a video layout
 

@@ -83,7 +83,7 @@
 <p class="status" id="audioStatus">The selected microphone or USB input is analysed only. Video audio does not drive VFX.</p>
 <div class="disconnected" id="disconnected">Main window disconnected. Reopen VFX from the player.</div>
 <script>
-  window.CLUB_VISUALS_VFX_UI_VERSION = 4;
+  window.CLUB_VISUALS_VFX_UI_VERSION = 5;
   let enabled = false;
   let audioConnected = false;
   let shapeImage = '';
@@ -151,8 +151,10 @@
   }
   function sendShape() {
     updateShapeLabels();
+    const kind = $('shapeKind').value;
+    if (kind === 'text') shapeImage = '';
     if (window.opener && !window.opener.closed) window.opener.setVfxShape({
-      kind: $('shapeKind').value, text: $('shapeText').value, image: shapeImage,
+      kind, text: $('shapeText').value, image: shapeImage,
       x: Number($('shapeX').value), y: Number($('shapeY').value),
       scale: Number($('shapeScale').value), depth: Number($('shapeDepth').value), edge: Number($('shapeEdge').value),
       tilt: Number($('shapeTilt').value), thickness: Number($('shapeThickness').value), spin: Number($('shapeSpin').value)
