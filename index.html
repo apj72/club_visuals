@@ -287,6 +287,8 @@
   .preset-playlist-dialog .dialog-status { min-height: 18px; margin: 8px 0 0; color: #ffc9c9; }
   .preset-playlist-dialog [hidden] { display: none; }
   .capture-panel.visible { display: block; }
+  .capture-panel-header { display: flex; align-items: start; justify-content: space-between; gap: 12px; }
+  .capture-panel-header button { padding: 5px 9px; border: 1px solid #4ecca3; border-radius: 5px; background: #183a3a; color: #c7ffeb; cursor: pointer; font: inherit; font-size: 0.75rem; }
   .capture-panel h3 { margin: 0 0 7px; color: #4ecca3; font-size: 0.95rem; }
   .capture-panel p { margin: 0 0 12px; color: #a9b3c5; font-size: 0.78rem; line-height: 1.45; }
   .capture-fields { display: flex; gap: 10px; flex-wrap: wrap; align-items: end; }
@@ -888,7 +890,7 @@
           <button class="btn-ctrl" id="mirrorBtn" onclick="activateMirrorSculpture()" title="Open reflective text and logo controls">Mirror 3D</button>
           <button class="btn-ctrl" id="logo3dBtn" onclick="activateLogo3d()" title="Show the rotatable Version1 logo">3D Logo</button>
           <button class="btn-ctrl" id="text3dBtn" onclick="activateText3d()" title="Show editable 3D Instagram text">3D Text</button>
-          <button class="btn-ctrl" id="captureToggle" onclick="toggleInstagramCapturePanel()">Instagram clip</button>
+          <button type="button" class="btn-ctrl" id="captureToggle" aria-controls="capturePanel" aria-expanded="false" onclick="toggleInstagramCapturePanel()">Instagram clip</button>
           <button class="btn-ctrl btn-fullscreen" id="fsBtn" onclick="toggleFullscreen()">Fullscreen</button>
         </div>
       </div>
@@ -921,7 +923,10 @@
         </div>
       </dialog>
       <div class="capture-panel" id="capturePanel">
-        <h3>Instagram background clip</h3>
+        <div class="capture-panel-header">
+          <h3>Instagram background clip</h3>
+          <button type="button" onclick="toggleInstagramCapturePanel()" aria-label="Close Instagram clip panel">Close</button>
+        </div>
         <p>Drag or resize the green box to choose the visible area. The result is a silent MP4 with the selected layout and effects, ready for a video layer in Instagram Video Studio.</p>
         <div class="capture-fields">
           <label>Format <select id="captureFormat" onchange="updateCaptureBox()">
@@ -2608,11 +2613,17 @@
   }
 
   function toggleInstagramCapturePanel() {
-    if (instagramRecorder) return;
+    if (instagramRecorder) {
+      setCaptureStatus('Stop the capture before closing this panel.');
+      return;
+    }
     const visible = !capturePanel.classList.contains('visible');
     capturePanel.classList.toggle('visible', visible);
     captureBox.classList.toggle('visible', visible);
-    document.getElementById('captureToggle').classList.toggle('active', visible);
+    const toggle = document.getElementById('captureToggle');
+    toggle.classList.toggle('active', visible);
+    toggle.textContent = visible ? 'Exit Instagram clip' : 'Instagram clip';
+    toggle.setAttribute('aria-expanded', String(visible));
     if (visible) updateCaptureBox();
   }
 
