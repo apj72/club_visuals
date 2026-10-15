@@ -99,6 +99,8 @@
   let rafId = null;
   let looping = true;
   let playbackSpeed = 1;
+  let outputWantsPlay = true;
+  let pixelHolding = false;
   let currentOutputEffects = null;
   let tileZoom = 1.0;
   let tilePanX = 0;
@@ -263,6 +265,7 @@
   function showVideo(filename, transition = null) {
     const chosenTransition = normaliseTransition(transition);
     if (video.readyState < 2 && chosenTransition.type !== 'fade-in') chosenTransition.type = 'cut';
+    pixelHolding = false;
     videoTransition.prepare(chosenTransition);
     const loadToken = ++videoLoadToken;
     video.src = '/video/' + encodeURIComponent(filename);
@@ -270,7 +273,16 @@
     video.load();
     video.addEventListener('loadeddata', function onLoaded() {
       video.removeEventListener('loadeddata', onLoaded);
-      if (loadToken === videoLoadToken) videoTransition.start();
+      if (loadToken !== videoLoadToken) return;
+      if (chosenTransition.type === 'pixel-scatter') {
+        pixelHolding = true;
+        video.pause();
+        videoTransition.start(() => {
+          if (loadToken !== videoLoadToken) return;
+          pixelHolding = false;
+          if (outputWantsPlay) video.play().catch(() => {});
+        });
+      } else videoTransition.start();
     });
     const count = CLONE_COUNTS[viewMode];
     if (count > 0) buildClones(count);
@@ -384,13 +396,16 @@
   function handleOutputCommand(cmd) {
     switch (cmd.type) {
       case 'loadVideo':
+        outputWantsPlay = true;
         showVideo(cmd.filename, cmd.transition);
-        video.play();
+        video.play().catch(() => {});
         break;
       case 'play':
-        video.play();
+        outputWantsPlay = true;
+        if (!pixelHolding) video.play().catch(() => {});
         break;
       case 'pause':
+        outputWantsPlay = false;
         video.pause();
         break;
       case 'setView':

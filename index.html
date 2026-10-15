@@ -1298,6 +1298,8 @@
     return canvas;
   });
   let videoLoadToken = 0;
+  let pixelHolding = false;
+  let pixelHoldWantsPlay = false;
   const vfxSource = document.createElement('canvas');
   const vfxSourceCtx = vfxSource.getContext('2d');
   const vfxState = { enabled: false, scene: 0, intensity: 0.7, feedback: 0.72, bass: 0, hit: 0,
@@ -2077,6 +2079,8 @@
       pace: document.getElementById('manualTransitionPace').value,
     } : transition);
     if (!hasOutgoing && chosenTransition.type !== 'fade-in') chosenTransition.type = 'cut';
+    pixelHolding = false;
+    pixelHoldWantsPlay = wasPlaying || plPlaying;
     videoTransition.prepare(chosenTransition);
     const loadToken = ++videoLoadToken;
     currentFilename = filename;
@@ -2099,8 +2103,19 @@
       video.removeEventListener('loadeddata', onLoaded);
       if (loadToken !== videoLoadToken) return;
       video.currentTime = 0.001;
-      videoTransition.start();
-      if (wasPlaying && !plPlaying) video.play().catch(() => {});
+      if (chosenTransition.type === 'pixel-scatter') {
+        pixelHolding = true;
+        video.pause();
+        playBtn.textContent = pixelHoldWantsPlay ? 'Pause' : 'Play';
+        videoTransition.start(() => {
+          if (loadToken !== videoLoadToken) return;
+          pixelHolding = false;
+          if (pixelHoldWantsPlay) video.play().catch(() => {});
+        });
+      } else {
+        videoTransition.start();
+        if (wasPlaying && !plPlaying) video.play().catch(() => {});
+      }
     });
     const count = CLONE_COUNTS[viewMode];
     if (count > 0) buildClones(count);
@@ -2154,6 +2169,12 @@
   }
 
   function togglePlay() {
+    if (pixelHolding) {
+      pixelHoldWantsPlay = !pixelHoldWantsPlay;
+      playBtn.textContent = pixelHoldWantsPlay ? 'Pause' : 'Play';
+      broadcastState({ type: pixelHoldWantsPlay ? 'play' : 'pause' });
+      return;
+    }
     if (bounceReversing) {
       stopBounce();
       video.pause();
@@ -3482,9 +3503,15 @@
       auditionTransition.prepare(transition);
       await loadAuditionVideo(to, run);
       if (run !== auditionRun) return;
-      await auditionVideo.play();
-      if (run !== auditionRun) return;
-      auditionTransition.start();
+      if (transition.type === 'pixel-scatter') {
+        auditionTransition.start(() => {
+          if (run === auditionRun) auditionVideo.play().catch(() => {});
+        });
+      } else {
+        await auditionVideo.play();
+        if (run !== auditionRun) return;
+        auditionTransition.start();
+      }
       auditionStatus.textContent = transition.type === 'cut' ? 'Cut preview playing.' : TRANSITION_NAMES[transition.type] + ' preview playing.';
     } catch (error) {
       if (run === auditionRun) { auditionTransition.cancel(); auditionStatus.textContent = error.message; }
@@ -3568,12 +3595,14 @@
       : `${minutes}:${String(secs).padStart(2, '0')}`;
   }
 
-  function playlistEntrySeconds(entry, sourceSeconds) {
+  function playlistEntrySeconds(entry, sourceSeconds, index = 0) {
     if (entry.duration?.type === 'seconds') return Math.max(0, Number(entry.duration.value) || 0);
     if (!Number.isFinite(sourceSeconds) || sourceSeconds <= 0) return null;
     const loops = Math.max(1, Number(entry.duration?.value) || 1);
     const speed = Math.max(0.25, Number(entry.speed) || 1);
-    return sourceSeconds * loops * (Number(entry.loopMode) === 2 ? 2 : 1) / speed;
+    const reveal = index > 0 && entry.transition?.type === 'pixel-scatter'
+      ? normaliseTransition(entry.transition).duration : 0;
+    return sourceSeconds * loops * (Number(entry.loopMode) === 2 ? 2 : 1) / speed + reveal;
   }
 
   function playlistSourceSeconds(filename) {
@@ -3614,7 +3643,7 @@
     if (version !== plRenderVersion) return;
     let total = 0, unknown = 0;
     entries.forEach((entry, index) => {
-      const seconds = playlistEntrySeconds(entry, lengths.get(entry.video));
+      const seconds = playlistEntrySeconds(entry, lengths.get(entry.video), index);
       const card = plEntriesEl.querySelector(`.pl-entry[data-idx="${index}"]`);
       if (!card) return;
       const runtime = card.querySelector('.pl-e-runtime');
@@ -3628,7 +3657,7 @@
         runtime.textContent = formatPlaylistTime(seconds);
         detail.textContent = entry.duration.type === 'seconds'
           ? `${entry.duration.value}s slot${Number(entry.speed || 1) !== 1 ? ' · ' + entry.speed + '× speed' : ''}`
-          : `${entry.duration.value} loop${Number(entry.duration.value) === 1 ? '' : 's'} · ${Number(entry.speed || 1)}×${Number(entry.loopMode) === 2 ? ' · Bounce' : ''}`;
+          : `${entry.duration.value} loop${Number(entry.duration.value) === 1 ? '' : 's'} · ${Number(entry.speed || 1)}×${Number(entry.loopMode) === 2 ? ' · Bounce' : ''}${index > 0 && entry.transition?.type === 'pixel-scatter' ? ' · reveal included' : ''}`;
       }
     });
     plTimelineTotal.textContent = entries.length + ' video' + (entries.length === 1 ? '' : 's')
@@ -4096,7 +4125,7 @@
       entry.duration?.type === 'seconds' ? null : playlistSourceSeconds(entry.video)));
     if (playlist !== plPlaylist) return;
     candidates.forEach(({ entry, index }, position) => {
-      const seconds = playlistEntrySeconds(entry, lengths[position]);
+      const seconds = playlistEntrySeconds(entry, lengths[position], index);
       entry.cues = [normalisePlaylistCue({ at: 0, effect: scenes[index % scenes.length] })];
       if (seconds && seconds >= 12) {
         entry.cues.push(normalisePlaylistCue({ at: Math.round(seconds * 0.55 * 10) / 10,

@@ -33,13 +33,14 @@
     });
     stage.appendChild(overlay);
     const ctx = overlay.getContext('2d');
-    let frame = null, settings = null, startTime = 0, raf = 0, progress = 0, tileOrder = [];
+    let frame = null, settings = null, startTime = 0, raf = 0, progress = 0, tileOrder = [], onComplete = null;
 
     function clear() {
       cancelAnimationFrame(raf);
       raf = 0;
       frame = null;
       settings = null;
+      onComplete = null;
       tileOrder = [];
       overlay.style.display = 'none';
       ctx.clearRect(0, 0, overlay.width, overlay.height);
@@ -142,7 +143,11 @@
       ctx.clearRect(0, 0, overlay.width, overlay.height);
       paint(ctx, overlay.width, overlay.height, progress);
       if (progress < 1) raf = requestAnimationFrame(tick);
-      else clear();
+      else {
+        const complete = onComplete;
+        clear();
+        if (complete) complete();
+      }
     }
 
     return {
@@ -169,8 +174,9 @@
         paint(ctx, overlay.width, overlay.height, 0);
         return true;
       },
-      start() {
+      start(complete) {
         if (!settings) return;
+        onComplete = typeof complete === 'function' ? complete : null;
         startTime = performance.now();
         raf = requestAnimationFrame(tick);
       },

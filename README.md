@@ -101,7 +101,7 @@ The same video can appear multiple times with different treatments, e.g.:
 - 8x mode, preset 22, for 30 seconds
 - 8x mode, preset 7, for 5 loops
 
-Use **Transition** beside Playback to choose the effect, duration (0.15–10 seconds), and speed curve when selecting a video manually. Playlist entries have their own incoming transitions, including when you press **Next**. Pixel Scatter, Data Tear, Iris Burst, and Shutters extend the original effects. Transitions appear in fullscreen, clean output, and recordings.
+Use **Transition** beside Playback to choose the effect, duration (0.15–10 seconds), and speed curve when selecting a video manually. Playlist entries have their own incoming transitions, including when you press **Next**. Pixel Scatter, Data Tear, Iris Burst, and Shutters extend the original effects. Pixel Scatter holds the incoming clip on its first frame until the blocks have cleared. Transitions appear in fullscreen, clean output, and recordings.
 
 The timeline shows a thumbnail, layout, and configured run time beside every video, plus an estimated playlist total. A loop-based run time accounts for source length, loop count, playback speed, and Bounce playback. Seconds-based entries show their specified slot length.
 
