@@ -87,11 +87,11 @@ Right-click a saved layout (or click its **⋯** button) and choose **Add to pla
 2. Click **New** to create a playlist, give it a name
 3. Add entries — each entry specifies:
    - **Video** — select from library (with thumbnail preview)
-   - **View mode** — Single, Dual, or 8x
+   - **View mode** — Single, Dual, 3x, 4x, or 8x
    - **Preset** — mirror configuration (P1–P32)
    - **Duration** — number of loops or seconds
-   - **Transition in** — Cut, Fade In, Fade Out/In, Cross Dissolve, Wipe, Zoom / Spin, or Whip Pan, with a duration from 0.15 to 5 seconds
-4. Drag the visual transition icons into the slots between video cards. Click a slot to adjust its type or duration. Use **Audition** above the icons to preview the selected effect with library videos, or **▶ Preview** on a slot to audition its two adjacent videos. The audition window lets you choose clips, change the effect and duration, and replay; **Use in slot** applies the choice to that playlist entry. It does not interrupt the main player or clean output. Drag video cards to reorder them, or use × to remove one.
+   - **Transition in** — choose from eleven effects, set a duration from 0.15 to 10 seconds, and choose an Even, Build, Hit, or Ease speed curve
+4. Drag the visual transition icons into the slots between video cards. Click a slot to adjust its type, duration, or speed curve. Use **Audition** above the icons to preview the selected effect with library videos, or **▶ Preview** on a slot to audition its two adjacent videos. The audition window lets you choose clips, change the effect, duration, and speed curve, and replay; **Use in slot** applies the choice to that playlist entry. It does not interrupt the main player or clean output. Click **✦ Script effects** on a video to schedule VFX scenes, mirror, 3D logo, 3D text, and Off cues with effect settings. **✦ Auto-script effects** adds varied cues to videos that have none. Drag video cards to reorder them, or use × to remove one.
 5. Click **Save** to persist the playlist (survives page reloads)
 6. Click **Play** to start — the indicator bar shows current entry and progress
 7. Use **Next** to skip ahead, **Stop** to exit playlist mode
@@ -101,7 +101,7 @@ The same video can appear multiple times with different treatments, e.g.:
 - 8x mode, preset 22, for 30 seconds
 - 8x mode, preset 7, for 5 loops
 
-Use **Transition** beside Playback to choose the effect and duration when selecting a video manually. Playlist entries have their own incoming transitions, including when you press **Next**. Transitions appear in fullscreen, clean output, and recordings.
+Use **Transition** beside Playback to choose the effect, duration (0.15–10 seconds), and speed curve when selecting a video manually. Playlist entries have their own incoming transitions, including when you press **Next**. Pixel Scatter, Data Tear, Iris Burst, and Shutters extend the original effects. Transitions appear in fullscreen, clean output, and recordings.
 
 The timeline shows a thumbnail, layout, and configured run time beside every video, plus an estimated playlist total. A loop-based run time accounts for source length, loop count, playback speed, and Bounce playback. Seconds-based entries show their specified slot length.
 

@@ -54,14 +54,14 @@
         <li>Choose a <strong>preset</strong>: P1 through P32</li>
         <li>Set the <strong>duration type</strong>: Loops (number of full video loops) or Seconds (wall-clock time)</li>
         <li>Set the <strong>duration value</strong></li>
-        <li>Choose the <strong>transition in</strong> and its duration in seconds</li>
+        <li>Choose the <strong>transition in</strong>, duration in seconds, and speed curve</li>
         <li>Choose the <strong>loop mode</strong>: Loop or Bounce</li>
         <li>Click <strong>Add</strong></li>
       </ol>
       <p>
         Changing the view or preset selector immediately previews the change in the player, so you can see the treatment before adding it.
       </p>
-      <p>Available transitions are Cut, Fade In, Fade Out/In, Cross Dissolve, Wipe, Zoom / Spin, and Whip Pan. The effect belongs to the incoming entry and plays when the playlist advances, including when you press Next. Fade In starts from black; Fade Out/In passes through black. The transition duration ranges from 0.15 to 5 seconds. The default for new entries is Cross Dissolve at 0.8 seconds. Existing playlist entries without a transition continue to use Cut. The outgoing frame is held while the next video loads, then the effect runs over the incoming video. The main player's Transition control sets the effect for manually selected videos. Transitions also appear in the clean output and recordings.</p>
+      <p>Available transitions are Cut, Fade In, Fade Out/In, Cross Dissolve, Wipe, Zoom / Spin, Whip Pan, Pixel Scatter, Data Tear, Iris Burst, and Shutters. Pixel Scatter removes shuffled blocks of the outgoing image to reveal the next clip. Data Tear displaces and removes horizontal strips with colour flashes; Iris Burst opens from the centre; Shutters collapse strips to reveal the image underneath. The effect belongs to the incoming entry and plays when the playlist advances, including when you press Next. Fade In starts from black; Fade Out/In passes through black. Set a duration from 0.15 to 10 seconds. The speed curve controls how motion develops within that exact duration: Even, Build (slow to fast), Hit (fast to slow), or Ease (smooth start and finish). The default for new entries is Cross Dissolve at 0.8 seconds with an Even curve. Existing playlist entries without a transition continue to use Cut. The outgoing frame is held while the next video loads, then the effect runs over the incoming video. The main player's Transition control sets the effect for manually selected videos. Transitions also appear in the clean output and recordings.</p>
       <p>
         The same video can appear multiple times in a playlist with different treatments. For example:
       </p>
@@ -79,8 +79,10 @@
         <li><strong>Drag and drop</strong> video cards to reorder them</li>
         <li>Drag an effect icon from the palette into a transition slot between cards, or select an icon and click a slot</li>
         <li>Click an entry to <strong>preview</strong> it in the player (outlined in red while previewing)</li>
-        <li>Click a transition slot to edit its incoming effect and duration, then click <strong>Save</strong> to keep the change</li>
-        <li>Click <strong>Audition</strong> above the transition icons to preview the selected effect with library clips. Click <strong>▶ Preview</strong> on a slot to start with the two videos around it; the first slot starts from black. In the audition window, choose clips, effect, and duration, then click <strong>▶ Replay</strong>. <strong>Use in slot</strong> applies the effect and duration to that entry; click <strong>Save</strong> to keep it. The preview does not interrupt the main player or clean output.</li>
+        <li>Click a transition slot to edit its incoming effect, duration, and speed curve, then click <strong>Save</strong> to keep the change</li>
+        <li>Click <strong>Audition</strong> above the transition icons to preview the selected effect with library clips. Click <strong>▶ Preview</strong> on a slot to start with the two videos around it; the first slot starts from black. In the audition window, choose clips, effect, duration, and speed curve, then click <strong>▶ Replay</strong>. <strong>Use in slot</strong> applies the settings to that entry; click <strong>Save</strong> to keep it. The preview does not interrupt the main player or clean output.</li>
+        <li>Click <strong>✦ Script effects</strong> on a video card to add timed VFX cues. Each cue starts a scene, mirror, 3D logo, or 3D text at a chosen number of seconds into that video. Set intensity and feedback, and for objects set text, position, size, rotation axis, angles, and rotation speed. Add an <strong>Off</strong> cue to end the effect. Cues run in time order and follow the video if you reorder the cards.</li>
+        <li>Click <strong>✦ Auto-script effects</strong> to add a varied set of VFX cues to videos that have none. Longer entries get a second cue later in the video. Existing cue scripts are preserved. Review each video's cues, then click <strong>Save</strong>.</li>
         <li>Click the <strong>&times;</strong> button to remove an entry</li>
       </ul>
 
@@ -105,6 +107,7 @@
       <p>
         During playback, the current entry is highlighted with a green border in the entry list.
       </p>
+      <p>Timed effect cues run relative to the start of their video. Pressing Next cancels pending cues for the previous entry. Stopping the playlist restores the VFX settings that were active before playback. Cue changes are sent to the clean output and included in recordings.</p>
 
       <h3>Playlist looping</h3>
       <p>

@@ -665,6 +665,23 @@
   .transition-audition-actions .dialog-primary { color: #0d1720; background: #4ecca3; border-color: #4ecca3; font-weight: 700; }
   .transition-audition-actions [hidden] { display: none; }
   .transition-audition-status { min-height: 18px; margin-top: 8px; color: #c7ffeb; font-size: .75rem; }
+  .playlist-cue-dialog { width: min(690px, calc(100vw - 28px)); max-height: calc(100vh - 28px); overflow-y: auto; padding: 18px; color: #e7eef5; background: #152039; border: 1px solid #4ecca3; border-radius: 10px; box-shadow: 0 18px 50px #000a; }
+  .playlist-cue-dialog::backdrop { background: #000b; }
+  .playlist-cue-dialog h3 { margin: 0 0 5px; color: #4ecca3; }
+  .playlist-cue-dialog p { margin: 0 0 12px; color: #aab6c4; font-size: .78rem; line-height: 1.45; }
+  .playlist-cue-list { display: grid; gap: 9px; }
+  .playlist-cue-row { padding: 10px; border: 1px solid #344b59; border-radius: 7px; background: #101a2b; }
+  .playlist-cue-row-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 8px; color: #4ecca3; font-size: .76rem; font-weight: 700; }
+  .playlist-cue-fields { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+  .playlist-cue-fields label { min-width: 0; color: #c5d2df; font-size: .72rem; }
+  .playlist-cue-fields input, .playlist-cue-fields select { display: block; width: 100%; margin-top: 4px; padding: 7px; background: #0d1628; border: 1px solid #46536c; border-radius: 5px; color: #fff; font: inherit; }
+  .playlist-cue-fields [hidden] { display: none; }
+  .playlist-cue-actions { display: flex; justify-content: space-between; gap: 8px; margin-top: 12px; }
+  .playlist-cue-actions button, .playlist-cue-row-head button { padding: 7px 9px; border: 1px solid #46536c; border-radius: 5px; background: #1d3150; color: #e7eef5; cursor: pointer; }
+  .playlist-cue-actions .dialog-primary { border-color: #4ecca3; background: #183a3a; color: #c7ffeb; }
+  .pl-e-cues { width: max-content; max-width: 100%; padding: 2px 5px; border: 1px solid #426a66; border-radius: 4px; background: #183a3a; color: #b9ffe7; font-size: .66rem; cursor: pointer; }
+  .pl-e-cues:hover { background: #25534a; }
+  @media (max-width: 520px) { .playlist-cue-fields { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
   @media (max-width: 520px) { .transition-audition-fields { grid-template-columns: 1fr; } }
   .pl-transition-palette { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 5px; margin-bottom: 10px; }
   .pl-transition-tool {
@@ -699,6 +716,7 @@
   }
   .pl-transition-slot-edit select { flex: 1; }
   .pl-transition-slot-edit input { width: 57px; }
+  .pl-transition-slot-edit .pl-transition-pace { width: 96px; flex: 0 0 96px; }
   .pl-entry {
     display: flex; align-items: center; gap: 6px;
     padding: 7px 8px; margin-bottom: 8px;
@@ -954,9 +972,12 @@
               <option value="fade-out">Fade Out/In</option><option value="cross-dissolve" selected>Cross Dissolve</option>
               <option value="wipe">Wipe</option><option value="zoom-spin">Zoom / Spin</option>
               <option value="whip-pan">Whip Pan</option>
+              <option value="pixel-scatter">Pixel Scatter</option><option value="data-tear">Data Tear</option>
+              <option value="iris-burst">Iris Burst</option><option value="shutters">Shutters</option>
             </select>
             <label for="manualTransitionDuration">s</label>
-            <input id="manualTransitionDuration" type="number" min="0.15" max="5" step="0.05" value="0.8">
+            <input id="manualTransitionDuration" type="number" min="0.15" max="10" step="0.05" value="0.8" title="Transition length in seconds">
+            <select id="manualTransitionPace" aria-label="Transition speed curve" title="Speed curve"><option value="steady">Even</option><option value="accelerate">Build</option><option value="decelerate">Hit</option><option value="ease">Ease</option></select>
           </span>
           <span class="speed-control" aria-label="Playback speed"><span>Speed</span><button type="button" id="speedDown" onclick="changePlaybackSpeed(-0.25)" aria-label="Decrease playback speed">−</button><output id="speedValue">1×</output><button type="button" id="speedUp" onclick="changePlaybackSpeed(0.25)" aria-label="Increase playback speed">+</button></span>
           <button class="btn-ctrl" id="muteBtn" onclick="toggleMute()">Mute</button>
@@ -1012,14 +1033,23 @@
             <option value="fade-out">Fade Out/In</option><option value="cross-dissolve" selected>Cross Dissolve</option>
             <option value="wipe">Wipe</option><option value="zoom-spin">Zoom / Spin</option>
             <option value="whip-pan">Whip Pan</option>
+            <option value="pixel-scatter">Pixel Scatter</option><option value="data-tear">Data Tear</option>
+            <option value="iris-burst">Iris Burst</option><option value="shutters">Shutters</option>
           </select></label>
-          <label>Seconds<input id="presetPlaylistTransitionDuration" type="number" min="0.15" max="5" step="0.05" value="0.8"></label>
+          <label>Seconds<input id="presetPlaylistTransitionDuration" type="number" min="0.15" max="10" step="0.05" value="0.8"></label>
         </div>
+        <label>Transition speed curve<select id="presetPlaylistTransitionPace"><option value="steady">Even</option><option value="accelerate">Build</option><option value="decelerate">Hit</option><option value="ease">Ease</option></select></label>
         <p class="dialog-status" id="presetPlaylistStatus" role="status"></p>
         <div class="dialog-actions">
           <button type="button" onclick="closePresetPlaylistDialog()">Cancel</button>
           <button type="button" class="dialog-primary" id="presetPlaylistAddButton" onclick="addPresetToPlaylist()">Add to playlist</button>
         </div>
+      </dialog>
+      <dialog class="playlist-cue-dialog" id="playlistCueDialog" aria-labelledby="playlistCueTitle">
+        <h3 id="playlistCueTitle">Script effects</h3>
+        <p>Add timed cues for this video. Times are seconds from its start; a later Off cue ends the effect. Cues also play in the clean output and recordings. Save the playlist when finished.</p>
+        <div class="playlist-cue-list" id="playlistCueList"></div>
+        <div class="playlist-cue-actions"><button type="button" class="dialog-primary" onclick="addPlaylistCue()">+ Add cue</button><button type="button" onclick="closePlaylistCueEditor()">Done</button></div>
       </dialog>
       <dialog class="transition-audition-dialog" id="transitionAuditionDialog" aria-labelledby="transitionAuditionTitle">
         <h3 id="transitionAuditionTitle">Audition transition</h3>
@@ -1029,7 +1059,8 @@
           <label>From<select id="transitionAuditionFrom"></select></label>
           <label>To<select id="transitionAuditionTo"></select></label>
           <label>Effect<select id="transitionAuditionType"></select></label>
-          <label>Duration (seconds)<input id="transitionAuditionDuration" type="number" min="0.15" max="5" step="0.05" value="0.8"></label>
+          <label>Duration (seconds)<input id="transitionAuditionDuration" type="number" min="0.15" max="10" step="0.05" value="0.8"></label>
+          <label>Speed curve<select id="transitionAuditionPace"><option value="steady">Even · constant</option><option value="accelerate">Build · slow then fast</option><option value="decelerate">Hit · fast then slow</option><option value="ease">Ease · smooth start and finish</option></select></label>
         </div>
         <div class="transition-audition-status" id="transitionAuditionStatus" role="status" aria-live="polite"></div>
         <div class="transition-audition-actions">
@@ -1136,9 +1167,12 @@
             <option value="fade-out">Fade Out/In</option><option value="cross-dissolve" selected>Cross Dissolve</option>
             <option value="wipe">Wipe</option><option value="zoom-spin">Zoom / Spin</option>
             <option value="whip-pan">Whip Pan</option>
+            <option value="pixel-scatter">Pixel Scatter</option><option value="data-tear">Data Tear</option>
+            <option value="iris-burst">Iris Burst</option><option value="shutters">Shutters</option>
           </select></label>
-          <label>Seconds<input type="number" id="plTransitionDuration" min="0.15" max="5" step="0.05" value="0.8"></label>
+          <label>Seconds<input type="number" id="plTransitionDuration" min="0.15" max="10" step="0.05" value="0.8"></label>
         </div>
+        <div class="pl-add-row"><label>Transition speed curve<select id="plTransitionPace"><option value="steady">Even · constant</option><option value="accelerate">Build · slow then fast</option><option value="decelerate">Hit · fast then slow</option><option value="ease">Ease · smooth start and finish</option></select></label></div>
         <button class="pl-btn pl-btn-add" onclick="addEntry()">Add</button>
       </div>
       <div class="pl-actions">
@@ -1147,6 +1181,7 @@
           <button class="pl-btn pl-btn-auto" onclick="toggleAutoGen()">Auto</button>
           <button class="pl-btn" id="plLoopBtn" onclick="togglePlLoop()">Loop: Off</button>
         </div>
+        <div class="pl-actions-row"><button class="pl-btn" onclick="autoScriptPlaylistEffects()" title="Add timed VFX cues to entries that have none">✦ Auto-script effects</button><span id="plAutoScriptStatus" class="pl-timeline-total" role="status"></span></div>
         <div class="pl-actions-row">
           <button class="pl-btn" id="recordBtn" onclick="toggleRecording()">Record</button>
           <button class="pl-btn pl-btn-play" onclick="startPlaylist()">Play</button>
@@ -2039,6 +2074,7 @@
     const chosenTransition = normaliseTransition(transition === undefined ? {
       type: document.getElementById('manualTransitionType').value,
       duration: document.getElementById('manualTransitionDuration').value,
+      pace: document.getElementById('manualTransitionPace').value,
     } : transition);
     if (!hasOutgoing && chosenTransition.type !== 'fade-in') chosenTransition.type = 'cut';
     videoTransition.prepare(chosenTransition);
@@ -2315,6 +2351,7 @@
   function resetPlayerControls() {
     document.getElementById('manualTransitionType').value = 'cross-dissolve';
     document.getElementById('manualTransitionDuration').value = '0.8';
+    document.getElementById('manualTransitionPace').value = 'steady';
     setLoopMode(0);
     setPlaybackSpeed(1);
     setViewModeTo(0);
@@ -2534,6 +2571,7 @@
         transition: normaliseTransition({
           type: document.getElementById('presetPlaylistTransitionType').value,
           duration: document.getElementById('presetPlaylistTransitionDuration').value,
+          pace: document.getElementById('presetPlaylistTransitionPace').value,
         }),
         layoutPresetId: preset.id, layoutPresetName: preset.id ? preset.name : null
       });
@@ -3291,6 +3329,9 @@
   let plEntryIdx = 0;
   let plLoopCount = 0;
   let plTimer = null;
+  let plCueTimers = [];
+  let plCueRun = 0;
+  let plVfxBeforePlaylist = null;
   let plSlug = '';
   let plLoopPlaylist = false;
 
@@ -3314,10 +3355,20 @@
   const plDurVal = document.getElementById('plDurVal');
   const plTransitionType = document.getElementById('plTransitionType');
   const plTransitionDuration = document.getElementById('plTransitionDuration');
+  const plTransitionPace = document.getElementById('plTransitionPace');
   const TRANSITION_NAMES = {
     'cut': 'Cut', 'fade-in': 'Fade In', 'fade-out': 'Fade Out/In',
     'cross-dissolve': 'Cross Dissolve', 'wipe': 'Wipe',
     'zoom-spin': 'Zoom / Spin', 'whip-pan': 'Whip Pan',
+    'pixel-scatter': 'Pixel Scatter', 'data-tear': 'Data Tear',
+    'iris-burst': 'Iris Burst', 'shutters': 'Shutters',
+  };
+  const TRANSITION_PACE_NAMES = { steady: 'Even', accelerate: 'Build', decelerate: 'Hit', ease: 'Ease' };
+  const PL_CUE_EFFECTS = {
+    off: 'Off', 'scene-0': 'Liquid ripple', 'scene-1': 'Image smear',
+    'scene-2': 'Video ribbons', mirror: 'Mirror sculpture',
+    'scene-4': 'Kaleidoscope tunnel', 'scene-5': 'Prism fracture',
+    logo: '3D Version1 logo', text: '3D text',
   };
   const TRANSITION_ART = {
     'cut': '<path d="M5 4v24M43 4v24M20 4v24M28 4v24"/><path d="M20 16h8" stroke-dasharray="2 3"/>',
@@ -3327,6 +3378,10 @@
     'wipe': '<rect x="5" y="5" width="38" height="22" rx="2"/><path d="M25 5v22M16 16h18m-5-5 5 5-5 5"/>',
     'zoom-spin': '<circle cx="24" cy="16" r="12"/><circle cx="24" cy="16" r="5"/><path d="M29 4a14 14 0 0 1 9 12m0 0-4-4m4 4 3-4"/>',
     'whip-pan': '<path d="M3 8h25M9 16h30M3 24h25M28 8l8 8-8 8"/>',
+    'pixel-scatter': '<rect x="5" y="5" width="10" height="9"/><rect x="18" y="5" width="10" height="9"/><rect x="5" y="17" width="10" height="9"/><rect x="18" y="17" width="10" height="9"/><path d="M32 7l4-2m1 8 5-2m-9 9 6 2m-7 4 3 2"/>',
+    'data-tear': '<path d="M5 6h33M10 11h33M3 16h31M12 21h31M5 26h33"/><path d="M31 4l-5 4m11 7-5 4m-10 0-5 4"/>',
+    'iris-burst': '<circle cx="24" cy="16" r="5"/><circle cx="24" cy="16" r="11"/><path d="M24 1v4m0 22v4M5 16h4m30 0h4"/>',
+    'shutters': '<path d="M5 5h38M5 11h38M5 17h38M5 23h38M5 29h38"/><path d="M17 7v3m14 8v3"/>',
   };
   function transitionIcon(type) {
     return `<svg viewBox="0 0 48 32" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${TRANSITION_ART[type] || TRANSITION_ART.cut}</svg>`;
@@ -3340,6 +3395,7 @@
   const auditionTo = document.getElementById('transitionAuditionTo');
   const auditionType = document.getElementById('transitionAuditionType');
   const auditionDuration = document.getElementById('transitionAuditionDuration');
+  const auditionPace = document.getElementById('transitionAuditionPace');
   const auditionStatus = document.getElementById('transitionAuditionStatus');
   const auditionApply = document.getElementById('transitionAuditionApply');
   let auditionSlotIndex = -1;
@@ -3401,7 +3457,7 @@
     const run = auditionRun;
     const from = auditionFrom.value;
     const to = auditionTo.value;
-    const transition = normaliseTransition({ type: auditionType.value, duration: auditionDuration.value });
+    const transition = normaliseTransition({ type: auditionType.value, duration: auditionDuration.value, pace: auditionPace.value });
     auditionDuration.value = transition.duration;
     if (!to) { auditionStatus.textContent = 'Choose a video to preview.'; return; }
     auditionStatus.textContent = 'Loading preview…';
@@ -3451,6 +3507,7 @@
     auditionTo.value = incoming || videoListCache.find(v => v.filename !== auditionFrom.value)?.filename || videoListCache[0]?.filename || '';
     auditionType.value = TRANSITION_NAMES[type] ? type : 'cross-dissolve';
     auditionDuration.value = slotIndex >= 0 ? normaliseTransition(plPlaylist.entries[slotIndex]?.transition).duration : normaliseTransition({ duration: plTransitionDuration.value }).duration;
+    auditionPace.value = slotIndex >= 0 ? normaliseTransition(plPlaylist.entries[slotIndex]?.transition).pace : plTransitionPace.value;
     auditionStatus.textContent = '';
     auditionDialog.showModal();
     replayTransitionAudition();
@@ -3464,7 +3521,7 @@
   }
   auditionDialog.addEventListener('cancel', event => { event.preventDefault(); closeTransitionAudition(); });
   function applyAuditionToSlot() {
-    if (auditionSlotIndex >= 0) setEntryTransition(auditionSlotIndex, auditionType.value, auditionDuration.value);
+    if (auditionSlotIndex >= 0) setEntryTransition(auditionSlotIndex, auditionType.value, auditionDuration.value, auditionPace.value);
     closeTransitionAudition();
   }
 
@@ -3726,6 +3783,8 @@
   }
 
   async function loadPlaylistBySlug(slug) {
+    if (plPlaying) stopPlaylist();
+    document.getElementById('plAutoScriptStatus').textContent = '';
     if (!slug) { plPlaylist = { name: '', entries: [] }; plSlug = ''; plNameInput.value = ''; plPreviewIdx = -1; renderPlaylistEntries(); return; }
     try {
       const res = await fetch('/api/playlist/' + encodeURIComponent(slug));
@@ -3740,10 +3799,12 @@
   }
 
   function newPlaylist() {
+    if (plPlaying) stopPlaylist();
     plPlaylist = { name: '', entries: [] };
     plSlug = '';
     plNameInput.value = '';
     plSelect.value = '';
+    document.getElementById('plAutoScriptStatus').textContent = '';
     renderPlaylistEntries();
   }
 
@@ -3790,7 +3851,7 @@
       video: vid,
       ...layout,
       duration: { type: plDurType.value, value: parseInt(plDurVal.value) || 5 },
-      transition: normaliseTransition({ type: plTransitionType.value, duration: plTransitionDuration.value }),
+      transition: normaliseTransition({ type: plTransitionType.value, duration: plTransitionDuration.value, pace: plTransitionPace.value }),
       layoutPresetId: matchingPreset?.id || null,
       layoutPresetName: matchingPreset?.name || null,
     });
@@ -3815,13 +3876,14 @@
     const transition = normaliseTransition(e.transition);
     plTransitionType.value = transition.type;
     plTransitionDuration.value = transition.duration;
+    plTransitionPace.value = transition.pace;
     renderPlaylistEntries();
   }
 
-  function setEntryTransition(index, type, duration) {
+  function setEntryTransition(index, type, duration, pace = 'steady') {
     const entry = plPlaylist.entries[index];
     if (!entry || !TRANSITION_NAMES[type]) return;
-    entry.transition = normaliseTransition({ type, duration });
+    entry.transition = normaliseTransition({ type, duration, pace });
     plPaletteArmed = false;
     renderTransitionPalette();
     renderPlaylistEntries();
@@ -3837,21 +3899,25 @@
     main.setAttribute('aria-label', (index ? 'Transition before video ' + (index + 1) : 'Opening transition') + ': ' + TRANSITION_NAMES[transition.type]);
     main.innerHTML = transitionIcon(transition.type) + '<span>' + (index ? 'Between clips' : 'Opening')
       + ' · <strong>' + TRANSITION_NAMES[transition.type] + '</strong></span><small>'
-      + (transition.type === 'cut' ? 'instant' : transition.duration + 's') + '</small>';
+      + (transition.type === 'cut' ? 'instant' : transition.duration + 's · ' + TRANSITION_PACE_NAMES[transition.pace]) + '</small>';
     const edit = document.createElement('div');
     edit.className = 'pl-transition-slot-edit'; edit.hidden = true;
     const select = plTransitionType.cloneNode(true);
     select.removeAttribute('id'); select.value = transition.type;
     select.setAttribute('aria-label', 'Transition type before video ' + (index + 1));
     const duration = document.createElement('input');
-    duration.type = 'number'; duration.min = '0.15'; duration.max = '5'; duration.step = '0.05';
+    duration.type = 'number'; duration.min = '0.15'; duration.max = '10'; duration.step = '0.05';
     duration.value = transition.duration;
     duration.setAttribute('aria-label', 'Transition duration in seconds');
-    select.addEventListener('change', () => setEntryTransition(index, select.value, duration.value));
-    duration.addEventListener('change', () => setEntryTransition(index, select.value, duration.value));
-    edit.append(select, duration);
+    const pace = plTransitionPace.cloneNode(true);
+    pace.removeAttribute('id'); pace.value = transition.pace; pace.className = 'pl-transition-pace';
+    pace.setAttribute('aria-label', 'Transition speed curve');
+    select.addEventListener('change', () => setEntryTransition(index, select.value, duration.value, pace.value));
+    duration.addEventListener('change', () => setEntryTransition(index, select.value, duration.value, pace.value));
+    pace.addEventListener('change', () => setEntryTransition(index, select.value, duration.value, pace.value));
+    edit.append(select, duration, pace);
     main.addEventListener('click', () => {
-      if (plPaletteArmed) setEntryTransition(index, plPaletteType, transition.duration);
+      if (plPaletteArmed) setEntryTransition(index, plPaletteType, transition.duration, transition.pace);
       else edit.hidden = !edit.hidden;
     });
     slot.addEventListener('dragover', event => {
@@ -3866,7 +3932,7 @@
       if (!TRANSITION_NAMES[type]) return;
       event.preventDefault(); event.stopPropagation();
       plDraggingTransitionType = '';
-      setEntryTransition(index, type, transition.duration);
+      setEntryTransition(index, type, transition.duration, transition.pace);
     });
     const preview = document.createElement('button');
     preview.type = 'button'; preview.className = 'pl-transition-slot-preview';
@@ -3875,6 +3941,170 @@
     preview.addEventListener('click', event => { event.stopPropagation(); openTransitionAudition(transition.type, index); });
     slot.append(preview, main, edit);
     return slot;
+  }
+
+  const plCueDialog = document.getElementById('playlistCueDialog');
+  const plCueList = document.getElementById('playlistCueList');
+  let plCueEntry = null;
+  const cueNumber = (value, fallback, min, max) => {
+    const number = Number(value);
+    return Number.isFinite(number) ? Math.min(max, Math.max(min, number)) : fallback;
+  };
+  function normalisePlaylistCue(value = {}) {
+    return {
+      at: cueNumber(value.at, 0, 0, 9999),
+      effect: PL_CUE_EFFECTS[value.effect] ? value.effect : 'off',
+      intensity: cueNumber(value.intensity, 0.7, 0, 1),
+      feedback: cueNumber(value.feedback, 0.72, 0, 1),
+      text: String(value.text ?? '@tonyt.dj').slice(0, 80),
+      x: cueNumber(value.x, 0.5, 0, 1),
+      y: cueNumber(value.y, 0.5, 0, 1),
+      scale: cueNumber(value.scale, 0.48, 0.1, 2),
+      axis: ['x', 'y', 'z'].includes(value.axis) ? value.axis : 'y',
+      startAngle: cueNumber(value.startAngle, -45, -360, 360),
+      endAngle: cueNumber(value.endAngle, 45, -360, 360),
+      motion: cueNumber(value.motion, 0.25, 0, 2),
+    };
+  }
+
+  function openPlaylistCueEditor(index) {
+    plCueEntry = plPlaylist.entries[index] || null;
+    if (!plCueEntry) return;
+    if (!Array.isArray(plCueEntry.cues)) plCueEntry.cues = [];
+    document.getElementById('playlistCueTitle').textContent = 'Script effects · video ' + (index + 1);
+    renderPlaylistCueEditor();
+    plCueDialog.showModal();
+  }
+  function closePlaylistCueEditor() {
+    plCueDialog.close();
+    plCueEntry = null;
+    renderPlaylistEntries();
+  }
+  plCueDialog.addEventListener('close', () => {
+    if (plCueEntry) { plCueEntry = null; renderPlaylistEntries(); }
+  });
+  function addPlaylistCue() {
+    if (!plCueEntry) return;
+    const last = plCueEntry.cues.reduce((maximum, cue) => Math.max(maximum, Number(cue.at) || 0), -5);
+    plCueEntry.cues.push(normalisePlaylistCue({ at: Math.max(0, last + 5), effect: 'scene-0' }));
+    renderPlaylistCueEditor();
+  }
+  function renderPlaylistCueEditor() {
+    plCueList.replaceChildren();
+    if (!plCueEntry) return;
+    if (!plCueEntry.cues.length) {
+      const empty = document.createElement('p');
+      empty.textContent = 'No cues yet. Add one to bring an effect in at a chosen time.';
+      plCueList.appendChild(empty);
+      return;
+    }
+    plCueEntry.cues.forEach((raw, index) => {
+      const cue = normalisePlaylistCue(raw);
+      Object.assign(raw, cue);
+      const row = document.createElement('div'); row.className = 'playlist-cue-row';
+      const head = document.createElement('div'); head.className = 'playlist-cue-row-head';
+      const title = document.createElement('span'); title.textContent = 'Cue ' + (index + 1);
+      const remove = document.createElement('button'); remove.type = 'button'; remove.textContent = 'Remove';
+      remove.setAttribute('aria-label', 'Remove cue ' + (index + 1));
+      remove.addEventListener('click', () => { plCueEntry.cues.splice(index, 1); renderPlaylistCueEditor(); });
+      head.append(title, remove);
+      const fields = document.createElement('div'); fields.className = 'playlist-cue-fields';
+      function field(label, key, kind, config = {}) {
+        const wrapper = document.createElement('label'); wrapper.textContent = label;
+        const input = document.createElement(kind === 'select' ? 'select' : 'input');
+        if (kind === 'select') {
+          Object.entries(config.options).forEach(([value, name]) => input.add(new Option(name, value)));
+        } else {
+          input.type = kind;
+          if (kind === 'number') {
+            input.min = config.min; input.max = config.max; input.step = config.step || '0.05';
+          } else input.maxLength = config.maxLength || 80;
+        }
+        input.value = cue[key];
+        input.addEventListener('change', () => {
+          raw[key] = kind === 'number' ? cueNumber(input.value, cue[key], Number(config.min), Number(config.max)) : input.value;
+          if (key === 'effect') renderPlaylistCueEditor();
+          else if (kind === 'number') input.value = raw[key];
+        });
+        wrapper.appendChild(input); fields.appendChild(wrapper);
+      }
+      field('At (seconds)', 'at', 'number', { min: '0', max: '9999', step: '0.1' });
+      field('Effect', 'effect', 'select', { options: PL_CUE_EFFECTS });
+      const active = cue.effect !== 'off';
+      if (active) {
+        field('Intensity', 'intensity', 'number', { min: '0', max: '1' });
+        field('Feedback', 'feedback', 'number', { min: '0', max: '1' });
+      }
+      const isObject = ['mirror', 'logo', 'text'].includes(cue.effect);
+      if (isObject) {
+        if (cue.effect !== 'logo') field('Text', 'text', 'text');
+        field('X position', 'x', 'number', { min: '0', max: '1' });
+        field('Y position', 'y', 'number', { min: '0', max: '1' });
+        field('Size', 'scale', 'number', { min: '0.1', max: '2' });
+      }
+      if (cue.effect === 'logo' || cue.effect === 'text') {
+        field('Rotation axis', 'axis', 'select', { options: { x: 'X', y: 'Y', z: 'Z' } });
+        field('Start angle', 'startAngle', 'number', { min: '-360', max: '360', step: '1' });
+        field('End angle', 'endAngle', 'number', { min: '-360', max: '360', step: '1' });
+        field('Rotation speed', 'motion', 'number', { min: '0', max: '2' });
+      }
+      row.append(head, fields); plCueList.appendChild(row);
+    });
+  }
+
+  function cancelPlaylistCues() {
+    plCueRun++;
+    plCueTimers.forEach(clearTimeout);
+    plCueTimers = [];
+  }
+  function applyPlaylistCue(value) {
+    const cue = normalisePlaylistCue(value);
+    if (cue.effect === 'off') { setVfxState({ enabled: false }); return; }
+    let scene = Number(cue.effect.slice(6));
+    if (cue.effect === 'mirror') {
+      scene = 3;
+      setVfxShape({ kind: 'text', text: cue.text || 'CLUB', x: cue.x, y: cue.y, scale: cue.scale });
+    } else if (cue.effect === 'logo' || cue.effect === 'text') {
+      scene = 6;
+      setVfxLogo3d({ kind: cue.effect === 'logo' ? 'logo' : 'text', text: cue.text || '@tonyt.dj',
+        x: cue.x, y: cue.y, scale: cue.scale, axis: cue.axis,
+        startAngle: cue.startAngle, endAngle: cue.endAngle, motion: cue.motion }, true);
+    }
+    setVfxState({ enabled: true, scene, intensity: cue.intensity, feedback: cue.feedback });
+  }
+  function schedulePlaylistCues(entry) {
+    const run = plCueRun;
+    const cues = (Array.isArray(entry.cues) ? entry.cues : []).map(normalisePlaylistCue)
+      .sort((a, b) => a.at - b.at);
+    cues.forEach(cue => {
+      if (cue.at === 0) applyPlaylistCue(cue);
+      else plCueTimers.push(setTimeout(() => {
+        if (plPlaying && run === plCueRun) applyPlaylistCue(cue);
+      }, cue.at * 1000));
+    });
+  }
+
+  async function autoScriptPlaylistEffects() {
+    const playlist = plPlaylist;
+    const status = document.getElementById('plAutoScriptStatus');
+    const scenes = ['scene-0', 'scene-2', 'mirror', 'scene-4', 'scene-5', 'logo', 'text'];
+    const candidates = playlist.entries.map((entry, index) => ({ entry, index }))
+      .filter(({ entry }) => !Array.isArray(entry.cues) || entry.cues.length === 0);
+    if (!candidates.length) { status.textContent = 'Every video already has cues.'; return; }
+    status.textContent = 'Building cues…';
+    const lengths = await Promise.all(candidates.map(async ({ entry }) =>
+      entry.duration?.type === 'seconds' ? null : playlistSourceSeconds(entry.video)));
+    if (playlist !== plPlaylist) return;
+    candidates.forEach(({ entry, index }, position) => {
+      const seconds = playlistEntrySeconds(entry, lengths[position]);
+      entry.cues = [normalisePlaylistCue({ at: 0, effect: scenes[index % scenes.length] })];
+      if (seconds && seconds >= 12) {
+        entry.cues.push(normalisePlaylistCue({ at: Math.round(seconds * 0.55 * 10) / 10,
+          effect: scenes[(index + 3) % scenes.length] }));
+      }
+    });
+    renderPlaylistEntries();
+    status.textContent = 'Added cues to ' + candidates.length + ' video' + (candidates.length === 1 ? '' : 's') + '. Save the playlist.';
   }
 
   function renderPlaylistEntries() {
@@ -3917,7 +4147,12 @@
         + view + ' · P' + (entry.preset || 1);
       const detail = document.createElement('span');
       detail.className = 'pl-e-runtime-detail'; detail.textContent = 'Calculating run time…';
-      body.append(number, name, info, detail);
+      const cuesButton = document.createElement('button');
+      cuesButton.type = 'button'; cuesButton.className = 'pl-e-cues';
+      const cueCount = Array.isArray(entry.cues) ? entry.cues.length : 0;
+      cuesButton.textContent = '✦ Script effects' + (cueCount ? ' · ' + cueCount + ' cue' + (cueCount === 1 ? '' : 's') : '');
+      cuesButton.addEventListener('click', event => { event.stopPropagation(); openPlaylistCueEditor(index); });
+      body.append(number, name, info, detail, cuesButton);
       const runtime = document.createElement('span');
       runtime.className = 'pl-e-runtime'; runtime.textContent = '…';
       runtime.title = 'Configured playlist run time';
@@ -3929,6 +4164,7 @@
       card.append(thumb, body, runtime, remove);
       card.addEventListener('click', () => previewEntry(index));
       card.addEventListener('dragstart', event => {
+        if (event.target.closest('.pl-e-cues')) { event.preventDefault(); return; }
         plDragIdx = index;
         event.dataTransfer.effectAllowed = 'move';
         event.dataTransfer.setData('text/plain', 'playlist-entry:' + index);
@@ -3963,6 +4199,7 @@
 
   function startPlaylist() {
     if (plPlaylist.entries.length === 0) return;
+    if (!plPlaying) plVfxBeforePlaylist = JSON.parse(JSON.stringify(vfxState));
     plPlaying = true;
     playEntry(0);
   }
@@ -3973,10 +4210,12 @@
     plEntryIdx = idx;
     plLoopCount = 0;
     clearTimeout(plTimer);
+    cancelPlaylistCues();
 
     showVideo(entry.video, entry.transition || { type: 'cut' });
     applyLayoutConfiguration(entry);
-    video.play();
+    video.play().catch(() => {});
+    schedulePlaylistCues(entry);
 
     if (entry.duration.type === 'seconds') {
       plTimer = setTimeout(onEntryComplete, entry.duration.value * 1000);
@@ -4012,6 +4251,14 @@
   function stopPlaylist() {
     plPlaying = false;
     clearTimeout(plTimer);
+    cancelPlaylistCues();
+    if (plVfxBeforePlaylist) {
+      setVfxLogo3d(plVfxBeforePlaylist.logo3d);
+      setVfxShape(plVfxBeforePlaylist.shape);
+      setVfxState({ enabled: plVfxBeforePlaylist.enabled, scene: plVfxBeforePlaylist.scene,
+        intensity: plVfxBeforePlaylist.intensity, feedback: plVfxBeforePlaylist.feedback });
+      plVfxBeforePlaylist = null;
+    }
     plIndicator.style.display = 'none';
     renderPlaylistEntries();
   }
@@ -4122,7 +4369,7 @@
         view: view,
         preset: preset,
         duration: { type: 'loops', value: loops },
-        transition: normaliseTransition({ type: plTransitionType.value, duration: plTransitionDuration.value }),
+        transition: normaliseTransition({ type: plTransitionType.value, duration: plTransitionDuration.value, pace: plTransitionPace.value }),
         loopMode: 1,
         speed: 1,
       });
@@ -4131,6 +4378,7 @@
     }
 
     const totalMin = Math.round(totalTime / 60);
+    if (plPlaying) stopPlaylist();
     plPlaylist = { name: 'Auto ' + targetMinutes + 'min', entries: entries };
     plSlug = '';
     plNameInput.value = plPlaylist.name;
