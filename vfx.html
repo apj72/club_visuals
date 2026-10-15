@@ -270,7 +270,7 @@
   loadDevices();
   setInterval(() => $('disconnected').classList.toggle('visible', !window.opener || window.opener.closed), 1000);
   window.addEventListener('beforeunload', () => {
-    if (window.opener && !window.opener.closed) window.opener.onVfxWindowClosed();
+    if (window.opener && !window.opener.closed) window.opener.onVfxWindowClosed(window);
   });
 </script>
 </body>

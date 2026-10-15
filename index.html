@@ -1606,23 +1606,35 @@
   }
 
   function activateMirrorSculpture() {
+    if (vfxState.enabled && vfxState.scene === 3) { deactivateVfxObject(); return; }
     setVfxState({ enabled: true, scene: 3 });
     openVfxController();
   }
 
   function activateLogo3d() {
+    if (vfxState.enabled && vfxState.scene === 6 && vfxState.logo3d.kind === 'logo') { deactivateVfxObject(); return; }
     setVfxLogo3d({ kind: 'logo' });
     setVfxState({ enabled: true, scene: 6 });
     openVfxController();
   }
 
   function activateText3d() {
+    if (vfxState.enabled && vfxState.scene === 6 && vfxState.logo3d.kind === 'text') { deactivateVfxObject(); return; }
     setVfxLogo3d({ kind: 'text' });
     setVfxState({ enabled: true, scene: 6 });
     openVfxController();
   }
 
-  function onVfxWindowClosed() {
+  function deactivateVfxObject() {
+    setVfxState({ enabled: false });
+    const controller = vfxWindow;
+    vfxWindow = null;
+    document.getElementById('vfxBtn').classList.remove('active');
+    if (controller && !controller.closed) controller.close();
+  }
+
+  function onVfxWindowClosed(closedWindow) {
+    if (closedWindow && closedWindow !== vfxWindow) return;
     vfxWindow = null;
     document.getElementById('vfxBtn').classList.remove('active');
   }
@@ -1753,8 +1765,13 @@
 
   function renderVfxFrame() {
     if (!vfxEngine || !video.videoWidth) return;
-    const width = Math.max(1, Math.round(videoStage.clientWidth * Math.min(devicePixelRatio, 1.5)));
-    const height = Math.max(1, Math.round(videoStage.clientHeight * Math.min(devicePixelRatio, 1.5)));
+    const stageWidth = Math.max(1, videoStage.clientWidth);
+    const stageHeight = Math.max(1, videoStage.clientHeight);
+    const textureLimit = vfxEngine.maxTextureSize;
+    const scale = Math.min(devicePixelRatio || 1, 2,
+      Math.sqrt(18_000_000 / (stageWidth * stageHeight)), textureLimit / stageWidth, textureLimit / stageHeight);
+    const width = Math.max(1, Math.round(stageWidth * scale));
+    const height = Math.max(1, Math.round(stageHeight * scale));
     if (vfxSource.width !== width || vfxSource.height !== height) {
       vfxSource.width = width;
       vfxSource.height = height;

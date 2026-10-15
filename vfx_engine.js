@@ -152,7 +152,9 @@
     void main() {
       vec3 normal = normalize(surfaceNormal);
       vec3 light = normalize(vec3(-0.45, 0.7, 0.7));
-      vec3 pigment = texture(logoTexture, uv).rgb;
+      vec4 surface = texture(logoTexture, uv);
+      if (sideFace < 0.5 && surface.a < 0.01) discard;
+      vec3 pigment = surface.rgb;
       vec2 reflectedUV = clamp(gl_FragCoord.xy / resolution + normal.xy * (0.045 + bass * 0.035) * intensity, 0.0, 1.0);
       vec3 reflection = texture(sourceFrame, reflectedUV).rgb;
       float diffuse = max(dot(normal, light), 0.0);
@@ -161,7 +163,7 @@
       vec3 material = mix(pigment * 0.82 + reflection * 0.18, pigment * 0.23 + reflection * 0.42, sideFace);
       material *= mix(0.78 + diffuse * 0.34, 0.42 + diffuse * 0.78, sideFace);
       material += vec3(0.75, 0.88, 1.0) * (shine * (0.36 + hit * 0.3) + edge * 0.08);
-      colour = vec4(material, 1.0);
+      colour = vec4(material, sideFace > 0.5 ? 1.0 : surface.a);
     }`;
 
   class VfxEngine {
@@ -170,6 +172,7 @@
       this.gl = canvas.getContext('webgl2', { alpha: false, antialias: true, depth: true });
       if (!this.gl) throw new Error('WebGL 2 is unavailable');
       const gl = this.gl;
+      this.maxTextureSize = gl.getParameter(gl.MAX_TEXTURE_SIZE);
       const compileProgram = (fragment, vertexCode = vertex) => {
         const program = gl.createProgram();
         for (const [type, code] of [[gl.VERTEX_SHADER, vertexCode], [gl.FRAGMENT_SHADER, fragment]]) {
@@ -223,9 +226,9 @@
       const logoImage = new Image();
       logoImage.onload = () => {
         const logoCanvas = document.createElement('canvas');
-        logoCanvas.width = 1046;
-        logoCanvas.height = 168;
-        logoCanvas.getContext('2d').drawImage(logoImage, 0, 20, 523, 84, 0, 0, 1046, 168);
+        logoCanvas.width = 2092;
+        logoCanvas.height = 336;
+        logoCanvas.getContext('2d').drawImage(logoImage, 0, 20, 523, 84, 0, 0, 2092, 336);
         this.logoSource = logoCanvas;
         if (this.logo3d.kind === 'logo') this.uploadLogoSurface(logoCanvas);
       };
@@ -282,18 +285,18 @@
       const handle = value.startsWith('@') ? value.slice(1) : value;
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
-      let fontSize = 176;
+      let fontSize = 352;
       const measure = () => {
         ctx.font = `${fontSize}px "Version1 Bungee"`;
         return ctx.measureText('@').width + ctx.measureText(handle).width;
       };
       let width = measure();
-      if (width > 1900) { fontSize *= 1900 / width; width = measure(); }
-      canvas.width = Math.ceil(width + 44);
-      canvas.height = 240;
+      if (width > 3800) { fontSize *= 3800 / width; width = measure(); }
+      canvas.width = Math.ceil(width + 88);
+      canvas.height = 480;
       ctx.font = `${fontSize}px "Version1 Bungee"`;
       ctx.textBaseline = 'middle';
-      const x = 22, y = canvas.height / 2;
+      const x = 44, y = canvas.height / 2;
       ctx.fillStyle = '#e20d22';
       ctx.fillText('@', x, y);
       ctx.fillStyle = '#ffffff';
@@ -309,9 +312,11 @@
       gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, canvas);
       gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
       const meshCanvas = document.createElement('canvas');
-      meshCanvas.width = Math.min(700, Math.max(1, Math.round(canvas.width / 2)));
+      meshCanvas.width = Math.min(1200, Math.max(1, Math.round(canvas.width / 2)));
       meshCanvas.height = Math.max(1, Math.round(meshCanvas.width * canvas.height / canvas.width));
-      meshCanvas.getContext('2d').drawImage(canvas, 0, 0, meshCanvas.width, meshCanvas.height);
+      const meshContext = meshCanvas.getContext('2d');
+      meshContext.imageSmoothingQuality = 'high';
+      meshContext.drawImage(canvas, 0, 0, meshCanvas.width, meshCanvas.height);
       this.buildLogoMesh(meshCanvas);
     }
 
@@ -319,8 +324,7 @@
       const gl = this.gl;
       const width = canvas.width, height = canvas.height;
       const pixels = canvas.getContext('2d').getImageData(0, 0, width, height).data;
-      const solid = (x, y) => x >= 0 && x < width && y >= 0 && y < height
-        && pixels[(y * width + x) * 4 + 3] > 96;
+      const alpha = (x, y) => pixels[(y * width + x) * 4 + 3] / 255;
       const aspect = width / height;
       const point = (x, y, z) => [(x / width - 0.5) * aspect, 0.5 - y / height, z];
       const uv = (x, y) => [x / width, 1 - y / height];
@@ -330,40 +334,46 @@
         push(a, normal, texA, side); push(b, normal, texB, side); push(c, normal, texC, side);
         push(a, normal, texA, side); push(c, normal, texC, side); push(d, normal, texD, side);
       };
-      for (let y = 0; y < height; y++) {
-        for (let x = 0; x < width;) {
-          if (!solid(x, y)) { x++; continue; }
-          const start = x;
-          while (x < width && solid(x, y)) x++;
-          const end = x;
-          quad(point(start, y, 0.5), point(end, y, 0.5), point(end, y + 1, 0.5), point(start, y + 1, 0.5),
-            [0, 0, 1], uv(start, y), uv(end, y), uv(end, y + 1), uv(start, y + 1));
-          quad(point(end, y, -0.5), point(start, y, -0.5), point(start, y + 1, -0.5), point(end, y + 1, -0.5),
-            [0, 0, -1], uv(end, y), uv(start, y), uv(start, y + 1), uv(end, y + 1));
-        }
-      }
-      const side = (a, b, c, d, normal, colourUv) => quad(a, b, c, d, normal,
-        colourUv, colourUv, colourUv, colourUv, 1);
-      for (let y = 0; y < height; y++) for (const top of [true, false]) {
-        for (let x = 0; x < width;) {
-          if (!solid(x, y) || solid(x, y + (top ? -1 : 1))) { x++; continue; }
-          const start = x;
-          while (x < width && solid(x, y) && !solid(x, y + (top ? -1 : 1))) x++;
-          const end = x;
-          const colourUv = uv((start + end) / 2, y + 0.5);
-          if (top) side(point(start, y, -0.5), point(end, y, -0.5), point(end, y, 0.5), point(start, y, 0.5), [0, 1, 0], colourUv);
-          else side(point(start, y + 1, 0.5), point(end, y + 1, 0.5), point(end, y + 1, -0.5), point(start, y + 1, -0.5), [0, -1, 0], colourUv);
-        }
-      }
-      for (let x = 0; x < width; x++) for (const left of [true, false]) {
-        for (let y = 0; y < height;) {
-          if (!solid(x, y) || solid(x + (left ? -1 : 1), y)) { y++; continue; }
-          const start = y;
-          while (y < height && solid(x, y) && !solid(x + (left ? -1 : 1), y)) y++;
-          const end = y;
-          const colourUv = uv(x + 0.5, (start + end) / 2);
-          if (left) side(point(x, start, -0.5), point(x, start, 0.5), point(x, end, 0.5), point(x, end, -0.5), [-1, 0, 0], colourUv);
-          else side(point(x + 1, start, 0.5), point(x + 1, start, -0.5), point(x + 1, end, -0.5), point(x + 1, end, 0.5), [1, 0, 0], colourUv);
+      // The front and back retain the source image's smooth alpha edges.
+      quad(point(0, 0, 0.5), point(width, 0, 0.5), point(width, height, 0.5), point(0, height, 0.5),
+        [0, 0, 1], uv(0, 0), uv(width, 0), uv(width, height), uv(0, height));
+      quad(point(width, 0, -0.5), point(0, 0, -0.5), point(0, height, -0.5), point(width, height, -0.5),
+        [0, 0, -1], uv(width, 0), uv(0, 0), uv(0, height), uv(width, height));
+
+      // Follow the half-alpha contour for the extrusion instead of making a
+      // square wall for each mask pixel. Each edge crossing is interpolated.
+      const threshold = 0.5;
+      for (let y = 0; y < height - 1; y++) for (let x = 0; x < width - 1; x++) {
+        const values = [alpha(x, y), alpha(x + 1, y), alpha(x + 1, y + 1), alpha(x, y + 1)];
+        const inside = values.map(value => value >= threshold);
+        const crossing = (a, b) => inside[a] !== inside[b];
+        const edgePoint = (edge) => {
+          const corners = [[x, y], [x + 1, y], [x + 1, y + 1], [x, y + 1]];
+          const a = edge, b = (edge + 1) % 4;
+          const t = Math.max(0, Math.min(1, (threshold - values[a]) / (values[b] - values[a])));
+          return [corners[a][0] + (corners[b][0] - corners[a][0]) * t,
+            corners[a][1] + (corners[b][1] - corners[a][1]) * t];
+        };
+        const edges = [0, 1, 2, 3].filter(edge => crossing(edge, (edge + 1) % 4));
+        if (!edges.length) continue;
+        const gx = (values[1] + values[2] - values[0] - values[3]) * 0.5;
+        const gy = (values[2] + values[3] - values[0] - values[1]) * 0.5;
+        const gradientLength = Math.hypot(gx, gy) || 1;
+        const normal = [-gx / gradientLength, gy / gradientLength, 0];
+        const segment = (startEdge, endEdge) => {
+          const a = edgePoint(startEdge), b = edgePoint(endEdge);
+          const sampleX = Math.max(0, Math.min(width, (a[0] + b[0]) / 2 + gx / gradientLength));
+          const sampleY = Math.max(0, Math.min(height, (a[1] + b[1]) / 2 + gy / gradientLength));
+          const colourUv = uv(sampleX, sampleY);
+          quad(point(a[0], a[1], 0.5), point(b[0], b[1], 0.5),
+            point(b[0], b[1], -0.5), point(a[0], a[1], -0.5),
+            normal, colourUv, colourUv, colourUv, colourUv, 1);
+        };
+        if (edges.length === 2) segment(edges[0], edges[1]);
+        else if (edges.length === 4) {
+          const centreInside = values.reduce((sum, value) => sum + value, 0) / 4 >= threshold;
+          if (centreInside === inside[0]) { segment(0, 1); segment(2, 3); }
+          else { segment(0, 3); segment(1, 2); }
         }
       }
       const data = new Float32Array(vertices);
@@ -491,6 +501,8 @@
         const logo = this.logo3d;
         gl.clear(gl.DEPTH_BUFFER_BIT);
         gl.enable(gl.DEPTH_TEST);
+        gl.enable(gl.BLEND);
+        gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
         gl.useProgram(this.logoProgram);
         gl.activeTexture(gl.TEXTURE0);
         gl.bindTexture(gl.TEXTURE_2D, this.source);
@@ -515,6 +527,7 @@
         gl.uniform1f(u.intensity, state.intensity);
         gl.bindVertexArray(this.logoMeshVao);
         gl.drawArrays(gl.TRIANGLES, 0, this.logoMeshVertexCount);
+        gl.disable(gl.BLEND);
         gl.disable(gl.DEPTH_TEST);
         gl.bindVertexArray(this.fullscreenVao);
       }

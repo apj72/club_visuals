@@ -71,9 +71,9 @@ While a video or playlist is playing, click **VFX** in the main player to open i
 
 **Mirror sculpture** uses the live video as a reflection inside text or a transparent PNG/WebP silhouette. Enter a title or Instagram handle, click **Use current video's @ID**, select the bundled **Version1 logo**, or upload logo artwork (up to 1 MB). The Position, Size, Reflection depth, Edge glow, 3D angle, Extrusion, and Motion controls shape the object and bend the video around it. Use a high-contrast logo with a transparent background; the image's alpha defines the reflective surface. The 3D controls create a live extruded silhouette rather than importing a 3D mesh.
 
-After loading a video, click **Mirror 3D** in the player controls to switch straight to Mirror sculpture and open its controller. If the app was already open when it was updated, reload the main browser tab once so the new button appears.
+After loading a video, click **Mirror 3D** in the player controls to switch straight to Mirror sculpture and open its controller. Click the active button again to turn the effect off and close the controller.
 
-Click **3D Logo** for a solid object built from the Version1 SVG, or **3D Text** for an editable Instagram ID. The text starts as `@tonyt.dj` in the bundled Bungee font, with a red @ and white handle. In the controller, switch between the two objects, type another ID, move and resize it, adjust depth and X/Y/Z rotation, and choose an auto rotation axis with start and end angles. Auto rotate at zero holds the chosen manual angle. The surface reflects the live video. The object appears in the main player, clean output, and recordings.
+Click **3D Logo** for a solid object built from the Version1 SVG, or **3D Text** for an editable Instagram ID. Click the active button again to turn it off and close the controller. The text starts as `@tonyt.dj` in the bundled Bungee font, with a red @ and white handle. In the controller, switch between the two objects, type another ID, move and resize it, adjust depth and X/Y/Z rotation, and choose an auto rotation axis with start and end angles. Auto rotate at zero holds the chosen manual angle. The surface reflects the live video. The object appears in the main player, clean output, and recordings.
 
 ### Save a video layout
 
