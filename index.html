@@ -562,10 +562,12 @@
 
   .library-item:hover { background: #1f2b4d; }
   .library-item .library-playlist-btn {
+    display: none;
     position: absolute; right: 6px; bottom: 6px; z-index: 2;
     padding: 4px 7px; border: 1px solid #4ecca3; border-radius: 5px;
     background: #102936; color: #b8ffe6; font-size: 0.68rem;
   }
+  .library-item.active .library-playlist-btn { display: block; }
   .library-item .library-playlist-btn:hover { background: #1b5446; }
   .library-item .delete-btn {
     position: absolute; top: 4px; right: 4px;
@@ -1032,7 +1034,7 @@
     </div>
     <div class="tab-content active" id="libraryTab">
       <div class="library" id="librarySection" style="display:none">
-        <p class="library-order-hint">Drag videos to change their order. Use arrow keys on the drag handle for precise moves. Click + Playlist on any video to add it to a playlist.</p>
+        <p class="library-order-hint">Drag videos to change their order. Use arrow keys on the drag handle for precise moves. Select a video to show its + Playlist button.</p>
         <div class="library-order-status" id="libraryOrderStatus" role="status" aria-live="polite"></div>
         <div class="library-order-status library-playlist-status" id="libraryPlaylistStatus" role="status" aria-live="polite"></div>
         <div class="library-grid" id="libraryGrid"></div>
