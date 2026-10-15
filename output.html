@@ -108,13 +108,16 @@
   let trailsEnabled = false;
   let trailAmount = 0.15;
   const vfxCanvas = document.getElementById('vfxCanvas');
-  const videoTransition = createTransitionController(videoStage, () => {
+  const transitionIncomingCanvas = document.createElement('canvas');
+  function captureTransitionFrame(reuse = false) {
     if (video.readyState < 2) return null;
     const stageRect = videoStage.getBoundingClientRect();
-    const snapshot = document.createElement('canvas');
+    const snapshot = reuse ? transitionIncomingCanvas : document.createElement('canvas');
     const scale = Math.min(devicePixelRatio || 1, 2, 1920 / Math.max(1, stageRect.width));
-    snapshot.width = Math.max(1, Math.round(stageRect.width * scale));
-    snapshot.height = Math.max(1, Math.round(stageRect.height * scale));
+    const width = Math.max(1, Math.round(stageRect.width * scale));
+    const height = Math.max(1, Math.round(stageRect.height * scale));
+    if (snapshot.width !== width) snapshot.width = width;
+    if (snapshot.height !== height) snapshot.height = height;
     const context = snapshot.getContext('2d');
     context.fillStyle = '#000';
     context.fillRect(0, 0, snapshot.width, snapshot.height);
@@ -146,7 +149,9 @@
       context.restore();
     }
     return snapshot;
-  });
+  }
+  const videoTransition = createTransitionController(videoStage,
+    () => captureTransitionFrame(), () => captureTransitionFrame(true));
   let videoLoadToken = 0;
   const vfxSource = document.createElement('canvas');
   const vfxSourceCtx = vfxSource.getContext('2d');

@@ -465,6 +465,7 @@
   .transition-control { display: inline-flex; align-items: center; gap: 5px; color: #aab3c5; font-size: 0.75rem; }
   .transition-control select, .transition-control input { padding: 6px; background: #16213e; color: #fff; border: 1px solid #333; border-radius: 4px; font: inherit; }
   .transition-control input { width: 48px; }
+  .transition-control button { padding: 6px 7px; background: #183a3a; color: #c7ffeb; border: 1px solid #4ecca3; border-radius: 4px; cursor: pointer; font: inherit; }
   .speed-control button { padding: 6px 9px; border: 1px solid #333; border-radius: 4px; background: #16213e; color: #fff; cursor: pointer; }
   .speed-control button:disabled { opacity: 0.4; cursor: default; }
   .speed-control output { min-width: 38px; text-align: center; color: #4ecca3; font-weight: 600; }
@@ -683,7 +684,11 @@
   .pl-e-cues:hover { background: #25534a; }
   @media (max-width: 520px) { .playlist-cue-fields { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
   @media (max-width: 520px) { .transition-audition-fields { grid-template-columns: 1fr; } }
-  .pl-transition-palette { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 5px; margin-bottom: 10px; }
+  .pl-transition-palette { margin-bottom: 10px; }
+  .pl-transition-category { margin-top: 8px; }
+  .pl-transition-category h4 { margin: 0 0 4px; color: #83a4bc; font-size: .67rem; font-weight: 700; }
+  .pl-transition-safety { color: #ffd28a; font-size: .65rem; }
+  .pl-transition-group-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 5px; }
   .pl-transition-tool {
     min-width: 0; padding: 6px 3px; border: 1px solid #34445e; border-radius: 7px;
     background: #101a2b; color: #b9c6d8; cursor: grab; font-size: 0.62rem;
@@ -974,10 +979,13 @@
               <option value="whip-pan">Whip Pan</option>
               <option value="pixel-scatter">Pixel Scatter</option><option value="data-tear">Data Tear</option>
               <option value="iris-burst">Iris Burst</option><option value="shutters">Shutters</option>
+              <option value="rgb-split">RGB Split</option><option value="infinite-zoom">Infinite Zoom</option>
+              <option value="neon-shockwave">Neon Shockwave</option>
             </select>
             <label for="manualTransitionDuration">s</label>
             <input id="manualTransitionDuration" type="number" min="0.15" max="10" step="0.05" value="0.8" title="Transition length in seconds">
             <select id="manualTransitionPace" aria-label="Transition speed curve" title="Speed curve"><option value="steady">Even</option><option value="accelerate">Build</option><option value="decelerate">Hit</option><option value="ease">Ease</option></select>
+            <button type="button" onclick="openTransitionAudition(document.getElementById('manualTransitionType').value, -1, 'manual')" title="Tune and audition the manual transition">Tune</button>
           </span>
           <span class="speed-control" aria-label="Playback speed"><span>Speed</span><button type="button" id="speedDown" onclick="changePlaybackSpeed(-0.25)" aria-label="Decrease playback speed">−</button><output id="speedValue">1×</output><button type="button" id="speedUp" onclick="changePlaybackSpeed(0.25)" aria-label="Increase playback speed">+</button></span>
           <button class="btn-ctrl" id="muteBtn" onclick="toggleMute()">Mute</button>
@@ -1035,6 +1043,8 @@
             <option value="whip-pan">Whip Pan</option>
             <option value="pixel-scatter">Pixel Scatter</option><option value="data-tear">Data Tear</option>
             <option value="iris-burst">Iris Burst</option><option value="shutters">Shutters</option>
+            <option value="rgb-split">RGB Split</option><option value="infinite-zoom">Infinite Zoom</option>
+            <option value="neon-shockwave">Neon Shockwave</option>
           </select></label>
           <label>Seconds<input id="presetPlaylistTransitionDuration" type="number" min="0.15" max="10" step="0.05" value="0.8"></label>
         </div>
@@ -1062,6 +1072,7 @@
           <label>Duration (seconds)<input id="transitionAuditionDuration" type="number" min="0.15" max="10" step="0.05" value="0.8"></label>
           <label>Speed curve<select id="transitionAuditionPace"><option value="steady">Even · constant</option><option value="accelerate">Build · slow then fast</option><option value="decelerate">Hit · fast then slow</option><option value="ease">Ease · smooth start and finish</option></select></label>
         </div>
+        <div class="transition-audition-fields" id="transitionAuditionParams" aria-label="Effect parameters"></div>
         <div class="transition-audition-status" id="transitionAuditionStatus" role="status" aria-live="polite"></div>
         <div class="transition-audition-actions">
           <button type="button" onclick="closeTransitionAudition()">Close</button>
@@ -1169,6 +1180,8 @@
             <option value="whip-pan">Whip Pan</option>
             <option value="pixel-scatter">Pixel Scatter</option><option value="data-tear">Data Tear</option>
             <option value="iris-burst">Iris Burst</option><option value="shutters">Shutters</option>
+            <option value="rgb-split">RGB Split</option><option value="infinite-zoom">Infinite Zoom</option>
+            <option value="neon-shockwave">Neon Shockwave</option>
           </select></label>
           <label>Seconds<input type="number" id="plTransitionDuration" min="0.15" max="10" step="0.05" value="0.8"></label>
         </div>
@@ -1207,6 +1220,7 @@
     </div>
     <div class="tab-content" id="settingsTab">
       <div class="settings-form">
+        <label class="settings-label"><input type="checkbox" id="reduceTransitionFlashes" onchange="setTransitionReduceFlashes(this.checked)"> Reduce flashes in transitions</label>
         <label class="settings-label">Download folder</label>
         <div class="settings-current" id="settingsCurrent">
           <span class="sc-label">Current:</span> <span id="settingsCurrentPath">./downloads</span>
@@ -1287,17 +1301,24 @@
   let trailsEnabled = false;
   let trailAmount = 0.15;
   const vfxCanvas = document.getElementById('vfxCanvas');
-  const videoTransition = createTransitionController(videoStage, () => {
+  const transitionIncomingCanvas = document.createElement('canvas');
+  function captureTransitionFrame(reuse = false) {
     if (video.readyState < 2) return null;
     const rect = videoStage.getBoundingClientRect();
-    const canvas = document.createElement('canvas');
+    const canvas = reuse ? transitionIncomingCanvas : document.createElement('canvas');
     const scale = Math.min(devicePixelRatio || 1, 2, 1920 / Math.max(1, rect.width));
-    canvas.width = Math.max(1, Math.round(rect.width * scale));
-    canvas.height = Math.max(1, Math.round(rect.height * scale));
+    const width = Math.max(1, Math.round(rect.width * scale));
+    const height = Math.max(1, Math.round(rect.height * scale));
+    if (canvas.width !== width) canvas.width = width;
+    if (canvas.height !== height) canvas.height = height;
     drawCompositeFrame(canvas, canvas.getContext('2d'), true, false, false);
     return canvas;
-  });
+  }
+  const videoTransition = createTransitionController(videoStage,
+    () => captureTransitionFrame(), () => captureTransitionFrame(true));
   let videoLoadToken = 0;
+  let manualTransitionParams = {};
+  let manualTransitionSeed = 1;
   let pixelHolding = false;
   let pixelHoldWantsPlay = false;
   const vfxSource = document.createElement('canvas');
@@ -2077,6 +2098,8 @@
       type: document.getElementById('manualTransitionType').value,
       duration: document.getElementById('manualTransitionDuration').value,
       pace: document.getElementById('manualTransitionPace').value,
+      params: manualTransitionParams,
+      seed: manualTransitionSeed,
     } : transition);
     if (!hasOutgoing && chosenTransition.type !== 'fade-in') chosenTransition.type = 'cut';
     pixelHolding = false;
@@ -2373,6 +2396,8 @@
     document.getElementById('manualTransitionType').value = 'cross-dissolve';
     document.getElementById('manualTransitionDuration').value = '0.8';
     document.getElementById('manualTransitionPace').value = 'steady';
+    manualTransitionParams = {};
+    manualTransitionSeed = 1;
     setLoopMode(0);
     setPlaybackSpeed(1);
     setViewModeTo(0);
@@ -3383,6 +3408,8 @@
     'zoom-spin': 'Zoom / Spin', 'whip-pan': 'Whip Pan',
     'pixel-scatter': 'Pixel Scatter', 'data-tear': 'Data Tear',
     'iris-burst': 'Iris Burst', 'shutters': 'Shutters',
+    'rgb-split': 'RGB Split', 'infinite-zoom': 'Infinite Zoom',
+    'neon-shockwave': 'Neon Shockwave',
   };
   const TRANSITION_PACE_NAMES = { steady: 'Even', accelerate: 'Build', decelerate: 'Hit', ease: 'Ease' };
   const PL_CUE_EFFECTS = {
@@ -3403,6 +3430,9 @@
     'data-tear': '<path d="M5 6h33M10 11h33M3 16h31M12 21h31M5 26h33"/><path d="M31 4l-5 4m11 7-5 4m-10 0-5 4"/>',
     'iris-burst': '<circle cx="24" cy="16" r="5"/><circle cx="24" cy="16" r="11"/><path d="M24 1v4m0 22v4M5 16h4m30 0h4"/>',
     'shutters': '<path d="M5 5h38M5 11h38M5 17h38M5 23h38M5 29h38"/><path d="M17 7v3m14 8v3"/>',
+    'rgb-split': '<path d="M10 5v22m10-22v22m10-22v22m10-22v22"/><circle cx="10" cy="10" r="3"/><circle cx="20" cy="16" r="3"/><circle cx="30" cy="22" r="3"/>',
+    'infinite-zoom': '<rect x="5" y="3" width="38" height="26"/><rect x="12" y="7" width="24" height="18"/><rect x="18" y="11" width="12" height="10"/><path d="M24 16h1"/>',
+    'neon-shockwave': '<circle cx="24" cy="16" r="5"/><circle cx="24" cy="16" r="11"/><path d="M24 1v3m0 24v3M5 16h3m32 0h3M9 4l3 3m24 18 3 3"/>',
   };
   function transitionIcon(type) {
     return `<svg viewBox="0 0 48 32" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${TRANSITION_ART[type] || TRANSITION_ART.cut}</svg>`;
@@ -3417,11 +3447,15 @@
   const auditionType = document.getElementById('transitionAuditionType');
   const auditionDuration = document.getElementById('transitionAuditionDuration');
   const auditionPace = document.getElementById('transitionAuditionPace');
+  const auditionParams = document.getElementById('transitionAuditionParams');
   const auditionStatus = document.getElementById('transitionAuditionStatus');
   const auditionApply = document.getElementById('transitionAuditionApply');
   let auditionSlotIndex = -1;
+  let auditionTarget = 'palette';
+  let auditionParamsState = {};
+  let auditionSeed = 1;
   let auditionRun = 0;
-  const auditionTransition = createTransitionController(auditionStage, () => {
+  function captureAuditionFrame(includeVideo) {
     const canvas = document.createElement('canvas');
     const rect = auditionStage.getBoundingClientRect();
     canvas.width = Math.max(1, Math.round(rect.width));
@@ -3429,15 +3463,45 @@
     const ctx = canvas.getContext('2d');
     ctx.fillStyle = '#000';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    if (auditionVideo.readyState >= 2 && auditionFrom.value) {
+    if (auditionVideo.readyState >= 2 && includeVideo) {
       const scale = Math.min(canvas.width / auditionVideo.videoWidth, canvas.height / auditionVideo.videoHeight);
       const width = auditionVideo.videoWidth * scale;
       const height = auditionVideo.videoHeight * scale;
       ctx.drawImage(auditionVideo, (canvas.width - width) / 2, (canvas.height - height) / 2, width, height);
     }
     return canvas;
-  });
+  }
+  const auditionTransition = createTransitionController(auditionStage,
+    () => captureAuditionFrame(!!auditionFrom.value), () => captureAuditionFrame(true));
   Object.entries(TRANSITION_NAMES).forEach(([type, name]) => auditionType.add(new Option(name, type)));
+  document.getElementById('reduceTransitionFlashes').checked = getTransitionReduceFlashes();
+
+  function renderAuditionParameters() {
+    auditionParams.replaceChildren();
+    const definition = TRANSITION_CATALOGUE[auditionType.value];
+    const rules = definition?.parameterDefinitions || {};
+    auditionParamsState = normaliseTransition({ type: auditionType.value, params: auditionParamsState }).params;
+    for (const [key, rule] of Object.entries(rules)) {
+      const label = document.createElement('label');
+      label.textContent = ({ centerX: 'Centre X', centerY: 'Centre Y' })[key]
+        || key[0].toUpperCase() + key.slice(1);
+      const input = document.createElement(rule.type === 'choice' ? 'select' : 'input');
+      if (rule.type === 'choice') rule.values.forEach(value => input.add(new Option(value, value)));
+      else if (rule.type === 'color') input.type = 'color';
+      else { input.type = 'number'; input.min = rule.min; input.max = rule.max; input.step = '0.05'; }
+      input.value = auditionParamsState[key];
+      input.addEventListener('change', () => { auditionParamsState[key] = input.value; });
+      label.appendChild(input); auditionParams.appendChild(label);
+    }
+    if (definition?.implementationKind === 'shader') {
+      const label = document.createElement('label'); label.textContent = 'Random seed';
+      const input = document.createElement('input'); input.type = 'number'; input.min = '0'; input.max = '4294967295'; input.step = '1';
+      input.value = auditionSeed;
+      input.addEventListener('change', () => { auditionSeed = input.value; });
+      label.appendChild(input); auditionParams.appendChild(label);
+    }
+  }
+  auditionType.addEventListener('change', () => { auditionParamsState = {}; renderAuditionParameters(); });
 
   function stopAudition() {
     auditionRun++;
@@ -3478,8 +3542,11 @@
     const run = auditionRun;
     const from = auditionFrom.value;
     const to = auditionTo.value;
-    const transition = normaliseTransition({ type: auditionType.value, duration: auditionDuration.value, pace: auditionPace.value });
+    const transition = normaliseTransition({ type: auditionType.value, duration: auditionDuration.value,
+      pace: auditionPace.value, params: auditionParamsState, seed: auditionSeed });
     auditionDuration.value = transition.duration;
+    auditionParamsState = transition.params;
+    auditionSeed = transition.seed;
     if (!to) { auditionStatus.textContent = 'Choose a video to preview.'; return; }
     auditionStatus.textContent = 'Loading preview…';
     try {
@@ -3501,6 +3568,7 @@
         auditionVideo.pause();
       }
       auditionTransition.prepare(transition);
+      const fallback = auditionTransition.getFallbackReason();
       await loadAuditionVideo(to, run);
       if (run !== auditionRun) return;
       if (transition.type === 'pixel-scatter') {
@@ -3512,16 +3580,18 @@
         if (run !== auditionRun) return;
         auditionTransition.start();
       }
-      auditionStatus.textContent = transition.type === 'cut' ? 'Cut preview playing.' : TRANSITION_NAMES[transition.type] + ' preview playing.';
+      auditionStatus.textContent = fallback || (transition.type === 'cut' ? 'Cut preview playing.' : TRANSITION_NAMES[transition.type] + ' preview playing.');
     } catch (error) {
       if (run === auditionRun) { auditionTransition.cancel(); auditionStatus.textContent = error.message; }
     }
   }
 
-  function openTransitionAudition(type = plPaletteType, slotIndex = -1) {
+  function openTransitionAudition(type = plPaletteType, slotIndex = -1, target = 'palette') {
     stopAudition();
     auditionSlotIndex = slotIndex;
-    auditionApply.hidden = slotIndex < 0;
+    auditionTarget = target;
+    auditionApply.hidden = slotIndex < 0 && target !== 'manual';
+    auditionApply.textContent = target === 'manual' ? 'Use for manual playback' : 'Use in slot';
     auditionFrom.replaceChildren(new Option('Black', ''));
     auditionTo.replaceChildren();
     videoListCache.forEach(v => {
@@ -3535,6 +3605,16 @@
     auditionType.value = TRANSITION_NAMES[type] ? type : 'cross-dissolve';
     auditionDuration.value = slotIndex >= 0 ? normaliseTransition(plPlaylist.entries[slotIndex]?.transition).duration : normaliseTransition({ duration: plTransitionDuration.value }).duration;
     auditionPace.value = slotIndex >= 0 ? normaliseTransition(plPlaylist.entries[slotIndex]?.transition).pace : plTransitionPace.value;
+    const configured = slotIndex >= 0 ? normaliseTransition(plPlaylist.entries[slotIndex]?.transition)
+      : target === 'manual' ? normaliseTransition({ type, params: manualTransitionParams, seed: manualTransitionSeed })
+        : normaliseTransition({ type });
+    if (target === 'manual') {
+      auditionDuration.value = document.getElementById('manualTransitionDuration').value;
+      auditionPace.value = document.getElementById('manualTransitionPace').value;
+    }
+    auditionParamsState = configured.params;
+    auditionSeed = configured.seed;
+    renderAuditionParameters();
     auditionStatus.textContent = '';
     auditionDialog.showModal();
     replayTransitionAudition();
@@ -3548,7 +3628,15 @@
   }
   auditionDialog.addEventListener('cancel', event => { event.preventDefault(); closeTransitionAudition(); });
   function applyAuditionToSlot() {
-    if (auditionSlotIndex >= 0) setEntryTransition(auditionSlotIndex, auditionType.value, auditionDuration.value, auditionPace.value);
+    if (auditionSlotIndex >= 0) setEntryTransition(auditionSlotIndex, auditionType.value,
+      auditionDuration.value, auditionPace.value, auditionParamsState, auditionSeed);
+    else if (auditionTarget === 'manual') {
+      document.getElementById('manualTransitionType').value = auditionType.value;
+      document.getElementById('manualTransitionDuration').value = auditionDuration.value;
+      document.getElementById('manualTransitionPace').value = auditionPace.value;
+      manualTransitionParams = normaliseTransition({ type: auditionType.value, params: auditionParamsState }).params;
+      manualTransitionSeed = normaliseTransition({ seed: auditionSeed }).seed;
+    }
     closeTransitionAudition();
   }
 
@@ -3560,13 +3648,24 @@
   function renderTransitionPalette() {
     plPalette.replaceChildren();
     plEntriesEl.classList.toggle('palette-armed', plPaletteArmed);
+    const groups = new Map();
     for (const [type, name] of Object.entries(TRANSITION_NAMES)) {
+      const category = TRANSITION_CATALOGUE[type]?.category || 'Other';
+      if (!groups.has(category)) {
+        const section = document.createElement('div'); section.className = 'pl-transition-category';
+        const heading = document.createElement('h4'); heading.textContent = category;
+        const grid = document.createElement('div'); grid.className = 'pl-transition-group-grid';
+        section.append(heading, grid); plPalette.appendChild(section);
+        groups.set(category, grid);
+      }
       const tool = document.createElement('button');
       tool.type = 'button'; tool.className = 'pl-transition-tool';
       tool.classList.toggle('selected', plPaletteArmed && plPaletteType === type);
       tool.draggable = true; tool.title = 'Drag ' + name + ' between videos';
       tool.setAttribute('aria-label', 'Select ' + name + ' transition');
-      tool.innerHTML = transitionIcon(type) + '<span>' + name + '</span>';
+      tool.innerHTML = transitionIcon(type) + '<span>' + name + '</span>'
+        + (TRANSITION_CATALOGUE[type]?.safetyTags.includes('high-contrast')
+          ? '<small class="pl-transition-safety">High contrast</small>' : '');
       tool.addEventListener('click', () => {
         plPaletteType = type;
         plPaletteArmed = true;
@@ -3581,7 +3680,7 @@
         event.dataTransfer.setData('text/plain', name);
       });
       tool.addEventListener('dragend', () => { plDraggingTransitionType = ''; });
-      plPalette.appendChild(tool);
+      groups.get(category).appendChild(tool);
     }
   }
   renderTransitionPalette();
@@ -3909,10 +4008,12 @@
     renderPlaylistEntries();
   }
 
-  function setEntryTransition(index, type, duration, pace = 'steady') {
+  function setEntryTransition(index, type, duration, pace = 'steady', params, seed) {
     const entry = plPlaylist.entries[index];
     if (!entry || !TRANSITION_NAMES[type]) return;
-    entry.transition = normaliseTransition({ type, duration, pace });
+    const previous = normaliseTransition(entry.transition);
+    entry.transition = normaliseTransition({ type, duration, pace,
+      params: params ?? (previous.type === type ? previous.params : {}), seed: seed ?? previous.seed });
     plPaletteArmed = false;
     renderTransitionPalette();
     renderPlaylistEntries();
