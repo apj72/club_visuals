@@ -91,7 +91,7 @@ Right-click a saved layout (or click its **⋯** button) and choose **Add to pla
    - **Preset** — mirror configuration (P1–P32)
    - **Duration** — number of loops or seconds
    - **Transition in** — Cut, Fade In, Fade Out/In, Cross Dissolve, Wipe, Zoom / Spin, or Whip Pan, with a duration from 0.15 to 5 seconds
-4. Drag the visual transition icons into the slots between video cards. Click a slot to adjust its type or duration. Drag video cards to reorder them, or use × to remove one.
+4. Drag the visual transition icons into the slots between video cards. Click a slot to adjust its type or duration. Use **Audition** above the icons to preview the selected effect with library videos, or **▶ Preview** on a slot to audition its two adjacent videos. The audition window lets you choose clips, change the effect and duration, and replay; **Use in slot** applies the choice to that playlist entry. It does not interrupt the main player or clean output. Drag video cards to reorder them, or use × to remove one.
 5. Click **Save** to persist the playlist (survives page reloads)
 6. Click **Play** to start — the indicator bar shows current entry and progress
 7. Use **Next** to skip ahead, **Stop** to exit playlist mode

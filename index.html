@@ -646,6 +646,26 @@
   .pl-timeline-head h3 { font-size: 0.79rem; color: #e7eef5; }
   .pl-timeline-total { font-size: 0.72rem; color: #4ecca3; font-variant-numeric: tabular-nums; }
   .pl-palette-title { font-size: 0.7rem; color: #9aa7b8; margin: 8px 0 6px; }
+  .pl-palette-heading { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .pl-audition-btn, .pl-transition-slot-preview { border: 1px solid #4ecca3; border-radius: 5px; background: #183a3a; color: #c7ffeb; cursor: pointer; font-size: 0.7rem; white-space: nowrap; }
+  .pl-audition-btn { padding: 5px 8px; }
+  .pl-transition-slot-preview { float: right; margin: 5px 7px 0 0; padding: 4px 7px; }
+  .pl-transition-slot-main { width: calc(100% - 82px); }
+  .transition-audition-dialog { width: min(720px, calc(100vw - 28px)); max-height: calc(100vh - 28px); overflow-y: auto; padding: 18px; color: #e7eef5; background: #152039; border: 1px solid #4ecca3; border-radius: 10px; box-shadow: 0 18px 50px #000a; }
+  .transition-audition-dialog::backdrop { background: #000b; }
+  .transition-audition-dialog h3 { margin: 0 0 4px; color: #4ecca3; }
+  .transition-audition-dialog p { margin: 0 0 12px; color: #aab6c4; font-size: .8rem; }
+  .transition-audition-stage { position: relative; width: 100%; aspect-ratio: 16 / 9; overflow: hidden; background: #000; border: 1px solid #46536c; border-radius: 7px; }
+  .transition-audition-stage video { display: block; width: 100%; height: 100%; object-fit: contain; }
+  .transition-audition-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; margin-top: 12px; }
+  .transition-audition-fields label { color: #c5d2df; font-size: .76rem; }
+  .transition-audition-fields select, .transition-audition-fields input { display: block; width: 100%; margin-top: 4px; padding: 8px; background: #0d1628; border: 1px solid #46536c; border-radius: 5px; color: #fff; font: inherit; }
+  .transition-audition-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 12px; }
+  .transition-audition-actions button { padding: 8px 11px; color: #e7eef5; background: #1d3150; border: 1px solid #46536c; border-radius: 5px; cursor: pointer; }
+  .transition-audition-actions .dialog-primary { color: #0d1720; background: #4ecca3; border-color: #4ecca3; font-weight: 700; }
+  .transition-audition-actions [hidden] { display: none; }
+  .transition-audition-status { min-height: 18px; margin-top: 8px; color: #c7ffeb; font-size: .75rem; }
+  @media (max-width: 520px) { .transition-audition-fields { grid-template-columns: 1fr; } }
   .pl-transition-palette { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 5px; margin-bottom: 10px; }
   .pl-transition-tool {
     min-width: 0; padding: 6px 3px; border: 1px solid #34445e; border-radius: 7px;
@@ -1001,6 +1021,23 @@
           <button type="button" class="dialog-primary" id="presetPlaylistAddButton" onclick="addPresetToPlaylist()">Add to playlist</button>
         </div>
       </dialog>
+      <dialog class="transition-audition-dialog" id="transitionAuditionDialog" aria-labelledby="transitionAuditionTitle">
+        <h3 id="transitionAuditionTitle">Audition transition</h3>
+        <p>Preview the effect with library videos. The main player and output keep running.</p>
+        <div class="transition-audition-stage" id="transitionAuditionStage"><video id="transitionAuditionVideo" muted playsinline preload="metadata"></video></div>
+        <div class="transition-audition-fields">
+          <label>From<select id="transitionAuditionFrom"></select></label>
+          <label>To<select id="transitionAuditionTo"></select></label>
+          <label>Effect<select id="transitionAuditionType"></select></label>
+          <label>Duration (seconds)<input id="transitionAuditionDuration" type="number" min="0.15" max="5" step="0.05" value="0.8"></label>
+        </div>
+        <div class="transition-audition-status" id="transitionAuditionStatus" role="status" aria-live="polite"></div>
+        <div class="transition-audition-actions">
+          <button type="button" onclick="closeTransitionAudition()">Close</button>
+          <button type="button" onclick="replayTransitionAudition()">▶ Replay</button>
+          <button type="button" class="dialog-primary" id="transitionAuditionApply" onclick="applyAuditionToSlot()" hidden>Use in slot</button>
+        </div>
+      </dialog>
       <div class="capture-panel" id="capturePanel">
         <div class="capture-panel-header">
           <h3>Instagram background clip</h3>
@@ -1047,7 +1084,7 @@
         <button class="pl-btn" onclick="deletePlaylistConfirm()">Del</button>
       </div>
       <input type="text" class="pl-name-input" id="plName" placeholder="Playlist name...">
-      <div class="pl-palette-title">Drag an effect between videos, or select one and click a transition slot.</div>
+      <div class="pl-palette-heading"><div class="pl-palette-title">Drag an effect between videos, or select one and click a transition slot.</div><button type="button" class="pl-audition-btn" onclick="openTransitionAudition()">▶ Audition</button></div>
       <div class="pl-transition-palette" id="plTransitionPalette" aria-label="Transition effects"></div>
       <div class="pl-timeline-head"><h3>Playlist timeline</h3><span class="pl-timeline-total" id="plTimelineTotal">0 videos</span></div>
       <div class="pl-entries" id="plEntries"></div>
@@ -3296,6 +3333,141 @@
   }
   const plPalette = document.getElementById('plTransitionPalette');
   const plTimelineTotal = document.getElementById('plTimelineTotal');
+  const auditionDialog = document.getElementById('transitionAuditionDialog');
+  const auditionStage = document.getElementById('transitionAuditionStage');
+  const auditionVideo = document.getElementById('transitionAuditionVideo');
+  const auditionFrom = document.getElementById('transitionAuditionFrom');
+  const auditionTo = document.getElementById('transitionAuditionTo');
+  const auditionType = document.getElementById('transitionAuditionType');
+  const auditionDuration = document.getElementById('transitionAuditionDuration');
+  const auditionStatus = document.getElementById('transitionAuditionStatus');
+  const auditionApply = document.getElementById('transitionAuditionApply');
+  let auditionSlotIndex = -1;
+  let auditionRun = 0;
+  const auditionTransition = createTransitionController(auditionStage, () => {
+    const canvas = document.createElement('canvas');
+    const rect = auditionStage.getBoundingClientRect();
+    canvas.width = Math.max(1, Math.round(rect.width));
+    canvas.height = Math.max(1, Math.round(rect.height));
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#000';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    if (auditionVideo.readyState >= 2 && auditionFrom.value) {
+      const scale = Math.min(canvas.width / auditionVideo.videoWidth, canvas.height / auditionVideo.videoHeight);
+      const width = auditionVideo.videoWidth * scale;
+      const height = auditionVideo.videoHeight * scale;
+      ctx.drawImage(auditionVideo, (canvas.width - width) / 2, (canvas.height - height) / 2, width, height);
+    }
+    return canvas;
+  });
+  Object.entries(TRANSITION_NAMES).forEach(([type, name]) => auditionType.add(new Option(name, type)));
+
+  function stopAudition() {
+    auditionRun++;
+    auditionTransition.cancel();
+    auditionVideo.pause();
+    auditionVideo.removeAttribute('src');
+    auditionVideo.load();
+  }
+
+  function loadAuditionVideo(filename, run) {
+    return new Promise((resolve, reject) => {
+      const timeout = setTimeout(() => finish(new Error('Video took too long to load.')), 12000);
+      let finished = false;
+      function finish(error) {
+        if (finished) return;
+        finished = true;
+        clearTimeout(timeout);
+        auditionVideo.removeEventListener('loadeddata', loaded);
+        auditionVideo.removeEventListener('error', failed);
+        auditionVideo.removeEventListener('abort', aborted);
+        if (error) reject(error); else resolve();
+      }
+      function loaded() { finish(); }
+      function failed() { finish(new Error('Could not load this video.')); }
+      function aborted() { finish(new Error('Audition cancelled.')); }
+      auditionVideo.addEventListener('loadeddata', loaded, { once: true });
+      auditionVideo.addEventListener('error', failed, { once: true });
+      auditionVideo.addEventListener('abort', aborted, { once: true });
+      auditionVideo.src = '/video/' + encodeURIComponent(filename);
+      auditionVideo.load();
+      if (run !== auditionRun) finish(new Error('Audition cancelled.'));
+    });
+  }
+
+  async function replayTransitionAudition() {
+    if (!auditionDialog.open) return;
+    stopAudition();
+    const run = auditionRun;
+    const from = auditionFrom.value;
+    const to = auditionTo.value;
+    const transition = normaliseTransition({ type: auditionType.value, duration: auditionDuration.value });
+    auditionDuration.value = transition.duration;
+    if (!to) { auditionStatus.textContent = 'Choose a video to preview.'; return; }
+    auditionStatus.textContent = 'Loading preview…';
+    try {
+      if (from) {
+        await loadAuditionVideo(from, run);
+        if (run !== auditionRun) return;
+        if (Number.isFinite(auditionVideo.duration) && auditionVideo.duration > 2) {
+          auditionVideo.currentTime = Math.max(0, auditionVideo.duration - 1.5);
+          await new Promise(resolve => {
+            if (!auditionVideo.seeking) { resolve(); return; }
+            const timeout = setTimeout(resolve, 2500);
+            auditionVideo.addEventListener('seeked', () => { clearTimeout(timeout); resolve(); }, { once: true });
+          });
+        }
+        if (run !== auditionRun) return;
+        await auditionVideo.play();
+        await new Promise(resolve => setTimeout(resolve, 650));
+        if (run !== auditionRun) return;
+        auditionVideo.pause();
+      }
+      auditionTransition.prepare(transition);
+      await loadAuditionVideo(to, run);
+      if (run !== auditionRun) return;
+      await auditionVideo.play();
+      if (run !== auditionRun) return;
+      auditionTransition.start();
+      auditionStatus.textContent = transition.type === 'cut' ? 'Cut preview playing.' : TRANSITION_NAMES[transition.type] + ' preview playing.';
+    } catch (error) {
+      if (run === auditionRun) { auditionTransition.cancel(); auditionStatus.textContent = error.message; }
+    }
+  }
+
+  function openTransitionAudition(type = plPaletteType, slotIndex = -1) {
+    stopAudition();
+    auditionSlotIndex = slotIndex;
+    auditionApply.hidden = slotIndex < 0;
+    auditionFrom.replaceChildren(new Option('Black', ''));
+    auditionTo.replaceChildren();
+    videoListCache.forEach(v => {
+      auditionFrom.add(new Option(playlistVideoName(v.filename), v.filename));
+      auditionTo.add(new Option(playlistVideoName(v.filename), v.filename));
+    });
+    const previous = slotIndex > 0 ? plPlaylist.entries[slotIndex - 1]?.video : '';
+    const incoming = slotIndex >= 0 ? plPlaylist.entries[slotIndex]?.video : '';
+    auditionFrom.value = previous || (slotIndex === 0 ? '' : (currentFilename || videoListCache[0]?.filename || ''));
+    auditionTo.value = incoming || videoListCache.find(v => v.filename !== auditionFrom.value)?.filename || videoListCache[0]?.filename || '';
+    auditionType.value = TRANSITION_NAMES[type] ? type : 'cross-dissolve';
+    auditionDuration.value = slotIndex >= 0 ? normaliseTransition(plPlaylist.entries[slotIndex]?.transition).duration : normaliseTransition({ duration: plTransitionDuration.value }).duration;
+    auditionStatus.textContent = '';
+    auditionDialog.showModal();
+    replayTransitionAudition();
+  }
+
+  function closeTransitionAudition() {
+    stopAudition();
+    auditionStatus.textContent = '';
+    auditionSlotIndex = -1;
+    auditionDialog.close();
+  }
+  auditionDialog.addEventListener('cancel', event => { event.preventDefault(); closeTransitionAudition(); });
+  function applyAuditionToSlot() {
+    if (auditionSlotIndex >= 0) setEntryTransition(auditionSlotIndex, auditionType.value, auditionDuration.value);
+    closeTransitionAudition();
+  }
+
   let plPaletteType = 'cross-dissolve';
   let plPaletteArmed = false;
   let plRenderVersion = 0;
@@ -3696,7 +3868,12 @@
       plDraggingTransitionType = '';
       setEntryTransition(index, type, transition.duration);
     });
-    slot.append(main, edit);
+    const preview = document.createElement('button');
+    preview.type = 'button'; preview.className = 'pl-transition-slot-preview';
+    preview.textContent = '▶ Preview';
+    preview.setAttribute('aria-label', 'Audition ' + TRANSITION_NAMES[transition.type] + ' before video ' + (index + 1));
+    preview.addEventListener('click', event => { event.stopPropagation(); openTransitionAudition(transition.type, index); });
+    slot.append(preview, main, edit);
     return slot;
   }
 
