@@ -462,6 +462,9 @@
   }
 
   .speed-control { display: inline-flex; align-items: center; gap: 4px; color: #aab3c5; font-size: 0.75rem; }
+  .transition-control { display: inline-flex; align-items: center; gap: 5px; color: #aab3c5; font-size: 0.75rem; }
+  .transition-control select, .transition-control input { padding: 6px; background: #16213e; color: #fff; border: 1px solid #333; border-radius: 4px; font: inherit; }
+  .transition-control input { width: 48px; }
   .speed-control button { padding: 6px 9px; border: 1px solid #333; border-radius: 4px; background: #16213e; color: #fff; cursor: pointer; }
   .speed-control button:disabled { opacity: 0.4; cursor: default; }
   .speed-control output { min-width: 38px; text-align: center; color: #4ecca3; font-weight: 600; }
@@ -645,6 +648,14 @@
   .pl-entry .pl-e-info {
     font-size: 0.65rem; color: #9aa7b8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   }
+  .pl-e-transition-edit { display: flex; gap: 5px; margin-top: 4px; }
+  .pl-e-transition-edit[hidden] { display: none; }
+  .pl-e-transition-edit select, .pl-e-transition-edit input {
+    min-width: 0; padding: 4px; color: #fff; background: #0d1628;
+    border: 1px solid #46536c; border-radius: 4px; font-size: 0.7rem;
+  }
+  .pl-e-transition-edit select { flex: 1; }
+  .pl-e-transition-edit input { width: 54px; }
   .pl-entry .pl-e-btn {
     background: none; border: none; color: #666; font-size: 0.8rem;
     cursor: pointer; padding: 0 3px; line-height: 1;
@@ -868,6 +879,17 @@
               <button class="popup-opt" data-mode="2" onclick="setLoopMode(2)">Bounce</button>
             </div>
           </span>
+          <span class="transition-control" aria-label="Transition for manually selected videos">
+            <label for="manualTransitionType">Transition</label>
+            <select id="manualTransitionType" title="Effect when selecting another video">
+              <option value="cut">Cut</option><option value="fade-in">Fade In</option>
+              <option value="fade-out">Fade Out/In</option><option value="cross-dissolve" selected>Cross Dissolve</option>
+              <option value="wipe">Wipe</option><option value="zoom-spin">Zoom / Spin</option>
+              <option value="whip-pan">Whip Pan</option>
+            </select>
+            <label for="manualTransitionDuration">s</label>
+            <input id="manualTransitionDuration" type="number" min="0.15" max="5" step="0.05" value="0.8">
+          </span>
           <span class="speed-control" aria-label="Playback speed"><span>Speed</span><button type="button" id="speedDown" onclick="changePlaybackSpeed(-0.25)" aria-label="Decrease playback speed">−</button><output id="speedValue">1×</output><button type="button" id="speedUp" onclick="changePlaybackSpeed(0.25)" aria-label="Increase playback speed">+</button></span>
           <button class="btn-ctrl" id="muteBtn" onclick="toggleMute()">Mute</button>
           <button class="btn-ctrl active" id="captionBtn" onclick="toggleCaption()">CC</button>
@@ -884,7 +906,7 @@
           </span>
           <span class="zoom-wrap" id="zoomWrap"><span class="zoom-label">Zoom</span><input type="range" class="zoom-slider" id="zoomSlider" min="1.0" max="4.0" step="0.1" value="1.0"><span class="zoom-label" id="zoomValue">1.0x</span><button class="zoom-reset" onclick="resetZoom()">Reset</button><span class="zoom-label">X</span><input type="range" class="zoom-slider" id="panXSlider" min="-1.0" max="1.0" step="0.05" value="0"><span class="zoom-label" id="panXValue">0</span><span class="zoom-label">Y</span><input type="range" class="zoom-slider" id="panYSlider" min="-1.0" max="1.0" step="0.05" value="0"><span class="zoom-label" id="panYValue">0</span><button class="zoom-reset" onclick="resetPan()">Reset</button></span>
           <span class="slider-wrap" id="sliderWrap"><input type="range" class="config-slider" id="configSlider" min="1" max="32" value="1"><span class="config-label" id="configLabel">1</span><span id="presetContainer"></span></span>
-          <button type="button" class="btn-ctrl" id="resetControlsBtn" onclick="resetPlayerControls()" title="Single layout, preset 1, 1× speed, no loop, centred zoom and pan">Reset controls</button>
+          <button type="button" class="btn-ctrl" id="resetControlsBtn" onclick="resetPlayerControls()" title="Single layout, preset 1, 1× speed, no loop, centred zoom and pan, 0.8s cross dissolve">Reset controls</button>
           <button class="btn-ctrl" id="fxBtn" onclick="openFxController()">FX</button>
           <button class="btn-ctrl" id="vfxBtn" onclick="openVfxController()">VFX</button>
           <button class="btn-ctrl" id="mirrorBtn" onclick="activateMirrorSculpture()" title="Open reflective text and logo controls">Mirror 3D</button>
@@ -915,6 +937,15 @@
         <div class="preset-playlist-duration">
           <label>Duration<select id="presetPlaylistDurationType"><option value="loops">Loops</option><option value="seconds">Seconds</option></select></label>
           <label>Amount<input id="presetPlaylistDurationValue" type="number" min="1" max="9999" step="1" value="5"></label>
+        </div>
+        <div class="preset-playlist-duration">
+          <label>Transition in<select id="presetPlaylistTransitionType">
+            <option value="cut">Cut</option><option value="fade-in">Fade In</option>
+            <option value="fade-out">Fade Out/In</option><option value="cross-dissolve" selected>Cross Dissolve</option>
+            <option value="wipe">Wipe</option><option value="zoom-spin">Zoom / Spin</option>
+            <option value="whip-pan">Whip Pan</option>
+          </select></label>
+          <label>Seconds<input id="presetPlaylistTransitionDuration" type="number" min="0.15" max="5" step="0.05" value="0.8"></label>
         </div>
         <p class="dialog-status" id="presetPlaylistStatus" role="status"></p>
         <div class="dialog-actions">
@@ -1010,6 +1041,15 @@
           <label>X position<input type="number" id="plPanX" min="-1" max="1" step="0.05" value="0"></label>
           <label>Y position<input type="number" id="plPanY" min="-1" max="1" step="0.05" value="0"></label>
         </div>
+        <div class="pl-add-row">
+          <label>Transition in<select id="plTransitionType">
+            <option value="cut">Cut</option><option value="fade-in">Fade In</option>
+            <option value="fade-out">Fade Out/In</option><option value="cross-dissolve" selected>Cross Dissolve</option>
+            <option value="wipe">Wipe</option><option value="zoom-spin">Zoom / Spin</option>
+            <option value="whip-pan">Whip Pan</option>
+          </select></label>
+          <label>Seconds<input type="number" id="plTransitionDuration" min="0.15" max="5" step="0.05" value="0.8"></label>
+        </div>
         <button class="pl-btn pl-btn-add" onclick="addEntry()">Add</button>
       </div>
       <div class="pl-actions">
@@ -1072,6 +1112,7 @@
 </div>
 
 <script src="/vfx_engine.js"></script>
+<script src="/transition_engine.js"></script>
 <script>
   const videoStage = document.getElementById('videoStage');
   const videoWrap = document.getElementById('videoWrap');
@@ -1122,6 +1163,17 @@
   let trailsEnabled = false;
   let trailAmount = 0.15;
   const vfxCanvas = document.getElementById('vfxCanvas');
+  const videoTransition = createTransitionController(videoStage, () => {
+    if (video.readyState < 2) return null;
+    const rect = videoStage.getBoundingClientRect();
+    const canvas = document.createElement('canvas');
+    const scale = Math.min(devicePixelRatio || 1, 2, 1920 / Math.max(1, rect.width));
+    canvas.width = Math.max(1, Math.round(rect.width * scale));
+    canvas.height = Math.max(1, Math.round(rect.height * scale));
+    drawCompositeFrame(canvas, canvas.getContext('2d'), true, false, false);
+    return canvas;
+  });
+  let videoLoadToken = 0;
   const vfxSource = document.createElement('canvas');
   const vfxSourceCtx = vfxSource.getContext('2d');
   const vfxState = { enabled: false, scene: 0, intensity: 0.7, feedback: 0.72, bass: 0, hit: 0,
@@ -1788,7 +1840,7 @@
       vfxSource.width = width;
       vfxSource.height = height;
     }
-    drawCompositeFrame(vfxSource, vfxSourceCtx, false, false);
+    drawCompositeFrame(vfxSource, vfxSourceCtx, false, false, false);
     const now = performance.now() / 1000;
     if (vfxAnalyser) {
       vfxAnalyser.getByteFrequencyData(vfxSpectrum);
@@ -1887,7 +1939,16 @@
     document.getElementById('status').className = 'status' + (type ? ' ' + type : '');
   }
 
-  function showVideo(filename) {
+  function showVideo(filename, transition = undefined) {
+    const wasPlaying = !video.paused && !video.ended;
+    const hasOutgoing = video.readyState >= 2 && !!currentFilename;
+    const chosenTransition = normaliseTransition(transition === undefined ? {
+      type: document.getElementById('manualTransitionType').value,
+      duration: document.getElementById('manualTransitionDuration').value,
+    } : transition);
+    if (!hasOutgoing && chosenTransition.type !== 'fade-in') chosenTransition.type = 'cut';
+    videoTransition.prepare(chosenTransition);
+    const loadToken = ++videoLoadToken;
     currentFilename = filename;
     stopBounce();
     const src = '/video/' + encodeURIComponent(filename);
@@ -1906,7 +1967,10 @@
     video.load();
     video.addEventListener('loadeddata', function onLoaded() {
       video.removeEventListener('loadeddata', onLoaded);
+      if (loadToken !== videoLoadToken) return;
       video.currentTime = 0.001;
+      videoTransition.start();
+      if (wasPlaying && !plPlaying) video.play().catch(() => {});
     });
     const count = CLONE_COUNTS[viewMode];
     if (count > 0) buildClones(count);
@@ -1916,7 +1980,7 @@
     });
     showCaptionForVideo();
     applyEffectFilters();
-    broadcastState({ type: 'loadVideo', filename });
+    broadcastState({ type: 'loadVideo', filename, transition: chosenTransition });
     syncFxTransport({ filename });
   }
 
@@ -2155,6 +2219,8 @@
   }
 
   function resetPlayerControls() {
+    document.getElementById('manualTransitionType').value = 'cross-dissolve';
+    document.getElementById('manualTransitionDuration').value = '0.8';
     setLoopMode(0);
     setPlaybackSpeed(1);
     setViewModeTo(0);
@@ -2355,7 +2421,12 @@
         video: filename, view: preset.view, preset: preset.preset,
         loopMode: preset.loopMode, speed: preset.speed ?? 1,
         zoom: preset.zoom, panX: preset.panX, panY: preset.panY,
-        duration: { type, value }, layoutPresetId: preset.id, layoutPresetName: preset.name
+        duration: { type, value },
+        transition: normaliseTransition({
+          type: document.getElementById('presetPlaylistTransitionType').value,
+          duration: document.getElementById('presetPlaylistTransitionDuration').value,
+        }),
+        layoutPresetId: preset.id, layoutPresetName: preset.name
       });
       const response = await fetch('/api/playlist/' + encodeURIComponent(slug), {
         method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(playlist)
@@ -2864,11 +2935,12 @@
   let recordedChunks = [];
   let obsOutputActive = false;
 
-  function drawCompositeFrame(targetCanvas = compCanvas, targetCtx = compCtx, useVfx = true, includeCaption = true) {
+  function drawCompositeFrame(targetCanvas = compCanvas, targetCtx = compCtx, useVfx = true, includeCaption = true, includeTransition = true) {
     if (!targetCanvas || !targetCtx) return;
     if (useVfx && vfxState.enabled && vfxFrameReady) {
       targetCtx.drawImage(vfxCanvas, 0, 0, targetCanvas.width, targetCanvas.height);
       if (includeCaption) drawCompositeCaption(targetCanvas, targetCtx);
+      if (includeTransition) videoTransition.draw(targetCtx, targetCanvas.width, targetCanvas.height);
       return;
     }
     const reverseFrame = bounceReversing ? bounceFrames[bounceFrameIdx] : null;
@@ -2930,6 +3002,7 @@
     }
 
     if (includeCaption) drawCompositeCaption(targetCanvas, targetCtx);
+    if (includeTransition) videoTransition.draw(targetCtx, targetCanvas.width, targetCanvas.height);
   }
 
   function drawCompositeCaption(targetCanvas, targetCtx) {
@@ -3118,6 +3191,13 @@
   const plPanY = document.getElementById('plPanY');
   const plDurType = document.getElementById('plDurType');
   const plDurVal = document.getElementById('plDurVal');
+  const plTransitionType = document.getElementById('plTransitionType');
+  const plTransitionDuration = document.getElementById('plTransitionDuration');
+  const TRANSITION_NAMES = {
+    'cut': 'Cut', 'fade-in': 'Fade In', 'fade-out': 'Fade Out/In',
+    'cross-dissolve': 'Cross Dissolve', 'wipe': 'Wipe',
+    'zoom-spin': 'Zoom / Spin', 'whip-pan': 'Whip Pan',
+  };
 
   for (let i = 1; i <= 32; i++) {
     const opt = document.createElement('option');
@@ -3331,6 +3411,7 @@
       video: vid,
       ...layout,
       duration: { type: plDurType.value, value: parseInt(plDurVal.value) || 5 },
+      transition: normaliseTransition({ type: plTransitionType.value, duration: plTransitionDuration.value }),
       layoutPresetId: matchingPreset?.id || null,
       layoutPresetName: matchingPreset?.name || null,
     });
@@ -3351,6 +3432,9 @@
     plPreviewIdx = idx;
     showVideo(e.video);
     applyLayoutConfiguration(e);
+    const transition = normaliseTransition(e.transition);
+    plTransitionType.value = transition.type;
+    plTransitionDuration.value = transition.duration;
     renderPlaylistEntries();
   }
 
@@ -3389,9 +3473,37 @@
       infoSpan.className = 'pl-e-info';
       const lm = e.loopMode === 2 ? ' B' : '';
       infoSpan.textContent = (e.layoutPresetName ? e.layoutPresetName + ' · ' : '')
-        + vl + ' P' + e.preset + ' ' + dt + lm + (Number(e.speed ?? 1) !== 1 ? ' · ' + e.speed + '×' : '');
+        + vl + ' P' + e.preset + ' ' + dt + lm + (Number(e.speed ?? 1) !== 1 ? ' · ' + e.speed + '×' : '')
+        + ' · ' + TRANSITION_NAMES[normaliseTransition(e.transition).type];
       body.appendChild(infoSpan);
+      const edit = document.createElement('div');
+      edit.className = 'pl-e-transition-edit';
+      edit.hidden = true;
+      edit.addEventListener('click', ev => ev.stopPropagation());
+      const typeSelect = plTransitionType.cloneNode(true);
+      typeSelect.removeAttribute('id');
+      typeSelect.value = normaliseTransition(e.transition).type;
+      typeSelect.setAttribute('aria-label', 'Transition into ' + sn);
+      const durationInput = document.createElement('input');
+      durationInput.type = 'number'; durationInput.min = '0.15'; durationInput.max = '5'; durationInput.step = '0.05';
+      durationInput.value = normaliseTransition(e.transition).duration;
+      durationInput.setAttribute('aria-label', 'Transition seconds');
+      const updateTransition = () => {
+        e.transition = normaliseTransition({ type: typeSelect.value, duration: durationInput.value });
+        durationInput.value = e.transition.duration;
+        infoSpan.textContent = infoSpan.textContent.replace(/ · (Cut|Fade In|Fade Out\/In|Cross Dissolve|Wipe|Zoom \/ Spin|Whip Pan)$/, ' · ' + TRANSITION_NAMES[e.transition.type]);
+      };
+      typeSelect.addEventListener('change', updateTransition);
+      durationInput.addEventListener('change', updateTransition);
+      edit.append(typeSelect, durationInput);
+      body.appendChild(edit);
       div.appendChild(body);
+
+      const editBtn = document.createElement('button');
+      editBtn.className = 'pl-e-btn'; editBtn.type = 'button'; editBtn.textContent = '✦';
+      editBtn.title = 'Edit transition'; editBtn.setAttribute('aria-label', 'Edit transition for ' + sn);
+      editBtn.addEventListener('click', ev => { ev.stopPropagation(); edit.hidden = !edit.hidden; });
+      div.appendChild(editBtn);
 
       const delBtn = document.createElement('button');
       delBtn.className = 'pl-e-btn';
@@ -3447,7 +3559,7 @@
     plLoopCount = 0;
     clearTimeout(plTimer);
 
-    showVideo(entry.video);
+    showVideo(entry.video, entry.transition || { type: 'cut' });
     applyLayoutConfiguration(entry);
     video.play();
 
@@ -3595,6 +3707,7 @@
         view: view,
         preset: preset,
         duration: { type: 'loops', value: loops },
+        transition: normaliseTransition({ type: plTransitionType.value, duration: plTransitionDuration.value }),
         loopMode: 1,
         speed: 1,
       });

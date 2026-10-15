@@ -90,7 +90,8 @@ Right-click a saved layout (or click its **⋯** button) and choose **Add to pla
    - **View mode** — Single, Dual, or 8x
    - **Preset** — mirror configuration (P1–P32)
    - **Duration** — number of loops or seconds
-4. Reorder entries with ↑↓ buttons, remove with ×
+   - **Transition in** — Cut, Fade In, Fade Out/In, Cross Dissolve, Wipe, Zoom / Spin, or Whip Pan, with a duration from 0.15 to 5 seconds
+4. Drag entries to reorder them, use ✦ to edit a transition, or × to remove an entry
 5. Click **Save** to persist the playlist (survives page reloads)
 6. Click **Play** to start — the indicator bar shows current entry and progress
 7. Use **Next** to skip ahead, **Stop** to exit playlist mode
@@ -99,6 +100,8 @@ The same video can appear multiple times with different treatments, e.g.:
 - Dual mode, preset 5, for 10 loops
 - 8x mode, preset 22, for 30 seconds
 - 8x mode, preset 7, for 5 loops
+
+Use **Transition** beside Playback to choose the effect and duration when selecting a video manually. Playlist entries have their own incoming transitions, including when you press **Next**. Transitions appear in fullscreen, clean output, and recordings.
 
 ### Capture an Instagram background clip
 

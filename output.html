@@ -86,6 +86,7 @@
 </div>
 
 <script src="/vfx_engine.js"></script>
+<script src="/transition_engine.js"></script>
 <script>
   const videoStage = document.getElementById('videoStage');
   const videoWrap = document.getElementById('videoWrap');
@@ -105,6 +106,46 @@
   let trailsEnabled = false;
   let trailAmount = 0.15;
   const vfxCanvas = document.getElementById('vfxCanvas');
+  const videoTransition = createTransitionController(videoStage, () => {
+    if (video.readyState < 2) return null;
+    const stageRect = videoStage.getBoundingClientRect();
+    const snapshot = document.createElement('canvas');
+    const scale = Math.min(devicePixelRatio || 1, 2, 1920 / Math.max(1, stageRect.width));
+    snapshot.width = Math.max(1, Math.round(stageRect.width * scale));
+    snapshot.height = Math.max(1, Math.round(stageRect.height * scale));
+    const context = snapshot.getContext('2d');
+    context.fillStyle = '#000';
+    context.fillRect(0, 0, snapshot.width, snapshot.height);
+    if (videoWrap.classList.contains('vfx-active') && vfxCanvas.width) {
+      context.drawImage(vfxCanvas, 0, 0, snapshot.width, snapshot.height);
+      return snapshot;
+    }
+    for (const element of [video, ...clones]) {
+      const style = getComputedStyle(element);
+      if (style.display === 'none') continue;
+      const rect = element.getBoundingClientRect();
+      const x = (rect.left - stageRect.left) * scale;
+      const y = (rect.top - stageRect.top) * scale;
+      const w = rect.width * scale, h = rect.height * scale;
+      const sw = element === video ? video.videoWidth : element.width;
+      const sh = element === video ? video.videoHeight : element.height;
+      if (!sw || !sh || !w || !h) continue;
+      context.save();
+      context.beginPath(); context.rect(x, y, w, h); context.clip();
+      context.filter = style.filter;
+      const flipX = element.style.transform.includes('scaleX(-1)');
+      const flipY = element.style.transform.includes('scaleY(-1)');
+      context.translate(x + w / 2, y + h / 2);
+      context.scale(flipX ? -1 : 1, flipY ? -1 : 1);
+      const fit = style.objectFit;
+      const ratio = fit === 'contain' ? Math.min(w / sw, h / sh) : Math.max(w / sw, h / sh);
+      const dw = sw * ratio, dh = sh * ratio;
+      context.drawImage(element, -dw / 2, -dh / 2, dw, dh);
+      context.restore();
+    }
+    return snapshot;
+  });
+  let videoLoadToken = 0;
   const vfxSource = document.createElement('canvas');
   const vfxSourceCtx = vfxSource.getContext('2d');
   const vfxState = { enabled: false, scene: 0, intensity: 0.7, feedback: 0.72, bass: 0, hit: 0,
@@ -219,10 +260,18 @@
     }
   }
 
-  function showVideo(filename) {
+  function showVideo(filename, transition = null) {
+    const chosenTransition = normaliseTransition(transition);
+    if (video.readyState < 2 && chosenTransition.type !== 'fade-in') chosenTransition.type = 'cut';
+    videoTransition.prepare(chosenTransition);
+    const loadToken = ++videoLoadToken;
     video.src = '/video/' + encodeURIComponent(filename);
     video.playbackRate = playbackSpeed;
     video.load();
+    video.addEventListener('loadeddata', function onLoaded() {
+      video.removeEventListener('loadeddata', onLoaded);
+      if (loadToken === videoLoadToken) videoTransition.start();
+    });
     const count = CLONE_COUNTS[viewMode];
     if (count > 0) buildClones(count);
     else if (vfxState.enabled && !rafId) startRenderLoop();
@@ -335,7 +384,7 @@
   function handleOutputCommand(cmd) {
     switch (cmd.type) {
       case 'loadVideo':
-        showVideo(cmd.filename);
+        showVideo(cmd.filename, cmd.transition);
         video.play();
         break;
       case 'play':
