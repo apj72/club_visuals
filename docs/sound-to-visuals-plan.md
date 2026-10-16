@@ -66,6 +66,14 @@ For example, a quiet passage could hold a single mirrored clip with slow rotatio
 
 The planner should choose the *next* scheduled action using the current best beat grid and update it as confidence changes. A small calibrated offset compensates for audio input, browser processing, and display latency; measure this on the target venue setup. Browser audio output latency properties describe output timing, not the full microphone-to-screen path [8].
 
+## Future development: iPad command and control
+
+Use the iPad as a touch-friendly remote controller while the Mac remains the performance engine. The Mac keeps the video library, audio input and beat analysis, playlist and Auto Perform logic, transition and VFX rendering, recording, and physical playout. The iPad sends commands and displays the Mac's current state, thumbnails, and meters; it does not render the show or need its own microphone, video files, Python server, or native iPad app.
+
+Build a dedicated iPad control view with large touch targets for Auto Perform, Stop, Hold video, Lock layout, Next on beat, Tap tempo, playlist selection, video selection, layouts, transitions, and VFX. The Mac must be the single authority for state and timing. Add a bidirectional control channel with command IDs, acknowledgements, and full state snapshots on connect/reconnect so the iPad can never appear to have changed a setting that the Mac did not apply. A lost iPad connection must leave the Mac's current performance and output running; after reconnection, the controls should reflect the Mac's actual state. Restrict control access to a paired device or authenticated session on the trusted venue network.
+
+The normal setup is Mac audio and video output to the venue display, with the iPad on the same local network as the Mac. The Mac-hosted control page should work in iPad Safari and be addable to the Home Screen. Test real iPad touch operation, reconnects, simultaneous Mac and iPad actions, network interruption, and command-to-output delay before relying on it live. This is a future feature; the current app does not yet provide a dedicated remote control interface.
+
 ## Delivery phases and acceptance
 
 | Phase | Scope | Acceptance |
@@ -75,6 +83,7 @@ The planner should choose the *next* scheduled action using the current best bea
 | 2. Live performance MVP | Auto Perform button, status panel, seeded rules, library pool, conservative clip/layout/VFX/transition choices, preloading, Stop/Hold/Next. | A 30-minute unattended run has no black frames, runaway cuts, or lost output sync; manual override works. |
 | 3. Musical structure | Build/break/drop estimator, phrase-aware decisions, user profiles, video tags, precomputed library features. | Annotated test sets show useful changes at musical boundaries; false drops do not cause repeated strong effects. |
 | 4. Authoring and replay | Display decisions and confidence on timeline, edit rules/weights, save a performance log or convert it to a playlist, optional offline audio analysis. | A saved run can be inspected and replayed with the same decisions and transition seeds. |
+| 5. iPad control | Add a touch-first remote UI, authenticated bidirectional commands, acknowledgements, and Mac-authoritative state recovery. Keep audio analysis and playout on the Mac. | The iPad controls a live Mac show; disconnection does not interrupt output, and reconnection restores the actual Mac state. |
 
 Set numeric pass thresholds after Phase 0 calibration on the target Mac, browser, input interface, and output display. Test half/double-time music, tempo changes, quiet breakdowns, vocals without a kick, rapid DJ mixes, silence, revoked permissions, missing files, WebGL fallback, fullscreen, clean output, and recording. Track decision latency, beat timing error, transitions missed because preload was late, repeated-video rate, CPU/GPU load, and operator override frequency. Test continuous performance with flash reduction enabled by default.
 
