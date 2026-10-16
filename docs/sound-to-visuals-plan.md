@@ -2,6 +2,8 @@
 
 Research and implementation plan, 16 October 2026.
 
+Current delivery: Auto Perform now has a shared microphone/USB input, an AudioWorklet feature stream with an analyser fallback, a beat and section estimator, automatic video/layout/transition/VFX decisions, prepared next video, performance profiles, library energy tags, operator locks, tap/resync controls, and an in-session decision log. Live drop detection is reactive. Offline look-ahead, a replayable/editable performance timeline, and measured venue-specific timing calibration remain future work.
+
 ## Product outcome
 
 Press **Auto Perform** and choose an audio input on first use. Club Visuals listens to the DJ feed, keeps a musical clock, selects videos from an eligible library pool, chooses layouts and transitions, and performs VFX changes. The operator can take over any decision, lock a video or layout, and stop automation immediately. The clean output and recordings show the same decisions as the editor.

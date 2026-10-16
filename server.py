@@ -181,6 +181,10 @@ class Handler(BaseHTTPRequestHandler):
             self.serve_vfx_engine()
         elif self.path == "/transition_engine.js":
             self.serve_transition_engine()
+        elif self.path == "/auto_perform.js":
+            self.serve_javascript("auto_perform.js")
+        elif self.path == "/auto_audio_worklet.js":
+            self.serve_javascript("auto_audio_worklet.js")
         elif self.path == "/assets/version1-logo.png":
             self.serve_version1_logo()
         elif self.path == "/assets/version1-hero.svg":
@@ -269,6 +273,15 @@ class Handler(BaseHTTPRequestHandler):
 
     def serve_transition_engine(self):
         content = (BASE_DIR / "transition_engine.js").read_bytes()
+        self.send_response(200)
+        self.send_header("Content-Type", "application/javascript; charset=utf-8")
+        self.send_header("Content-Length", len(content))
+        self.send_header("Cache-Control", "no-cache")
+        self.end_headers()
+        self.wfile.write(content)
+
+    def serve_javascript(self, filename):
+        content = (BASE_DIR / filename).read_bytes()
         self.send_response(200)
         self.send_header("Content-Type", "application/javascript; charset=utf-8")
         self.send_header("Content-Length", len(content))

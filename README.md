@@ -14,6 +14,7 @@ A browser-based tool for downloading Instagram videos and playing them back as m
 - **Seamless looping** — near-invisible loop points
 - **Efficient rendering** — clones share a single decoded video stream via `captureStream()`
 - **Live VFX** — ripple, image smear, video ribbons, kaleidoscope, prism fracture, reflective text, and a rotatable 3D Version1 logo, driven by a venue microphone or USB audio input
+- **Auto Perform** — listens to a microphone/USB feed and automatically changes videos, layouts, transitions, and VFX on detected beats and musical sections
 - **Instagram background clips** — position a 4:5, 9:16, or square crop box over the player, choose a source timecode and length, and save a silent MP4 for Instagram Video Studio
 
 ## Requirements
@@ -68,6 +69,12 @@ Paste an Instagram reel/post URL into the input field and click **Download**. Pr
 ### Live VFX
 
 While a video or playlist is playing, click **VFX** in the main player to open its dedicated pop-out controller. Turn VFX on, choose a scene, and adjust Intensity and Feedback. The effect applies to the current layout in the main fullscreen player, clean output window, and recordings. Keys 1–7 switch scenes and Space fires a pulse while the controller has focus. To react to the DJ's music, select a venue microphone or USB audio input and click **Connect**. The input is analysed but not played through the app. The video soundtrack is not used for VFX. The **FX** button opens the separate colour and trails controller.
+
+### Auto Perform: sound to visuals
+
+Choose a microphone or USB audio input in the **Sound to Visuals** bar and press **Auto Perform**. On first use, grant browser microphone permission. The app mutes the video's own soundtrack while it listens to the external audio feed, estimates the beat and energy, and changes videos, layouts, transitions, and VFX automatically. The BPM display includes a confidence score. It takes several regular beats to lock onto a tempo; quiet passages hold the current look. The clean output and recordings receive the same player changes. **Stop Auto** leaves the current video on screen and restores its previous mute setting.
+
+Use **Style** and **Change every** to tune the performance. **Videos** can use the full library or the currently loaded playlist as a pool. **Curate videos** lets you exclude clips and mark them Calm, Medium, or Peak; those preferences are stored in this browser. **Hold video** and **Lock layout** prevent those automatic changes. **Next on beat** queues a video change, **Tap tempo** supplies a tempo estimate, and **Resync** resets the beat count. The **Performance decisions** list shows the latest choices. A USB/virtual line input is preferable to an open microphone in a loud venue. Live analysis reacts to an unexpected drop after it arrives; it cannot predict unheard music. [Implementation and research plan](docs/sound-to-visuals-plan.md).
 
 **Mirror sculpture** uses the live video as a reflection inside text or a transparent PNG/WebP silhouette. Enter a title or Instagram handle, click **Use current video's @ID**, select the bundled **Version1 logo**, or upload logo artwork (up to 1 MB). The Position, Size, Reflection depth, Edge glow, 3D angle, Extrusion, and Motion controls shape the object and bend the video around it. Use a high-contrast logo with a transparent background; the image's alpha defines the reflective surface. The 3D controls create a live extruded silhouette rather than importing a 3D mesh.
 

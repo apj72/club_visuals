@@ -49,6 +49,33 @@
   .right-col::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
 
   .playlist-library-col { display: none; width: 250px; flex: 0 0 250px; max-height: calc(100vh - 40px); overflow-y: auto; scrollbar-width: thin; }
+  .auto-perform-panel { max-width: 1680px; margin: 0 auto 14px; padding: 11px 14px; border: 1px solid #40606b; border-radius: 9px; background: #112334; }
+  .auto-perform-top { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+  .auto-perform-top strong { color: #4ecca3; margin-right: auto; font-size: .86rem; }
+  .auto-perform-panel button, .auto-perform-panel select { padding: 6px 9px; border: 1px solid #4b6674; border-radius: 5px; background: #1b3044; color: #eaf7f2; font-size: .74rem; cursor: pointer; }
+  .auto-perform-panel .auto-main-btn { background: #4ecca3; color: #09231e; border-color: #4ecca3; font-weight: 700; }
+  .auto-perform-panel .auto-main-btn.running { background: #e94560; border-color: #e94560; color: #fff; }
+  .auto-perform-panel button.active { border-color: #4ecca3; color: #a9ffe7; }
+  .auto-perform-status { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 7px; color: #b6c9d2; font-size: .73rem; }
+  .auto-perform-status b { color: #fff; }
+  .auto-perform-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; margin-top: 9px; }
+  .auto-perform-controls label { color: #aabdc8; font-size: .7rem; }
+  .auto-perform-controls label select { margin-left: 3px; }
+  .auto-input-meter { width: 58px; height: 6px; border-radius: 5px; background: #304557; overflow: hidden; align-self: center; }
+  .auto-input-meter i { display: block; height: 100%; width: 0; background: #4ecca3; }
+  .auto-perform-log { margin-top: 7px; color: #9db5c2; font-size: .69rem; }
+  .auto-perform-log summary { cursor: pointer; }
+  .auto-perform-log pre { max-height: 90px; margin-top: 5px; overflow-y: auto; white-space: pre-wrap; color: #c9d9e1; }
+  .auto-library-dialog { width: min(580px, calc(100vw - 30px)); max-height: 80vh; padding: 16px; overflow-y: auto; border: 1px solid #4ecca3; border-radius: 9px; background: #122238; color: #eaf7f2; }
+  .auto-library-dialog::backdrop { background: #000b; }
+  .auto-library-dialog h3 { color: #4ecca3; margin-bottom: 7px; }
+  .auto-library-dialog p { color: #aabdc8; font-size: .76rem; margin-bottom: 10px; }
+  .auto-library-dialog input[type="search"] { width: 100%; padding: 8px; border: 1px solid #4b6674; border-radius: 5px; background: #091929; color: #fff; }
+  .auto-library-list { display: grid; gap: 5px; max-height: 48vh; overflow-y: auto; margin: 10px 0; }
+  .auto-library-row { display: grid; grid-template-columns: auto minmax(0,1fr) 92px; align-items: center; gap: 8px; padding: 6px; border-radius: 5px; background: #1c3044; font-size: .72rem; }
+  .auto-library-row span { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+  .auto-library-dialog button { padding: 7px 12px; border: 1px solid #4ecca3; border-radius: 5px; background: #183a3a; color: #c7ffeb; cursor: pointer; }
+  .auto-library-row select { min-width: 0; padding: 5px; background: #091929; border: 1px solid #4b6674; color: #fff; }
   .playlist-library-col h2 { margin-bottom: 8px; color: #4ecca3; font-size: .85rem; }
   body.playlist-mode .main-layout { max-width: 1680px; gap: 16px; }
   body.playlist-mode .playlist-library-col { display: block; }
@@ -996,6 +1023,14 @@
   <div class="status" id="status"></div>
 </div>
 
+<section class="auto-perform-panel" aria-label="Automatic music performance">
+  <div class="auto-perform-top"><strong>Sound to Visuals</strong><button type="button" class="auto-main-btn" id="autoPerformButton" onclick="toggleAutoPerform()">▶ Auto Perform</button><button type="button" id="autoHoldButton" onclick="toggleAutoHold()" title="Keep the current video">Hold video</button><button type="button" id="autoLayoutLockButton" onclick="toggleAutoLayoutLock()" title="Keep the current layout">Lock layout</button><button type="button" id="autoNextButton" onclick="autoNextOnBeat()">Next on beat</button><button type="button" onclick="tapAutoTempo()">Tap tempo</button><button type="button" onclick="resyncAutoBeat()">Resync</button></div>
+  <div class="auto-perform-status" role="status" aria-live="polite"><span id="autoStatus">Ready. Choose an input and press Auto Perform.</span><span>BPM <b id="autoBpm">—</b></span><span>Beat <b id="autoBeat">—</b></span><span>Section <b id="autoSection">—</b></span><span>Next <b id="autoNext">—</b></span><span class="auto-input-meter" aria-label="Audio input level"><i id="autoLevel"></i></span></div>
+  <div class="auto-perform-controls"><label>Input<select id="autoAudioDevice" aria-label="Automatic performance audio input"><option value="">Default microphone / USB input</option></select></label><label>Style<select id="autoProfile"><option value="balanced">Balanced</option><option value="hypnotic">Hypnotic</option><option value="high-energy">High Energy</option><option value="ambient">Ambient</option></select></label><label>Change every<select id="autoChangeBars"><option value="4">4 bars</option><option value="8" selected>8 bars</option><option value="16">16 bars</option></select></label><label>Videos<select id="autoVideoPool"><option value="library">Entire library</option><option value="playlist">Current playlist</option></select></label><button type="button" onclick="openAutoLibraryEditor()">Curate videos</button></div>
+  <details class="auto-perform-log"><summary>Performance decisions</summary><pre id="autoDecisionLog">No decisions yet.</pre></details>
+  <dialog class="auto-library-dialog" id="autoLibraryDialog"><h3>Curate Auto Perform videos</h3><p>Include or exclude videos, and mark their energy. Untagged videos work in any section.</p><input id="autoLibrarySearch" type="search" placeholder="Find a video…" aria-label="Find video to curate"><div class="auto-library-list" id="autoLibraryList"></div><button type="button" onclick="document.getElementById('autoLibraryDialog').close()">Done</button></dialog>
+</section>
+
 <div class="main-layout">
   <aside class="playlist-library-col" id="playlistLibraryCol"><h2>Video library</h2><p class="timeline-status">Drag a video onto the timeline.</p></aside>
   <div class="left-col">
@@ -1331,6 +1366,7 @@
 
 <script src="/vfx_engine.js"></script>
 <script src="/transition_engine.js"></script>
+<script src="/auto_perform.js"></script>
 <script>
   const videoStage = document.getElementById('videoStage');
   const videoWrap = document.getElementById('videoWrap');
@@ -2034,6 +2070,7 @@
   }
 
   function disconnectVfxAudio() {
+    if (autoRun) stopAutoPerform(false);
     if (vfxAudioStream) vfxAudioStream.getTracks().forEach(track => track.stop());
     if (vfxAudioContext) vfxAudioContext.close();
     vfxAudioStream = null;
@@ -2045,6 +2082,346 @@
     broadcastState({ type: 'vfxAudio', bass: 0, hit: 0 });
     syncFxTransport({ vfxAudioStatus: 'Audio input disconnected.' });
   }
+
+  // Automatic performance uses the same audio input as VFX, but its analysis
+  // continues even when the VFX renderer is switched off.
+  let autoRun = null;
+  let autoStarting = false;
+  let autoHoldVideo = false;
+  let autoLayoutLocked = false;
+  let autoPendingNext = 0;
+  let autoRandomState = 1;
+  let autoVideoTags = {};
+  try { autoVideoTags = JSON.parse(localStorage.getItem('autoVideoTags') || '{}'); } catch {}
+  const autoPerformanceLog = [];
+  window.autoPerformanceLog = autoPerformanceLog;
+  const autoUi = id => document.getElementById(id);
+  function autoRandom() {
+    autoRandomState ^= autoRandomState << 13;
+    autoRandomState ^= autoRandomState >>> 17;
+    autoRandomState ^= autoRandomState << 5;
+    return (autoRandomState >>> 0) / 4294967296;
+  }
+  function autoPick(options) { return options[Math.floor(autoRandom() * options.length)]; }
+  function autoRecord(kind, detail) {
+    autoPerformanceLog.push({ at: new Date().toISOString(), kind, detail, seed: autoRandomState >>> 0 });
+    if (autoPerformanceLog.length > 500) autoPerformanceLog.shift();
+    autoUi('autoDecisionLog').textContent = autoPerformanceLog.slice(-6).map(event =>
+      event.at.slice(11, 19) + ' ' + event.kind + ' · ' + (event.detail.filename ? playlistVideoName(event.detail.filename) : event.detail.reason ?? event.detail.view ?? event.detail.scene ?? '')).join('\n');
+  }
+  function autoStatus(message) { autoUi('autoStatus').textContent = message; }
+  function autoUpdateUi(snapshot) {
+    autoUi('autoBpm').textContent = !autoRun ? '—' : snapshot?.bpm ? snapshot.bpm + ' (' + Math.round(snapshot.confidence * 100) + '%)' : 'listening';
+    autoUi('autoBeat').textContent = snapshot?.beat ? snapshot.beat + ' · bar ' + snapshot.bar : '—';
+    autoUi('autoSection').textContent = snapshot?.section || '—';
+    autoUi('autoLevel').style.width = Math.round(Math.min(1, snapshot?.inputLevel || 0) * 100) + '%';
+    autoUi('autoNext').textContent = autoPendingNext ? 'video on next beat'
+      : autoRun?.nextVideo ? playlistVideoName(autoRun.nextVideo) : autoRun ? 'preparing next video' : '—';
+    autoUi('autoPerformButton').classList.toggle('running', !!autoRun);
+    autoUi('autoPerformButton').textContent = autoRun ? '■ Stop Auto' : autoStarting ? 'Connecting…' : '▶ Auto Perform';
+    autoUi('autoPerformButton').disabled = autoStarting;
+    autoUi('autoAudioDevice').disabled = !!autoRun || autoStarting;
+    autoUi('autoHoldButton').classList.toggle('active', autoHoldVideo);
+    autoUi('autoLayoutLockButton').classList.toggle('active', autoLayoutLocked);
+  }
+  async function refreshAutoAudioDevices() {
+    try {
+      const select = autoUi('autoAudioDevice');
+      const current = select.value || localStorage.getItem('autoAudioDevice') || '';
+      const devices = await listVfxAudioDevices();
+      select.replaceChildren(new Option('Default microphone / USB input', ''));
+      devices.forEach(device => select.add(new Option(device.label || 'Audio input', device.id)));
+      if ([...select.options].some(option => option.value === current)) select.value = current;
+    } catch {}
+  }
+  function openAutoLibraryEditor() {
+    const dialog = autoUi('autoLibraryDialog');
+    const list = autoUi('autoLibraryList');
+    list.replaceChildren();
+    for (const item of videoListCache) {
+      const tag = autoVideoTags[item.filename] || {};
+      const row = document.createElement('label'); row.className = 'auto-library-row';
+      row.dataset.name = playlistVideoName(item.filename).toLowerCase();
+      const enabled = document.createElement('input'); enabled.type = 'checkbox'; enabled.checked = tag.enabled !== false;
+      enabled.setAttribute('aria-label', 'Include ' + playlistVideoName(item.filename));
+      const name = document.createElement('span'); name.textContent = playlistVideoName(item.filename); name.title = item.filename;
+      const energy = document.createElement('select'); energy.setAttribute('aria-label', 'Energy for ' + playlistVideoName(item.filename));
+      for (const [value, label] of [['any', 'Any energy'], ['calm', 'Calm'], ['medium', 'Medium'], ['peak', 'Peak']]) energy.add(new Option(label, value));
+      energy.value = tag.energy || 'any';
+      const save = () => {
+        autoVideoTags[item.filename] = { enabled: enabled.checked, energy: energy.value };
+        localStorage.setItem('autoVideoTags', JSON.stringify(autoVideoTags));
+        if (autoRun) autoPrepareNext();
+      };
+      enabled.addEventListener('change', save); energy.addEventListener('change', save);
+      row.append(enabled, name, energy); list.appendChild(row);
+    }
+    autoUi('autoLibrarySearch').value = '';
+    dialog.showModal();
+  }
+  autoUi('autoLibrarySearch').addEventListener('input', event => {
+    const needle = event.target.value.toLowerCase();
+    autoUi('autoLibraryList').querySelectorAll('.auto-library-row').forEach(row => { row.hidden = !row.dataset.name.includes(needle); });
+  });
+  function autoPool() {
+    if (autoUi('autoVideoPool').value === 'playlist') {
+      const names = new Set(plPlaylist.entries.map(entry => entry.video));
+      return videoListCache.filter(videoItem => names.has(videoItem.filename) && autoVideoTags[videoItem.filename]?.enabled !== false);
+    }
+    return videoListCache.filter(videoItem => autoVideoTags[videoItem.filename]?.enabled !== false);
+  }
+  function autoChooseVideo(energy = .5) {
+    const pool = autoPool();
+    if (!pool.length) return '';
+    const recent = autoRun?.recent || [];
+    const eligible = pool.filter(item => item.filename !== currentFilename && !recent.includes(item.filename));
+    const candidates = eligible.length ? eligible : pool.filter(item => item.filename !== currentFilename);
+    if (!candidates.length) return pool[0].filename;
+    let best = candidates[0], bestScore = -Infinity;
+    for (const candidate of candidates) {
+      const tag = autoVideoTags[candidate.filename]?.energy || 'any';
+      const target = tag === 'calm' ? .15 : tag === 'medium' ? .5 : tag === 'peak' ? .9 : energy;
+      const score = 1 - Math.abs(energy - target) + (tag === 'any' ? 0 : .2) + autoRandom() * .35;
+      if (score > bestScore) { bestScore = score; best = candidate; }
+    }
+    return best.filename;
+  }
+  function autoPrepareNext(energy = autoRun?.engine.snapshot().energy ?? .5) {
+    if (!autoRun) return;
+    const filename = autoChooseVideo(energy);
+    if (!filename || filename === currentFilename) { autoRun.nextVideo = ''; return; }
+    if (autoRun.nextVideo === filename) return;
+    if (autoRun.preloader) { autoRun.preloader.removeAttribute('src'); autoRun.preloader.load(); }
+    const preloader = document.createElement('video');
+    preloader.preload = 'auto'; preloader.muted = true;
+    preloader.src = '/video/' + encodeURIComponent(filename);
+    preloader.load();
+    autoRun.preloader = preloader;
+    autoRun.nextVideo = filename;
+    autoUpdateUi(autoRun.engine.snapshot());
+  }
+  function autoChooseTransition(reason, energy) {
+    const profile = autoUi('autoProfile').value;
+    const styles = profile === 'ambient' ? ['cross-dissolve', 'fade-in', 'liquid-morph', 'smoke-dissolve']
+      : profile === 'hypnotic' ? ['cross-dissolve', 'infinite-zoom', 'kaleidoscope-morph', 'spiral-vortex']
+        : profile === 'high-energy' ? ['pixel-scatter', 'whip-pan', 'rgb-split', 'bass-impact-distortion', 'neon-shockwave']
+          : ['cross-dissolve', 'pixel-scatter', 'wipe', 'infinite-zoom', 'neon-shockwave'];
+    const safe = styles.filter(type => TRANSITION_CATALOGUE[type]
+      && !TRANSITION_CATALOGUE[type].safetyTags.includes('flash'));
+    const type = reason === 'drop' && energy > .45 && safe.includes('bass-impact-distortion')
+      ? 'bass-impact-distortion' : autoPick(safe.length ? safe : ['cross-dissolve']);
+    const beatSeconds = autoRun?.engine.bpm ? 60 / autoRun.engine.bpm : .5;
+    return normaliseTransition({ type, duration: Math.max(.35, Math.min(1.5, beatSeconds * (reason === 'drop' ? 1 : 2))),
+      pace: reason === 'drop' ? 'accelerate' : 'ease', seed: autoRandomState >>> 0 });
+  }
+  function autoChooseLayout(energy) {
+    if (autoLayoutLocked) return;
+    const profile = autoUi('autoProfile').value;
+    const modes = profile === 'ambient' ? [0, 0, 1] : profile === 'hypnotic' ? [1, 2, 3]
+      : energy > .65 ? [2, 3, 4] : [0, 1, 1, 3];
+    let next = autoPick(modes);
+    if (modes.some(mode => mode !== viewMode)) {
+      for (let i = 0; i < 4 && next === viewMode; i++) next = autoPick(modes);
+    }
+    setViewModeTo(next);
+    const choices = next === 1 ? DUAL_PRESETS : next === 2 ? TRIPLE_PRESETS
+      : next === 3 ? QUAD_PRESETS : next === 4 ? OCTO_PRESETS : [1];
+    setConfig(autoPick(choices));
+    applyZoomPan(next ? 1 + Math.round(autoRandom() * Math.min(1.2, energy + .2) * 10) / 10 : 1, 0, 0);
+    setPlaybackSpeed(energy > .7 && profile === 'high-energy' ? 1.25 : 1);
+    setLoopMode(1);
+    autoRecord('layout', { view: VIEW_NAMES[next], preset: configIdx + 1, zoom: tileZoom });
+  }
+  function autoChangeVideo(reason, energy) {
+    if (!autoRun || autoHoldVideo) return false;
+    const filename = reason === 'drop' ? autoChooseVideo(energy) : autoRun.nextVideo || autoChooseVideo(energy);
+    if (!filename) { autoStatus('No videos in the chosen pool.'); return false; }
+    if (filename === currentFilename) { autoChooseLayout(energy); autoChangeVfx(energy); return true; }
+    const now = performance.now() / 1000;
+    if (reason !== 'start' && now - autoRun.lastVideoAt < 2.5) return false;
+    autoRun.lastVideoAt = now;
+    autoRun.nextVideo = '';
+    if (autoRun.preloader) { autoRun.preloader.removeAttribute('src'); autoRun.preloader.load(); autoRun.preloader = null; }
+    const transition = autoChooseTransition(reason, energy);
+    showVideo(filename, transition);
+    autoChooseLayout(energy);
+    video.muted = true;
+    video.addEventListener('loadeddata', () => { if (autoRun && currentFilename === filename && !pixelHolding) video.play().catch(() => {}); }, { once: true });
+    autoRun.recent.push(filename);
+    if (autoRun.recent.length > 4) autoRun.recent.shift();
+    autoRecord('video', { filename, reason, transition, view: VIEW_NAMES[viewMode], preset: configIdx + 1 });
+    autoStatus((reason === 'drop' ? 'Drop' : reason === 'start' ? 'Started' : 'Changed') + ': ' + playlistVideoName(filename) + ' · ' + TRANSITION_NAMES[transition.type]);
+    autoPrepareNext(energy);
+    return true;
+  }
+  function autoChangeVfx(energy) {
+    if (!autoRun) return;
+    const profile = autoUi('autoProfile').value;
+    const scenes = profile === 'ambient' ? [0, 1, 3, 5] : profile === 'hypnotic' ? [0, 2, 3, 4, 5]
+      : [0, 1, 2, 3, 4, 5, 6];
+    const scene = autoPick(scenes);
+    if (scene === 6) {
+      const kind = autoRandom() < .55 ? 'logo' : 'text';
+      setVfxLogo3d({ kind, text: '@tonyt.dj', axis: autoPick(['x', 'y', 'z']), startAngle: -35, endAngle: 35 }, true);
+      if (kind === 'text') {
+        const filename = currentFilename;
+        getCurrentVfxInstagramId().then(handle => {
+          if (autoRun && currentFilename === filename && vfxState.logo3d.kind === 'text' && handle) setVfxLogo3d({ text: handle }, true);
+        });
+      }
+    }
+    setVfxState({ enabled: true, scene, intensity: Math.max(.3, Math.min(.9, .35 + energy * .55)) });
+    autoRecord('vfx', { scene, intensity: vfxState.intensity });
+  }
+  function autoProcessFrame(frame) {
+    if (!autoRun) return;
+    const snapshot = autoRun.engine.process({ ...frame, time: performance.now() / 1000 });
+    const now = performance.now() / 1000;
+    if (snapshot.silent && !autoRun.wasQuiet) autoStatus('Music is quiet. Holding the current look.');
+    else if (!snapshot.silent && autoRun.wasQuiet) autoStatus('Music detected. Following the beat.');
+    autoRun.wasQuiet = snapshot.silent;
+    let requestedChange = false;
+    if (autoPendingNext && (snapshot.actions.some(action => action.kind === 'accent') || now - autoPendingNext > 5)) {
+      requestedChange = autoChangeVideo('requested', snapshot.energy);
+      if (requestedChange) autoPendingNext = 0;
+    }
+    const hasVideoChange = requestedChange || snapshot.actions.some(action => action.kind === 'change-video');
+    for (const action of snapshot.actions) {
+      if (action.kind === 'accent') {
+        if (vfxState.enabled && action.strength > .2) triggerVfxPulse();
+      } else if (action.kind === 'vfx') autoChangeVfx(action.energy);
+      else if (action.kind === 'layout' && !hasVideoChange) autoChooseLayout(action.energy);
+      else if (action.kind === 'change-video' && !requestedChange) autoChangeVideo(action.reason, action.energy);
+    }
+    if (snapshot.section === 'quiet' && vfxState.enabled && now - autoRun.lastQuietFade > 4) {
+      setVfxState({ intensity: Math.max(.2, vfxState.intensity * .7) });
+      autoRun.lastQuietFade = now;
+    }
+    if (now - autoRun.lastUi > .12) {
+      autoUpdateUi(snapshot);
+      autoRun.lastUi = now;
+    }
+  }
+  function autoFallbackFrame() {
+    if (!autoRun || !vfxAnalyser || !vfxAudioContext) return;
+    const spectrum = autoRun.spectrum || (autoRun.spectrum = new Uint8Array(vfxAnalyser.frequencyBinCount));
+    const waveform = autoRun.waveform || (autoRun.waveform = new Float32Array(vfxAnalyser.fftSize));
+    vfxAnalyser.getByteFrequencyData(spectrum);
+    vfxAnalyser.getFloatTimeDomainData(waveform);
+    const hz = vfxAudioContext.sampleRate / vfxAnalyser.fftSize;
+    const band = (low, high) => {
+      let sum = 0, count = 0;
+      for (let i = Math.max(1, Math.floor(low / hz)); i < Math.min(spectrum.length, Math.ceil(high / hz)); i++) {
+        sum += spectrum[i]; count++;
+      }
+      return count ? sum / count / 255 : 0;
+    };
+    const rms = Math.sqrt(waveform.reduce((sum, value) => sum + value * value, 0) / waveform.length);
+    autoProcessFrame({ rms: Math.min(1.5, rms * 4), bass: band(35, 180), mid: band(180, 2200), high: band(2200, 10000) });
+  }
+  async function startAutoPerform() {
+    if (autoRun || autoStarting) return;
+    autoStarting = true;
+    autoUpdateUi();
+    autoStatus('Connecting audio input…');
+    let ownedAudio = false;
+    try {
+      if (!videoListCache.length) await loadLibrary();
+      if (!autoPool().length) throw new Error('Add videos to the selected pool first.');
+      if (plPlaying) stopPlaylist();
+      restoreTimelineVfxPreview();
+      const deviceId = autoUi('autoAudioDevice').value;
+      const connectedId = vfxAudioStream?.getAudioTracks()[0]?.getSettings()?.deviceId || '';
+      if (!vfxAudioContext || (deviceId && deviceId !== connectedId)) {
+        await connectVfxAudio(deviceId);
+        ownedAudio = true;
+      }
+      await vfxAudioContext.resume();
+      const engine = createAutoPerformanceEngine({ changeBars: autoUi('autoChangeBars').value });
+      autoRandomState = (Date.now() >>> 0) || 1;
+      autoHoldVideo = false;
+      autoLayoutLocked = false;
+      autoRun = { engine, ownedAudio, previousMute: video.muted, recent: [], lastUi: 0, lastQuietFade: 0, wasQuiet: false,
+        lastVideoAt: -Infinity, nextVideo: '', preloader: null, node: null, gain: null, fallback: null };
+      try {
+        await vfxAudioContext.audioWorklet.addModule('/auto_audio_worklet.js');
+        if (!autoRun) return;
+        const node = new AudioWorkletNode(vfxAudioContext, 'auto-audio-features');
+        const gain = vfxAudioContext.createGain(); gain.gain.value = 0;
+        vfxAnalyser.connect(node); node.connect(gain); gain.connect(vfxAudioContext.destination);
+        node.port.onmessage = event => autoProcessFrame(event.data);
+        autoRun.node = node; autoRun.gain = gain;
+      } catch (error) {
+        autoRun.fallback = setInterval(autoFallbackFrame, 25);
+        autoStatus('Using audio analyser fallback: ' + error.message);
+      }
+      video.muted = true;
+      autoChangeVideo('start', .4);
+      setVfxState({ enabled: true, scene: 0, intensity: .4 });
+      autoRecord('vfx', { scene: 0, intensity: .4 });
+      autoStatus('Listening for the beat. Audio is analysed only.');
+      autoRecord('start', { input: vfxAudioStream?.getAudioTracks()[0]?.label || 'Audio input',
+        profile: autoUi('autoProfile').value, pool: autoUi('autoVideoPool').value });
+      localStorage.setItem('autoAudioDevice', deviceId);
+      refreshAutoAudioDevices();
+      vfxAudioStream?.getAudioTracks()[0]?.addEventListener('ended', () => {
+        if (autoRun) { stopAutoPerform(false); autoStatus('Audio input ended. Current video held.'); }
+      }, { once: true });
+    } catch (error) {
+      if (autoRun) stopAutoPerform();
+      else if (ownedAudio) disconnectVfxAudio();
+      autoStatus('Auto Perform could not start: ' + error.message);
+    } finally {
+      autoStarting = false;
+      autoUpdateUi(autoRun?.engine.snapshot());
+    }
+  }
+  function stopAutoPerform(disconnectOwned = true) {
+    if (!autoRun) return;
+    const run = autoRun;
+    autoRun = null;
+    autoPendingNext = 0;
+    if (run.fallback) clearInterval(run.fallback);
+    if (run.preloader) { run.preloader.removeAttribute('src'); run.preloader.load(); }
+    if (run.node) { run.node.port.onmessage = null; vfxAnalyser?.disconnect(run.node); run.node.disconnect(); }
+    if (run.gain) run.gain.disconnect();
+    video.muted = run.previousMute;
+    autoRecord('stop', { video: currentFilename });
+    if (disconnectOwned && run.ownedAudio) disconnectVfxAudio();
+    autoStatus('Auto Perform stopped. Current video remains on screen.');
+    autoUpdateUi();
+  }
+  function toggleAutoPerform() { if (autoRun) stopAutoPerform(); else startAutoPerform(); }
+  function toggleAutoHold() { autoHoldVideo = !autoHoldVideo; autoUpdateUi(autoRun?.engine.snapshot()); }
+  function toggleAutoLayoutLock() { autoLayoutLocked = !autoLayoutLocked; autoUpdateUi(autoRun?.engine.snapshot()); }
+  function autoNextOnBeat() {
+    if (!autoRun) { autoStatus('Start Auto Perform first.'); return; }
+    autoHoldVideo = false;
+    autoPendingNext = performance.now() / 1000;
+    autoStatus('Next video queued for the next beat.');
+    autoUpdateUi(autoRun.engine.snapshot());
+  }
+  function tapAutoTempo() {
+    if (!autoRun) return;
+    autoUpdateUi(autoRun.engine.tap(performance.now() / 1000));
+  }
+  function resyncAutoBeat() {
+    if (!autoRun) return;
+    autoRun.engine.resync(performance.now() / 1000);
+    autoStatus('Beat count reset. Listening for the next downbeat.');
+    autoUpdateUi(autoRun.engine.snapshot());
+  }
+  for (const id of ['autoProfile', 'autoChangeBars', 'autoVideoPool']) {
+    const select = autoUi(id);
+    const stored = localStorage.getItem(id);
+    if (stored && [...select.options].some(option => option.value === stored)) select.value = stored;
+    select.addEventListener('change', () => {
+      localStorage.setItem(id, select.value);
+      if (id === 'autoChangeBars' && autoRun) autoRun.engine.changeBars = Number(select.value);
+      if (id === 'autoVideoPool' && autoRun) autoPrepareNext();
+    });
+  }
+  refreshAutoAudioDevices();
 
   function setVfxSensitivity(value) { vfxSensitivity = value; }
 
@@ -2183,7 +2560,7 @@
     } : transition);
     if (!hasOutgoing && chosenTransition.type !== 'fade-in') chosenTransition.type = 'cut';
     pixelHolding = false;
-    pixelHoldWantsPlay = wasPlaying || plPlaying;
+    pixelHoldWantsPlay = wasPlaying || plPlaying || !!autoRun;
     videoTransition.prepare(chosenTransition);
     const loadToken = ++videoLoadToken;
     currentFilename = filename;
@@ -4839,6 +5216,7 @@
 
   function startPlaylist() {
     if (plPlaylist.entries.length === 0) return;
+    if (autoRun) stopAutoPerform();
     timelinePreviewRun++;
     timelineOverlay.hidden = true;
     restoreTimelineVfxPreview();
