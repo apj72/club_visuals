@@ -48,6 +48,17 @@
   .right-col::-webkit-scrollbar-track { background: transparent; }
   .right-col::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
 
+  .playlist-library-col { display: none; width: 250px; flex: 0 0 250px; max-height: calc(100vh - 40px); overflow-y: auto; scrollbar-width: thin; }
+  .playlist-library-col h2 { margin-bottom: 8px; color: #4ecca3; font-size: .85rem; }
+  body.playlist-mode .main-layout { max-width: 1680px; gap: 16px; }
+  body.playlist-mode .playlist-library-col { display: block; }
+  body.playlist-mode .left-col { position: static; display: flex; flex-direction: column; }
+  body.playlist-mode .right-col { width: 350px; }
+  body.playlist-mode .playlist-library-col .library-item img { width: 72px; height: 45px; }
+  body.playlist-mode .playlist-library-col .library-order-hint { display: none; }
+  body.playlist-mode .playlist-library-col .library-drag-handle { display: none; }
+  body.playlist-mode .playlist-library-col .library-playlist-btn { display: none; }
+
   h1 {
     font-size: 1.4rem;
     font-weight: 600;
@@ -643,6 +654,50 @@
   }
   .pl-header .pl-select { flex: 1; margin-bottom: 0; }
   .pl-entries { margin-bottom: 12px; min-height: 20px; }
+  body.playlist-mode #plEntries, body.playlist-mode .pl-timeline-head { display: none; }
+  .playlist-timeline-workspace { display: none; margin-top: 16px; padding: 13px; border: 1px solid #39526b; border-radius: 10px; background: #111c30; }
+  body.playlist-mode .playlist-timeline-workspace { display: block; order: -1; margin-top: 0; }
+  .timeline-toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 9px; margin-bottom: 10px; }
+  .timeline-toolbar h3 { margin-right: auto; color: #4ecca3; font-size: .9rem; }
+  .timeline-toolbar output { min-width: 92px; color: #e7eef5; font-size: .82rem; font-variant-numeric: tabular-nums; }
+  .timeline-toolbar button { padding: 5px 9px; border: 1px solid #46536c; background: #1d3150; color: #e7eef5; font-size: .73rem; }
+  .timeline-toolbar label { color: #aab6c4; font-size: .72rem; }
+  .timeline-toolbar input { width: 90px; vertical-align: middle; accent-color: #4ecca3; }
+  .timeline-scroll { overflow-x: auto; padding-bottom: 9px; border-radius: 6px; }
+  .timeline-content { width: max-content; min-width: 100%; }
+  .timeline-ruler { position: relative; height: 30px; background: repeating-linear-gradient(90deg, #273b52 0 1px, transparent 1px 40px); cursor: crosshair; }
+  .timeline-marker { position: absolute; top: 4px; color: #8298ab; font-size: .65rem; transform: translateX(4px); pointer-events: none; }
+  .timeline-track { position: relative; display: flex; min-height: 112px; border: 1px dashed #506982; border-radius: 5px; background: #0b1527; }
+  .timeline-track.drag-over { border-color: #4ecca3; background: #12372f; }
+  .timeline-clip { position: relative; flex: 0 0 auto; min-height: 110px; overflow: hidden; border-right: 2px solid #0b1527; background: #1a2744; cursor: pointer; }
+  .timeline-clip.selected { outline: 2px solid #4ecca3; outline-offset: -2px; }
+  .timeline-clip.dragging { opacity: .5; }
+  .timeline-clip img { width: 100%; height: 100%; position: absolute; inset: 0; object-fit: cover; opacity: .64; }
+  .timeline-clip-label { position: absolute; inset: auto 3px 3px; padding: 4px; border-radius: 3px; background: #091323d9; color: #fff; font-size: .67rem; line-height: 1.2; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+  .timeline-clip-time { position: absolute; right: 4px; top: 4px; padding: 2px 4px; border-radius: 3px; background: #091323cf; color: #fff; font-size: .64rem; }
+  .timeline-transition-chip { position: absolute; z-index: 2; left: 0; top: 27px; height: 48px; padding: 4px; border: 1px solid #e59cb2; border-radius: 0 5px 5px 0; background: #351b3ee6; color: #ffe2ed; font-size: .62rem; overflow: hidden; text-align: center; cursor: pointer; }
+  .timeline-transition-chip svg { width: 21px; height: 16px; display: block; margin: 0 auto; }
+  .timeline-playhead { position: absolute; z-index: 5; top: -30px; bottom: 0; width: 2px; background: #ffda65; pointer-events: none; }
+  .timeline-playhead::before { content: ''; position: absolute; top: -1px; left: -6px; border-left: 7px solid transparent; border-right: 7px solid transparent; border-top: 8px solid #ffda65; }
+  .timeline-empty { padding: 33px 15px; color: #9aa7b8; font-size: .76rem; }
+  .timeline-status { min-height: 17px; margin-top: 5px; color: #9fcdbd; font-size: .7rem; }
+  .video-wrap .video-stage .timeline-preview-overlay { position: absolute; z-index: 10; inset: 0; width: 100%; height: 100%; object-fit: fill; pointer-events: none; }
+  body.playlist-mode .video-wrap:not(:fullscreen) .video-stage video,
+  body.playlist-mode .video-wrap:not(:fullscreen) .video-stage canvas { height: 38vh; }
+  body.playlist-mode .video-wrap.quad:not(:fullscreen) .video-stage video,
+  body.playlist-mode .video-wrap.quad:not(:fullscreen) .video-stage canvas,
+  body.playlist-mode .video-wrap.octo:not(:fullscreen) .video-stage video,
+  body.playlist-mode .video-wrap.octo:not(:fullscreen) .video-stage canvas { height: 19vh; }
+  body.playlist-mode .video-wrap:not(:fullscreen) .video-stage .timeline-preview-overlay { height: 100%; }
+  [hidden] { display: none !important; }
+  .pl-inspector { margin: 10px 0; padding: 10px; border: 1px solid #456077; border-radius: 8px; background: #111d31; }
+  .pl-inspector h3 { color: #4ecca3; font-size: .82rem; margin-bottom: 5px; }
+  .pl-inspector-name { color: #e7eef5; font-size: .73rem; overflow-wrap: anywhere; margin-bottom: 9px; }
+  .pl-inspector-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; }
+  .pl-inspector-grid label { color: #aab6c4; font-size: .68rem; }
+  .pl-inspector-grid select, .pl-inspector-grid input { display: block; width: 100%; margin-top: 3px; padding: 6px; border: 1px solid #46536c; border-radius: 4px; background: #0d1628; color: #fff; font: inherit; }
+  .pl-inspector-actions { display: flex; gap: 6px; margin-top: 8px; }
+  .pl-inspector-actions button { padding: 6px 8px; border: 1px solid #4ecca3; border-radius: 4px; background: #183a3a; color: #c7ffeb; font-size: .7rem; }
   .pl-timeline-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin: 6px 0 8px; }
   .pl-timeline-head h3 { font-size: 0.79rem; color: #e7eef5; }
   .pl-timeline-total { font-size: 0.72rem; color: #4ecca3; font-variant-numeric: tabular-nums; }
@@ -906,6 +961,8 @@
     .main-layout { flex-direction: column; }
     .left-col { position: static; width: 100%; }
     .right-col { width: 100%; max-height: none; }
+    body.playlist-mode .playlist-library-col { width: 100%; flex-basis: auto; max-height: 220px; }
+    body.playlist-mode .right-col { width: 100%; }
   }
 </style>
 </head>
@@ -940,6 +997,7 @@
 </div>
 
 <div class="main-layout">
+  <aside class="playlist-library-col" id="playlistLibraryCol"><h2>Video library</h2><p class="timeline-status">Drag a video onto the timeline.</p></aside>
   <div class="left-col">
     <div class="player-section" id="playerSection">
       <div class="video-wrap" id="videoWrap">
@@ -1104,6 +1162,11 @@
         <div class="capture-status" id="captureStatus" role="status" aria-live="polite"></div>
       </div>
     </div>
+    <section class="playlist-timeline-workspace" id="playlistTimelineWorkspace" aria-label="Playlist timeline editor">
+      <div class="timeline-toolbar"><h3>Playlist timeline</h3><button type="button" id="timelineBack" aria-label="Move playhead back one second">−1s</button><output id="timelineTimecode">0:00 / 0:00</output><button type="button" id="timelineForward" aria-label="Move playhead forward one second">+1s</button><label>Scale <input id="timelineZoom" type="range" min="5" max="24" value="10" aria-label="Timeline scale"></label></div>
+      <div class="timeline-scroll" id="timelineScroll"><div class="timeline-content" id="timelineContent"><div class="timeline-ruler" id="timelineRuler"></div><div class="timeline-track" id="timelineTrack"></div></div></div>
+      <div class="timeline-status" id="timelineStatus" role="status">Drag videos from the library onto the timeline, then scrub to preview.</div>
+    </section>
   </div>
 
   <div class="right-col">
@@ -1127,6 +1190,22 @@
         <button class="pl-btn" onclick="deletePlaylistConfirm()">Del</button>
       </div>
       <input type="text" class="pl-name-input" id="plName" placeholder="Playlist name...">
+      <div class="pl-inspector" id="plInspector"><h3>Selected clip</h3><p class="pl-inspector-name" id="plInspectorName">Select a clip on the timeline to edit its settings.</p>
+        <div class="pl-inspector-grid" id="plInspectorFields" hidden>
+          <label>Length mode<select id="insDurationType"><option value="seconds">Seconds</option><option value="loops">Loops</option></select></label>
+          <label>Length<input id="insDurationValue" type="number" min="1" step="1"></label>
+          <label>Layout<select id="insView"><option value="single">Single</option><option value="dual">Dual</option><option value="triple">3x</option><option value="quad">4x</option><option value="octo">8x</option></select></label>
+          <label>Orientation<select id="insPreset"></select></label>
+          <label>Playback<select id="insLoopMode"><option value="0">No loop</option><option value="1">Loop</option><option value="2">Bounce</option></select></label>
+          <label>Speed<input id="insSpeed" type="number" min="0.25" max="4" step="0.05"></label>
+          <label>Zoom<input id="insZoom" type="number" min="1" max="4" step="0.05"></label>
+          <label>Pan X<input id="insPanX" type="number" min="-1" max="1" step="0.05"></label>
+          <label>Pan Y<input id="insPanY" type="number" min="-1" max="1" step="0.05"></label>
+          <label>Transition<select id="insTransitionType"></select></label>
+          <label>Transition seconds<input id="insTransitionDuration" type="number" min="0.15" max="10" step="0.05"></label>
+          <label>Transition pace<select id="insTransitionPace"><option value="steady">Even</option><option value="accelerate">Build</option><option value="decelerate">Hit</option><option value="ease">Ease</option></select></label>
+        </div><div class="pl-inspector-actions" id="plInspectorActions" hidden><button type="button" id="insAudition">▶ Audition transition</button><button type="button" id="insCues">✦ Script effects</button><button type="button" id="insRemove">Remove clip</button></div>
+      </div>
       <div class="pl-palette-heading"><div class="pl-palette-title">Drag an effect between videos, or select one and click a transition slot.</div><button type="button" class="pl-audition-btn" onclick="openTransitionAudition()">▶ Audition</button></div>
       <div class="pl-transition-palette" id="plTransitionPalette" aria-label="Transition effects"></div>
       <div class="pl-timeline-head"><h3>Playlist timeline</h3><span class="pl-timeline-total" id="plTimelineTotal">0 videos</span></div>
@@ -2825,6 +2904,13 @@
       event.preventDefault();
       return;
     }
+    if (document.body.classList.contains('playlist-mode')) {
+      draggedLibraryItem = null;
+      event.dataTransfer.effectAllowed = 'copy';
+      event.dataTransfer.setData('application/x-club-video', event.currentTarget.dataset.filename);
+      event.dataTransfer.setData('text/plain', event.currentTarget.dataset.filename);
+      return;
+    }
     draggedLibraryItem = event.currentTarget;
     dragOriginalOrder = libraryFilenames();
     libraryDropCompleted = false;
@@ -3785,6 +3871,7 @@
     });
     plTimelineTotal.textContent = entries.length + ' video' + (entries.length === 1 ? '' : 's')
       + (unknown === entries.length ? ' · time unavailable' : ' · ' + (unknown ? '≥' : '~') + formatPlaylistTime(total));
+    renderPlaylistTimeline(lengths);
   }
 
   for (let i = 1; i <= 32; i++) {
@@ -3863,6 +3950,17 @@
     document.getElementById('libraryTab').classList.toggle('active', tab === 'library');
     document.getElementById('playlistTab').classList.toggle('active', tab === 'playlist');
     document.getElementById('settingsTab').classList.toggle('active', tab === 'settings');
+    const library = document.getElementById('librarySection');
+    const playlistMode = tab === 'playlist';
+    document.body.classList.toggle('playlist-mode', playlistMode);
+    (playlistMode ? document.getElementById('playlistLibraryCol') : document.getElementById('libraryTab')).appendChild(library);
+    if (playlistMode) {
+      renderPlaylistTimeline();
+      if (plPlaylist.entries.length && plPreviewIdx < 0 && !plPlaying) setTimelinePlayhead(0);
+    } else {
+      timelinePreviewRun++;
+      timelineOverlay.hidden = true;
+    }
     if (tab === 'settings') loadSettings();
   }
 
@@ -3937,7 +4035,7 @@
   async function loadPlaylistBySlug(slug) {
     if (plPlaying) stopPlaylist();
     document.getElementById('plAutoScriptStatus').textContent = '';
-    if (!slug) { plPlaylist = { name: '', entries: [] }; plSlug = ''; plNameInput.value = ''; plPreviewIdx = -1; renderPlaylistEntries(); return; }
+    if (!slug) { plPlaylist = { name: '', entries: [] }; plSlug = ''; plNameInput.value = ''; plPreviewIdx = -1; timelineTime = 0; renderPlaylistEntries(); return; }
     try {
       const res = await fetch('/api/playlist/' + encodeURIComponent(slug));
       if (!res.ok) throw new Error('Could not load playlist');
@@ -3946,7 +4044,9 @@
       plSelect.value = slug;
       plNameInput.value = plPlaylist.name || '';
       plPreviewIdx = -1;
+      timelineTime = 0;
       renderPlaylistEntries();
+      if (document.body.classList.contains('playlist-mode')) setTimelinePlayhead(0);
     } catch {}
   }
 
@@ -3956,6 +4056,8 @@
     plSlug = '';
     plNameInput.value = '';
     plSelect.value = '';
+    plPreviewIdx = -1;
+    timelineTime = 0;
     document.getElementById('plAutoScriptStatus').textContent = '';
     renderPlaylistEntries();
   }
@@ -4007,11 +4109,14 @@
       layoutPresetId: matchingPreset?.id || null,
       layoutPresetName: matchingPreset?.name || null,
     });
+    plPreviewIdx = plPlaylist.entries.length - 1;
     renderPlaylistEntries();
+    if (document.body.classList.contains('playlist-mode')) setTimelinePlayhead(timeForClip(plPreviewIdx));
   }
 
   function removeEntry(idx) {
     plPlaylist.entries.splice(idx, 1);
+    plPreviewIdx = Math.min(plPreviewIdx, plPlaylist.entries.length - 1);
     renderPlaylistEntries();
   }
 
@@ -4270,6 +4375,7 @@
       empty.textContent = 'Add a video below or from the Library to start your timeline.';
       plEntriesEl.appendChild(empty);
       plTimelineTotal.textContent = '0 videos';
+      renderPlaylistTimeline();
       return;
     }
     plPlaylist.entries.forEach((entry, index) => {
@@ -4348,11 +4454,344 @@
     });
     plTimelineTotal.textContent = plPlaylist.entries.length + ' video'
       + (plPlaylist.entries.length === 1 ? '' : 's') + ' · calculating…';
+    renderPlaylistTimeline();
     updatePlaylistRunTimes(version);
+  }
+
+  // The visible playlist editor shares the saved entry model with playback.
+  const timelineTrack = document.getElementById('timelineTrack');
+  const timelineRuler = document.getElementById('timelineRuler');
+  const timelineContent = document.getElementById('timelineContent');
+  const timelineTimecode = document.getElementById('timelineTimecode');
+  const timelineStatus = document.getElementById('timelineStatus');
+  const timelineOverlay = document.createElement('canvas');
+  timelineOverlay.className = 'timeline-preview-overlay';
+  timelineOverlay.hidden = true;
+  videoStage.appendChild(timelineOverlay);
+  const timelineFrameRenderer = createTransitionFrameRenderer();
+  const timelineFrameVideos = [document.createElement('video'), document.createElement('video')];
+  timelineFrameVideos.forEach(source => { source.preload = 'auto'; source.muted = true; });
+  let timelineSegments = [];
+  let timelineTime = 0;
+  let timelineScale = 10;
+  let timelinePreviewRun = 0;
+  let timelineEntryStartedAt = 0;
+  video.addEventListener('timeupdate', () => {
+    if (!plPlaying || !document.body.classList.contains('playlist-mode')) return;
+    const segment = timelineSegments[plEntryIdx];
+    if (!segment) return;
+    timelineTime = Math.min(segment.end, segment.start + (performance.now() - timelineEntryStartedAt) / 1000);
+    updateTimelinePlayhead();
+  });
+
+  function timelinePosition(seconds) {
+    const segment = timelineSegments.find(item => seconds <= item.end) || timelineSegments.at(-1);
+    if (!segment) return 0;
+    return segment.x + Math.max(0, Math.min(segment.duration, seconds - segment.start)) * segment.width / segment.duration;
+  }
+
+  function renderPlaylistTimeline(lengths = new Map()) {
+    if (!timelineTrack) return;
+    timelineTrack.replaceChildren();
+    timelineRuler.replaceChildren();
+    timelineSegments = [];
+    let time = 0, x = 0;
+    plPlaylist.entries.forEach((entry, index) => {
+      const sourceSeconds = lengths.get(entry.video) ?? Number(plSourceDurationCache.get(entry.video));
+      const duration = playlistEntrySeconds(entry, sourceSeconds, index) || Math.max(1, Number(entry.duration?.value) || 10);
+      const width = Math.max(105, duration * timelineScale);
+      timelineSegments.push({ index, start: time, end: time + duration, duration, x, width });
+      const clip = document.createElement('div');
+      clip.className = 'timeline-clip' + (index === plPreviewIdx ? ' selected' : '');
+      clip.dataset.index = index;
+      clip.style.width = width + 'px';
+      clip.draggable = true;
+      const thumb = document.createElement('img');
+      thumb.src = '/thumbnail/' + encodeURIComponent(entry.video);
+      thumb.alt = '';
+      thumb.draggable = false;
+      const label = document.createElement('span');
+      label.className = 'timeline-clip-label';
+      label.textContent = playlistVideoName(entry.video);
+      const runtime = document.createElement('span');
+      runtime.className = 'timeline-clip-time';
+      runtime.textContent = formatPlaylistTime(duration);
+      clip.append(thumb, label, runtime);
+      const transition = normaliseTransition(entry.transition);
+      if (transition.type !== 'cut') {
+        const chip = document.createElement('button');
+        chip.type = 'button';
+        chip.className = 'timeline-transition-chip';
+        chip.style.width = Math.min(width - 4, Math.max(52, transition.duration * width / duration)) + 'px';
+        chip.title = TRANSITION_NAMES[transition.type] + ' · ' + transition.duration + 's';
+        chip.setAttribute('aria-label', 'Preview ' + chip.title + ' before clip ' + (index + 1));
+        chip.innerHTML = transitionIcon(transition.type) + '<span>' + TRANSITION_NAMES[transition.type] + '</span>';
+        chip.addEventListener('click', event => { event.stopPropagation(); setTimelinePlayhead(timeForTransition(index)); });
+        clip.appendChild(chip);
+      }
+      clip.addEventListener('click', () => setTimelinePlayhead(timeForClip(index)));
+      clip.addEventListener('dragstart', event => {
+        event.dataTransfer.effectAllowed = 'move';
+        event.dataTransfer.setData('application/x-club-timeline-entry', String(index));
+        clip.classList.add('dragging');
+      });
+      clip.addEventListener('dragend', () => clip.classList.remove('dragging'));
+      timelineTrack.appendChild(clip);
+      const marker = document.createElement('span');
+      marker.className = 'timeline-marker';
+      marker.style.left = x + 'px';
+      marker.textContent = formatPlaylistTime(time);
+      timelineRuler.appendChild(marker);
+      time += duration; x += width;
+    });
+    if (!timelineSegments.length) {
+      const empty = document.createElement('div');
+      empty.className = 'timeline-empty';
+      empty.textContent = 'Drag a video here to start the playlist.';
+      timelineTrack.appendChild(empty);
+    }
+    const playhead = document.createElement('div');
+    playhead.className = 'timeline-playhead';
+    timelineTrack.appendChild(playhead);
+    timelineContent.style.width = Math.max(320, x) + 'px';
+    timelineRuler.style.width = Math.max(320, x) + 'px';
+    timelineTime = Math.min(timelineTime, time);
+    updateTimelinePlayhead();
+    renderTimelineInspector();
+  }
+
+  function timeForClip(index) { return (timelineSegments[index]?.start || 0) + 0.05; }
+  function timeForTransition(index) {
+    const segment = timelineSegments[index];
+    if (!segment) return 0;
+    return segment.start + Math.min(segment.duration, normaliseTransition(plPlaylist.entries[index].transition).duration) / 2;
+  }
+  function updateTimelinePlayhead() {
+    const total = timelineSegments.at(-1)?.end || 0;
+    timelineTimecode.textContent = formatPlaylistTime(timelineTime) + ' / ' + formatPlaylistTime(total);
+    const head = timelineTrack.querySelector('.timeline-playhead');
+    if (head) head.style.left = timelinePosition(timelineTime) + 'px';
+    const scroll = document.getElementById('timelineScroll');
+    const position = timelinePosition(timelineTime);
+    if (position < scroll.scrollLeft + 15) scroll.scrollLeft = Math.max(0, position - 20);
+    else if (position > scroll.scrollLeft + scroll.clientWidth - 20) scroll.scrollLeft = position - scroll.clientWidth + 35;
+  }
+  function timelineDropIndex(clientX) {
+    const x = clientX - timelineTrack.getBoundingClientRect().left;
+    const found = timelineSegments.find(segment => x < segment.x + segment.width / 2);
+    return found ? found.index : plPlaylist.entries.length;
+  }
+  timelineTrack.addEventListener('dragover', event => {
+    if (![...event.dataTransfer.types].some(type => type === 'application/x-club-video' || type === 'application/x-club-timeline-entry' || type === 'application/x-club-transition')) return;
+    event.preventDefault();
+    event.dataTransfer.dropEffect = [...event.dataTransfer.types].includes('application/x-club-timeline-entry') ? 'move' : 'copy';
+    timelineTrack.classList.add('drag-over');
+  });
+  timelineTrack.addEventListener('dragleave', event => { if (!timelineTrack.contains(event.relatedTarget)) timelineTrack.classList.remove('drag-over'); });
+  timelineTrack.addEventListener('drop', event => {
+    event.preventDefault();
+    timelineTrack.classList.remove('drag-over');
+    const transitionType = event.dataTransfer.getData('application/x-club-transition') || plDraggingTransitionType;
+    const targetClip = event.target.closest('.timeline-clip');
+    if (transitionType && TRANSITION_NAMES[transitionType] && targetClip) {
+      const index = Number(targetClip.dataset.index);
+      const previous = normaliseTransition(plPlaylist.entries[index].transition);
+      setEntryTransition(index, transitionType, previous.duration, previous.pace);
+      setTimelinePlayhead(timeForTransition(index));
+      plDraggingTransitionType = '';
+      return;
+    }
+    const videoName = event.dataTransfer.getData('application/x-club-video');
+    const insertion = timelineDropIndex(event.clientX);
+    if (videoName && videoListCache.some(item => item.filename === videoName)) {
+      plPlaylist.entries.splice(insertion, 0, { video: videoName, view: 'single', preset: 1, loopMode: 1,
+        speed: 1, zoom: 1, panX: 0, panY: 0, duration: { type: 'seconds', value: 10 },
+        transition: normaliseTransition({ type: insertion ? 'cross-dissolve' : 'cut' }) });
+      plPreviewIdx = insertion;
+      renderPlaylistEntries();
+      setTimelinePlayhead(timeForClip(insertion));
+      timelineStatus.textContent = 'Clip added. Configure it on the right, then save the playlist.';
+      return;
+    }
+    const draggedData = event.dataTransfer.getData('application/x-club-timeline-entry');
+    if (draggedData === '') return;
+    const dragged = Number(draggedData);
+    if (!Number.isInteger(dragged) || dragged < 0 || dragged >= plPlaylist.entries.length) return;
+    const [entry] = plPlaylist.entries.splice(dragged, 1);
+    const destination = Math.min(plPlaylist.entries.length, insertion > dragged ? insertion - 1 : insertion);
+    plPlaylist.entries.splice(destination, 0, entry);
+    plPreviewIdx = destination;
+    renderPlaylistEntries();
+    setTimelinePlayhead(timeForClip(destination));
+  });
+  let timelineScrubbing = false;
+  function scrubTimeline(event) {
+    const x = event.clientX - timelineTrack.getBoundingClientRect().left;
+    const segment = timelineSegments.find(item => x < item.x + item.width) || timelineSegments.at(-1);
+    if (!segment) return;
+    setTimelinePlayhead(segment.start + Math.max(0, Math.min(1, (x - segment.x) / segment.width)) * segment.duration);
+  }
+  timelineRuler.addEventListener('pointerdown', event => { timelineScrubbing = true; timelineRuler.setPointerCapture(event.pointerId); scrubTimeline(event); });
+  timelineRuler.addEventListener('pointermove', event => { if (timelineScrubbing) scrubTimeline(event); });
+  timelineRuler.addEventListener('pointerup', () => { timelineScrubbing = false; });
+  document.getElementById('timelineBack').addEventListener('click', () => setTimelinePlayhead(timelineTime - 1));
+  document.getElementById('timelineForward').addEventListener('click', () => setTimelinePlayhead(timelineTime + 1));
+  document.getElementById('timelineZoom').addEventListener('input', event => { timelineScale = Number(event.target.value); renderPlaylistTimeline(); });
+
+  function renderTimelineInspector() {
+    const entry = plPlaylist.entries[plPreviewIdx];
+    document.getElementById('plInspectorName').textContent = entry ? playlistVideoName(entry.video) : 'Select a clip on the timeline to edit its settings.';
+    document.getElementById('plInspectorFields').hidden = !entry;
+    document.getElementById('plInspectorActions').hidden = !entry;
+    timelineTrack.querySelectorAll('.timeline-clip').forEach(clip => clip.classList.toggle('selected', Number(clip.dataset.index) === plPreviewIdx));
+    if (!entry) return;
+    const transition = normaliseTransition(entry.transition);
+    const values = { insDurationType: entry.duration?.type || 'seconds', insDurationValue: entry.duration?.value || 10,
+      insView: entry.view || 'single', insPreset: entry.preset || 1, insLoopMode: entry.loopMode ?? 1,
+      insSpeed: entry.speed ?? 1, insZoom: entry.zoom ?? 1, insPanX: entry.panX ?? 0, insPanY: entry.panY ?? 0,
+      insTransitionType: transition.type, insTransitionDuration: transition.duration, insTransitionPace: transition.pace };
+    const presets = document.getElementById('insPreset');
+    if (!presets.options.length) for (let i = 1; i <= 32; i++) presets.add(new Option('Option ' + i, i));
+    for (const [id, value] of Object.entries(values)) document.getElementById(id).value = value;
+  }
+  for (const [type, name] of Object.entries(TRANSITION_NAMES)) document.getElementById('insTransitionType').add(new Option(name, type));
+  document.getElementById('plInspectorFields').addEventListener('change', () => {
+    const entry = plPlaylist.entries[plPreviewIdx];
+    if (!entry) return;
+    const field = id => document.getElementById('ins' + id).value;
+    entry.duration = { type: field('DurationType'), value: Math.max(1, Number(field('DurationValue')) || 1) };
+    entry.view = field('View'); entry.preset = Number(field('Preset'));
+    entry.loopMode = Number(field('LoopMode')); entry.speed = Math.max(.25, Math.min(4, Number(field('Speed')) || 1));
+    entry.zoom = Math.max(1, Math.min(4, Number(field('Zoom')) || 1));
+    entry.panX = Math.max(-1, Math.min(1, Number(field('PanX')) || 0));
+    entry.panY = Math.max(-1, Math.min(1, Number(field('PanY')) || 0));
+    const previous = normaliseTransition(entry.transition);
+    entry.transition = normaliseTransition({ type: field('TransitionType'), duration: field('TransitionDuration'),
+      pace: field('TransitionPace'), params: previous.type === field('TransitionType') ? previous.params : {}, seed: previous.seed });
+    entry.layoutPresetId = null; entry.layoutPresetName = null;
+    renderPlaylistEntries();
+    setTimelinePlayhead(Math.min(timelineTime, timelineSegments.at(-1)?.end || 0));
+    timelineStatus.textContent = 'Clip updated. Save the playlist to keep your changes.';
+  });
+  document.getElementById('insAudition').addEventListener('click', () => openTransitionAudition(normaliseTransition(plPlaylist.entries[plPreviewIdx].transition).type, plPreviewIdx));
+  document.getElementById('insCues').addEventListener('click', () => openPlaylistCueEditor(plPreviewIdx));
+  document.getElementById('insRemove').addEventListener('click', () => removeEntry(plPreviewIdx));
+
+  async function seekTimelineSource(source, filename, seconds) {
+    const url = '/video/' + encodeURIComponent(filename);
+    if (source.dataset.filename !== filename) {
+      source.dataset.filename = filename;
+      source.src = url;
+      source.load();
+      await new Promise((resolve, reject) => { source.addEventListener('loadeddata', resolve, { once: true }); source.addEventListener('error', reject, { once: true }); });
+    }
+    const end = Number.isFinite(source.duration) ? Math.max(0, source.duration - .05) : 0;
+    const time = Math.max(0, Math.min(end, seconds));
+    if (Math.abs(source.currentTime - time) > .04) {
+      source.currentTime = time;
+      await new Promise(resolve => source.addEventListener('seeked', resolve, { once: true }));
+    }
+  }
+  function timelineSourceTime(entry, local, sourceDuration) {
+    const elapsed = Math.max(0, local * Math.max(.25, Number(entry.speed) || 1));
+    if (!sourceDuration) return elapsed;
+    if (Number(entry.loopMode) === 2) { const turn = elapsed % (sourceDuration * 2); return turn > sourceDuration ? sourceDuration * 2 - turn : turn; }
+    return Number(entry.loopMode) === 1 ? elapsed % sourceDuration : Math.min(elapsed, sourceDuration - .05);
+  }
+  function drawTimelineFrame(source, entry, canvas) {
+    const ctx = canvas.getContext('2d');
+    const width = canvas.width, height = canvas.height;
+    ctx.fillStyle = '#000'; ctx.fillRect(0, 0, width, height);
+    if (!source || !source.videoWidth) return;
+    const mode = VIEW_NAMES.indexOf(entry.view);
+    const cols = [1, 2, 3, 2, 4][mode] || 1;
+    const rows = [1, 1, 1, 2, 2][mode] || 1;
+    const tileWidth = width / cols, tileHeight = height / rows;
+    const config = CONFIGS[Math.max(0, Math.min(31, Number(entry.preset || 1) - 1))];
+    for (let row = 0; row < rows; row++) for (let col = 0; col < cols; col++) {
+      const index = row * cols + col;
+      const position = mode === 1 ? DUAL_POS_MAP[index] : mode === 2 ? TRIPLE_POS_MAP[index] : mode === 3 ? QUAD_POS_MAP[index] : index;
+      const flip = config[position] || '';
+      ctx.save(); ctx.translate((col + .5) * tileWidth, (row + .5) * tileHeight);
+      ctx.scale(flip.includes('scaleX(-1)') ? -1 : 1, flip.includes('scaleY(-1)') ? -1 : 1);
+      const vw = source.videoWidth, vh = source.videoHeight;
+      if (mode <= 0) {
+        const scale = Math.min(tileWidth / vw, tileHeight / vh);
+        ctx.drawImage(source, -vw * scale / 2, -vh * scale / 2, vw * scale, vh * scale);
+      } else {
+        const scale = Math.max(tileWidth / vw, tileHeight / vh) * Math.max(1, Number(entry.zoom) || 1);
+        const sw = Math.min(vw, tileWidth / scale), sh = Math.min(vh, tileHeight / scale);
+        const sx = (vw - sw) * (1 + (Number(entry.panX) || 0)) / 2;
+        const sy = (vh - sh) * (1 - (Number(entry.panY) || 0)) / 2;
+        ctx.drawImage(source, sx, sy, sw, sh, -tileWidth / 2, -tileHeight / 2, tileWidth, tileHeight);
+      }
+      ctx.restore();
+    }
+  }
+  async function setTimelinePlayhead(seconds) {
+    const total = timelineSegments.at(-1)?.end || 0;
+    timelineTime = Math.max(0, Math.min(total, seconds));
+    updateTimelinePlayhead();
+    const segment = timelineSegments.find(item => timelineTime < item.end) || timelineSegments.at(-1);
+    if (!segment) return;
+    const run = ++timelinePreviewRun;
+    if (plPlaying) stopPlaylist();
+    const entry = plPlaylist.entries[segment.index];
+    plPreviewIdx = segment.index;
+    renderTimelineInspector();
+    const local = timelineTime - segment.start;
+    const transition = normaliseTransition(entry.transition);
+    const inTransition = transition.type !== 'cut' && local < transition.duration;
+    timelineOverlay.hidden = true;
+    video.pause();
+    if (currentFilename !== entry.video) showVideo(entry.video, { type: 'cut' });
+    applyLayoutConfiguration(entry);
+    video.pause();
+    try {
+      if (video.readyState < 2) await new Promise(resolve => video.addEventListener('loadeddata', resolve, { once: true }));
+      if (run !== timelinePreviewRun) return;
+      video.currentTime = timelineSourceTime(entry, local, video.duration);
+      video.pause();
+      if (!inTransition) {
+        timelineOverlay.hidden = true;
+        timelineStatus.textContent = 'Clip ' + (segment.index + 1) + ' · ' + formatPlaylistTime(local) + ' into ' + playlistVideoName(entry.video);
+        return;
+      }
+      timelineStatus.textContent = 'Rendering ' + TRANSITION_NAMES[transition.type] + ' at ' + Math.round(local / transition.duration * 100) + '%…';
+      const width = 640, height = 360;
+      const from = document.createElement('canvas'), to = document.createElement('canvas');
+      from.width = to.width = width; from.height = to.height = height;
+      const previous = plPlaylist.entries[segment.index - 1];
+      if (previous) {
+        const source = timelineFrameVideos[0];
+        const sourceDuration = await playlistSourceSeconds(previous.video);
+        const previousLength = timelineSegments[segment.index - 1]?.duration || 0;
+        await seekTimelineSource(source, previous.video, timelineSourceTime(previous, Math.max(0, previousLength - .05), sourceDuration));
+        if (run !== timelinePreviewRun) return;
+        drawTimelineFrame(source, previous, from);
+      } else drawTimelineFrame(null, entry, from);
+      const incoming = timelineFrameVideos[1];
+      await seekTimelineSource(incoming, entry.video, timelineSourceTime(entry, local, await playlistSourceSeconds(entry.video)));
+      if (run !== timelinePreviewRun) return;
+      drawTimelineFrame(incoming, entry, to);
+      const linear = Math.max(0, Math.min(1, local / transition.duration));
+      const progress = transition.pace === 'accelerate' ? linear * linear
+        : transition.pace === 'decelerate' ? 1 - (1 - linear) * (1 - linear)
+          : transition.pace === 'ease' ? linear * linear * (3 - 2 * linear) : linear;
+      const rendered = timelineFrameRenderer.render(from, to, transition, progress, width, height);
+      timelineOverlay.width = width; timelineOverlay.height = height;
+      timelineOverlay.getContext('2d').drawImage(rendered, 0, 0);
+      timelineOverlay.hidden = false;
+      timelineStatus.textContent = TRANSITION_NAMES[transition.type] + ' · ' + Math.round(local / transition.duration * 100) + '%';
+    } catch (error) {
+      if (run === timelinePreviewRun) { timelineOverlay.hidden = true; timelineStatus.textContent = 'Could not preview this position: ' + (error.message || 'video unavailable'); }
+    }
   }
 
   function startPlaylist() {
     if (plPlaylist.entries.length === 0) return;
+    timelinePreviewRun++;
+    timelineOverlay.hidden = true;
     if (!plPlaying) plVfxBeforePlaylist = JSON.parse(JSON.stringify(vfxState));
     plPlaying = true;
     playEntry(0);
@@ -4362,6 +4801,8 @@
     if (idx >= plPlaylist.entries.length) { stopPlaylist(); return; }
     const entry = plPlaylist.entries[idx];
     plEntryIdx = idx;
+    plPreviewIdx = idx;
+    timelineEntryStartedAt = performance.now();
     plLoopCount = 0;
     clearTimeout(plTimer);
     cancelPlaylistCues();
