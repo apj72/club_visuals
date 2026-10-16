@@ -3960,6 +3960,7 @@
     } else {
       timelinePreviewRun++;
       timelineOverlay.hidden = true;
+      restoreTimelineVfxPreview();
     }
     if (tab === 'settings') loadSettings();
   }
@@ -4034,6 +4035,7 @@
 
   async function loadPlaylistBySlug(slug) {
     if (plPlaying) stopPlaylist();
+    restoreTimelineVfxPreview();
     document.getElementById('plAutoScriptStatus').textContent = '';
     if (!slug) { plPlaylist = { name: '', entries: [] }; plSlug = ''; plNameInput.value = ''; plPreviewIdx = -1; timelineTime = 0; renderPlaylistEntries(); return; }
     try {
@@ -4052,6 +4054,7 @@
 
   function newPlaylist() {
     if (plPlaying) stopPlaylist();
+    restoreTimelineVfxPreview();
     plPlaylist = { name: '', entries: [] };
     plSlug = '';
     plNameInput.value = '';
@@ -4476,6 +4479,32 @@
   let timelineScale = 10;
   let timelinePreviewRun = 0;
   let timelineEntryStartedAt = 0;
+  let timelineVfxBeforePreview = null;
+  let timelineCueKey = '';
+  function restoreTimelineVfxPreview() {
+    if (!timelineVfxBeforePreview) return;
+    setVfxLogo3d(timelineVfxBeforePreview.logo3d);
+    setVfxShape(timelineVfxBeforePreview.shape);
+    setVfxState({ enabled: timelineVfxBeforePreview.enabled, scene: timelineVfxBeforePreview.scene,
+      intensity: timelineVfxBeforePreview.intensity, feedback: timelineVfxBeforePreview.feedback });
+    timelineVfxBeforePreview = null;
+    timelineCueKey = '';
+  }
+  function previewTimelineCues(index, local) {
+    let active = null, key = '';
+    for (let entryIndex = 0; entryIndex <= index; entryIndex++) {
+      const entry = plPlaylist.entries[entryIndex];
+      const limit = entryIndex === index ? local : timelineSegments[entryIndex]?.duration || 0;
+      for (const cue of (Array.isArray(entry.cues) ? entry.cues : []).map(normalisePlaylistCue).sort((a, b) => a.at - b.at)) {
+        if (cue.at <= limit) { active = cue; key = entryIndex + ':' + cue.at + ':' + JSON.stringify(cue); }
+      }
+    }
+    if (!active) { restoreTimelineVfxPreview(); return; }
+    if (key === timelineCueKey) return;
+    if (!timelineVfxBeforePreview) timelineVfxBeforePreview = JSON.parse(JSON.stringify(vfxState));
+    applyPlaylistCue(active);
+    timelineCueKey = key;
+  }
   video.addEventListener('timeupdate', () => {
     if (!plPlaying || !document.body.classList.contains('playlist-mode')) return;
     const segment = timelineSegments[plEntryIdx];
@@ -4677,19 +4706,36 @@
   document.getElementById('insCues').addEventListener('click', () => openPlaylistCueEditor(plPreviewIdx));
   document.getElementById('insRemove').addEventListener('click', () => removeEntry(plPreviewIdx));
 
+  function waitTimelineMedia(source, eventName) {
+    return new Promise((resolve, reject) => {
+      const finish = error => {
+        clearTimeout(timeout);
+        source.removeEventListener(eventName, succeeded);
+        source.removeEventListener('error', failed);
+        if (error) reject(error); else resolve();
+      };
+      const succeeded = () => finish();
+      const failed = () => finish(new Error('Video could not be loaded.'));
+      const timeout = setTimeout(() => finish(new Error('Video preview timed out.')), 7000);
+      source.addEventListener(eventName, succeeded, { once: true });
+      source.addEventListener('error', failed, { once: true });
+    });
+  }
   async function seekTimelineSource(source, filename, seconds) {
     const url = '/video/' + encodeURIComponent(filename);
     if (source.dataset.filename !== filename) {
       source.dataset.filename = filename;
+      const ready = waitTimelineMedia(source, 'loadeddata');
       source.src = url;
       source.load();
-      await new Promise((resolve, reject) => { source.addEventListener('loadeddata', resolve, { once: true }); source.addEventListener('error', reject, { once: true }); });
+      await ready;
     }
     const end = Number.isFinite(source.duration) ? Math.max(0, source.duration - .05) : 0;
     const time = Math.max(0, Math.min(end, seconds));
     if (Math.abs(source.currentTime - time) > .04) {
+      const sought = waitTimelineMedia(source, 'seeked');
       source.currentTime = time;
-      await new Promise(resolve => source.addEventListener('seeked', resolve, { once: true }));
+      await sought;
     }
   }
   function timelineSourceTime(entry, local, sourceDuration) {
@@ -4743,12 +4789,15 @@
     const transition = normaliseTransition(entry.transition);
     const inTransition = transition.type !== 'cut' && local < transition.duration;
     timelineOverlay.hidden = true;
+    previewTimelineCues(segment.index, local);
     video.pause();
-    if (currentFilename !== entry.video) showVideo(entry.video, { type: 'cut' });
+    const changingVideo = currentFilename !== entry.video;
+    const ready = changingVideo || video.readyState < 2 ? waitTimelineMedia(video, 'loadeddata') : null;
+    if (changingVideo) showVideo(entry.video, { type: 'cut' });
     applyLayoutConfiguration(entry);
     video.pause();
     try {
-      if (video.readyState < 2) await new Promise(resolve => video.addEventListener('loadeddata', resolve, { once: true }));
+      if (ready) await ready;
       if (run !== timelinePreviewRun) return;
       video.currentTime = timelineSourceTime(entry, local, video.duration);
       video.pause();
@@ -4792,6 +4841,7 @@
     if (plPlaylist.entries.length === 0) return;
     timelinePreviewRun++;
     timelineOverlay.hidden = true;
+    restoreTimelineVfxPreview();
     if (!plPlaying) plVfxBeforePlaylist = JSON.parse(JSON.stringify(vfxState));
     plPlaying = true;
     playEntry(0);
