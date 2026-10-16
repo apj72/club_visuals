@@ -686,7 +686,7 @@
   @media (max-width: 520px) { .transition-audition-fields { grid-template-columns: 1fr; } }
   .pl-transition-palette { margin-bottom: 10px; }
   .pl-transition-category { margin-top: 8px; }
-  .pl-transition-category h4 { margin: 0 0 4px; color: #83a4bc; font-size: .67rem; font-weight: 700; }
+  .pl-transition-category summary { margin: 0 0 4px; color: #83a4bc; font-size: .72rem; font-weight: 700; cursor: pointer; }
   .pl-transition-safety { color: #ffd28a; font-size: .65rem; }
   .pl-transition-group-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 5px; }
   .pl-transition-tool {
@@ -695,7 +695,7 @@
     display: flex; flex-direction: column; align-items: center; gap: 3px;
   }
   .pl-transition-tool svg { width: 31px; height: 25px; color: #e59cb2; }
-  .pl-transition-tool span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; }
+  .pl-transition-tool span { max-width: 100%; overflow-wrap: anywhere; line-height: 1.15; text-align: center; }
   .pl-transition-tool:hover, .pl-transition-tool.selected { border-color: #4ecca3; color: #fff; background: #183044; }
   .pl-transition-tool:active { cursor: grabbing; }
   .pl-timeline-empty { padding: 18px 10px; border: 1px dashed #46536c; border-radius: 8px; color: #9aa7b8; font-size: 0.76rem; text-align: center; }
@@ -1073,6 +1073,7 @@
           <label>Speed curve<select id="transitionAuditionPace"><option value="steady">Even · constant</option><option value="accelerate">Build · slow then fast</option><option value="decelerate">Hit · fast then slow</option><option value="ease">Ease · smooth start and finish</option></select></label>
         </div>
         <div class="transition-audition-fields" id="transitionAuditionParams" aria-label="Effect parameters"></div>
+        <p class="transition-audition-description" id="transitionAuditionDescription"></p>
         <div class="transition-audition-status" id="transitionAuditionStatus" role="status" aria-live="polite"></div>
         <div class="transition-audition-actions">
           <button type="button" onclick="closeTransitionAudition()">Close</button>
@@ -3402,15 +3403,13 @@
   const plTransitionType = document.getElementById('plTransitionType');
   const plTransitionDuration = document.getElementById('plTransitionDuration');
   const plTransitionPace = document.getElementById('plTransitionPace');
-  const TRANSITION_NAMES = {
-    'cut': 'Cut', 'fade-in': 'Fade In', 'fade-out': 'Fade Out/In',
-    'cross-dissolve': 'Cross Dissolve', 'wipe': 'Wipe',
-    'zoom-spin': 'Zoom / Spin', 'whip-pan': 'Whip Pan',
-    'pixel-scatter': 'Pixel Scatter', 'data-tear': 'Data Tear',
-    'iris-burst': 'Iris Burst', 'shutters': 'Shutters',
-    'rgb-split': 'RGB Split', 'infinite-zoom': 'Infinite Zoom',
-    'neon-shockwave': 'Neon Shockwave',
-  };
+  const TRANSITION_NAMES = Object.fromEntries(Object.entries(TRANSITION_CATALOGUE).map(([id, definition]) => [id, definition.name]));
+  for (const select of [document.getElementById('manualTransitionType'),
+    document.getElementById('presetPlaylistTransitionType'), plTransitionType]) {
+    for (const [id, name] of Object.entries(TRANSITION_NAMES)) {
+      if (![...select.options].some(option => option.value === id)) select.add(new Option(name, id));
+    }
+  }
   const TRANSITION_PACE_NAMES = { steady: 'Even', accelerate: 'Build', decelerate: 'Hit', ease: 'Ease' };
   const PL_CUE_EFFECTS = {
     off: 'Off', 'scene-0': 'Liquid ripple', 'scene-1': 'Image smear',
@@ -3434,8 +3433,24 @@
     'infinite-zoom': '<rect x="5" y="3" width="38" height="26"/><rect x="12" y="7" width="24" height="18"/><rect x="18" y="11" width="12" height="10"/><path d="M24 16h1"/>',
     'neon-shockwave': '<circle cx="24" cy="16" r="5"/><circle cx="24" cy="16" r="11"/><path d="M24 1v3m0 24v3M5 16h3m32 0h3M9 4l3 3m24 18 3 3"/>',
   };
+  function generatedTransitionArt(type) {
+    const category = TRANSITION_CATALOGUE[type]?.category || '';
+    let hash = 2166136261;
+    for (const char of type) hash = Math.imul(hash ^ char.charCodeAt(0), 16777619);
+    const offset = Math.abs(hash % 7);
+    if (category.includes('Glitch')) return Array.from({ length: 5 }, (_, i) =>
+      `<path d="M${4 + (i * 7 + offset) % 12} ${5 + i * 5}h${20 + (i * 3 + offset) % 15}"/>`).join('');
+    if (category === 'Psychedelic') return `<circle cx="24" cy="16" r="${6 + offset}"/><circle cx="24" cy="16" r="${12 + offset / 2}"/><path d="M24 3l${offset - 3} 13 12 9M6 16h35"/>`;
+    if (category === 'Light') return `<circle cx="24" cy="16" r="${4 + offset / 2}"/><path d="M24 2v7m0 14v7M4 16h9m22 0h9M8 5l7 6m18 10 7 6M40 5l-7 6M15 21l-7 6"/>`;
+    if (category.includes('Geometry')) return `<rect x="${5 + offset}" y="5" width="15" height="20"/><path d="M${20 + offset} 5l18 5v18l-18-3zM10 16h29"/>`;
+    if (category.includes('Organic')) return `<path d="M4 9q10 ${-5 + offset} 20 0t20 0M4 16q10 ${5 - offset} 20 0t20 0M4 23q10 ${-5 + offset} 20 0t20 0"/>`;
+    return `<path d="M24 3l${15 + offset / 2} 10v10L24 30 7 23V13zM7 13l17 10 17-10M24 3v20"/>`;
+  }
   function transitionIcon(type) {
-    return `<svg viewBox="0 0 48 32" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${TRANSITION_ART[type] || TRANSITION_ART.cut}</svg>`;
+    const generated = !TRANSITION_ART[type];
+    const initials = generated ? TRANSITION_NAMES[type].split(' ').map(word => word[0]).slice(0, 2).join('') : '';
+    const badge = generated ? `<rect x="16" y="9" width="16" height="14" rx="2" fill="#101a2b" stroke="none"/><text x="24" y="19" text-anchor="middle" fill="currentColor" stroke="none" font-size="9" font-weight="700">${initials}</text>` : '';
+    return `<svg viewBox="0 0 48 32" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${TRANSITION_ART[type] || generatedTransitionArt(type)}${badge}</svg>`;
   }
   const plPalette = document.getElementById('plTransitionPalette');
   const plTimelineTotal = document.getElementById('plTimelineTotal');
@@ -3448,6 +3463,7 @@
   const auditionDuration = document.getElementById('transitionAuditionDuration');
   const auditionPace = document.getElementById('transitionAuditionPace');
   const auditionParams = document.getElementById('transitionAuditionParams');
+  const auditionDescription = document.getElementById('transitionAuditionDescription');
   const auditionStatus = document.getElementById('transitionAuditionStatus');
   const auditionApply = document.getElementById('transitionAuditionApply');
   let auditionSlotIndex = -1;
@@ -3479,6 +3495,7 @@
   function renderAuditionParameters() {
     auditionParams.replaceChildren();
     const definition = TRANSITION_CATALOGUE[auditionType.value];
+    auditionDescription.textContent = definition?.description || '';
     const rules = definition?.parameterDefinitions || {};
     auditionParamsState = normaliseTransition({ type: auditionType.value, params: auditionParamsState }).params;
     for (const [key, rule] of Object.entries(rules)) {
@@ -3642,6 +3659,7 @@
 
   let plPaletteType = 'cross-dissolve';
   let plPaletteArmed = false;
+  const plOpenTransitionCategories = new Set(['Classic', 'Digital', 'Glitch and Digital']);
   let plRenderVersion = 0;
   const plSourceDurationCache = new Map();
 
@@ -3652,8 +3670,14 @@
     for (const [type, name] of Object.entries(TRANSITION_NAMES)) {
       const category = TRANSITION_CATALOGUE[type]?.category || 'Other';
       if (!groups.has(category)) {
-        const section = document.createElement('div'); section.className = 'pl-transition-category';
-        const heading = document.createElement('h4'); heading.textContent = category;
+        const section = document.createElement('details'); section.className = 'pl-transition-category';
+        section.open = plOpenTransitionCategories.has(category)
+          || (plPaletteArmed && TRANSITION_CATALOGUE[plPaletteType]?.category === category);
+        section.addEventListener('toggle', () => {
+          if (section.open) plOpenTransitionCategories.add(category);
+          else plOpenTransitionCategories.delete(category);
+        });
+        const heading = document.createElement('summary'); heading.textContent = category;
         const grid = document.createElement('div'); grid.className = 'pl-transition-group-grid';
         section.append(heading, grid); plPalette.appendChild(section);
         groups.set(category, grid);
@@ -3661,11 +3685,11 @@
       const tool = document.createElement('button');
       tool.type = 'button'; tool.className = 'pl-transition-tool';
       tool.classList.toggle('selected', plPaletteArmed && plPaletteType === type);
-      tool.draggable = true; tool.title = 'Drag ' + name + ' between videos';
+      tool.draggable = true; tool.title = name + ' — ' + (TRANSITION_CATALOGUE[type]?.description || '') + '. Drag between videos.';
       tool.setAttribute('aria-label', 'Select ' + name + ' transition');
       tool.innerHTML = transitionIcon(type) + '<span>' + name + '</span>'
-        + (TRANSITION_CATALOGUE[type]?.safetyTags.includes('high-contrast')
-          ? '<small class="pl-transition-safety">High contrast</small>' : '');
+        + (TRANSITION_CATALOGUE[type]?.safetyTags.length
+          ? '<small class="pl-transition-safety">' + (TRANSITION_CATALOGUE[type].safetyTags.includes('flash') ? 'Flash' : 'High contrast') + '</small>' : '');
       tool.addEventListener('click', () => {
         plPaletteType = type;
         plPaletteArmed = true;

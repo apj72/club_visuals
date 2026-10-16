@@ -10,11 +10,11 @@ Build the 50-effect catalogue for house, techno, electro, trance, and drum and b
 |---|---|---|
 | 1. Core | A metadata registry, validated serialisable parameters, deterministic seeds, two-input progress renderer, easing, GPU capability check, preview and recording parity, safe defaults | Exact A at 0 and B at 1; shared implementation in player, audition, clean output, and recordings; clear fallback on unavailable WebGL2 |
 | 2a. Vertical slice | RGB Split, Infinite Zoom, Neon Shockwave | Three distinct GPU effects can be configured, auditioned, saved in playlists, and recorded |
-| 2b. Remaining priority effects | Digital Glitch, Spiral Vortex, Liquid Morph, Kaleidoscope Morph, Pixel Explosion, Motion Blur Whip, Hexagonal Mosaic, Plasma Dissolve, Geometric Shatter, Tunnel Warp, Dimensional Portal, Bass Impact Distortion | All first 15 render and export with controls and presets |
+| 2b. Remaining priority effects | Digital Glitch, Spiral Vortex, Liquid Morph, Kaleidoscope Morph, Pixel Explosion, Motion Blur Whip, Hexagonal Mosaic, Plasma Dissolve, Geometric Shatter, Tunnel Warp, Dimensional Portal, Bass Impact Distortion | All first 15 render and export with controls and configurable defaults |
 | 3. Remaining catalogue | The other 35 named effects below | All 50 effects are available and verified |
 | 4. Automation | Beat/bar/phrase timing, audio modulation, effect chains, weighted collections, repeat avoidance, optional content analysis | Repeatable, configurable automatic transitions with safety filtering |
 
-Current delivery: Phase 1 foundation and Phase 2a are implemented. Phases 2b, 3, and 4 remain planned. The first slice adds three GPU effects to the eleven existing transitions; the remaining catalogue names are roadmap items rather than selectable effects.
+Current delivery: Phases 1, 2a, 2b, and 3 are implemented as 50 selectable GPU effects alongside eleven classic transitions. Phase 4 automation remains planned. Effects involving codec corruption, fluids, smoke, or particles use deterministic shader simulations; they do not modify compressed video streams or run physical simulations.
 
 ## Catalogue and priority
 
@@ -45,7 +45,7 @@ Parameter vocabulary: `duration`, `intensity`, `direction`, `pace/easing`, `colo
 
 Time durations remain available. Phase 4 adds quarter, half, 1, 2, 4, and 8 beats, bars, and phrases from BPM (`seconds = beats × 60 / BPM`). An effect's main impact can align to a beat or drop by starting before it. Audio-reactive modulation will use the existing mic input and allow bass, mid, or treble amounts, with deterministic recording policy documented before release. Playlist VFX cue scripting already exists and remains separate from transition timing.
 
-Reduce Flashes is a persistent global setting. The current Neon Shockwave implementation caps effect-added glow when it is enabled. Later flash and strobe effects must remove rapid alternation and limit brightness under this setting, including in previews and weighted random selection. Defaults use non-strobing presets. Label `flash` and `high-contrast` effects in the UI. Later chains and random collections must apply this setting to every component rather than only to the first effect.
+Reduce Flashes is a persistent global setting. It caps effect-added glow, changes Strobe Cut to a smooth reveal, attenuates White Flash, and removes animated static in Digital Signal Loss. It applies in previews, playback, clean output, and recordings. Flash and high-contrast effects are labelled in the playlist palette. Later chains and random collections must apply this setting to every component rather than only to the first effect.
 
 Phase 4 chaining combines effects with adjustable internal time shares and stable endpoints. Weighted random collections are Techno, Psychedelic, High Energy, Atmospheric, and Experimental, with per-effect weights, immediate-repeat avoidance, seeded selection, and safety filtering. Optional later content analysis may use geometry, palette similarity, colour change, motion, darkness, and musical energy as input features. Selection must remain overridable and reproducible.
 
@@ -58,7 +58,7 @@ Phase 4 chaining combines effects with adjustable internal time shares and stabl
 5. Unsupported GPU features fall back with a visible explanation in audition.
 6. Saved parameters validate, round-trip through playlist JSON, and preserve old playlists.
 7. Beat timing, impact alignment, safety filtering, and chain endpoints pass dedicated checks before Phase 4 is called complete.
-8. Effects are grouped by category, discoverable, previewable with real adjacent videos, and registered without editing core drawing logic.
+8. Effects are grouped by category, discoverable, previewable with real adjacent videos, and registered with stable IDs. The shader currently uses a shared program with one branch per effect; a future modular shader registry could reduce compile cost as the catalogue grows.
 
 ## Reference review
 

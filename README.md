@@ -90,7 +90,7 @@ Right-click a saved layout (or click its **⋯** button) and choose **Add to pla
    - **View mode** — Single, Dual, 3x, 4x, or 8x
    - **Preset** — mirror configuration (P1–P32)
    - **Duration** — number of loops or seconds
-   - **Transition in** — choose from fourteen effects, set a duration from 0.15 to 10 seconds, and choose an Even, Build, Hit, or Ease speed curve
+   - **Transition in** — choose from 50 GPU effects or eleven classic effects, set a duration from 0.15 to 10 seconds, and choose an Even, Build, Hit, or Ease speed curve
 4. Drag the visual transition icons into the slots between video cards. Click a slot to adjust its type, duration, or speed curve. Use **Audition** above the icons to preview the selected effect with library videos, or **▶ Preview** on a slot to audition its two adjacent videos. The audition window lets you choose clips, change the effect, duration, speed curve, and available effect parameters, then replay; **Use in slot** saves those settings to that playlist entry. It does not interrupt the main player or clean output. Click **✦ Script effects** on a video to schedule VFX scenes, mirror, 3D logo, 3D text, and Off cues with effect settings. **✦ Auto-script effects** adds varied cues to videos that have none. Drag video cards to reorder them, or use × to remove one.
 5. Click **Save** to persist the playlist (survives page reloads)
 6. Click **Play** to start — the indicator bar shows current entry and progress
@@ -101,9 +101,11 @@ The same video can appear multiple times with different treatments, e.g.:
 - 8x mode, preset 22, for 30 seconds
 - 8x mode, preset 7, for 5 loops
 
-Use **Transition** beside Playback to choose the effect, duration (0.15–10 seconds), and speed curve when selecting a video manually. **Tune** opens the audition window for effect-specific controls and saves them for manual playback. Playlist entries have their own incoming transitions, including when you press **Next**. RGB Split, Infinite Zoom, and Neon Shockwave use WebGL2; if it is unavailable they play as Cross Dissolve and the audition reports why. Pixel Scatter holds the incoming clip on its first frame until the blocks have cleared. Transitions appear in fullscreen, clean output, and recordings. **Reduce flashes in transitions** is enabled by default in Settings and applies to previews and playback.
+Use **Transition** beside Playback to choose the effect, duration (0.15–10 seconds), and speed curve when selecting a video manually. **Tune** opens the audition window for effect-specific controls and saves them for manual playback. Playlist entries have their own incoming transitions, including when you press **Next**. The 50 catalogue effects use WebGL2; if it is unavailable they play as Cross Dissolve and the audition reports why. Pixel Scatter holds the incoming clip on its first frame until the blocks have cleared. Transitions appear in fullscreen, clean output, and recordings. **Reduce flashes in transitions** is enabled by default in Settings and applies to previews and playback. Strobe Cut becomes a smooth reveal in this mode; White Flash is attenuated. Datamosh, fluid, smoke, particle, and similar effects are visual shader simulations rather than codec edits or physical simulations.
 
-The [transition roadmap](docs/transition-roadmap.md) lists the complete 50-effect catalogue and the staged work still planned.
+The [transition roadmap](docs/transition-roadmap.md) lists all 50 effects and the separate automation work still planned.
+
+Run `node test_transition_engine.js` to check the catalogue, parameter validation, saved-setting round trips, and the global flash preference. The WebGL2 effects were also visually checked with real clips and swept across all 50 definitions using mixed-size source frames.
 
 The timeline shows a thumbnail, layout, and configured run time beside every video, plus an estimated playlist total. A loop-based run time accounts for source length, loop count, playback speed, and Bounce playback. Seconds-based entries show their specified slot length.
 

@@ -13,11 +13,22 @@ context.window = context;
 vm.runInNewContext(fs.readFileSync('transition_engine.js', 'utf8'), context);
 
 const catalogue = context.TRANSITION_CATALOGUE;
-assert.equal(Object.keys(catalogue).length, 14);
-for (const type of ['rgb-split', 'infinite-zoom', 'neon-shockwave']) {
+assert.equal(Object.keys(catalogue).length, 61);
+assert.equal(Object.values(catalogue).filter(effect => effect.implementationKind === 'shader').length, 50);
+for (const type of ['rgb-split', 'infinite-zoom', 'neon-shockwave', 'digital-glitch',
+  'spiral-vortex', 'liquid-morph', 'kaleidoscope-morph', 'pixel-explosion',
+  'motion-blur-whip', 'hexagonal-mosaic', 'plasma-dissolve', 'geometric-shatter',
+  'tunnel-warp', 'dimensional-portal', 'bass-impact-distortion']) {
   assert.equal(catalogue[type].implementationKind, 'shader');
   assert.ok(catalogue[type].supportedParameters.includes('intensity'));
 }
+for (const effect of Object.values(catalogue).filter(item => item.implementationKind === 'shader')) {
+  const normalised = context.normaliseTransition({ type: effect.id });
+  assert.equal(normalised.type, effect.id);
+  assert.equal(JSON.stringify(normalised.params), JSON.stringify(effect.defaultParameters));
+}
+assert.ok(catalogue['strobe-cut'].safetyTags.includes('flash'));
+assert.ok(catalogue['white-flash'].safetyTags.includes('flash'));
 
 const configured = context.normaliseTransition({
   type: 'neon-shockwave', duration: 99, pace: 'ease', seed: 83,
