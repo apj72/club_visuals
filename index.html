@@ -693,6 +693,9 @@
     margin-bottom: 8px;
   }
   .pl-header .pl-select { flex: 1; margin-bottom: 0; }
+  .pl-name-row { display: flex; gap: 6px; align-items: stretch; margin-bottom: 8px; }
+  .pl-name-row .pl-name-input { flex: 1; min-width: 0; width: auto; margin-bottom: 0; }
+  .pl-name-row .pl-btn-save { min-width: 68px; }
   .pl-entries { margin-bottom: 12px; min-height: 20px; }
   body.playlist-mode #plEntries, body.playlist-mode .pl-timeline-head { display: none; }
   .playlist-timeline-workspace { display: none; margin-top: 16px; padding: 13px; border: 1px solid #39526b; border-radius: 10px; background: #111c30; }
@@ -1245,7 +1248,10 @@
         <button class="pl-btn" onclick="newPlaylist()">New</button>
         <button class="pl-btn" onclick="deletePlaylistConfirm()">Del</button>
       </div>
-      <input type="text" class="pl-name-input" id="plName" placeholder="Playlist name...">
+      <div class="pl-name-row">
+        <input type="text" class="pl-name-input" id="plName" placeholder="Playlist name..." aria-label="Playlist name">
+        <button type="button" class="pl-btn pl-btn-save" onclick="savePlaylist()">Save</button>
+      </div>
       <div class="pl-inspector" id="plInspector"><h3>Selected clip</h3><p class="pl-inspector-name" id="plInspectorName">Select a clip on the timeline to edit its settings.</p>
         <div class="pl-inspector-grid" id="plInspectorFields" hidden>
           <label>Length mode<select id="insDurationType"><option value="seconds">Seconds</option><option value="loops">Loops</option></select></label>
@@ -1326,7 +1332,6 @@
       </div>
       <div class="pl-actions">
         <div class="pl-actions-row">
-          <button class="pl-btn pl-btn-save" onclick="savePlaylist()">Save</button>
           <button class="pl-btn pl-btn-auto" onclick="toggleAutoGen()">Auto</button>
           <button class="pl-btn" id="plLoopBtn" onclick="togglePlLoop()">Loop: Off</button>
         </div>
