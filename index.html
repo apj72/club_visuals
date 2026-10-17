@@ -907,6 +907,7 @@
   .pl-btn-save { color: #4ecca3; border-color: #4ecca3; }
   .pl-btn.active { color: #4ecca3; border-color: #4ecca3; }
   .pl-btn-play { color: #1a1a2e; background: #4ecca3; border-color: #4ecca3; }
+  .pl-btn-play.is-stopping { color: #fff; background: #a53049; border-color: #e94560; }
   .pl-btn-auto { color: #f0a500; border-color: #f0a500; }
   .auto-gen-form {
     display: none; background: #16213e; border-radius: 8px;
@@ -1338,7 +1339,7 @@
         <div class="pl-actions-row"><button class="pl-btn" onclick="autoScriptPlaylistEffects()" title="Add timed VFX cues to entries that have none">✦ Auto-script effects</button><span id="plAutoScriptStatus" class="pl-timeline-total" role="status"></span></div>
         <div class="pl-actions-row">
           <button class="pl-btn" id="recordBtn" onclick="toggleRecording()">Record</button>
-          <button class="pl-btn pl-btn-play" onclick="startPlaylist()">Play</button>
+          <button type="button" class="pl-btn pl-btn-play" id="plPlayBtn" onclick="togglePlaylistPlayback()">Play</button>
         </div>
       </div>
       <div class="auto-gen-form" id="autoGenForm">
@@ -5458,6 +5459,18 @@
     }
   }
 
+  function updatePlaylistPlaybackButton() {
+    const button = document.getElementById('plPlayBtn');
+    button.textContent = plPlaying ? 'Stop' : 'Play';
+    button.classList.toggle('is-stopping', plPlaying);
+    button.setAttribute('aria-label', plPlaying ? 'Stop playlist' : 'Play playlist');
+  }
+
+  function togglePlaylistPlayback() {
+    if (plPlaying) stopPlaylist();
+    else startPlaylist();
+  }
+
   function startPlaylist() {
     if (plPlaylist.entries.length === 0) return;
     if (autoRun) stopAutoPerform();
@@ -5466,6 +5479,7 @@
     restoreTimelineVfxPreview();
     if (!plPlaying) plVfxBeforePlaylist = JSON.parse(JSON.stringify(vfxState));
     plPlaying = true;
+    updatePlaylistPlaybackButton();
     playEntry(0);
   }
 
@@ -5519,6 +5533,13 @@
     plPlaying = false;
     clearTimeout(plTimer);
     cancelPlaylistCues();
+    videoLoadToken++;
+    pixelHolding = false;
+    pixelHoldWantsPlay = false;
+    videoTransition.cancel();
+    stopBounce();
+    video.pause();
+    broadcastState({ type: 'pause' });
     if (plVfxBeforePlaylist) {
       setVfxLogo3d(plVfxBeforePlaylist.logo3d);
       setVfxShape(plVfxBeforePlaylist.shape);
@@ -5527,6 +5548,7 @@
       plVfxBeforePlaylist = null;
     }
     plIndicator.style.display = 'none';
+    updatePlaylistPlaybackButton();
     renderPlaylistEntries();
   }
 

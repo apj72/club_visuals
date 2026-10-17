@@ -103,7 +103,7 @@ Right-click a saved layout (or click its **⋯** button) and choose **Add to pla
 4. Drag the visual transition icons into the slots between video cards. Click a slot to adjust its type, duration, or speed curve. Use **Audition** above the icons to preview the selected effect with library videos, or **▶ Preview** on a slot to audition its two adjacent videos. The audition window lets you choose clips, change the effect, duration, speed curve, and available effect parameters, then replay; **Use in slot** saves those settings to that playlist entry. It does not interrupt the main player or clean output. Click **✦ Script effects** on a video to schedule VFX scenes, mirror, 3D logo, 3D text, and Off cues with effect settings. **✦ Auto-script effects** adds varied cues to videos that have none. Drag video cards to reorder them, or use × to remove one.
 5. Click **Save** to persist the playlist (survives page reloads)
 6. Click **Play** to start — the indicator bar shows current entry and progress
-7. Use **Next** to skip ahead, **Stop** to exit playlist mode
+7. The **Play** button becomes **Stop** while the playlist runs; click it to stop playback and pause the video. Use **Next** on the player to skip ahead.
 
 The same video can appear multiple times with different treatments, e.g.:
 - Dual mode, preset 5, for 10 loops
