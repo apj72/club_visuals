@@ -1,11 +1,10 @@
 #!/bin/bash
 cd "$(dirname "$0")"
 
-if [ -f .server.pid ]; then
-    kill "$(cat .server.pid)" 2>/dev/null
-    rm .server.pid
+server_pids=$(lsof -tiTCP:8008 -sTCP:LISTEN 2>/dev/null)
+if [ -n "$server_pids" ]; then
+    kill $server_pids 2>/dev/null
 fi
-
-lsof -ti:8008 | xargs kill 2>/dev/null
+rm -f .server.pid
 
 echo "Stopped."

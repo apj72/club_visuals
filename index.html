@@ -2326,6 +2326,9 @@
     autoStatus('Connecting audio input…');
     let ownedAudio = false;
     try {
+      if (typeof createAutoPerformanceEngine !== 'function') {
+        throw new Error('Auto Perform script is missing. Restart Club Visuals, then reload this page.');
+      }
       if (!videoListCache.length) await loadLibrary();
       if (!autoPool().length) throw new Error('Add videos to the selected pool first.');
       if (plPlaying) stopPlaylist();
