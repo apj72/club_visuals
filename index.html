@@ -79,6 +79,10 @@
   .auto-text-panel { margin-top: 9px; border-top: 1px solid #304c5b; padding-top: 8px; color: #b6c9d2; font-size: .74rem; }
   .auto-text-panel summary { cursor: pointer; color: #a9ffe7; font-weight: 700; }
   .auto-text-panel p { margin: 7px 0; }
+  .auto-text-toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 8px 0; }
+  .auto-text-toolbar label { color: #a9ffe7; }
+  .auto-text-toolbar input { flex: 1 1 150px; min-width: 120px; padding: 6px 8px; border: 1px solid #4b6674; border-radius: 5px; background: #091929; color: #fff; }
+  .auto-text-toolbar span { flex-basis: 100%; color: #aabdc8; }
   .auto-text-list { display: grid; gap: 5px; max-height: 210px; overflow-y: auto; }
   .auto-text-row, .auto-text-add { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
   .auto-text-row { padding: 5px 7px; border-radius: 5px; background: #1c3044; }
@@ -1036,7 +1040,7 @@
   <div class="auto-perform-top"><strong>Sound to Visuals</strong><button type="button" class="auto-main-btn" id="autoPerformButton" onclick="toggleAutoPerform()">▶ Auto Perform</button><button type="button" id="autoHoldButton" onclick="toggleAutoHold()" title="Keep the current video">Hold video</button><button type="button" id="autoLayoutLockButton" onclick="toggleAutoLayoutLock()" title="Keep the current layout">Lock layout</button><button type="button" id="autoNextButton" onclick="autoNextOnBeat()">Next on beat</button><button type="button" onclick="tapAutoTempo()">Tap tempo</button><button type="button" onclick="resyncAutoBeat()">Resync</button></div>
   <div class="auto-perform-status" role="status" aria-live="polite"><span id="autoStatus">Ready. Choose an input and press Auto Perform.</span><span>BPM <b id="autoBpm">—</b></span><span>Beat <b id="autoBeat">—</b></span><span>Section <b id="autoSection">—</b></span><span>Next <b id="autoNext">—</b></span><span class="auto-input-meter" aria-label="Audio input level"><i id="autoLevel"></i></span></div>
   <div class="auto-perform-controls"><label>Input<select id="autoAudioDevice" aria-label="Automatic performance audio input"><option value="">Default microphone / USB input</option></select></label><label>Style<select id="autoProfile"><option value="balanced">Balanced</option><option value="hypnotic">Hypnotic</option><option value="high-energy">High Energy</option><option value="ambient">Ambient</option></select></label><label>Change every<select id="autoChangeBars"><option value="4">4 bars</option><option value="8" selected>8 bars</option><option value="16">16 bars</option></select></label><label>Videos<select id="autoVideoPool"><option value="library">Entire library</option><option value="playlist">Current playlist</option></select></label><button type="button" onclick="openAutoLibraryEditor()">Curate videos</button></div>
-  <details class="auto-text-panel" id="autoTextPanel"><summary>3D text for Auto Perform <span id="autoTextCount"></span></summary><p>Add event names, Instagram IDs, or short web URLs. Enabled entries rotate into the 3D text effect. Instagram IDs show a red @; other text is white. Use <strong>Show now</strong> to preview an entry.</p><div class="auto-text-list" id="autoTextList"></div><form class="auto-text-add" id="autoTextForm"><select id="autoTextType" aria-label="New 3D text type"><option value="event">Event name</option><option value="instagram">Instagram ID</option><option value="url">Web URL</option></select><input id="autoTextValue" type="text" maxlength="80" placeholder="Enter text to display" aria-label="New 3D text" required><button type="submit">Add text</button></form></details>
+  <details class="auto-text-panel" id="autoTextPanel"><summary>3D text for Auto Perform <span id="autoTextCount"></span></summary><p>Choose a saved list; your last selection loads automatically next time. Edits save as you make them. Enabled entries rotate into the 3D text effect. Instagram IDs show a red @; event names and URLs are white.</p><div class="auto-text-toolbar"><label for="autoTextListSelect">Saved list</label><select id="autoTextListSelect"></select><input id="autoTextListName" type="text" maxlength="50" placeholder="List name" aria-label="Text list name"><button type="button" id="autoTextSaveAs">Save as new</button><button type="button" id="autoTextRename">Rename</button><button type="button" id="autoTextDelete">Delete list</button><span id="autoTextListStatus" role="status"></span></div><div class="auto-text-list" id="autoTextList"></div><form class="auto-text-add" id="autoTextForm"><select id="autoTextType" aria-label="New 3D text type"><option value="event">Event name</option><option value="instagram">Instagram ID</option><option value="url">Web URL</option></select><input id="autoTextValue" type="text" maxlength="80" placeholder="Enter text to display" aria-label="New 3D text" required><button type="submit">Add text</button></form></details>
   <details class="auto-perform-log"><summary>Performance decisions</summary><pre id="autoDecisionLog">No decisions yet.</pre></details>
   <dialog class="auto-library-dialog" id="autoLibraryDialog"><h3>Curate Auto Perform videos</h3><p>Include or exclude videos, and mark their energy. Untagged videos work in any section.</p><input id="autoLibrarySearch" type="search" placeholder="Find a video…" aria-label="Find video to curate"><div class="auto-library-list" id="autoLibraryList"></div><button type="button" onclick="document.getElementById('autoLibraryDialog').close()">Done</button></dialog>
 </section>
@@ -2107,20 +2111,73 @@
   window.autoPerformanceLog = autoPerformanceLog;
   const autoUi = id => document.getElementById(id);
   const AUTO_TEXT_TYPES = ['event', 'instagram', 'url'];
-  let autoTextEntries = [{ type: 'instagram', text: '@tonyt.dj', enabled: true }];
+  const autoRegularText = [
+    { type: 'instagram', text: '@tonyt.dj', enabled: true },
+    { type: 'instagram', text: '@smilejack', enabled: true },
+    { type: 'instagram', text: '@moss_b', enabled: true },
+    { type: 'url', text: 'version1djs.com', enabled: true },
+  ];
+  const autoNormaliseTextEntries = entries => entries.filter(entry => entry && typeof entry.text === 'string')
+    .map(entry => ({ type: AUTO_TEXT_TYPES.includes(entry.type) ? entry.type : 'event',
+      text: entry.text.slice(0, 80), enabled: entry.enabled !== false }));
+  let autoTextLists = [{ id: 'version1-regulars', name: 'Version1 regulars', entries: autoRegularText }];
+  let autoTextActiveId = 'version1-regulars';
   try {
-    const saved = JSON.parse(localStorage.getItem('autoTextEntries'));
-    if (Array.isArray(saved)) autoTextEntries = saved.filter(entry => entry && typeof entry.text === 'string')
-      .map(entry => ({ type: AUTO_TEXT_TYPES.includes(entry.type) ? entry.type : 'event',
-        text: entry.text.slice(0, 80), enabled: entry.enabled !== false }));
+    const savedLists = JSON.parse(localStorage.getItem('autoTextListsV1'));
+    if (Array.isArray(savedLists?.lists) && savedLists.lists.length) {
+      const valid = savedLists.lists.filter(list => list && typeof list.id === 'string'
+        && typeof list.name === 'string' && Array.isArray(list.entries));
+      if (valid.length) {
+        autoTextLists = valid.map(list => ({ id: list.id, name: list.name.slice(0, 50),
+          entries: autoNormaliseTextEntries(list.entries) }));
+        autoTextActiveId = autoTextLists.some(list => list.id === savedLists.activeId)
+          ? savedLists.activeId : autoTextLists[0].id;
+      }
+    } else {
+      const previous = JSON.parse(localStorage.getItem('autoTextEntries'));
+      if (Array.isArray(previous)) {
+        const entries = autoNormaliseTextEntries(previous);
+        const wasStarter = entries.length === 1 && entries[0].type === 'instagram'
+          && entries[0].text === '@tonyt.dj' && entries[0].enabled;
+        if (!wasStarter) {
+          for (const regular of autoRegularText) {
+            const matches = entry => entry.type === regular.type
+              && entry.text.toLowerCase().replace(/^@/, '') === regular.text.toLowerCase().replace(/^@/, '');
+            if (!entries.some(matches)) entries.push({ ...regular });
+          }
+          autoTextLists.push({ id: 'my-text', name: 'My text', entries });
+          autoTextActiveId = 'my-text';
+        }
+      }
+    }
   } catch {}
+  let autoTextEntries = autoTextLists.find(list => list.id === autoTextActiveId).entries;
+  const autoCurrentTextList = () => autoTextLists.find(list => list.id === autoTextActiveId);
   function autoTextDisplay(entry) {
     const value = entry.text.trim();
     return entry.type === 'instagram' && value && !value.startsWith('@') ? '@' + value : value;
   }
   function autoSaveTextEntries() {
-    localStorage.setItem('autoTextEntries', JSON.stringify(autoTextEntries));
-    autoUi('autoTextCount').textContent = '(' + autoTextEntries.filter(entry => entry.enabled && autoTextDisplay(entry)).length + ' enabled)';
+    autoCurrentTextList().entries = autoTextEntries;
+    localStorage.setItem('autoTextListsV1', JSON.stringify({ activeId: autoTextActiveId, lists: autoTextLists }));
+    autoUi('autoTextCount').textContent = '(' + autoCurrentTextList().name + ' · '
+      + autoTextEntries.filter(entry => entry.enabled && autoTextDisplay(entry)).length + ' enabled)';
+  }
+  function autoRenderTextLists() {
+    const select = autoUi('autoTextListSelect');
+    select.replaceChildren();
+    autoTextLists.forEach(list => select.add(new Option(list.name, list.id)));
+    select.value = autoTextActiveId;
+    autoUi('autoTextListName').value = autoCurrentTextList().name;
+    autoUi('autoTextDelete').disabled = autoTextLists.length < 2;
+  }
+  function autoSelectTextList(id) {
+    if (!autoTextLists.some(list => list.id === id)) return;
+    autoTextActiveId = id;
+    autoTextEntries = autoCurrentTextList().entries;
+    autoRenderTextLists();
+    autoRenderTextEntries();
+    autoUi('autoTextListStatus').textContent = 'Loaded ' + autoCurrentTextList().name + '.';
   }
   function autoShowText(entry) {
     const value = autoTextDisplay(entry);
@@ -2167,6 +2224,38 @@
     autoUi('autoTextValue').value = '';
     autoRenderTextEntries();
   });
+  autoUi('autoTextListSelect').addEventListener('change', event => autoSelectTextList(event.target.value));
+  autoUi('autoTextSaveAs').addEventListener('click', () => {
+    const name = autoUi('autoTextListName').value.trim();
+    if (!name) { autoUi('autoTextListStatus').textContent = 'Enter a list name first.'; return; }
+    if (autoTextLists.some(list => list.name.toLowerCase() === name.toLowerCase())) {
+      autoUi('autoTextListStatus').textContent = 'A list with that name already exists.'; return;
+    }
+    const id = 'text-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 7);
+    autoTextLists.push({ id, name, entries: autoTextEntries.map(entry => ({ ...entry })) });
+    autoSelectTextList(id);
+    autoUi('autoTextListStatus').textContent = 'Saved and loaded ' + name + '.';
+  });
+  autoUi('autoTextRename').addEventListener('click', () => {
+    const name = autoUi('autoTextListName').value.trim();
+    if (!name) { autoUi('autoTextListStatus').textContent = 'Enter a list name first.'; return; }
+    if (autoTextLists.some(list => list.id !== autoTextActiveId && list.name.toLowerCase() === name.toLowerCase())) {
+      autoUi('autoTextListStatus').textContent = 'A list with that name already exists.'; return;
+    }
+    autoCurrentTextList().name = name;
+    autoRenderTextLists();
+    autoSaveTextEntries();
+    autoUi('autoTextListStatus').textContent = 'Renamed list to ' + name + '.';
+  });
+  autoUi('autoTextDelete').addEventListener('click', () => {
+    if (autoTextLists.length < 2) return;
+    const name = autoCurrentTextList().name;
+    if (!confirm('Delete text list "' + name + '"?')) return;
+    autoTextLists = autoTextLists.filter(list => list.id !== autoTextActiveId);
+    autoSelectTextList(autoTextLists[0].id);
+    autoUi('autoTextListStatus').textContent = 'Deleted ' + name + '.';
+  });
+  autoRenderTextLists();
   autoRenderTextEntries();
   function autoRandom() {
     autoRandomState ^= autoRandomState << 13;
