@@ -285,15 +285,16 @@
     }
 
     renderLogoText() {
-      const value = String(this.logo3d.text || '').slice(0, 40).trim();
+      const value = String(this.logo3d.text || '').slice(0, 80).trim();
       if (!value) { this.logoMeshVertexCount = 0; return; }
-      const handle = value.startsWith('@') ? value.slice(1) : value;
+      const hasAt = value.startsWith('@');
+      const handle = hasAt ? value.slice(1) : value;
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
       let fontSize = 352;
       const measure = () => {
         ctx.font = `${fontSize}px "Version1 Bungee"`;
-        return ctx.measureText('@').width + ctx.measureText(handle).width;
+        return (hasAt ? ctx.measureText('@').width : 0) + ctx.measureText(handle).width;
       };
       let width = measure();
       if (width > 3800) { fontSize *= 3800 / width; width = measure(); }
@@ -302,10 +303,12 @@
       ctx.font = `${fontSize}px "Version1 Bungee"`;
       ctx.textBaseline = 'middle';
       const x = 44, y = canvas.height / 2;
-      ctx.fillStyle = '#e20d22';
-      ctx.fillText('@', x, y);
+      if (hasAt) {
+        ctx.fillStyle = '#e20d22';
+        ctx.fillText('@', x, y);
+      }
       ctx.fillStyle = '#ffffff';
-      ctx.fillText(handle, x + ctx.measureText('@').width, y);
+      ctx.fillText(handle, x + (hasAt ? ctx.measureText('@').width : 0), y);
       this.uploadLogoSurface(canvas);
     }
 

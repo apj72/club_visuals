@@ -76,6 +76,15 @@
   .auto-library-row span { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
   .auto-library-dialog button { padding: 7px 12px; border: 1px solid #4ecca3; border-radius: 5px; background: #183a3a; color: #c7ffeb; cursor: pointer; }
   .auto-library-row select { min-width: 0; padding: 5px; background: #091929; border: 1px solid #4b6674; color: #fff; }
+  .auto-text-panel { margin-top: 9px; border-top: 1px solid #304c5b; padding-top: 8px; color: #b6c9d2; font-size: .74rem; }
+  .auto-text-panel summary { cursor: pointer; color: #a9ffe7; font-weight: 700; }
+  .auto-text-panel p { margin: 7px 0; }
+  .auto-text-list { display: grid; gap: 5px; max-height: 210px; overflow-y: auto; }
+  .auto-text-row, .auto-text-add { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+  .auto-text-row { padding: 5px 7px; border-radius: 5px; background: #1c3044; }
+  .auto-text-row input[type="text"], .auto-text-add input { flex: 1 1 220px; min-width: 120px; padding: 6px 8px; border: 1px solid #4b6674; border-radius: 5px; background: #091929; color: #fff; }
+  .auto-text-add { margin-top: 8px; }
+  .auto-text-empty { color: #aabdc8; font-style: italic; }
   .playlist-library-col h2 { margin-bottom: 8px; color: #4ecca3; font-size: .85rem; }
   body.playlist-mode .main-layout { max-width: 1680px; gap: 16px; }
   body.playlist-mode .playlist-library-col { display: block; }
@@ -1027,6 +1036,7 @@
   <div class="auto-perform-top"><strong>Sound to Visuals</strong><button type="button" class="auto-main-btn" id="autoPerformButton" onclick="toggleAutoPerform()">▶ Auto Perform</button><button type="button" id="autoHoldButton" onclick="toggleAutoHold()" title="Keep the current video">Hold video</button><button type="button" id="autoLayoutLockButton" onclick="toggleAutoLayoutLock()" title="Keep the current layout">Lock layout</button><button type="button" id="autoNextButton" onclick="autoNextOnBeat()">Next on beat</button><button type="button" onclick="tapAutoTempo()">Tap tempo</button><button type="button" onclick="resyncAutoBeat()">Resync</button></div>
   <div class="auto-perform-status" role="status" aria-live="polite"><span id="autoStatus">Ready. Choose an input and press Auto Perform.</span><span>BPM <b id="autoBpm">—</b></span><span>Beat <b id="autoBeat">—</b></span><span>Section <b id="autoSection">—</b></span><span>Next <b id="autoNext">—</b></span><span class="auto-input-meter" aria-label="Audio input level"><i id="autoLevel"></i></span></div>
   <div class="auto-perform-controls"><label>Input<select id="autoAudioDevice" aria-label="Automatic performance audio input"><option value="">Default microphone / USB input</option></select></label><label>Style<select id="autoProfile"><option value="balanced">Balanced</option><option value="hypnotic">Hypnotic</option><option value="high-energy">High Energy</option><option value="ambient">Ambient</option></select></label><label>Change every<select id="autoChangeBars"><option value="4">4 bars</option><option value="8" selected>8 bars</option><option value="16">16 bars</option></select></label><label>Videos<select id="autoVideoPool"><option value="library">Entire library</option><option value="playlist">Current playlist</option></select></label><button type="button" onclick="openAutoLibraryEditor()">Curate videos</button></div>
+  <details class="auto-text-panel" id="autoTextPanel"><summary>3D text for Auto Perform <span id="autoTextCount"></span></summary><p>Add event names, Instagram IDs, or short web URLs. Enabled entries rotate into the 3D text effect. Instagram IDs show a red @; other text is white. Use <strong>Show now</strong> to preview an entry.</p><div class="auto-text-list" id="autoTextList"></div><form class="auto-text-add" id="autoTextForm"><select id="autoTextType" aria-label="New 3D text type"><option value="event">Event name</option><option value="instagram">Instagram ID</option><option value="url">Web URL</option></select><input id="autoTextValue" type="text" maxlength="80" placeholder="Enter text to display" aria-label="New 3D text" required><button type="submit">Add text</button></form></details>
   <details class="auto-perform-log"><summary>Performance decisions</summary><pre id="autoDecisionLog">No decisions yet.</pre></details>
   <dialog class="auto-library-dialog" id="autoLibraryDialog"><h3>Curate Auto Perform videos</h3><p>Include or exclude videos, and mark their energy. Untagged videos work in any section.</p><input id="autoLibrarySearch" type="search" placeholder="Find a video…" aria-label="Find video to curate"><div class="auto-library-list" id="autoLibraryList"></div><button type="button" onclick="document.getElementById('autoLibraryDialog').close()">Done</button></dialog>
 </section>
@@ -2096,6 +2106,68 @@
   const autoPerformanceLog = [];
   window.autoPerformanceLog = autoPerformanceLog;
   const autoUi = id => document.getElementById(id);
+  const AUTO_TEXT_TYPES = ['event', 'instagram', 'url'];
+  let autoTextEntries = [{ type: 'instagram', text: '@tonyt.dj', enabled: true }];
+  try {
+    const saved = JSON.parse(localStorage.getItem('autoTextEntries'));
+    if (Array.isArray(saved)) autoTextEntries = saved.filter(entry => entry && typeof entry.text === 'string')
+      .map(entry => ({ type: AUTO_TEXT_TYPES.includes(entry.type) ? entry.type : 'event',
+        text: entry.text.slice(0, 80), enabled: entry.enabled !== false }));
+  } catch {}
+  function autoTextDisplay(entry) {
+    const value = entry.text.trim();
+    return entry.type === 'instagram' && value && !value.startsWith('@') ? '@' + value : value;
+  }
+  function autoSaveTextEntries() {
+    localStorage.setItem('autoTextEntries', JSON.stringify(autoTextEntries));
+    autoUi('autoTextCount').textContent = '(' + autoTextEntries.filter(entry => entry.enabled && autoTextDisplay(entry)).length + ' enabled)';
+  }
+  function autoShowText(entry) {
+    const value = autoTextDisplay(entry);
+    if (!value) return;
+    setVfxLogo3d({ kind: 'text', text: value }, true);
+    setVfxState({ enabled: true, scene: 6 });
+    autoRecord('3D text', { text: value, type: entry.type });
+    autoStatus('Showing 3D text: ' + value);
+  }
+  function autoRenderTextEntries() {
+    const list = autoUi('autoTextList');
+    list.replaceChildren();
+    autoTextEntries.forEach((entry, index) => {
+      const row = document.createElement('div'); row.className = 'auto-text-row';
+      const enabled = document.createElement('input'); enabled.type = 'checkbox'; enabled.checked = entry.enabled;
+      enabled.setAttribute('aria-label', 'Enable ' + autoTextDisplay(entry));
+      enabled.addEventListener('change', () => { entry.enabled = enabled.checked; autoSaveTextEntries(); });
+      const type = document.createElement('select'); type.setAttribute('aria-label', 'Text type');
+      for (const [value, label] of [['event', 'Event'], ['instagram', 'Instagram'], ['url', 'URL']]) type.add(new Option(label, value));
+      type.value = entry.type;
+      type.addEventListener('change', () => { entry.type = type.value; autoSaveTextEntries(); });
+      const value = document.createElement('input'); value.type = 'text'; value.maxLength = 80; value.value = entry.text;
+      value.setAttribute('aria-label', '3D text value');
+      value.addEventListener('change', () => { entry.text = value.value.trim(); autoSaveTextEntries(); });
+      const show = document.createElement('button'); show.type = 'button'; show.textContent = 'Show now';
+      show.addEventListener('click', () => { entry.text = value.value.trim(); autoSaveTextEntries(); autoShowText(entry); });
+      const remove = document.createElement('button'); remove.type = 'button'; remove.textContent = 'Remove';
+      remove.setAttribute('aria-label', 'Remove ' + autoTextDisplay(entry));
+      remove.addEventListener('click', () => { autoTextEntries.splice(index, 1); autoSaveTextEntries(); autoRenderTextEntries(); });
+      row.append(enabled, type, value, show, remove); list.appendChild(row);
+    });
+    if (!autoTextEntries.length) {
+      const empty = document.createElement('span'); empty.className = 'auto-text-empty';
+      empty.textContent = 'No text entries. Add one below to include 3D text in Auto Perform.';
+      list.appendChild(empty);
+    }
+    autoSaveTextEntries();
+  }
+  autoUi('autoTextForm').addEventListener('submit', event => {
+    event.preventDefault();
+    const value = autoUi('autoTextValue').value.trim();
+    if (!value) return;
+    autoTextEntries.push({ type: autoUi('autoTextType').value, text: value.slice(0, 80), enabled: true });
+    autoUi('autoTextValue').value = '';
+    autoRenderTextEntries();
+  });
+  autoRenderTextEntries();
   function autoRandom() {
     autoRandomState ^= autoRandomState << 13;
     autoRandomState ^= autoRandomState >>> 17;
@@ -2107,7 +2179,7 @@
     autoPerformanceLog.push({ at: new Date().toISOString(), kind, detail, seed: autoRandomState >>> 0 });
     if (autoPerformanceLog.length > 500) autoPerformanceLog.shift();
     autoUi('autoDecisionLog').textContent = autoPerformanceLog.slice(-6).map(event =>
-      event.at.slice(11, 19) + ' ' + event.kind + ' · ' + (event.detail.filename ? playlistVideoName(event.detail.filename) : event.detail.reason ?? event.detail.view ?? event.detail.scene ?? '')).join('\n');
+      event.at.slice(11, 19) + ' ' + event.kind + ' · ' + (event.detail.filename ? playlistVideoName(event.detail.filename) : event.detail.text ?? event.detail.reason ?? event.detail.view ?? event.detail.scene ?? '')).join('\n');
   }
   function autoStatus(message) { autoUi('autoStatus').textContent = message; }
   function autoUpdateUi(snapshot) {
@@ -2257,17 +2329,22 @@
   function autoChangeVfx(energy) {
     if (!autoRun) return;
     const profile = autoUi('autoProfile').value;
-    const scenes = profile === 'ambient' ? [0, 1, 3, 5] : profile === 'hypnotic' ? [0, 2, 3, 4, 5]
+    const scenes = profile === 'ambient' ? [0, 1, 3, 5, 6] : profile === 'hypnotic' ? [0, 2, 3, 4, 5, 6]
       : [0, 1, 2, 3, 4, 5, 6];
     const scene = autoPick(scenes);
     if (scene === 6) {
-      const kind = autoRandom() < .55 ? 'logo' : 'text';
-      setVfxLogo3d({ kind, text: '@tonyt.dj', axis: autoPick(['x', 'y', 'z']), startAngle: -35, endAngle: 35 }, true);
-      if (kind === 'text') {
-        const filename = currentFilename;
-        getCurrentVfxInstagramId().then(handle => {
-          if (autoRun && currentFilename === filename && vfxState.logo3d.kind === 'text' && handle) setVfxLogo3d({ text: handle }, true);
-        });
+      const entries = autoTextEntries.filter(entry => entry.enabled && autoTextDisplay(entry));
+      const useText = entries.length && autoRandom() < .7;
+      const rotation = { axis: autoPick(['x', 'y', 'z']), startAngle: -35, endAngle: 35 };
+      if (useText) {
+        const fresh = entries.filter(entry => autoTextDisplay(entry) !== autoRun.lastText);
+        const entry = autoPick(fresh.length ? fresh : entries);
+        const text = autoTextDisplay(entry);
+        autoRun.lastText = text;
+        setVfxLogo3d({ kind: 'text', text, ...rotation }, true);
+        autoRecord('3D text', { text, type: entry.type });
+      } else {
+        setVfxLogo3d({ kind: 'logo', ...rotation }, true);
       }
     }
     setVfxState({ enabled: true, scene, intensity: Math.max(.3, Math.min(.9, .35 + energy * .55)) });
@@ -2344,7 +2421,7 @@
       autoRandomState = (Date.now() >>> 0) || 1;
       autoHoldVideo = false;
       autoLayoutLocked = false;
-      autoRun = { engine, ownedAudio, previousMute: video.muted, recent: [], lastUi: 0, lastQuietFade: 0, wasQuiet: false,
+      autoRun = { engine, ownedAudio, previousMute: video.muted, recent: [], lastText: '', lastUi: 0, lastQuietFade: 0, wasQuiet: false,
         lastVideoAt: -Infinity, nextVideo: '', preloader: null, node: null, gain: null, fallback: null };
       try {
         await vfxAudioContext.audioWorklet.addModule('/auto_audio_worklet.js');
