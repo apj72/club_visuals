@@ -118,6 +118,8 @@ Run `node test_transition_engine.js` to check the catalogue, parameter validatio
 
 The timeline shows a thumbnail, layout, and configured run time beside every video, plus an estimated playlist total. A loop-based run time accounts for source length, loop count, playback speed, and Bounce playback. Seconds-based entries show their specified slot length.
 
+In the Playlist tab, use **+ Add current view** to insert the video currently shown in the player, including its layout, playback settings, and active VFX, at the playhead. Clips are inserted at the nearest clip boundary because playlist entries are whole videos. The new clip opens in the timeline inspector; adjust its duration or incoming transition there, then **Save** the playlist. Use **Preview frame** to choose this screen, 16:9, 16:10 projector, 3:2 laptop, or another frame ratio. The chosen ratio is remembered in this browser. A single video is fitted inside the frame with its original proportions, so any extra space appears as black bars.
+
 ### Capture an Instagram background clip
 
 1. Load a video from the Library and set its layout, mirror preset, zoom, and effects.

@@ -703,6 +703,9 @@
   .timeline-toolbar button { padding: 5px 9px; border: 1px solid #46536c; background: #1d3150; color: #e7eef5; font-size: .73rem; }
   .timeline-toolbar label { color: #aab6c4; font-size: .72rem; }
   .timeline-toolbar input { width: 90px; vertical-align: middle; accent-color: #4ecca3; }
+  .timeline-toolbar select { padding: 5px 7px; border: 1px solid #46536c; border-radius: 4px; background: #1d3150; color: #e7eef5; font-size: .73rem; }
+  .timeline-toolbar #timelineAddCurrent { color: #09231e; background: #4ecca3; border-color: #4ecca3; font-weight: 700; }
+  .timeline-toolbar #timelineAddCurrent:disabled { opacity: .45; cursor: not-allowed; }
   .timeline-scroll { overflow-x: auto; padding-bottom: 9px; border-radius: 6px; }
   .timeline-content { width: max-content; min-width: 100%; }
   .timeline-ruler { position: relative; height: 30px; background: repeating-linear-gradient(90deg, #273b52 0 1px, transparent 1px 40px); cursor: crosshair; }
@@ -722,12 +725,16 @@
   .timeline-empty { padding: 33px 15px; color: #9aa7b8; font-size: .76rem; }
   .timeline-status { min-height: 17px; margin-top: 5px; color: #9fcdbd; font-size: .7rem; }
   .video-wrap .video-stage .timeline-preview-overlay { position: absolute; z-index: 10; inset: 0; width: 100%; height: 100%; object-fit: fill; pointer-events: none; }
+  body.playlist-mode .video-wrap:not(:fullscreen) .video-stage {
+    aspect-ratio: var(--playlist-preview-aspect, 16 / 9);
+    width: min(100%, calc(65vh * var(--playlist-preview-aspect, 1.77778)));
+    height: auto;
+    margin-inline: auto;
+  }
   body.playlist-mode .video-wrap:not(:fullscreen) .video-stage video,
-  body.playlist-mode .video-wrap:not(:fullscreen) .video-stage canvas { height: 38vh; }
-  body.playlist-mode .video-wrap.quad:not(:fullscreen) .video-stage video,
-  body.playlist-mode .video-wrap.quad:not(:fullscreen) .video-stage canvas,
-  body.playlist-mode .video-wrap.octo:not(:fullscreen) .video-stage video,
-  body.playlist-mode .video-wrap.octo:not(:fullscreen) .video-stage canvas { height: 19vh; }
+  body.playlist-mode .video-wrap:not(:fullscreen) .video-stage canvas { height: 100%; min-height: 0; max-height: 100%; }
+  body.playlist-mode .video-wrap:not(:fullscreen) .video-stage video { object-fit: contain; }
+  body.playlist-mode .video-wrap:not(:fullscreen) .video-stage .video-clone { object-fit: cover; }
   body.playlist-mode .video-wrap:not(:fullscreen) .video-stage .timeline-preview-overlay { height: 100%; }
   [hidden] { display: none !important; }
   .pl-inspector { margin: 10px 0; padding: 10px; border: 1px solid #456077; border-radius: 8px; background: #111d31; }
@@ -1212,7 +1219,7 @@
       </div>
     </div>
     <section class="playlist-timeline-workspace" id="playlistTimelineWorkspace" aria-label="Playlist timeline editor">
-      <div class="timeline-toolbar"><h3>Playlist timeline</h3><button type="button" id="timelineBack" aria-label="Move playhead back one second">−1s</button><output id="timelineTimecode">0:00 / 0:00</output><button type="button" id="timelineForward" aria-label="Move playhead forward one second">+1s</button><label>Scale <input id="timelineZoom" type="range" min="5" max="24" value="10" aria-label="Timeline scale"></label></div>
+      <div class="timeline-toolbar"><h3>Playlist timeline</h3><button type="button" id="timelineAddCurrent" title="Insert the current player video and look at the nearest clip boundary" disabled>+ Add current view</button><button type="button" id="timelineBack" aria-label="Move playhead back one second">−1s</button><output id="timelineTimecode">0:00 / 0:00</output><button type="button" id="timelineForward" aria-label="Move playhead forward one second">+1s</button><label for="playlistPreviewAspect">Preview frame</label><select id="playlistPreviewAspect" aria-label="Playlist preview aspect ratio"><option value="screen">This screen</option><option value="16:9">16:9 · widescreen</option><option value="16:10">16:10 · projector</option><option value="3:2">3:2 · laptop</option><option value="4:3">4:3 · classic</option><option value="1:1">1:1 · square</option><option value="9:16">9:16 · portrait</option></select><label>Scale <input id="timelineZoom" type="range" min="5" max="24" value="10" aria-label="Timeline scale"></label></div>
       <div class="timeline-scroll" id="timelineScroll"><div class="timeline-content" id="timelineContent"><div class="timeline-ruler" id="timelineRuler"></div><div class="timeline-track" id="timelineTrack"></div></div></div>
       <div class="timeline-status" id="timelineStatus" role="status">Drag videos from the library onto the timeline, then scrub to preview.</div>
     </section>
@@ -2733,6 +2740,7 @@
     videoTransition.prepare(chosenTransition);
     const loadToken = ++videoLoadToken;
     currentFilename = filename;
+    document.getElementById('timelineAddCurrent').disabled = false;
     stopBounce();
     const src = '/video/' + encodeURIComponent(filename);
     video.src = src;
@@ -4765,9 +4773,18 @@
       intensity: cueNumber(value.intensity, 0.7, 0, 1),
       feedback: cueNumber(value.feedback, 0.72, 0, 1),
       text: String(value.text ?? '@tonyt.dj').slice(0, 80),
+      image: typeof value.image === 'string' ? value.image : '',
       x: cueNumber(value.x, 0.5, 0, 1),
       y: cueNumber(value.y, 0.5, 0, 1),
       scale: cueNumber(value.scale, 0.48, 0.1, 2),
+      depth: cueNumber(value.depth, value.effect === 'mirror' ? 1 : 0.45, 0, 2),
+      edge: cueNumber(value.edge, 0.7, 0, 2),
+      tilt: cueNumber(value.tilt, 0, -360, 360),
+      thickness: cueNumber(value.thickness, 0.8, 0, 2),
+      spin: cueNumber(value.spin, 0.3, 0, 2),
+      rotX: cueNumber(value.rotX, 0, -360, 360),
+      rotY: cueNumber(value.rotY, -20, -360, 360),
+      rotZ: cueNumber(value.rotZ, 0, -360, 360),
       axis: ['x', 'y', 'z'].includes(value.axis) ? value.axis : 'y',
       startAngle: cueNumber(value.startAngle, -45, -360, 360),
       endAngle: cueNumber(value.endAngle, 45, -360, 360),
@@ -4871,11 +4888,14 @@
     let scene = Number(cue.effect.slice(6));
     if (cue.effect === 'mirror') {
       scene = 3;
-      setVfxShape({ kind: 'text', text: cue.text || 'CLUB', x: cue.x, y: cue.y, scale: cue.scale });
+      setVfxShape({ kind: cue.image ? 'image' : 'text', image: cue.image, text: cue.text || 'CLUB',
+        x: cue.x, y: cue.y, scale: cue.scale, depth: cue.depth, edge: cue.edge,
+        tilt: cue.tilt, thickness: cue.thickness, spin: cue.spin });
     } else if (cue.effect === 'logo' || cue.effect === 'text') {
       scene = 6;
       setVfxLogo3d({ kind: cue.effect === 'logo' ? 'logo' : 'text', text: cue.text || '@tonyt.dj',
         x: cue.x, y: cue.y, scale: cue.scale, axis: cue.axis,
+        depth: cue.depth, rotX: cue.rotX, rotY: cue.rotY, rotZ: cue.rotZ,
         startAngle: cue.startAngle, endAngle: cue.endAngle, motion: cue.motion }, true);
     }
     setVfxState({ enabled: true, scene, intensity: cue.intensity, feedback: cue.feedback });
@@ -5009,6 +5029,8 @@
 
   // The visible playlist editor shares the saved entry model with playback.
   const timelineTrack = document.getElementById('timelineTrack');
+  const timelineAddCurrent = document.getElementById('timelineAddCurrent');
+  const playlistPreviewAspect = document.getElementById('playlistPreviewAspect');
   const timelineRuler = document.getElementById('timelineRuler');
   const timelineContent = document.getElementById('timelineContent');
   const timelineTimecode = document.getElementById('timelineTimecode');
@@ -5027,6 +5049,21 @@
   let timelineEntryStartedAt = 0;
   let timelineVfxBeforePreview = null;
   let timelineCueKey = '';
+  function playlistPreviewRatio() {
+    if (playlistPreviewAspect.value === 'screen') return screen.width / screen.height || 16 / 9;
+    const [width, height] = playlistPreviewAspect.value.split(':').map(Number);
+    return width / height;
+  }
+  function applyPlaylistPreviewAspect() {
+    videoWrap.style.setProperty('--playlist-preview-aspect', String(playlistPreviewRatio()));
+    localStorage.setItem('playlistPreviewAspect', playlistPreviewAspect.value);
+    if (!timelineOverlay.hidden && document.body.classList.contains('playlist-mode')) setTimelinePlayhead(timelineTime);
+  }
+  const savedPreviewAspect = localStorage.getItem('playlistPreviewAspect');
+  if ([...playlistPreviewAspect.options].some(option => option.value === savedPreviewAspect)) playlistPreviewAspect.value = savedPreviewAspect;
+  playlistPreviewAspect.addEventListener('change', applyPlaylistPreviewAspect);
+  window.addEventListener('resize', () => { if (playlistPreviewAspect.value === 'screen') applyPlaylistPreviewAspect(); });
+  applyPlaylistPreviewAspect();
   function restoreTimelineVfxPreview() {
     if (!timelineVfxBeforePreview) return;
     setVfxLogo3d(timelineVfxBeforePreview.logo3d);
@@ -5136,6 +5173,39 @@
   }
 
   function timeForClip(index) { return (timelineSegments[index]?.start || 0) + 0.05; }
+  function currentPlayerCue() {
+    const effect = !vfxState.enabled ? 'off' : vfxState.scene === 3 ? 'mirror'
+      : vfxState.scene === 6 ? vfxState.logo3d.kind === 'text' ? 'text' : 'logo' : 'scene-' + vfxState.scene;
+    const object = effect === 'mirror' ? vfxState.shape : effect === 'text' || effect === 'logo' ? vfxState.logo3d : {};
+    return normalisePlaylistCue({ ...object, at: 0, effect,
+      intensity: vfxState.intensity, feedback: vfxState.feedback });
+  }
+  function addCurrentViewAtPlayhead() {
+    if (!currentFilename) return;
+    const filename = currentFilename;
+    const layout = currentPlayerLayout();
+    const cue = currentPlayerCue();
+    const segment = timelineSegments.find(item => timelineTime < item.end) || timelineSegments.at(-1);
+    const insertion = segment && timelineTime - segment.start > segment.end - timelineTime
+      ? segment.index + 1 : segment?.index ?? 0;
+    const currentEntry = plPlaylist.entries[plPreviewIdx];
+    const duration = currentEntry?.video === filename && currentEntry.duration
+      ? { ...currentEntry.duration } : { type: 'seconds', value: 10 };
+    if (plPlaying) stopPlaylist();
+    plPlaylist.entries.splice(insertion, 0, {
+      video: filename, ...layout, duration,
+      transition: normaliseTransition({ type: insertion ? plTransitionType.value : 'cut',
+        duration: plTransitionDuration.value, pace: plTransitionPace.value }),
+      cues: [cue],
+    });
+    plPreviewIdx = insertion;
+    renderPlaylistEntries();
+    setTimelinePlayhead(timeForClip(insertion)).then(() => {
+      timelineStatus.textContent = 'Current view added at ' + formatPlaylistTime(timelineSegments[insertion].start)
+        + ' (nearest clip boundary). Save the playlist to keep it.';
+    });
+  }
+  timelineAddCurrent.addEventListener('click', addCurrentViewAtPlayhead);
   function timeForTransition(index) {
     const segment = timelineSegments[index];
     if (!segment) return 0;
@@ -5353,7 +5423,7 @@
         return;
       }
       timelineStatus.textContent = 'Rendering ' + TRANSITION_NAMES[transition.type] + ' at ' + Math.round(local / transition.duration * 100) + '%…';
-      const width = 640, height = 360;
+      const width = 640, height = Math.round(width / playlistPreviewRatio());
       const from = document.createElement('canvas'), to = document.createElement('canvas');
       from.width = to.width = width; from.height = to.height = height;
       const previous = plPlaylist.entries[segment.index - 1];
