@@ -1060,6 +1060,7 @@
   <aside class="playlist-library-col" id="playlistLibraryCol"><h2>Video library</h2><p class="timeline-status">Drag a video onto the timeline.</p></aside>
   <div class="left-col">
     <div class="player-section" id="playerSection">
+      <p id="previewVideoStatus" role="status" style="padding:8px;color:#76e5ca"></p>
       <div class="video-wrap" id="videoWrap">
         <div class="pl-indicator" id="plIndicator">
           <span id="plIndicatorText"></span>
@@ -1067,7 +1068,7 @@
           <button class="pl-ind-btn" onclick="stopPlaylist()">Stop</button>
         </div>
         <div class="video-stage" id="videoStage">
-          <video id="video" playsinline></video>
+          <video id="video" playsinline muted preload="metadata"></video>
           <canvas id="vfxCanvas" aria-label="Live VFX output"></canvas>
           <div class="capture-box" id="captureBox" aria-label="Instagram capture area">
             <span class="capture-box-label" id="captureBoxLabel">4:5</span>
@@ -1128,7 +1129,8 @@
           <button class="btn-ctrl" id="logo3dBtn" onclick="activateLogo3d()" title="Show the rotatable Version1 logo">3D Logo</button>
           <button class="btn-ctrl" id="text3dBtn" onclick="activateText3d()" title="Show editable 3D Instagram text">3D Text</button>
           <button type="button" class="btn-ctrl" id="captureToggle" aria-controls="capturePanel" aria-expanded="false" onclick="toggleInstagramCapturePanel()">Instagram clip</button>
-          <button class="btn-ctrl btn-fullscreen" id="fsBtn" onclick="toggleFullscreen()">Fullscreen</button>
+          <button class="btn-ctrl btn-fullscreen" id="fsBtn" onclick="toggleFullscreen()">Mac fullscreen</button>
+          <button class="btn-ctrl" onclick="togglePreviewFullscreen()">Preview fullscreen</button>
         </div>
       </div>
       <div class="video-presets" id="videoPresetPanel">
@@ -1213,7 +1215,20 @@
           </select></label>
           <label>Start timecode <input id="captureStart" type="text" value="00:00" placeholder="mm:ss.sss" inputmode="decimal"></label>
           <label>Length (seconds) <input id="captureDuration" type="number" min="0.1" max="600" step="0.1" value="10"></label>
+          <label>Loop transition <select id="captureTransition" onchange="updateCaptureTransition()">
+            <option value="none">None</option>
+            <option value="fade">Crossfade</option>
+            <option value="dissolve">Dissolve</option>
+            <option value="wipeleft">Wipe left</option>
+            <option value="wiperight">Wipe right</option>
+            <option value="slideleft">Slide left</option>
+            <option value="slideright">Slide right</option>
+            <option value="pixelize">Pixelate</option>
+            <option value="circleopen">Circle open</option>
+          </select></label>
+          <label>Transition (seconds) <input id="captureTransitionDuration" type="number" min="0.1" max="10" step="0.1" value="1" disabled></label>
         </div>
+        <p style="margin-top:10px">With a loop transition, half the effect appears at the end and half at the start, joining across repeat playback. Length is the finished loop length. Capture takes one extra transition length; transitions can be up to half the loop length.</p>
         <div class="capture-actions">
           <button type="button" onclick="useCurrentCaptureTime()">Use current time</button>
           <button type="button" id="captureAction" onclick="toggleInstagramCapture()">Capture MP4</button>
@@ -1395,12 +1410,35 @@
 <script src="/transition_engine.js"></script>
 <script src="/auto_perform.js"></script>
 <script>
+  const isMacEngine = new URLSearchParams(location.search).get('host') === '1';
+  const requiresSafariPreview = !isMacEngine && ((navigator.maxTouchPoints > 1 && /Mac|iPad|iPhone/.test(navigator.platform + navigator.userAgent))
+    || (/Safari/.test(navigator.userAgent) && !/Chrome|Chromium|Edg|Android/.test(navigator.userAgent)));
+  const compatiblePreviewUrls = new Map();
+  async function compatibleVideoSource(filename, progress = () => {}) {
+    if (!requiresSafariPreview) return '/video/' + encodeURIComponent(filename);
+    if (compatiblePreviewUrls.has(filename)) return compatiblePreviewUrls.get(filename);
+    const deadline = Date.now() + 210000;
+    while (Date.now() < deadline) {
+      const response = await fetch('/api/preview/' + encodeURIComponent(filename));
+      if (!response.ok) throw new Error('Could not request this video from the Mac.');
+      const result = await response.json();
+      if (result.error) throw new Error(result.error);
+      if (result.ready) { compatiblePreviewUrls.set(filename, result.url); return result.url; }
+      progress('Preparing iPad-compatible video on the Mac… First use can take a moment.');
+      await new Promise(resolve => setTimeout(resolve, 500));
+    }
+    throw new Error('The Mac took too long to prepare this preview. Try this video again.');
+  }
+  let playoutWrites = Promise.resolve();
+  let macPlayoutArmed = false;
   const videoStage = document.getElementById('videoStage');
   const videoWrap = document.getElementById('videoWrap');
   const video = document.getElementById('video');
   const playBtn = document.getElementById('playBtn');
   const loopBtn = document.getElementById('loopBtn');
   const muteBtn = document.getElementById('muteBtn');
+  muteBtn.textContent = 'Unmute';
+  muteBtn.classList.add('active');
   const viewBtn = document.getElementById('viewBtn');
   const sliderWrap = document.getElementById('sliderWrap');
   const configSlider = document.getElementById('configSlider');
@@ -1468,7 +1506,8 @@
   const vfxSourceCtx = vfxSource.getContext('2d');
   const vfxState = { enabled: false, scene: 0, intensity: 0.7, feedback: 0.72, bass: 0, hit: 0,
     logo3d: { kind: 'logo', text: '@tonyt.dj', x: 0.5, y: 0.5, scale: 0.48, depth: 0.45,
-      rotX: 0, rotY: -20, rotZ: 0, motion: 0.25, axis: 'y', startAngle: -45, endAngle: 45 },
+      rotX: 0, rotY: -20, rotZ: 0, motion: 0.25, axis: 'y', startAngle: -45, endAngle: 45,
+      skin: 'chrome', font: 'modern', bevel: .035, roughness: .14, reflection: 1, environment: 1, exposure: 1, quality: 'high' },
     shape: { kind: 'text', text: 'CLUB', image: '', x: 0.5, y: 0.5, scale: 0.7, depth: 1, edge: 0.7, tilt: 0, thickness: 0.8, spin: 0.3 } };
   let vfxEngine = null;
   let vfxFrameReady = false;
@@ -1629,6 +1668,11 @@
     playBtn.textContent = 'Play';
     syncFxTransport({ playing: false });
   });
+  video.addEventListener('error', () => {
+    if (!isMacEngine && video.getAttribute('src')) {
+      document.getElementById('previewVideoStatus').textContent = 'Preview could not play. Select the video again to retry, or check the connection to the Mac.';
+    }
+  });
 
   function stopBounce() {
     bounceReversing = false;
@@ -1720,8 +1764,6 @@
 
   document.addEventListener('fullscreenchange', () => {
     const isFs = !!document.fullscreenElement;
-    fsBtn.textContent = isFs ? 'Exit Fullscreen' : 'Fullscreen';
-    fsBtn.classList.toggle('active', isFs);
     if (isFs) {
       showControls();
     } else {
@@ -1940,7 +1982,7 @@
 
   function openVfxController() {
     if (vfxWindow && !vfxWindow.closed) {
-      if (vfxWindow.CLUB_VISUALS_VFX_UI_VERSION !== 5) vfxWindow.location.replace('/vfx');
+      if (vfxWindow.CLUB_VISUALS_VFX_UI_VERSION !== 6) vfxWindow.location.replace('/vfx');
       vfxWindow.focus();
       return;
     }
@@ -2299,6 +2341,7 @@
     autoUi('autoLayoutLockButton').classList.toggle('active', autoLayoutLocked);
   }
   async function refreshAutoAudioDevices() {
+    if (!isMacEngine) return;
     try {
       const select = autoUi('autoAudioDevice');
       const current = select.value || localStorage.getItem('autoAudioDevice') || '';
@@ -2456,6 +2499,14 @@
     if (!autoRun) return;
     const snapshot = autoRun.engine.process({ ...frame, time: performance.now() / 1000 });
     const now = performance.now() / 1000;
+    // The Mac engine lives in the output's setup frame. AudioWorklet messages
+    // continue when that frame is closed; visual animation frames may not.
+    if (isMacEngine && now - vfxLastBroadcast > .07) {
+      vfxState.bass = Math.min(1.5, frame.bass * vfxSensitivity);
+      vfxState.hit *= .86;
+      broadcastState({type:'vfxAudio', bass:vfxState.bass, hit:vfxState.hit});
+      vfxLastBroadcast = now;
+    }
     if (snapshot.silent && !autoRun.wasQuiet) autoStatus('Music is quiet. Holding the current look.');
     else if (!snapshot.silent && autoRun.wasQuiet) autoStatus('Music detected. Following the beat.');
     autoRun.wasQuiet = snapshot.silent;
@@ -2742,14 +2793,17 @@
     } : transition);
     if (!hasOutgoing && chosenTransition.type !== 'fade-in') chosenTransition.type = 'cut';
     pixelHolding = false;
-    pixelHoldWantsPlay = wasPlaying || plPlaying || !!autoRun;
+    pixelHoldWantsPlay = wasPlaying || plPlaying || !!autoRun || !isMacEngine;
     videoTransition.prepare(chosenTransition);
     const loadToken = ++videoLoadToken;
     currentFilename = filename;
     document.getElementById('timelineAddCurrent').disabled = false;
     stopBounce();
-    const src = '/video/' + encodeURIComponent(filename);
-    video.src = src;
+    const previewStatus = document.getElementById('previewVideoStatus');
+    previewStatus.textContent = requiresSafariPreview ? 'Loading iPad preview…' : '';
+    video.poster = '/thumbnail/' + encodeURIComponent(filename);
+    if (requiresSafariPreview) video.removeAttribute('src');
+    else video.src = '/video/' + encodeURIComponent(filename);
     video.loop = false;
     video.playbackRate = playbackSpeed;
 
@@ -2765,6 +2819,7 @@
     video.addEventListener('loadeddata', function onLoaded() {
       video.removeEventListener('loadeddata', onLoaded);
       if (loadToken !== videoLoadToken) return;
+      previewStatus.textContent = '';
       video.currentTime = 0.001;
       if (chosenTransition.type === 'pixel-scatter') {
         pixelHolding = true;
@@ -2777,9 +2832,24 @@
         });
       } else {
         videoTransition.start();
-        if (wasPlaying && !plPlaying) video.play().catch(() => {});
+        if ((wasPlaying || !isMacEngine) && !plPlaying) video.play().catch(() => {
+          previewStatus.textContent = 'Preview ready. Tap Play to start it.';
+        });
       }
     });
+    if (requiresSafariPreview) {
+      compatibleVideoSource(filename, message => {
+        if (loadToken === videoLoadToken) previewStatus.textContent = message;
+      }).then(src => {
+        if (loadToken !== videoLoadToken) return;
+        video.src = src; video.load();
+        const count = CLONE_COUNTS[viewMode];
+        if (count > 0) buildClones(count);
+      }).catch(error => {
+        if (loadToken === videoLoadToken) previewStatus.textContent = error.message;
+      });
+      playerSection.scrollIntoView({block:'start', behavior:'smooth'});
+    }
     const count = CLONE_COUNTS[viewMode];
     if (count > 0) buildClones(count);
     else if (vfxState.enabled && !rafId) startRenderLoop();
@@ -3344,6 +3414,10 @@
   }
 
   function toggleFullscreen() {
+    requestMacFullscreen();
+  }
+
+  function togglePreviewFullscreen() {
     if (document.fullscreenElement) document.exitFullscreen();
     else videoWrap.requestFullscreen();
   }
@@ -3422,6 +3496,7 @@
       });
       populateVideoDropdown();
       if (autoSelectMode) renderAutoSelectUI();
+      window.updateLibraryCatalogue?.();
     } catch {}
   }
 
@@ -3460,7 +3535,7 @@
   }
 
   function startLibraryDrag(event) {
-    if (event.target.closest('.delete-btn, .confirm-delete, .auto-cb, .library-playlist-btn')) {
+    if (event.target.closest('.delete-btn, .confirm-delete, .auto-cb, .library-playlist-btn, .catalog-edit')) {
       event.preventDefault();
       return;
     }
@@ -3471,6 +3546,7 @@
       event.dataTransfer.setData('text/plain', event.currentTarget.dataset.filename);
       return;
     }
+    if (window.libraryCanReorder && !window.libraryCanReorder()) { event.preventDefault(); return; }
     draggedLibraryItem = event.currentTarget;
     dragOriginalOrder = libraryFilenames();
     libraryDropCompleted = false;
@@ -3508,6 +3584,7 @@
   }
 
   function moveLibraryItemWithKeys(event) {
+    if (window.libraryCanReorder && !window.libraryCanReorder()) return;
     if (event.key !== 'ArrowUp' && event.key !== 'ArrowDown') return;
     event.preventDefault();
     const item = event.currentTarget.parentElement;
@@ -3559,13 +3636,28 @@
   let instagramTimer = null;
   let instagramStarted = 0;
   let instagramStopped = false;
+  let instagramCaptureBusy = false;
+
+  function updateCaptureTransition() {
+    document.getElementById('captureTransitionDuration').disabled = instagramCaptureBusy || document.getElementById('captureTransition').value === 'none';
+  }
+
+  function setCaptureBusy(busy) {
+    instagramCaptureBusy = busy;
+    for (const id of ['captureFormat', 'captureStart', 'captureDuration', 'captureTransition']) {
+      document.getElementById(id).disabled = busy;
+    }
+    updateCaptureTransition();
+    captureAction.disabled = busy;
+    if (!busy) captureAction.textContent = 'Capture MP4';
+  }
 
   function setCaptureStatus(message) {
     document.getElementById('captureStatus').textContent = message;
   }
 
   function toggleInstagramCapturePanel() {
-    if (instagramRecorder) {
+    if (instagramCaptureBusy) {
       setCaptureStatus('Stop the capture before closing this panel.');
       return;
     }
@@ -3665,6 +3757,7 @@
 
   async function toggleInstagramCapture() {
     if (instagramRecorder) { stopInstagramCapture(); return; }
+    if (instagramCaptureBusy) return;
     if (!currentFilename || !video.videoWidth || !Number.isFinite(video.duration)) {
       setCaptureStatus('Load a video from the Library first.'); return;
     }
@@ -3679,8 +3772,16 @@
     if (!Number.isFinite(duration) || duration < 0.1 || duration > 600) {
       setCaptureStatus('Enter a length between 0.1 and 600 seconds.'); return;
     }
-    if (loopMode === 0 && start + duration * playbackSpeed > video.duration + 0.02) {
-      setCaptureStatus('The clip runs past the source video. Choose Playback → Loop or Bounce, or shorten it.'); return;
+    const transition = document.getElementById('captureTransition').value;
+    const requestedOverlap = Number(document.getElementById('captureTransitionDuration').value);
+    const overlap = transition === 'none' ? 0 : Math.round(requestedOverlap * 15) * 2 / 30;
+    const loopLength = Math.round(duration * 30) / 30;
+    if (transition !== 'none' && (!Number.isFinite(requestedOverlap) || requestedOverlap < 0.1 || requestedOverlap > 10 || overlap * 2 > loopLength)) {
+      setCaptureStatus('Enter a transition length from 0.1 to 10 seconds, no more than half the clip length.'); return;
+    }
+    const recordingLength = loopLength + overlap;
+    if (loopMode === 0 && start + recordingLength * playbackSpeed > video.duration + 0.02) {
+      setCaptureStatus('The clip, including extra footage for the transition, runs past the source video. Choose Playback → Loop or Bounce, or shorten it.'); return;
     }
     const rect = captureRect();
     if (!rect) { setCaptureStatus('The playback stage is not ready.'); return; }
@@ -3705,8 +3806,7 @@
     };
 
     captureDownload.style.display = 'none';
-    captureAction.disabled = true;
-    captureFormat.disabled = true;
+    setCaptureBusy(true);
     setCaptureStatus('Seeking to ' + document.getElementById('captureStart').value + '…');
     try {
       video.pause();
@@ -3722,17 +3822,21 @@
       recorder.onstop = async () => {
         cancelAnimationFrame(instagramFrame);
         stream.getTracks().forEach(track => track.stop());
-        const clipLength = Math.min(duration, Math.max(0.1, (performance.now() - instagramStarted) / 1000));
+        const elapsed = (performance.now() - instagramStarted) / 1000;
+        const clipLength = Math.min(loopLength, Math.round((elapsed - overlap) * 30) / 30);
         instagramRecorder = null;
-        captureAction.disabled = false;
-        captureAction.textContent = 'Capture MP4';
-        captureFormat.disabled = false;
-        if (!chunks.length) { setCaptureStatus('No frames were captured.'); return; }
-        setCaptureStatus('Converting the clip to MP4…');
+        captureAction.disabled = true;
+        captureAction.textContent = 'Finishing clip…';
         try {
+          if (!chunks.length) throw new Error('No frames were captured.');
+          if (clipLength < 0.1 || (overlap && clipLength < overlap * 2)) {
+            throw new Error('Capture stopped too early for this transition. Let the capture finish or use a shorter transition.');
+          }
+          setCaptureStatus(overlap ? 'Building the loop transition and converting to MP4…' : 'Converting the clip to MP4…');
           const response = await fetch('/api/convert', {
             method: 'POST',
-            headers: { 'Content-Type': mimeType, 'X-Recording-Profile': 'instagram_' + formatKey, 'X-Recording-Duration': String(clipLength) },
+            headers: { 'Content-Type': mimeType, 'X-Recording-Profile': 'instagram_' + formatKey, 'X-Recording-Duration': String(clipLength),
+              'X-Loop-Transition': transition, 'X-Loop-Transition-Duration': String(overlap) },
             body: new Blob(chunks, { type: mimeType }),
           });
           const result = await response.json();
@@ -3742,6 +3846,7 @@
           captureDownload.download = result.filename;
           captureDownload.style.display = '';
         } catch (error) { setCaptureStatus('Capture failed: ' + error.message); }
+        finally { setCaptureBusy(false); }
       };
       recorder.start(250);
       instagramRecorder = recorder;
@@ -3749,9 +3854,9 @@
       instagramStarted = performance.now();
       captureAction.disabled = false;
       captureAction.textContent = 'Stop capture';
-      setCaptureStatus('Recording ' + format.label + ' clip for ' + duration + ' seconds…');
+      setCaptureStatus('Recording ' + format.label + ': ' + loopLength + ' second loop' + (overlap ? ' + ' + overlap.toFixed(2) + ' seconds for the transition' : '') + '…');
       await video.play();
-      instagramTimer = setTimeout(stopInstagramCapture, duration * 1000);
+      if (!instagramStopped) instagramTimer = setTimeout(stopInstagramCapture, Math.max(0, recordingLength * 1000 - (performance.now() - instagramStarted)));
     } catch (error) {
       clearTimeout(instagramTimer);
       cancelAnimationFrame(instagramFrame);
@@ -3760,9 +3865,7 @@
         instagramRecorder.stop();
       }
       instagramRecorder = null;
-      captureAction.disabled = false;
-      captureAction.textContent = 'Capture MP4';
-      captureFormat.disabled = false;
+      setCaptureBusy(false);
       setCaptureStatus('Capture failed: ' + error.message);
     }
   }
@@ -3982,11 +4085,12 @@
   }
 
   function broadcastState(cmd) {
-    fetch('/api/state', {
+    if (!isMacEngine || !macPlayoutArmed || !hostClaimed) return;
+    playoutWrites = playoutWrites.then(() => fetch('/api/state', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(cmd),
-    }).catch(() => {});
+    })).catch(() => {});
   }
 
   async function uploadRecording(blob) {
@@ -4174,7 +4278,9 @@
     auditionVideo.load();
   }
 
-  function loadAuditionVideo(filename, run) {
+  async function loadAuditionVideo(filename, run) {
+    const src = await compatibleVideoSource(filename, message => { auditionStatus.textContent = message; });
+    if (run !== auditionRun) throw new Error('Audition cancelled.');
     return new Promise((resolve, reject) => {
       const timeout = setTimeout(() => finish(new Error('Video took too long to load.')), 12000);
       let finished = false;
@@ -4193,7 +4299,7 @@
       auditionVideo.addEventListener('loadeddata', loaded, { once: true });
       auditionVideo.addEventListener('error', failed, { once: true });
       auditionVideo.addEventListener('abort', aborted, { once: true });
-      auditionVideo.src = '/video/' + encodeURIComponent(filename);
+      auditionVideo.src = src;
       auditionVideo.load();
       if (run !== auditionRun) finish(new Error('Audition cancelled.'));
     });
@@ -4381,6 +4487,7 @@
       const seconds = Number(metadata?.duration);
       if (Number.isFinite(seconds) && seconds > 0) return seconds;
       if (currentFilename === filename && Number.isFinite(video.duration) && video.duration > 0) return video.duration;
+      const src = await compatibleVideoSource(filename);
       return new Promise(resolve => {
         const probe = document.createElement('video');
         probe.preload = 'metadata';
@@ -4396,7 +4503,7 @@
         }
         probe.addEventListener('loadedmetadata', () => finish(Number.isFinite(probe.duration) ? probe.duration : null), { once: true });
         probe.addEventListener('error', () => finish(null), { once: true });
-        probe.src = '/video/' + encodeURIComponent(filename);
+        probe.src = src;
       });
     })();
     plSourceDurationCache.set(filename, pending);
@@ -4523,6 +4630,7 @@
       restoreTimelineVfxPreview();
     }
     if (tab === 'settings') loadSettings();
+    window.applyCatalogueFilters?.();
   }
 
   function populateVideoDropdown() {
@@ -4795,6 +4903,11 @@
       startAngle: cueNumber(value.startAngle, -45, -360, 360),
       endAngle: cueNumber(value.endAngle, 45, -360, 360),
       motion: cueNumber(value.motion, 0.25, 0, 2),
+      skin: VfxEngine.materials.includes(value.skin) ? value.skin : 'chrome',
+      font: ['modern','bungee','serif'].includes(value.font) ? value.font : 'modern',
+      quality: ['balanced','high','ultra'].includes(value.quality) ? value.quality : 'high',
+      bevel: cueNumber(value.bevel,.035,0,.1), roughness: cueNumber(value.roughness,.14,.025,.8),
+      reflection: cueNumber(value.reflection,1,0,2), environment: cueNumber(value.environment,1,0,2), exposure: cueNumber(value.exposure,1,.3,2),
     };
   }
 
@@ -4874,6 +4987,14 @@
         field('Size', 'scale', 'number', { min: '0.1', max: '2' });
       }
       if (cue.effect === 'logo' || cue.effect === 'text') {
+        field('Finish','skin','select',{options:{chrome:'Chrome',mirror:'Liquid mirror',brushed:'Brushed silver',gold:'Gold','rose-gold':'Rose gold',obsidian:'Black chrome',pearl:'Pearl',iridescent:'Iridescent',original:'Original colours'}});
+        if(cue.effect==='text') field('Typeface','font','select',{options:{modern:'Modern sans',bungee:'Bungee',serif:'Editorial serif'}});
+        field('Bevel','bevel','number',{min:'0',max:'.1',step:'.0025'});
+        field('Roughness','roughness','number',{min:'.025',max:'.8',step:'.005'});
+        field('Video reflection','reflection','number',{min:'0',max:'2',step:'.01'});
+        field('Environment wrap','environment','number',{min:'0',max:'2',step:'.01'});
+        field('Brightness','exposure','number',{min:'.3',max:'2',step:'.01'});
+        field('Quality','quality','select',{options:{balanced:'Balanced',high:'High definition',ultra:'Ultra'}});
         field('Rotation axis', 'axis', 'select', { options: { x: 'X', y: 'Y', z: 'Z' } });
         field('Start angle', 'startAngle', 'number', { min: '-360', max: '360', step: '1' });
         field('End angle', 'endAngle', 'number', { min: '-360', max: '360', step: '1' });
@@ -4900,6 +5021,7 @@
     } else if (cue.effect === 'logo' || cue.effect === 'text') {
       scene = 6;
       setVfxLogo3d({ kind: cue.effect === 'logo' ? 'logo' : 'text', text: cue.text || '@tonyt.dj',
+        skin:cue.skin,font:cue.font,bevel:cue.bevel,roughness:cue.roughness,reflection:cue.reflection,environment:cue.environment,exposure:cue.exposure,quality:cue.quality,
         x: cue.x, y: cue.y, scale: cue.scale, axis: cue.axis,
         depth: cue.depth, rotX: cue.rotX, rotY: cue.rotY, rotZ: cue.rotZ,
         startAngle: cue.startAngle, endAngle: cue.endAngle, motion: cue.motion }, true);
@@ -5047,7 +5169,7 @@
   videoStage.appendChild(timelineOverlay);
   const timelineFrameRenderer = createTransitionFrameRenderer();
   const timelineFrameVideos = [document.createElement('video'), document.createElement('video')];
-  timelineFrameVideos.forEach(source => { source.preload = 'auto'; source.muted = true; });
+  timelineFrameVideos.forEach(source => { source.preload = 'auto'; source.muted = true; source.playsInline = true; });
   let timelineSegments = [];
   let timelineTime = 0;
   let timelineScale = 10;
@@ -5344,7 +5466,7 @@
     });
   }
   async function seekTimelineSource(source, filename, seconds) {
-    const url = '/video/' + encodeURIComponent(filename);
+    const url = await compatibleVideoSource(filename, message => { timelineStatus.textContent = message; });
     if (source.dataset.filename !== filename) {
       source.dataset.filename = filename;
       const ready = waitTimelineMedia(source, 'loadeddata');
@@ -5592,13 +5714,13 @@
   }
 
   function autoSelectAll(val) {
-    document.querySelectorAll('.library-item .auto-cb').forEach(cb => cb.checked = val);
+    document.querySelectorAll('.library-item:not([hidden]) .auto-cb').forEach(cb => cb.checked = val);
   }
 
   function getSelectedAutoVideos() {
-    if (!autoSelectMode) return videoListCache.map(v => v.filename);
+    if (!autoSelectMode) return [...libraryGrid.querySelectorAll('.library-item:not([hidden])')].map(card => card.dataset.filename);
     const selected = [];
-    document.querySelectorAll('.library-item .auto-cb:checked').forEach(cb => {
+    document.querySelectorAll('.library-item:not([hidden]) .auto-cb:checked').forEach(cb => {
       selected.push(cb.dataset.filename);
     });
     return selected;
@@ -5789,5 +5911,7 @@
     }
   }
 </script>
+<script src="/library_catalog.js"></script>
+<script src="/remote_control.js"></script>
 </body>
 </html>

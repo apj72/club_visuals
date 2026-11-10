@@ -12,6 +12,9 @@ import threading
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from pathlib import Path
 from socketserver import ThreadingMixIn
+from mac_output import MacOutput
+from media_preview import PreviewCache
+from library_catalog import LibraryCatalog
 
 
 class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
@@ -39,6 +42,17 @@ CONFIG_FILE = BASE_DIR / "config.json"
 STATE_CLIENTS = []
 STATE_LOCK = threading.Lock()
 STATE_SNAPSHOT = {}
+REMOTE_STATUS = {}
+CONTROL_SESSION = {'owner': None, 'seen': 0, 'revoked': set()}
+MAC_OUTPUT = MacOutput(BASE_DIR, PORT)
+LIBRARY_CATALOG = LibraryCatalog(BASE_DIR / 'library_catalog.json')
+
+
+def control_status():
+    """Called with STATE_LOCK held. A disconnected tablet never locks out the Mac."""
+    if time.time() - CONTROL_SESSION['seen'] > 8:
+        CONTROL_SESSION['owner'] = None
+    return {'owner': CONTROL_SESSION['owner'], 'remote': CONTROL_SESSION['owner'] is not None}
 
 
 def load_config():
@@ -126,6 +140,44 @@ def find_working_ffmpeg():
     return None
 
 
+LOOP_TRANSITIONS = {"fade", "dissolve", "wipeleft", "wiperight", "slideleft", "slideright", "pixelize", "circleopen"}
+PREVIEW_CACHE = PreviewCache(BASE_DIR / '.runtime' / 'ipad-previews', find_working_ffmpeg)
+
+
+def instagram_conversion_args(path, duration, transition="none", transition_duration=0):
+    """Build a 30fps loop with the overlap's midpoint at the file boundary.
+
+    Capture duration + overlap seconds. Replace the overlapping head/tail with
+    one transition, then place its second half first and its first half last.
+    Independent inputs avoid buffering an entire long capture in a split graph.
+    """
+    frames = round(duration * 30)
+    if transition == "none":
+        return ["-i", str(path), "-vf",
+                f"fps=30,tpad=stop_mode=clone:stop_duration=1,trim=end_frame={frames},setpts=PTS-STARTPTS"]
+    if transition not in LOOP_TRANSITIONS:
+        raise ValueError("Invalid loop transition")
+    if not math.isfinite(transition_duration) or not 0.1 <= transition_duration <= 10:
+        raise ValueError("Transition length must be between 0.1 and 10 seconds")
+    overlap = round(transition_duration * 15) * 2
+    if overlap * 2 > frames:
+        raise ValueError("Transition length must be no more than half the clip length")
+    half = overlap // 2
+    normalise = "fps=30,tpad=stop_mode=clone:stop_duration=1"
+    graph = (
+        f"[0:v]{normalise},trim=start_frame={overlap}:end_frame={frames},setpts=PTS-STARTPTS[body];"
+        f"[1:v]{normalise},trim=end_frame={overlap + 1},setpts=PTS-STARTPTS[tail];"
+        f"[2:v]{normalise},trim=end_frame={overlap + 1},setpts=PTS-STARTPTS[head];"
+        f"[tail][head]xfade=transition={transition}:duration={overlap / 30:.9f}:offset=0,"
+        f"trim=end_frame={overlap},split[a][b];"
+        f"[a]trim=start_frame={half},setpts=PTS-STARTPTS[opening];"
+        f"[b]trim=end_frame={half},setpts=PTS-STARTPTS[ending];"
+        "[opening][body][ending]concat=n=3:v=1:a=0,format=yuv420p[loop]"
+    )
+    return ["-i", str(path), "-ss", f"{frames / 30:.9f}", "-i", str(path),
+            "-i", str(path), "-filter_complex", graph, "-map", "[loop]"]
+
+
 def refresh_cookies(password=None):
     try:
         if password:
@@ -169,9 +221,9 @@ class Handler(BaseHTTPRequestHandler):
         print(f"  {args[0]}")
 
     def do_GET(self):
-        if self.path == "/" or self.path == "/index.html":
+        if urllib.parse.urlsplit(self.path).path in ("/", "/index.html"):
             self.serve_html()
-        elif self.path == "/output":
+        elif urllib.parse.urlsplit(self.path).path == "/output":
             self.serve_output()
         elif self.path == "/effects":
             self.serve_effects()
@@ -183,6 +235,33 @@ class Handler(BaseHTTPRequestHandler):
             self.serve_transition_engine()
         elif self.path == "/auto_perform.js":
             self.serve_javascript("auto_perform.js")
+        elif self.path == "/remote_control.js":
+            self.serve_javascript("remote_control.js")
+        elif self.path == '/library_catalog.js':
+            self.serve_javascript('library_catalog.js')
+        elif self.path == "/api/remote-status":
+            with STATE_LOCK:
+                status = {role: {**value, "connected": time.time() - value["seen"] < 6}
+                          for role, value in REMOTE_STATUS.items()}
+                status['control'] = control_status()
+            status['window'] = MAC_OUTPUT.status()
+            self.send_json_response(status)
+        elif self.path == '/api/library-catalog':
+            self.send_json_response({'videos': LIBRARY_CATALOG.read()})
+        elif self.path.startswith('/api/preview/'):
+            filename = urllib.parse.unquote(self.path[len('/api/preview/'):])
+            path = resolve_video_path(filename)
+            if not path.is_file():
+                self.send_error(404, 'Video not found')
+            else:
+                result = PREVIEW_CACHE.request(path)
+                self.send_json_response({key: value for key, value in result.items() if key != 'path'})
+        elif self.path.startswith('/preview-video/'):
+            name = urllib.parse.unquote(self.path[len('/preview-video/'):])
+            if not re.fullmatch(r'[0-9a-f]{64}\.mp4', name):
+                self.send_error(404)
+            else:
+                self.serve_media_file(PREVIEW_CACHE.directory / name)
         elif self.path == "/auto_audio_worklet.js":
             self.serve_javascript("auto_audio_worklet.js")
         elif self.path == "/assets/version1-logo.png":
@@ -223,7 +302,41 @@ class Handler(BaseHTTPRequestHandler):
             self.send_error(404)
 
     def do_POST(self):
-        if self.path == "/api/state":
+        if self.path == '/api/library-catalog':
+            try:
+                data = json.loads(self.rfile.read(int(self.headers.get('Content-Length', 0))))
+                filename = data.get('filename')
+                if not isinstance(filename, str) or filename not in {path.name for path in source_video_files()}:
+                    raise ValueError('Choose a video in the library')
+                entry = LIBRARY_CATALOG.update(filename, {**data, 'source': 'manual'})
+                self.send_json_response({'ok': True, 'catalog': entry})
+            except (ValueError, TypeError) as error:
+                self.send_error(400, str(error))
+        elif self.path == '/api/control-session':
+            self.control_session()
+        elif self.path == '/api/output-window':
+            try:
+                data = json.loads(self.rfile.read(int(self.headers.get('Content-Length', 0))))
+                if data.get('operation') == 'open':
+                    self.send_json_response({'ok': True, **MAC_OUTPUT.open()})
+                    return
+                if not self.allow_playout_control(data):
+                    return
+                if not isinstance(data.get('enabled'), bool):
+                    raise ValueError('enabled must be true or false')
+                self.send_json_response({'ok': True, **MAC_OUTPUT.set_fullscreen(data['enabled'])})
+            except Exception as error:
+                self.send_response(503)
+                body = json.dumps({'ok': False, 'error': str(error)}).encode()
+                self.send_header('Content-Type', 'application/json')
+                self.send_header('Content-Length', str(len(body)))
+                self.end_headers()
+                self.wfile.write(body)
+        elif self.path == "/api/remote-status":
+            self.update_remote_status()
+        elif self.path == "/api/remote-command":
+            self.remote_command()
+        elif self.path == "/api/state":
             self.update_state()
         elif self.path == "/api/refresh-cookies":
             self.handle_refresh_cookies()
@@ -393,14 +506,89 @@ class Handler(BaseHTTPRequestHandler):
                 if self.wfile in STATE_CLIENTS:
                     STATE_CLIENTS.remove(self.wfile)
 
+    def control_session(self):
+        data = json.loads(self.rfile.read(int(self.headers.get('Content-Length', 0))))
+        action, identity = data.get('action'), data.get('id')
+        if action not in ('heartbeat', 'claim', 'release') or (action != 'release' and (not isinstance(identity, str) or not 1 <= len(identity) <= 150)):
+            self.send_error(400, 'Invalid control session')
+            return
+        with STATE_LOCK:
+            state = control_status()
+            if action == 'release':
+                if state['owner']:
+                    CONTROL_SESSION['revoked'].add(state['owner'])
+                CONTROL_SESSION['owner'] = None
+            elif state['owner'] in (None, identity):
+                if action == 'claim':
+                    CONTROL_SESSION['revoked'].discard(identity)
+                if identity not in CONTROL_SESSION['revoked']:
+                    CONTROL_SESSION.update(owner=identity, seen=time.time())
+            state = {**control_status(), 'allowed': CONTROL_SESSION['owner'] == identity}
+        self.send_json_response(state)
+
+    def allow_playout_control(self, data):
+        with STATE_LOCK:
+            owner = control_status()['owner']
+            identity = data.get('controllerId')
+            allowed = identity == owner if owner else not identity
+        if not allowed:
+            body = json.dumps({'error': 'The iPad has control.' if owner else 'Control has returned to the Mac. Tap Take remote control on the iPad to reconnect.'}).encode()
+            self.send_response(423)
+            self.send_header('Content-Type', 'application/json')
+            self.send_header('Content-Length', str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+        return allowed
+
+    def update_remote_status(self):
+        data = json.loads(self.rfile.read(int(self.headers.get("Content-Length", 0))))
+        role = data.get("role")
+        if role not in ("host", "output"):
+            self.send_error(400, "Invalid remote role")
+            return
+        with STATE_LOCK:
+            previous = REMOTE_STATUS.get(role, {})
+            if (role == "host" and time.time() - previous.get("seen", 0) < 6
+                    and previous.get("id") != data.get("id")):
+                self.send_error(409, "Another Mac engine is already connected")
+                return
+            REMOTE_STATUS[role] = {**data, "seen": time.time()}
+        self.send_json_response({"ok": True})
+
+    def remote_command(self):
+        data = json.loads(self.rfile.read(int(self.headers.get("Content-Length", 0))))
+        if not self.allow_playout_control(data):
+            return
+        allowed = {"take", "playlist", "stop", "next", "auto", "hold", "lock", "nextBeat", "tap", "resync", "autoSettings"}
+        if data.get("action") not in allowed or not isinstance(data.get("id"), str):
+            self.send_error(400, "Invalid remote command")
+            return
+        with STATE_LOCK:
+            host = REMOTE_STATUS.get("host", {})
+            connected = time.time() - host.get("seen", 0) < 6
+            host_id = host.get("id")
+        if not connected:
+            self.send_error(409, "Open the Mac output and wait for its engine to connect")
+            return
+        self.publish_state({**data, "type": "remoteCommand", "hostId": host_id})
+        self.send_json_response({"ok": True})
+
     def update_state(self):
         length = int(self.headers.get("Content-Length", 0))
         data = json.loads(self.rfile.read(length))
+        self.publish_state(data)
+        self.send_json_response({"ok": True})
+
+    def publish_state(self, data):
         msg = f"data: {json.dumps(data)}\n\n".encode()
         dead = []
         with STATE_LOCK:
-            if data.get("type") != "vfxPulse":
-                STATE_SNAPSHOT[data.get("type")] = data
+            if data.get("type") not in ("vfxPulse", "remoteCommand", "outputFullscreen"):
+                if data.get("type") == "loadVideo":
+                    STATE_SNAPSHOT.pop("seek", None)
+                key = "transport" if data.get("type") in ("play", "pause") else data.get("type")
+                STATE_SNAPSHOT.pop(key, None)
+                STATE_SNAPSHOT[key] = data
             for client in STATE_CLIENTS:
                 try:
                     client.write(msg)
@@ -409,29 +597,67 @@ class Handler(BaseHTTPRequestHandler):
                     dead.append(client)
             for d in dead:
                 STATE_CLIENTS.remove(d)
-        self.send_json_response({"ok": True})
 
     def serve_video(self):
         filename = urllib.parse.unquote(self.path[len("/video/"):])
         safe_name = Path(filename).name
         filepath = resolve_video_path(safe_name)
 
-        if not filepath.exists():
+        self.serve_media_file(filepath)
+
+    def serve_media_file(self, filepath):
+        if not filepath.is_file():
             self.send_error(404, "Video not found")
             return
 
         size = filepath.stat().st_size
-        self.send_response(200)
+        start, end = 0, size - 1
+        byte_range = self.headers.get('Range')
+        if byte_range:
+            match = re.fullmatch(r'bytes=(\d*)-(\d*)', byte_range.strip())
+            try:
+                if not match or not any(match.groups()):
+                    raise ValueError()
+                first, last = match.groups()
+                if first:
+                    start = int(first)
+                    end = min(int(last), size - 1) if last else size - 1
+                else:
+                    suffix = int(last)
+                    if suffix <= 0:
+                        raise ValueError()
+                    start = max(0, size - suffix)
+                if start > end or start >= size:
+                    raise ValueError()
+            except ValueError:
+                self.send_response(416)
+                self.send_header('Content-Range', f'bytes */{size}')
+                self.send_header('Content-Length', '0')
+                self.end_headers()
+                return
+        length = max(0, end - start + 1)
+        self.send_response(206 if byte_range else 200)
         self.send_header("Content-Type", "video/mp4")
-        self.send_header("Content-Length", size)
+        self.send_header("Content-Length", str(length))
         self.send_header("Accept-Ranges", "bytes")
+        if byte_range:
+            self.send_header('Content-Range', f'bytes {start}-{end}/{size}')
         self.end_headers()
 
         with open(filepath, "rb") as f:
-            while chunk := f.read(65536):
-                self.wfile.write(chunk)
+            f.seek(start)
+            try:
+                while length:
+                    chunk = f.read(min(65536, length))
+                    if not chunk:
+                        break
+                    self.wfile.write(chunk)
+                    length -= len(chunk)
+            except (BrokenPipeError, ConnectionResetError):
+                pass
 
     def list_videos(self):
+        catalogue = LIBRARY_CATALOG.read()
         dl = get_download_dir()
         with LIBRARY_ORDER_LOCK:
             saved_order = read_library_order()
@@ -446,6 +672,7 @@ class Handler(BaseHTTPRequestHandler):
                 "filename": f.name,
                 "size": stat.st_size,
                 "modified": stat.st_mtime,
+                "catalog": catalogue.get(f.name, {}),
             }
             info_path = dl / (f.stem + ".info.json")
             if info_path.exists():
@@ -859,13 +1086,17 @@ class Handler(BaseHTTPRequestHandler):
         mp4_path = dl / f"{prefix}_{timestamp}.mp4"
 
         duration = None
+        conversion_args = None
         if instagram:
             try:
                 duration = float(self.headers.get("X-Recording-Duration", ""))
                 if not 0.1 <= duration <= 600 or not math.isfinite(duration):
-                    raise ValueError()
-            except ValueError:
-                self.send_json_response({"ok": False, "error": "Invalid clip length"})
+                    raise ValueError("Invalid clip length")
+                conversion_args = instagram_conversion_args(
+                    webm_path, duration, self.headers.get("X-Loop-Transition", "none"),
+                    float(self.headers.get("X-Loop-Transition-Duration", "0")))
+            except ValueError as error:
+                self.send_json_response({"ok": False, "error": str(error)})
                 return
 
         body = self.rfile.read(length)
@@ -879,9 +1110,8 @@ class Handler(BaseHTTPRequestHandler):
             ffmpeg = find_working_ffmpeg()
             if not ffmpeg:
                 raise RuntimeError("No working FFmpeg found for recording conversion")
-            command = [ffmpeg, "-y", "-i", str(webm_path)]
-            if instagram:
-                command += ["-vf", f"fps=30,tpad=stop_mode=clone:stop_duration=1,trim=duration={duration:.3f},setpts=PTS-STARTPTS"]
+            command = [ffmpeg, "-y"]
+            command += conversion_args if instagram else ["-i", str(webm_path)]
             command += ["-c:v", "libx264", "-preset", "fast", "-crf", "23", "-pix_fmt", "yuv420p"]
             if instagram:
                 command += ["-an", "-movflags", "+faststart"]

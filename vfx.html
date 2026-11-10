@@ -61,9 +61,17 @@
 </section>
 <section class="logo3d-controls" id="logo3dControls">
   <h2>3D branding</h2>
-  <p class="hint">Render the Version1 logo or type a solid Bungee ID. The @ is red and the handle is white.</p>
+  <p class="hint">Rounded, high-definition 3D text with live-video reflections. Choose a finish, then tune its polish and bevel. Original colours keeps the red @ and white handle.</p>
   <label><span>Object</span><select id="logo3dKind" onchange="sendLogo3d()"><option value="logo">Version1 logo</option><option value="text">Instagram ID</option></select></label>
-  <label id="logo3dTextField"><span>Instagram ID</span><input id="logo3dText" type="text" maxlength="40" value="@tonyt.dj" oninput="sendLogo3d()" spellcheck="false" autocomplete="off"></label>
+  <label id="logo3dTextField"><span>Text / Instagram ID</span><input id="logo3dText" type="text" maxlength="80" value="@tonyt.dj" oninput="scheduleLogo3dText()" spellcheck="false" autocomplete="off"></label>
+  <label id="logo3dFontField"><span>Typeface</span><select id="logo3dFont" onchange="sendLogo3d()"><option value="modern">Modern sans</option><option value="bungee">Bungee · original block style</option><option value="serif">Editorial serif</option></select></label>
+  <label><span>Surface finish</span><select id="logo3dSkin" onchange="applyLogoMaterial()"><option value="chrome">Polished chrome</option><option value="mirror">Liquid mirror · live video</option><option value="brushed">Brushed silver</option><option value="gold">Gold</option><option value="rose-gold">Rose gold</option><option value="obsidian">Black chrome</option><option value="pearl">Pearl ceramic</option><option value="iridescent">Iridescent metal</option><option value="original">Original colours</option></select></label>
+  <label><span>Bevel / edge roundness <output id="logo3dBevelValue">0.035</output></span><input id="logo3dBevel" type="range" min="0" max="0.1" step="0.0025" value="0.035" oninput="sendLogo3d()"></label>
+  <label><span>Roughness · polished to satin <output id="logo3dRoughnessValue">0.14</output></span><input id="logo3dRoughness" type="range" min="0.025" max="0.8" step="0.005" value="0.14" oninput="sendLogo3d()"></label>
+  <label><span>Video reflection <output id="logo3dReflectionValue">1.00</output></span><input id="logo3dReflection" type="range" min="0" max="2" step="0.01" value="1" oninput="sendLogo3d()"></label>
+  <label><span>Video environment wrap <output id="logo3dEnvironmentValue">1.00</output></span><input id="logo3dEnvironment" type="range" min="0" max="2" step="0.01" value="1" oninput="sendLogo3d()"></label>
+  <label><span>Material brightness <output id="logo3dExposureValue">1.00</output></span><input id="logo3dExposure" type="range" min="0.3" max="2" step="0.01" value="1" oninput="sendLogo3d()"></label>
+  <label><span>Render quality</span><select id="logo3dQuality" onchange="sendLogo3d()"><option value="balanced">Balanced</option><option value="high" selected>High definition</option><option value="ultra">Ultra · smoother edges, more GPU</option></select></label>
   <label><span>Horizontal position <output id="logo3dXValue">50%</output></span><input id="logo3dX" type="range" min="0" max="1" step="0.01" value="0.5" oninput="sendLogo3d()"></label>
   <label><span>Vertical position <output id="logo3dYValue">50%</output></span><input id="logo3dY" type="range" min="0" max="1" step="0.01" value="0.5" oninput="sendLogo3d()"></label>
   <label><span>Size <output id="logo3dScaleValue">48%</output></span><input id="logo3dScale" type="range" min="0.1" max="1.5" step="0.01" value="0.48" oninput="sendLogo3d()"></label>
@@ -83,7 +91,7 @@
 <p class="status" id="audioStatus">The selected microphone or USB input is analysed only. Video audio does not drive VFX.</p>
 <div class="disconnected" id="disconnected">Main window disconnected. Reopen VFX from the player.</div>
 <script>
-  window.CLUB_VISUALS_VFX_UI_VERSION = 5;
+  window.CLUB_VISUALS_VFX_UI_VERSION = 6;
   let enabled = false;
   let audioConnected = false;
   let shapeImage = '';
@@ -115,6 +123,10 @@
         $('logo3dKind').value = vfx.logo3d.kind || 'logo';
         if (document.activeElement !== $('logo3dText')) $('logo3dText').value = vfx.logo3d.text || '@tonyt.dj';
         $('logo3dAxis').value = vfx.logo3d.axis || 'y';
+        $('logo3dFont').value = vfx.logo3d.font || 'modern';
+        $('logo3dSkin').value = vfx.logo3d.skin || 'chrome';
+        $('logo3dQuality').value = vfx.logo3d.quality || 'high';
+        for (const [key,fallback] of [['bevel',.035],['roughness',.14],['reflection',1],['environment',1],['exposure',1]]) $('logo3d'+key[0].toUpperCase()+key.slice(1)).value=vfx.logo3d[key]??fallback;
         for (const [key, id] of [['x', 'logo3dX'], ['y', 'logo3dY'], ['scale', 'logo3dScale'], ['depth', 'logo3dDepth'], ['rotX', 'logo3dRotX'], ['rotY', 'logo3dRotY'], ['rotZ', 'logo3dRotZ'], ['motion', 'logo3dMotion'], ['startAngle', 'logo3dStartAngle'], ['endAngle', 'logo3dEndAngle']]) $(id).value = vfx.logo3d[key];
         updateLogo3dLabels();
       }
@@ -162,14 +174,28 @@
   }
   function updateLogo3dLabels() {
     $('logo3dTextField').style.display = $('logo3dKind').value === 'text' ? 'block' : 'none';
+    $('logo3dFontField').style.display = $('logo3dKind').value === 'text' ? 'block' : 'none';
     for (const id of ['logo3dX', 'logo3dY', 'logo3dScale']) $(id + 'Value').textContent = Math.round(Number($(id).value) * 100) + '%';
     for (const id of ['logo3dRotX', 'logo3dRotY', 'logo3dRotZ', 'logo3dStartAngle', 'logo3dEndAngle']) $(id + 'Value').textContent = $(id).value + '°';
     for (const id of ['logo3dDepth', 'logo3dMotion']) $(id + 'Value').textContent = Number($(id).value).toFixed(2);
+    for (const id of ['logo3dBevel','logo3dRoughness','logo3dReflection','logo3dEnvironment','logo3dExposure']) $(id+'Value').textContent=Number($(id).value).toFixed(id==='logo3dBevel'?3:2);
+  }
+  let logoTextTimer;
+  function scheduleLogo3dText() { clearTimeout(logoTextTimer);logoTextTimer=setTimeout(sendLogo3d,180); }
+  function applyLogoMaterial() {
+    const roughness={chrome:.14,mirror:.035,brushed:.36,gold:.18,'rose-gold':.18,obsidian:.22,pearl:.28,iridescent:.16,original:.22};
+    $('logo3dRoughness').value=roughness[$('logo3dSkin').value]??.14;
+    $('logo3dReflection').value=$('logo3dSkin').value === 'original' ? .35 : 1;
+    sendLogo3d();
   }
   function sendLogo3d() {
+    clearTimeout(logoTextTimer);
     updateLogo3dLabels();
     if (window.opener && !window.opener.closed) window.opener.setVfxLogo3d({
       kind: $('logo3dKind').value, text: $('logo3dText').value, axis: $('logo3dAxis').value,
+      font: $('logo3dFont').value, skin: $('logo3dSkin').value, quality: $('logo3dQuality').value,
+      bevel: Number($('logo3dBevel').value), roughness: Number($('logo3dRoughness').value),
+      reflection: Number($('logo3dReflection').value), environment: Number($('logo3dEnvironment').value), exposure: Number($('logo3dExposure').value),
       x: Number($('logo3dX').value), y: Number($('logo3dY').value),
       scale: Number($('logo3dScale').value), depth: Number($('logo3dDepth').value),
       rotX: Number($('logo3dRotX').value), rotY: Number($('logo3dRotY').value),

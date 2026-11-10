@@ -77,6 +77,14 @@
 </style>
 </head>
 <body>
+<div id="outputSetup" style="position:fixed;right:12px;top:12px;z-index:100;font:14px system-ui;color:white;background:#182333;padding:10px;border-radius:8px">
+  <button id="outputFullscreenButton" style="padding:12px">Enter fullscreen</button>
+  <button id="outputAudioButton" style="padding:12px">Mac audio setup</button>
+  <span id="outputNotice" role="status"></span>
+</div>
+<div id="macEnginePanel" hidden style="position:fixed;inset:65px 20px 20px;z-index:99;background:#111">
+  <button onclick="document.getElementById('macEnginePanel').hidden=true" style="padding:12px">Close setup · engine keeps running</button>
+</div>
 <div class="video-wrap" id="videoWrap">
   <div class="video-stage" id="videoStage">
     <video id="video" playsinline muted loop></video>
@@ -100,6 +108,7 @@
   let looping = true;
   let playbackSpeed = 1;
   let outputWantsPlay = true;
+  let outputSeek = null;
   let pixelHolding = false;
   let currentOutputEffects = null;
   let tileZoom = 1.0;
@@ -157,7 +166,8 @@
   const vfxSourceCtx = vfxSource.getContext('2d');
   const vfxState = { enabled: false, scene: 0, intensity: 0.7, feedback: 0.72, bass: 0, hit: 0,
     logo3d: { kind: 'logo', text: '@tonyt.dj', x: 0.5, y: 0.5, scale: 0.48, depth: 0.45,
-      rotX: 0, rotY: -20, rotZ: 0, motion: 0.25, axis: 'y', startAngle: -45, endAngle: 45 },
+      rotX: 0, rotY: -20, rotZ: 0, motion: 0.25, axis: 'y', startAngle: -45, endAngle: 45,
+      skin: 'chrome', font: 'modern', bevel: .035, roughness: .14, reflection: 1, environment: 1, exposure: 1, quality: 'high' },
     shape: { kind: 'text', text: 'CLUB', image: '', x: 0.5, y: 0.5, scale: 0.7, depth: 1, edge: 0.7, tilt: 0, thickness: 0.8, spin: 0.3 } };
   let vfxEngine = null;
 
@@ -279,6 +289,10 @@
     video.addEventListener('loadeddata', function onLoaded() {
       video.removeEventListener('loadeddata', onLoaded);
       if (loadToken !== videoLoadToken) return;
+      if (outputSeek !== null) {
+        video.currentTime = Math.min(outputSeek, Math.max(0, video.duration - .01));
+        outputSeek = null;
+      }
       if (chosenTransition.type === 'pixel-scatter') {
         pixelHolding = true;
         video.pause();
@@ -400,6 +414,13 @@
   evtSource.onmessage = (e) => handleOutputCommand(JSON.parse(e.data));
   function handleOutputCommand(cmd) {
     switch (cmd.type) {
+      case 'outputFullscreen':
+        setOutputFullscreen(cmd.enabled);
+        break;
+      case 'seek':
+        if (video.readyState >= 2) video.currentTime = Math.min(cmd.time, Math.max(0, video.duration - .01));
+        else outputSeek = cmd.time;
+        break;
       case 'loadVideo':
         outputWantsPlay = true;
         showVideo(cmd.filename, cmd.transition);
@@ -482,6 +503,61 @@
         if (vfxEngine) vfxEngine.pulse(cmd.point[0], cmd.point[1]);
         break;
     }
+  }
+
+  const outputMonitor = new URLSearchParams(location.search).has('monitor');
+  const managedOutput = new URLSearchParams(location.search).has('managed');
+  let fullscreenBlocked = false;
+  const outputIdentity = globalThis.crypto?.randomUUID?.() || String(Date.now());
+  async function reportOutput() {
+    if (outputMonitor) return;
+    try {
+      let nativeFullscreen = false;
+      if (managedOutput) {
+        const status = await (await fetch('/api/remote-status')).json();
+        nativeFullscreen = !!status.window?.fullscreen;
+        document.getElementById('outputSetup').hidden = nativeFullscreen;
+      }
+      await fetch('/api/remote-status', {method:'POST', headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({role:'output', id:outputIdentity, fullscreen:managedOutput ? nativeFullscreen : !!document.fullscreenElement, fullscreenBlocked})});
+    } catch {}
+  }
+  async function setOutputFullscreen(enabled) {
+    try {
+      if (managedOutput) {
+        const response = await fetch('/api/output-window', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({enabled})});
+        if (!response.ok) throw new Error('Mac window command failed');
+        await reportOutput(); return;
+      }
+      if (enabled && !document.fullscreenElement) await document.documentElement.requestFullscreen();
+      else if (!enabled && document.fullscreenElement) await document.exitFullscreen();
+      fullscreenBlocked = false;
+      document.getElementById('outputNotice').textContent = '';
+    } catch {
+      fullscreenBlocked = true;
+      document.getElementById('outputSetup').hidden = false;
+      document.getElementById('outputNotice').textContent = 'Remote fullscreen requested. Click Enter fullscreen here.';
+    }
+    reportOutput();
+  }
+  document.getElementById('outputFullscreenButton').onclick = () => setOutputFullscreen(true);
+  document.addEventListener('fullscreenchange', () => {
+    document.getElementById('outputSetup').hidden = !!document.fullscreenElement;
+    fullscreenBlocked = false;
+    reportOutput();
+  });
+  if (outputMonitor) document.getElementById('outputSetup').hidden = true;
+  else {
+    // One resident editor executes playlists and analyses the Mac's audio input.
+    const engine = document.createElement('iframe');
+    engine.src = '/?host=1'; engine.title = 'Mac playout and audio engine';
+    engine.allow = 'microphone; autoplay';
+    engine.style.cssText = 'display:block;width:100%;height:calc(100% - 45px);border:0';
+    document.getElementById('macEnginePanel').append(engine);
+    document.getElementById('outputAudioButton').onclick = () => {
+      document.getElementById('macEnginePanel').hidden = !document.getElementById('macEnginePanel').hidden;
+    };
+    reportOutput(); setInterval(reportOutput, 2000);
   }
 </script>
 </body>
