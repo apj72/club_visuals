@@ -2,6 +2,10 @@
 
 Research and implementation plan, 16 October 2026.
 
+> This file contains historical research and proposed extensions. Use the
+> [product reference](product-reference.md) and [UI redesign reference](ui-redesign-reference.md)
+> for current behaviour, including the Mac-resident engine and iPad control.
+
 Current delivery: Auto Perform now has a shared microphone/USB input, an AudioWorklet feature stream with an analyser fallback, a beat and section estimator, automatic video/layout/transition/VFX decisions, prepared next video, performance profiles, library energy tags, operator locks, tap/resync controls, and an in-session decision log. Live drop detection is reactive. Offline look-ahead, a replayable/editable performance timeline, and measured venue-specific timing calibration remain future work.
 
 ## Product outcome
@@ -10,7 +14,7 @@ Press **Auto Perform** and choose an audio input on first use. Club Visuals list
 
 The first release should work with a microphone or USB/virtual audio input, which the app already supports for VFX. Capturing audio from another browser tab or the operating system is a later input option: browser screen capture may return no audio track even when requested, and it requires a fresh user gesture and permission each time [1].
 
-## What exists today
+## Historical baseline at planning time
 
 - `index.html` already obtains a microphone/USB stream using `getUserMedia`, disables echo cancellation/noise suppression/automatic gain control when possible, creates an `AudioContext` and `AnalyserNode`, and derives bass level and isolated pulses. This analysis runs inside `renderVfxFrame`, so it is tied to the VFX render loop and cannot currently drive a reliable autonomous show.
 - The playlist model already contains video, duration, layout/preset, speed, zoom/pan, transition, and timed VFX cues. The transition catalogue has 61 choices. `showVideo`, `applyLayoutConfiguration`, `applyPlaylistCue`, and `broadcastState` are usable action endpoints.

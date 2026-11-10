@@ -1,5 +1,9 @@
 # Club Visuals transition implementation plan
 
+> This plan distinguishes delivered catalogue work from future automation.
+> For the current application and redesign baseline, start with the
+> [product reference](product-reference.md) and [UI redesign reference](ui-redesign-reference.md).
+
 Source brief: `/Users/antonyjoyce/Downloads/club_visuals_transitions.md` (16 October 2026).
 
 ## Product goal and delivery order

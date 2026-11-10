@@ -40,6 +40,14 @@ for (const element of [...document.body.children]) {
   if (element !== remoteBar && !['SCRIPT','STYLE','LINK'].includes(element.tagName)) macEditor.append(element);
 }
 document.body.append(macEditor);
+// Keep the handover action reachable even when a native modal is already open.
+const remoteHandoverDialog=document.createElement('dialog');
+remoteHandoverDialog.id='remoteHandoverDialog';
+remoteHandoverDialog.className='remote-handover';
+remoteHandoverDialog.setAttribute('aria-labelledby','remoteHandoverTitle');
+remoteHandoverDialog.innerHTML='<h2 id="remoteHandoverTitle">Being remote controlled by iPad</h2><p>Your open editor is kept in place. Return control to continue working on this Mac.</p><button id="remoteHandoverReturn" type="button">Return control to Mac</button><button id="remoteHandoverOpen" type="button">Open output screen</button><p id="remoteHandoverStatus" role="status"></p>';
+remoteHandoverDialog.addEventListener('cancel',event=>{if(macControlsLocked)event.preventDefault();});
+document.body.append(remoteHandoverDialog);
 const remoteStyle = document.createElement('style');
 remoteStyle.textContent = `.remote-bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:100;margin:12px;padding:14px;border:2px solid #56d6bd;border-radius:10px;background:#182333;color:white;font:14px system-ui;box-shadow:0 6px 18px #0005}
 .remote-bar strong{display:block;color:#56d6bd;margin-bottom:6px}.remote-actions{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
@@ -47,6 +55,7 @@ remoteStyle.textContent = `.remote-bar{position:sticky;top:env(safe-area-inset-t
 #remoteTake{background:#16755f}#remoteMessage{color:#ffda87}.remote-bar p{margin-top:6px}
 .control-banner{padding:12px;background:#283a4b;border-radius:6px}.control-banner[hidden]{display:none}.control-banner button{padding:12px;min-height:44px;margin:4px 8px 0 0;border-radius:6px;border:1px solid #86cbbd;background:#203b36;color:white}
 #macEditorControls.remote-locked{opacity:.35;filter:grayscale(1);pointer-events:none}.remote-actions button:disabled{opacity:.35;cursor:not-allowed}
+.remote-handover{width:min(520px,94vw);margin:auto;padding:24px;border:1px solid #86cbbd;border-radius:10px;background:#182333;color:white;font:14px system-ui}.remote-handover::backdrop{background:#0008}.remote-handover p{margin:12px 0}.remote-handover button{padding:12px;margin:4px;border:1px solid #86cbbd;border-radius:6px;background:#203b36;color:white}
 @media(max-width:1100px){.main-layout{display:flex;flex-direction:column}.left-col,.right-col{width:100%;min-width:0}.controls{flex-wrap:wrap}button{touch-action:manipulation}}
 `;
 document.head.append(remoteStyle);
@@ -62,6 +71,8 @@ function updateControlOwnership(state) {
   macEditor.inert = locked;
   macEditor.classList.toggle('remote-locked', locked);
   macEditor.querySelectorAll('dialog').forEach(dialog => { dialog.inert = locked; });
+  if(locked&&macEditor.querySelector('dialog[open]')&&!remoteHandoverDialog.open)remoteHandoverDialog.showModal();
+  if(!locked&&remoteHandoverDialog.open)remoteHandoverDialog.close();
   remoteBar.querySelectorAll('.remote-actions button:not(#remoteOpen)').forEach(button => {
     button.disabled = !controllerAllowed;
   });
@@ -77,16 +88,18 @@ function updateControlOwnership(state) {
   }
 }
 document.addEventListener('keydown', event => {
-  if (macControlsLocked && !remoteBar.contains(event.target) && !event.metaKey && !event.ctrlKey) {
+  if (macControlsLocked && !remoteBar.contains(event.target) && !remoteHandoverDialog.contains(event.target) && !event.metaKey && !event.ctrlKey) {
     event.preventDefault(); event.stopImmediatePropagation();
   }
 }, true);
-document.getElementById('controlReturn').onclick = async () => {
+async function returnControlToMac() {
   try {
     updateControlOwnership(await remotePost('/api/control-session', {action:'release'}));
     remoteMessage('Control returned to this Mac.');
-  } catch (error) { remoteMessage(error.message); }
-};
+  } catch (error) { remoteMessage(error.message);document.getElementById('remoteHandoverStatus').textContent=error.message; }
+}
+document.getElementById('controlReturn').onclick = returnControlToMac;
+document.getElementById('remoteHandoverReturn').onclick = returnControlToMac;
 document.getElementById('controlClaim').onclick = async () => {
   try {
     updateControlOwnership(await remotePost('/api/control-session', {action:'claim', id:remoteId}));
@@ -160,6 +173,7 @@ async function openOutputScreen() {
 }
 document.getElementById('remoteOpen').onclick = openOutputScreen;
 document.getElementById('controlOpen').onclick = openOutputScreen;
+document.getElementById('remoteHandoverOpen').onclick = openOutputScreen;
 async function requestMacFullscreen() {
   try {
     remoteMessage('Opening the Mac playout window…');

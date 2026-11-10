@@ -2,17 +2,29 @@
 
 A browser-based tool for downloading Instagram videos and playing them back as multi-screen DJ visuals with mirror/kaleidoscope effects.
 
+## Documentation for the UI redesign
+
+The current, source-checked references are:
+
+- [Product reference](docs/product-reference.md): complete features, operating workflows, iPad control and current limitations.
+- [UI redesign reference](docs/ui-redesign-reference.md): screen inventory, action scopes, state diagrams, control ranges and acceptance checklist.
+- [Technical reference](docs/technical-reference.md): architecture, APIs, data formats, persistence, backup and tests.
+- [Documentation index](docs/README.md): reading order and the status of older guides/screenshots.
+
 ## Features
 
 - **Download** Instagram reels and posts via URL
 - **Video library** with thumbnail previews and saved drag-and-drop ordering
-- **Multi-screen display** — Single, Dual (2-up), or 8x (4x2 grid) layouts
+- **Tiled compositions** — Single, Dual, 3x, 4x and 8x layouts in one output
+- **iPad remote control** — private preparation preview, deliberate Mac playout, sticky live controls, ownership/handover and confirmation-free native Mac fullscreen
+- **Shared classification** — theme/colour/type tags, searchable filters, video review, vocabulary usage counts, bulk corrections and Undo
 - **32 mirror presets** — horizontal and vertical flip combinations across all screens, controlled by a slider and quick-access preset buttons
 - **Playlist / DJ mode** — build cue lists where each entry specifies a video, view mode, mirror preset, and duration (loop count or seconds). Playlists auto-advance and are saved as JSON for reuse across sessions
 - **Per-video layout presets** — save multiple named combinations of layout, playback method, panel orientation, zoom and X/Y position for each video, then use them in playlists
-- **Fullscreen playback** — gap-free edge-to-edge video with auto-hiding controls
+- **Clean fullscreen output** — separate Mac output and private preview fullscreen
 - **Seamless looping** — near-invisible loop points
-- **Efficient rendering** — clones share a single decoded video stream via `captureStream()`
+- **Efficient rendering** — Canvas tiles share a single decoded video source
+- **HD 3D text/logo materials** — rounded bevels, three typefaces, nine finishes and live-video chrome/mirror reflections
 - **Live VFX** — ripple, image smear, video ribbons, kaleidoscope, prism fracture, reflective text, and a rotatable 3D Version1 logo, driven by a venue microphone or USB audio input
 - **Auto Perform** — listens to a microphone/USB feed and automatically changes videos, layouts, transitions, and VFX on detected beats and musical sections
 - **Instagram background clips** — position a 4:5, 9:16, or square crop box over the player, choose a source timecode and length, and save a silent MP4 for Instagram Video Studio
@@ -21,7 +33,7 @@ A browser-based tool for downloading Instagram videos and playing them back as m
 
 - Python 3.10+
 - [yt-dlp](https://github.com/yt-dlp/yt-dlp) — `brew install yt-dlp`
-- [ffmpeg](https://ffmpeg.org/) — `brew install ffmpeg` (for thumbnail generation)
+- [ffmpeg](https://ffmpeg.org/) — `brew install ffmpeg` (for thumbnails, compatible previews and MP4/loop conversion)
 - A Chromium-based browser (Brave, Chrome, Edge) with an active Instagram login — used for cookie-based authentication
 
 ## Setup
@@ -41,7 +53,7 @@ No Python dependencies beyond the standard library.
 ./start.sh
 ```
 
-This starts the server at `http://localhost:8008` and opens it in your browser. On first launch it exports Instagram cookies from your browser for authenticated downloads.
+This starts the server at `http://localhost:8008` and opens it in your browser. Use the connection panel to refresh Instagram cookies before the first authenticated download.
 
 ### Stop the server
 
@@ -52,7 +64,7 @@ This starts the server at `http://localhost:8008` and opens it in your browser. 
 ### iPad preview and Mac playout
 
 Connect the Mac and iPad to the same local network and start the server on the
-Mac. **Open Mac playout** and **Mac fullscreen** on the iPad open a dedicated
+Mac. **Open output screen** and **Mac fullscreen** on the iPad open a dedicated
 Brave/Chrome/Edge window on the Mac. Sending a look or playlist also opens it
 automatically if no playout engine is connected. Its engine runs playlists and
 audio analysis. A normal `http://localhost:8008/output` page still works as an
@@ -136,18 +148,38 @@ between Mac and iPad and saved separately in `library_catalog.json`. Refresh
 the Library on another device to see edits. Source files and saved playlists
 keep their existing names and paths. New downloads start as **Untagged**.
 
+Use **Manage classification tags** for a wide review workspace. **Videos &
+review** shows each clip's tags and a separate video-review editor: remove
+chips with ×, pick existing labels, enter custom labels, mark Reviewed and
+use Save & next video. **All tags & usage** lists assignment counts and the
+clips using each tag. Rename a tag, merge it into an existing label or remove
+it across matching library videos. Selected clips can also receive/remove a
+tag or change review status in bulk. These operations preserve other metadata
+and offer **Undo last tag change** during the current server session.
+
+New review edits use catalogue revisions to avoid overwriting changes made on
+another screen. If an edit conflicts, reload its saved tags before retrying.
+Classification data stays in the local, gitignored catalogue; it is not a
+background AI classification service or an automatic feature of new downloads.
+
 ### Playback
 
 1. Click any video in the **Library** to load it
 2. Use the controls:
    - **Play / Pause** — toggle playback
-   - **Loop** — seamless looping
+   - **Playback** — Once, forward Loop or Bounce
    - **Speed − / +** — 0.25× to 2× playback in 0.25× steps
    - **Mute** — toggle audio
-   - **Dual / 8x / Single** — cycle view modes
+   - **Layout** — Single, Dual, 3x, 4x or 8x
    - **Slider + preset buttons** — select mirror configuration (different presets shown for Dual vs 8x)
    - **Reset controls** — return to Single layout, preset 1, No Loop, 1× speed, 1× zoom, and centred X/Y pan
-   - **Fullscreen** — fills the entire screen, controls auto-hide after 1.5s
+   - **Preview fullscreen** — fills this editor's screen; controls auto-hide after 1.5s
+   - **Mac fullscreen** — controls the dedicated live output window
+
+The main editor implements Bounce. The current clean-output playback handler
+maps Bounce to forward looping, so this mode does not yet have full preview/
+output parity. Recording captures its initiating editor; there is no dedicated
+remote Record Mac action.
 
 ### Live VFX
 
@@ -155,11 +187,11 @@ While a video or playlist is playing, click **VFX** in the main player to open i
 
 ### Auto Perform: sound to visuals
 
-Choose a microphone or USB audio input in the **Sound to Visuals** bar and press **Auto Perform**. On first use, grant browser microphone permission. The app mutes the video's own soundtrack while it listens to the external audio feed, estimates the beat and energy, and changes videos, layouts, transitions, and VFX automatically. The BPM display includes a confidence score. It takes several regular beats to lock onto a tempo; quiet passages hold the current look. The clean output and recordings receive the same player changes. **Stop Auto** leaves the current video on screen and restores its previous mute setting.
+Choose a Mac microphone or USB audio input in **Sound to Visuals · Mac audio** and press **Mac Auto Perform**. On first use, grant microphone permission and activate audio in **Mac audio setup** on the output. The Mac engine mutes the video's soundtrack while it analyses the external feed, estimates beat/energy and changes videos, layouts, transitions and VFX. The BPM display includes confidence; several regular beats are needed to settle. Quiet passages hold the current look. The clean output follows the engine's choices. **Stop Auto** leaves the current video on screen and restores its previous mute setting. Recording still belongs to the editor where Record was pressed.
 
 Use **Style** and **Change every** to tune the performance. **Videos** can use the full library or the currently loaded playlist as a pool. **Curate videos** lets you exclude clips and mark them Calm, Medium, or Peak; those preferences are stored in this browser. **Hold video** and **Lock layout** prevent those automatic changes. **Next on beat** queues a video change, **Tap tempo** supplies a tempo estimate, and **Resync** resets the beat count. The **Performance decisions** list shows the latest choices. A USB/virtual line input is preferable to an open microphone in a loud venue. Live analysis reacts to an unexpected drop after it arrives; it cannot predict unheard music. [Implementation and research plan](docs/sound-to-visuals-plan.md).
 
-Open **3D text for Auto Perform** to manage named text lists. The starter **Version1 regulars** list contains `@tonyt.dj`, `@smilejack`, `@moss_b`, and `version1djs.com`. Add event names, Instagram IDs, or short web URLs; edit or remove entries, untick any you want to exclude, and use **Show now** to preview one immediately. **Save as new** copies the current list under a new name, while **Rename** and **Delete list** manage saved lists. Edits save automatically, and the last selected list loads when this browser opens Club Visuals again. An existing custom text pool is kept as **My text** during the upgrade, with missing regular entries added. Auto Perform rotates through enabled entries in the active list when it selects the 3D text scene, avoiding the previous entry when it can. Instagram IDs have a red @ and white handle; event names and URLs render in white. If no entries are enabled, Auto Perform can still show the Version1 logo.
+Open **3D text for Auto Perform** to manage named text lists. The starter **Version1 regulars** list contains `@tonyt.dj`, `@smilejack`, `@moss_b`, and `version1djs.com`. Add event names, Instagram IDs, or short web URLs; edit or remove entries, untick any you want to exclude, and use **Show now** to preview one immediately. **Save as new** copies the current list under a new name, while **Rename** and **Delete list** manage saved lists. Edits save automatically, and the last selected list loads when this browser opens Club Visuals again. An existing custom text pool is kept as **My text** during the upgrade, with missing regular entries added. Auto Perform rotates through enabled entries in the active list when it selects the 3D text scene, avoiding the previous entry when it can. With Original colours, Instagram IDs have a red @ and white handle and event names/URLs are white; other selected 3D finishes determine their material appearance. If no entries are enabled, Auto Perform can still show the Version1 logo.
 
 **Mirror sculpture** uses the live video as a reflection inside text or a transparent PNG/WebP silhouette. Enter a title or Instagram handle, click **Use current video's @ID**, select the bundled **Version1 logo**, or upload logo artwork (up to 1 MB). The Position, Size, Reflection depth, Edge glow, 3D angle, Extrusion, and Motion controls shape the object and bend the video around it. Use a high-contrast logo with a transparent background; the image's alpha defines the reflective surface. The 3D controls create a live extruded silhouette rather than importing a 3D mesh.
 
@@ -230,14 +262,22 @@ In Instagram Video Studio, use **Add layers → Video** and choose the MP4. Sele
 
 ## Browser authentication
 
-The server reads cookies from Brave browser at startup and caches them for 1 hour. To use a different Chromium browser, edit the `--cookies-from-browser` value in `server.py`.
+The connection panel exports cookies from Brave and caches them for up to seven days. Expired or failed authentication prompts a refresh. To use another Chromium browser for cookie export, change the `--cookies-from-browser` value in `server.py`; the dedicated playout browser is a separate choice.
 
 ## File structure
 
 ```
 club_visuals/
 ├── server.py       # Python HTTP server (stdlib only)
-├── index.html      # Complete frontend (single file)
+├── index.html      # Main editor, playlists, timeline, capture and settings
+├── remote_control.js / mac_output.py  # iPad ownership and native Mac playout
+├── library_catalog.py / library_catalog.js / tag_manager.js  # Shared classification
+├── vfx_engine.js / vfx.html / effects.html  # Graphics and controller windows
+├── transition_engine.js  # Transition catalogue and rendering
+├── auto_perform.js / auto_audio_worklet.js  # Audio performance engine
+├── media_preview.py # Safari-compatible video cache
+├── output.html     # Clean output and resident Mac engine
+├── docs/           # Product, UI-redesign and technical references
 ├── ig-save.sh      # CLI download script
 ├── start.sh        # Start server + open browser
 ├── stop.sh         # Stop server

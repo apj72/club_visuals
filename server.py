@@ -14,7 +14,7 @@ from pathlib import Path
 from socketserver import ThreadingMixIn
 from mac_output import MacOutput
 from media_preview import PreviewCache
-from library_catalog import LibraryCatalog
+from library_catalog import LibraryCatalog, CatalogConflict
 
 
 class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
@@ -239,6 +239,8 @@ class Handler(BaseHTTPRequestHandler):
             self.serve_javascript("remote_control.js")
         elif self.path == '/library_catalog.js':
             self.serve_javascript('library_catalog.js')
+        elif self.path == '/tag_manager.js':
+            self.serve_javascript('tag_manager.js')
         elif self.path == "/api/remote-status":
             with STATE_LOCK:
                 status = {role: {**value, "connected": time.time() - value["seen"] < 6}
@@ -247,7 +249,7 @@ class Handler(BaseHTTPRequestHandler):
             status['window'] = MAC_OUTPUT.status()
             self.send_json_response(status)
         elif self.path == '/api/library-catalog':
-            self.send_json_response({'videos': LIBRARY_CATALOG.read()})
+            self.send_json_response(LIBRARY_CATALOG.snapshot())
         elif self.path.startswith('/api/preview/'):
             filename = urllib.parse.unquote(self.path[len('/api/preview/'):])
             path = resolve_video_path(filename)
@@ -302,14 +304,29 @@ class Handler(BaseHTTPRequestHandler):
             self.send_error(404)
 
     def do_POST(self):
-        if self.path == '/api/library-catalog':
+        if self.path == '/api/library-catalog/manage':
             try:
                 data = json.loads(self.rfile.read(int(self.headers.get('Content-Length', 0))))
+                if not isinstance(data, dict):
+                    raise ValueError('Invalid tag change')
+                result = LIBRARY_CATALOG.manage(data, {path.name for path in source_video_files()})
+                self.send_json_response({'ok': True, **result})
+            except CatalogConflict as error:
+                self.send_catalog_error(409, str(error))
+            except (ValueError, TypeError) as error:
+                self.send_catalog_error(400, str(error))
+        elif self.path == '/api/library-catalog':
+            try:
+                data = json.loads(self.rfile.read(int(self.headers.get('Content-Length', 0))))
+                if not isinstance(data, dict):
+                    raise ValueError('Invalid video tags')
                 filename = data.get('filename')
                 if not isinstance(filename, str) or filename not in {path.name for path in source_video_files()}:
                     raise ValueError('Choose a video in the library')
-                entry = LIBRARY_CATALOG.update(filename, {**data, 'source': 'manual'})
+                entry = LIBRARY_CATALOG.update(filename, {**data, 'source': 'manual'}, data.get('expectedRevision'))
                 self.send_json_response({'ok': True, 'catalog': entry})
+            except CatalogConflict as error:
+                self.send_catalog_error(409, str(error))
             except (ValueError, TypeError) as error:
                 self.send_error(400, str(error))
         elif self.path == '/api/control-session':
@@ -505,6 +522,14 @@ class Handler(BaseHTTPRequestHandler):
             with STATE_LOCK:
                 if self.wfile in STATE_CLIENTS:
                     STATE_CLIENTS.remove(self.wfile)
+
+    def send_catalog_error(self, status, message):
+        body = json.dumps({'error': message}).encode()
+        self.send_response(status)
+        self.send_header('Content-Type', 'application/json')
+        self.send_header('Content-Length', str(len(body)))
+        self.end_headers()
+        self.wfile.write(body)
 
     def control_session(self):
         data = json.loads(self.rfile.read(int(self.headers.get('Content-Length', 0))))
