@@ -1,4 +1,5 @@
 """Integration checks for isolation and additive routes, in a child process."""
+import pytest
 import json
 from pathlib import Path
 import socket
@@ -11,7 +12,8 @@ import urllib.error
 ROOT = Path(__file__).parent
 
 
-def test_read_only_trial_and_legacy_routes(tmp_path):
+@pytest.mark.parametrize("playout", [False, True])
+def test_read_only_trial_and_legacy_routes(tmp_path, playout):
     data = tmp_path / 'data'
     runtime = tmp_path / 'runtime'
     (data / 'media').mkdir(parents=True)
@@ -21,7 +23,7 @@ def test_read_only_trial_and_legacy_routes(tmp_path):
         sock.bind(('127.0.0.1', 0))
         port = sock.getsockname()[1]
     process = subprocess.Popen([sys.executable, 'scripts/run-ui-preview.py',
-        '--port', str(port), '--data-root', str(data), '--runtime-root', str(runtime)],
+        '--port', str(port), '--data-root', str(data), '--runtime-root', str(runtime)] + (['--enable-playout'] if playout else []),
         cwd=ROOT, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE)
     base = f'http://127.0.0.1:{port}'
 
@@ -53,10 +55,19 @@ def test_read_only_trial_and_legacy_routes(tmp_path):
         assert request('/ui-v2/../../.cookies.txt')[0] == 404
         assert json.loads(request('/api/videos')[1])[0]['filename'] == 'fixture.mp4'
         before = (data/'config.json').read_bytes()
-        for path in ['/api/config','/api/library-catalog','/api/output-window','/api/control-session','/download','/api/convert']:
+        for path in ['/api/config','/api/library-catalog','/download','/api/convert'] + ([] if playout else ['/api/output-window','/api/control-session']):
             assert request(path, 'POST', b'{}')[0] == 403
         assert request('/api/video/fixture.mp4', 'DELETE')[0] == 403
         assert request('/api/browse?path=/')[0] == 403
+        if playout:
+            code, body = request('/api/control-session', 'POST', b'{"action":"claim","id":"test-controller"}')
+            assert code == 200 and json.loads(body)['allowed']
+            code, _ = request('/api/remote-status', 'POST', b'{"role":"host","id":"test-host"}')
+            assert code == 200
+            assert json.loads(request('/api/remote-status')[1])['host']['connected']
+            code, _ = request('/api/remote-command', 'POST', b'{"id":"test-command","action":"stop","controllerId":"test-controller"}')
+            assert code == 200
+            assert request('/api/remote-command', 'POST', b'{"id":"stale","action":"stop","controllerId":"wrong"}')[0] == 423
         assert media.read_bytes() == b'original fixture'
         assert (data/'config.json').read_bytes() == before
         (data/'media/escape.mp4').symlink_to(ROOT/'index.html')

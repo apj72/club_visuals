@@ -1,5 +1,55 @@
 # V2 implementation progress
 
+## Current milestone — private layouts and isolated Mac control
+
+**11 November 2026.** The trial now renders Single, Dual, 3×, 4× and 8×
+compositions from one decoded video. It uses the baseline's 32 mirror patterns,
+tile position maps and cover/crop maths. Speed, Once/Loop, zoom and pan are
+working; Single retains the existing contain behaviour. Preview transport,
+seeking, mute and preview fullscreen are separate from Mac controls.
+
+Start with the additional `--enable-playout` flag to enable the trial's native
+output, status, ownership, Send, Stop and Mac fullscreen actions. Saved edits,
+deletion, downloads, config changes and recording uploads remain blocked.
+Without the flag, the previous server-side read-only behaviour still applies.
+
+```sh
+python3 scripts/run-ui-preview.py --port 8012 --bind 0.0.0.0 --enable-playout \
+  --data-root /private/tmp/club-visuals-v2-data \
+  --runtime-root /private/tmp/club-visuals-v2-runtime
+```
+
+Refresh `http://localhost:8012/ui-v2/` (or the Mac's LAN address on iPad).
+Choose a clip, prepare a composition and use **Take remote control**. Open
+the trial output and wait for its engine to connect, then Send. Commands are
+reported as sent first and confirmed only after the engine returns their ID.
+Connection/ownership failures leave live actions unavailable. No claim occurs
+merely from opening V2. Returning control revokes the session until explicitly
+claimed again. A Mac V2 editor becomes inert while another controller owns it;
+recovery stays available in the header. These actions affect only port 8012.
+
+This milestone sends layout/playback with neutral colour, disabled VFX/trails
+and captions off. It does not yet edit creative effects, save layouts, edit
+tags/playlists, use Auto Perform or capture recordings. Bounce is deliberately
+unavailable until its preview/output behaviour is addressed.
+
+Validation: 45 Python tests passed, both existing Node checks passed, and the
+new `node test_ui_v2_preview.mjs` checks mirror mapping, crop bounds and Single
+contain rendering. Real trial-engine browser checks confirmed a Quad look with
+pattern 7 and zoom 1.5, seek transfer, native fullscreen enter/exit and Stop.
+Editing the private layout left the output snapshot unchanged; Return control
+disabled Send. Landscape 1194px and portrait 834px fit without page overflow,
+and the header remained pinned. Physical iPad verification is still pending.
+
+Chromium creates its own Singleton symlinks inside the owned output profile.
+The runtime guard therefore validates the proxy cache and profile roots/
+DevTools file rather than rejecting browser-owned internal Singleton links.
+The copied data tree still rejects all symlinks. Normal production code,
+launchers and data remain unchanged.
+
+The earlier milestone record below is retained as history; its statement that
+all trial POST requests are blocked applies to the default runner mode only.
+
 **First milestone · 11 November 2026**
 
 The trial now has real library browsing and private media playback in a new

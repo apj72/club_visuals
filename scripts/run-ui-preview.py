@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Isolated, read-only first milestone of the V2 implementation.
+"""Isolated V2 implementation trial with optional native Mac playout.
 
-No production launchers or server files are modified. Mutations and output
-launch are deliberately unavailable until a later integration milestone.
+No production launchers or server files are modified. Saved-content mutations remain blocked. Use --enable-playout to allow
+only the existing live command and engine-report endpoints on this instance.
 """
 import argparse
 import json
@@ -16,6 +16,8 @@ import server
 
 ASSETS = {'/ui-v2/': ('index.html', 'text/html; charset=utf-8'),
           '/ui-v2/app.js': ('app.js', 'text/javascript; charset=utf-8'),
+          '/ui-v2/preview.js': ('preview.js', 'text/javascript; charset=utf-8'),
+          '/ui-v2/remote.js': ('remote.js', 'text/javascript; charset=utf-8'),
           '/ui-v2/style.css': ('style.css', 'text/css; charset=utf-8')}
 
 
@@ -24,7 +26,7 @@ def no_links(root):
         raise ValueError('Trial directories must contain copies, not symlinks')
 
 
-def configure(data, runtime, port):
+def configure(data, runtime, port, enable_playout=False):
     if not 1 <= port <= 65535 or port == 8008:
         raise ValueError('Choose a valid trial port other than 8008')
     for root in (data, runtime):
@@ -53,7 +55,13 @@ def configure(data, runtime, port):
             if root == path or path in root.parents or root in path.parents:
                 raise ValueError('Trial roots overlap production paths')
         root.mkdir(parents=True, exist_ok=True)
-        no_links(root)
+        if root == data:
+            no_links(root)
+        else:
+            no_links(root / '.runtime' / 'ipad-previews')
+            for part in [root / '.runtime', root / '.runtime/playout-browser', root / '.runtime/playout-browser/DevToolsActivePort']:
+                if part.is_symlink():
+                    raise ValueError('Runtime profile roots and DevTools file must not be symlinks')
     for name in ('media', 'clips', 'thumbnails', 'playlists', 'video_presets'):
         (data / name).mkdir(exist_ok=True)
     expected = {'download_dir': str(data / 'media'),
@@ -75,7 +83,7 @@ def configure(data, runtime, port):
         def do_GET(self):
             try:
                 no_links(data)
-                no_links(runtime)
+                no_links(runtime / '.runtime' / 'ipad-previews')
             except ValueError as error:
                 self.send_error(403, str(error))
                 return
@@ -96,7 +104,7 @@ def configure(data, runtime, port):
                 self.end_headers()
                 self.wfile.write(body)
             elif parsed.path == '/api/ui-preview-info':
-                self.send_json_response({'label':'TEST LIBRARY', 'readOnly':True,
+                self.send_json_response({'label':'TEST LIBRARY', 'readOnly':True, 'playoutEnabled':enable_playout,
                                          'port':port, 'dataRoot':str(data)})
             elif parsed.path.startswith('/ui-v2/'):
                 self.send_error(404)
@@ -106,6 +114,14 @@ def configure(data, runtime, port):
                 super().do_GET()
 
         def do_POST(self):
+            try:
+                no_links(data)
+                no_links(runtime / '.runtime' / 'ipad-previews')
+            except ValueError as error:
+                self.send_error(403, str(error))
+                return
+            if enable_playout and self.path in ('/api/control-session', '/api/output-window', '/api/remote-status', '/api/remote-command', '/api/state'):
+                return super().do_POST()
             self.send_error(403, 'Read-only trial: saved data and live commands are disabled')
 
         def do_DELETE(self):
@@ -116,17 +132,18 @@ def configure(data, runtime, port):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--enable-playout', action='store_true', help='Allow live commands only on this isolated instance; saved edits remain blocked')
     parser.add_argument('--port', type=int, default=8012)
     parser.add_argument('--bind', choices=['127.0.0.1', '0.0.0.0'], default='127.0.0.1')
     parser.add_argument('--data-root', type=Path, required=True)
     parser.add_argument('--runtime-root', type=Path, required=True)
     args = parser.parse_args()
     try:
-        handler = configure(args.data_root, args.runtime_root, args.port)
+        handler = configure(args.data_root, args.runtime_root, args.port, args.enable_playout)
         httpd = server.ThreadedHTTPServer((args.bind, args.port), handler)
     except (ValueError, OSError) as error:
         parser.exit(2, f'Cannot start trial: {error}\n')
-    print(f'TEST LIBRARY — READ ONLY\nData: {args.data_root}\nRuntime: {args.runtime_root}\n'
+    print(f'TEST LIBRARY — SAVED EDITS DISABLED (playout={args.enable_playout})\nData: {args.data_root}\nRuntime: {args.runtime_root}\n'
           f'Open http://localhost:{args.port}/ui-v2/', flush=True)
     try:
         httpd.serve_forever()
