@@ -23,9 +23,9 @@ export function setupPreview(video,canvas){
  const ctx=canvas.getContext('2d');let frame;
  const stage=canvas.parentElement;
  function resizeCanvas(){
-  const vw=video.videoWidth,vh=video.videoHeight,hasSource=vw>0&&vh>0,ratio=hasSource?vw/vh:16/9,useSourceAspect=hasSource&&Math.abs(ratio-16/9)>.01;
-  if(useSourceAspect){const scale=Math.min(1,1440/Math.max(vw,vh));canvas.width=Math.max(1,Math.round(vw*scale));canvas.height=Math.max(1,Math.round(vh*scale));stage.classList.add('source-aspect');stage.style.aspectRatio=`${canvas.width} / ${canvas.height}`}
-  else{canvas.width=1280;canvas.height=720;stage.classList.remove('source-aspect');stage.style.aspectRatio='16 / 9'}
+  const vw=video.videoWidth,vh=video.videoHeight,portrait=layout.view==='single'&&vw>0&&vh>vw;
+  if(portrait){let width=720,height=Math.round(width*vh/vw);if(height>1440){width=Math.round(width*1440/height);height=1440}canvas.width=width;canvas.height=height;stage.classList.add('portrait-preview');stage.style.aspectRatio=`${width} / ${height}`}
+  else{canvas.width=1280;canvas.height=720;stage.classList.remove('portrait-preview');stage.style.aspectRatio='16 / 9'}
  }
  resizeCanvas();
  function draw(){drawFrame(ctx,video);if(!video.paused&&!video.ended)frame=requestAnimationFrame(draw)}

@@ -20,7 +20,6 @@ main{height:calc(100vh - var(--header-height,190px))}
 #stage-panel{height:100%;min-height:0;display:flex;flex-direction:column}
 #stage-panel .stage{position:relative;display:flex;align-items:center;justify-content:center;flex:1 1 auto;min-height:0;width:100%;margin:0 auto;aspect-ratio:auto;overflow:hidden}
 #stage-panel .stage.portrait-preview{width:auto;height:100%;max-width:100%;align-self:center;flex:0 1 auto}
-#stage-panel .stage.source-aspect{width:auto;height:100%;max-width:100%;align-self:center;flex:0 1 auto}
 #composition{display:block;object-fit:fill}
 #stage-panel .transport{flex:0 0 auto}
 #stage-panel>p{flex:0 0 auto;margin:6px 0 10px}

@@ -60,10 +60,10 @@ unavailable until its preview/output behaviour is addressed.
 Pattern cards now use the same per-layout tile position maps as the Mac
 renderer. Their asymmetric portrait thumbnail makes horizontal/vertical flips
 visible. Equivalent patterns that differ only by flipping the whole canvas are
-shown once (for example, Dual's former patterns 1/3 and 2/4). Single preview
-uses the source video's aspect ratio in every composition mode (including
-square and portrait clips). Composed output on the Mac still uses the legacy
-16:9 output canvas.
+shown once (for example, Dual's former patterns 1/3 and 2/4). Preview sizing
+retains the existing behavior: portrait Single uses a portrait canvas, while
+composed/tiled layouts use the established 16:9 canvas. This UI redesign does
+not change the Mac output or composition sizing logic.
 
 ### Focused prepare/settings screens
 
