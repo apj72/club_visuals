@@ -76,6 +76,13 @@ vertically scrollable control panel. Native selects are replaced by compact
 menus positioned beside their trigger, avoiding browser-native oversized
 popups that can open at the edge of the screen.
 
+The classification manager now provides a filtered video review queue,
+multi-select/bulk tag and review actions, per-video tag editing, tag usage
+counts and assigned thumbnails, rename/remove actions, revision-aware writes,
+and shared Undo. The isolated trial reports its read-only status and disables
+all classification writes while keeping the full workflow available to
+inspect.
+
 Validation: 45 Python tests passed, both existing Node checks passed, and the
 new `node test_ui_v2_preview.mjs` checks mirror mapping, crop bounds and Single
 contain rendering. Real trial-engine browser checks confirmed a Quad look with

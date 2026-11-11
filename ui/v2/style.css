@@ -73,6 +73,7 @@ main{height:calc(100vh - var(--header-height,190px))}
 .library-sort .menu-select{flex:1;min-width:0;width:auto;margin-top:0}
 .library-sort .menu-trigger{min-height:34px;padding:6px 8px;font-size:11px}
 .library-actions button{min-height:34px;padding:6px 11px}
+@media(max-width:700px){.library-actions button{padding-inline:7px;font-size:11px}}
 #active-filter-count{display:inline-grid;place-items:center;min-width:19px;height:19px;margin-left:5px;border-radius:20px;background:#c1f477;color:#172018;font-size:11px;font-weight:700}
 #active-filter-count[hidden],#clear-filters[hidden]{display:none}
 #filter-panel{position:fixed;z-index:1200;display:flex;flex-direction:column;overflow:auto;overscroll-behavior:contain;padding:12px;border:1px solid #536059;border-radius:11px;background:#1b2120;box-shadow:0 16px 48px #000c;color:#f1f3ed}
