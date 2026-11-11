@@ -59,3 +59,39 @@ main{height:calc(100vh - var(--header-height,190px))}
 #stage-panel .stage.portrait-preview{width:auto;height:100%;max-width:100%;align-self:center;flex:0 1 auto}
 @media(max-width:700px){#prepare-workspace{grid-template-columns:minmax(0,1fr) minmax(230px,35%)}#prepare-workspace .clip img{height:clamp(96px,17vh,150px)}}
 @media(max-width:560px){#prepare-workspace{grid-template-columns:1fr;grid-template-rows:minmax(0,1fr) minmax(180px,28vh)}#prepare-workspace .library-panel{padding:9px}#prepare-workspace .library-heading{flex-direction:row;align-items:center}#prepare-workspace .library-heading h2{font-size:14px}#prepare-workspace .library-heading input{width:55%}#prepare-workspace .clip img{height:clamp(75px,13vh,120px)}}
+/* Complete library controls: searchable, multi-select facets, and review state. */
+.library-panel{position:relative}
+.sr-only{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+#prepare-workspace .library-heading{display:flex;flex-direction:column;align-items:stretch;gap:9px}
+.library-title{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.library-title h2{margin:0;font-size:16px}
+#library-summary{color:#a6b1ad;font-size:11px;white-space:nowrap}
+.library-search{display:block;margin:0}
+.library-search input{width:100%;min-height:40px;padding:8px 11px;border:1px solid #39443f;border-radius:8px;background:#222727;color:#f1f3ed}
+.library-actions{display:flex;align-items:center;gap:7px}
+.library-sort{display:flex;align-items:center;gap:6px;flex:1;min-width:0;margin:0;color:#a6b1ad;font-size:11px}
+.library-sort .menu-select{flex:1;min-width:0;width:auto;margin-top:0}
+.library-sort .menu-trigger{min-height:34px;padding:6px 8px;font-size:11px}
+.library-actions button{min-height:34px;padding:6px 11px}
+#active-filter-count{display:inline-grid;place-items:center;min-width:19px;height:19px;margin-left:5px;border-radius:20px;background:#c1f477;color:#172018;font-size:11px;font-weight:700}
+#active-filter-count[hidden],#clear-filters[hidden]{display:none}
+#filter-panel{position:fixed;z-index:1200;display:flex;flex-direction:column;overflow:auto;overscroll-behavior:contain;padding:12px;border:1px solid #536059;border-radius:11px;background:#1b2120;box-shadow:0 16px 48px #000c;color:#f1f3ed}
+#filter-panel[hidden]{display:none}
+.filter-panel-heading{position:sticky;top:-12px;z-index:1;display:flex;align-items:center;justify-content:space-between;margin:-12px -12px 7px;padding:12px;background:#1b2120;border-bottom:1px solid #343d3c}
+.filter-panel-heading button{min-height:30px;padding:4px 10px}
+.filter-group{border-bottom:1px solid #303936}
+.filter-group summary{display:flex;align-items:center;justify-content:space-between;min-height:42px;cursor:pointer;list-style:none;font-size:13px;font-weight:650}
+.filter-group summary::-webkit-details-marker{display:none}
+.filter-group summary:after{content:'+';color:#a6b1ad;font-size:17px}
+.filter-group[open] summary:after{content:'−'}
+.filter-picked{margin-left:auto;margin-right:8px;color:#a6b1ad;font-size:11px;font-weight:400}
+.filter-options{display:grid;grid-template-columns:1fr 1fr;gap:2px 8px;padding:0 0 9px}
+.filter-option{display:flex;align-items:center;gap:7px;min-width:0;min-height:34px;padding:4px 5px;border-radius:6px;color:#d8dfda;font-size:12px;cursor:pointer}
+.filter-option:hover{background:#29312e}
+.filter-option input{flex:0 0 auto;width:16px;height:16px;margin:0;accent-color:#c1f477}
+.filter-option span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.filter-option small{margin-left:auto;color:#83908a;font-size:10px}
+.library-empty{grid-column:1/-1;display:grid;align-content:center;gap:6px;min-height:120px;padding:14px;color:#a6b1ad;text-align:center;font-size:12px}
+.library-empty strong{color:#f1f3ed;font-size:14px}
+#prepare-workspace .clip img{height:clamp(84px,12vh,135px)}
+@media(max-width:700px){#prepare-workspace .library-heading{gap:7px}.filter-options{grid-template-columns:1fr}.library-empty{min-height:70px}.library-actions{gap:5px}.library-actions button{padding-inline:8px}}

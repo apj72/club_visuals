@@ -68,7 +68,10 @@ not change the Mac output or composition sizing logic.
 ### Focused prepare/settings screens
 
 Prepare now keeps the selected-video library in a fixed-height internal
-scroller. Settings is a separate page containing the live preview and a
+scroller with text search, multi-select Theme/Colour/Type facets, tag-review
+status filters, sorting by library order/name/theme/colour/type, result counts,
+and a one-action clear state. Settings is a
+separate page containing the live preview and a
 vertically scrollable control panel. Native selects are replaced by compact
 menus positioned beside their trigger, avoiding browser-native oversized
 popups that can open at the edge of the screen.

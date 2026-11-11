@@ -32,6 +32,7 @@ const measureHeader=()=>document.documentElement.style.setProperty('--header-hei
 const redraw=setupPreview($('#video'),$('#composition'));
 const remote=setupRemote(()=>selected?{filename:selected,layout:{...layout},time:$('#video').ended?0:$('#video').currentTime||0}:null);
 let videos = [], selected = null, generation = 0;
+const libraryFilters={themes:new Set(),colours:new Set(),types:new Set(),status:new Set()};
 let showAllPatterns=false;
 function patternIcon(){const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('viewBox','0 0 40 40');svg.setAttribute('aria-hidden','true');const el=(tag,attrs)=>{const node=document.createElementNS(svg.namespaceURI,tag);Object.entries(attrs).forEach(([key,value])=>node.setAttribute(key,value));svg.append(node)};el('rect',{x:10,y:3,width:20,height:34,rx:3,fill:'#28352f',stroke:'#c1f477','stroke-width':1.4});el('rect',{x:12,y:5,width:16,height:4,rx:1,fill:'#c1f477'});el('path',{d:'M13 13 L21 18 L13 23 Z',fill:'#79d8e5'});el('circle',{cx:25,cy:29,r:2.2,fill:'#b99af8'});el('path',{d:'M20 32h7',stroke:'#ffbe75','stroke-width':1.5});return svg}
 function renderPatterns(){const all=patternIds(layout.view),curated=recommendedIds(layout.view),ids=showAllPatterns?all:(curated.length?curated:all),count={dual:2,triple:3,quad:4,octo:8}[layout.view]||0;$('#pattern-count').textContent=all.length?`${ids.length} shown · ${all.length} unique`:'Not used in Single';const gridHost=$('#patterns');gridHost.dataset.view=layout.view;gridHost.replaceChildren();if(!count)return;gridHost.style.setProperty('--cols',layout.view==='dual'?2:layout.view==='triple'?3:layout.view==='quad'?2:4);const options=document.createElement('div');options.className='pattern-options';ids.forEach((id,index)=>{const button=document.createElement('button');button.type='button';button.className='pattern'+(layout.preset===id?' selected':'');button.setAttribute('aria-pressed',String(layout.preset===id));button.setAttribute('aria-label',`Pattern ${index+1} of ${ids.length} for ${layout.view}`);const mosaic=document.createElement('span');mosaic.className='pattern-grid';const flips=tileFlips(id,layout.view);flips.forEach(([x,y])=>{const tile=document.createElement('span');tile.className='pattern-tile';tile.style.transform=`scale(${x?-1:1},${y?-1:1})`;tile.append(patternIcon());mosaic.append(tile)});button.append(mosaic);const name=document.createElement('span');name.textContent=`${showAllPatterns||!curated.includes(id)?'Pattern '+(index+1):'Balanced '+(curated.indexOf(id)+1)}`;button.append(name);button.onclick=()=>{layout.preset=id;renderPatterns();redraw()};options.append(button)});gridHost.append(options);const toggle=document.createElement('button');toggle.type='button';toggle.className='show-all';toggle.textContent=showAllPatterns?'Show recommended patterns':`Show all ${all.length} unique patterns`;toggle.setAttribute('aria-expanded',String(showAllPatterns));toggle.onclick=()=>{showAllPatterns=!showAllPatterns;renderPatterns()};gridHost.append(toggle)}
@@ -50,20 +51,62 @@ async function json(url) {
   return response.json();
 }
 function render() {
-  const query = $('#search').value.toLowerCase();
-  const shown = videos.filter(clip => [clip.filename, clip.uploader, ...tags(clip)].join(' ').toLowerCase().includes(query));
-  $('#count').textContent = `${shown.length} videos`;
+  const query = $('#search').value.trim().toLowerCase();
+  const shown = videos.filter(clip => {
+    const textMatches=[clip.filename,clip.uploader,...tags(clip)].join(' ').toLowerCase().includes(query);
+    const facetsMatch=['themes','colours','types'].every(key=>!libraryFilters[key].size||tagsFor(clip,key).some(value=>libraryFilters[key].has(value)));
+    const statuses=clipStatus(clip),statusMatches=!libraryFilters.status.size||statuses.some(value=>libraryFilters.status.has(value));
+    return textMatches&&facetsMatch&&statusMatches;
+  });
+  const sortKey=$('#library-sort').value,sortField={theme:'themes',colour:'colours',type:'types'}[sortKey];
+  if(sortKey==='name')shown.sort((a,b)=>a.filename.localeCompare(b.filename,undefined,{sensitivity:'base',numeric:true}));
+  else if(sortField)shown.sort((a,b)=>(tagsFor(a,sortField)[0]||'').localeCompare(tagsFor(b,sortField)[0]||'',undefined,{sensitivity:'base'})||a.filename.localeCompare(b.filename,undefined,{sensitivity:'base',numeric:true}));
+  $('#count').textContent = `${shown.length} of ${videos.length} videos`;
+  $('#library-summary').textContent = query||activeFilterCount()?`${shown.length} of ${videos.length} videos`:`${videos.length} videos`;
+  const active=activeFilterCount();$('#active-filter-count').textContent=String(active);$('#active-filter-count').hidden=!active;$('#clear-filters').hidden=!query&&!active;
   $('#clips').replaceChildren(...shown.map(clip => {
     const button = document.createElement('button');button.className='clip';
     button.setAttribute('aria-pressed', String(selected === clip.filename));
     const image=document.createElement('img'); image.alt='';image.loading='lazy';
     image.src='/thumbnail/'+encodeURIComponent(clip.filename);
-    const title=document.createElement('strong');title.textContent=clip.filename;
-    const meta=document.createElement('span');meta.textContent=tags(clip).join(' · ') || 'Untagged';
+    const title=document.createElement('strong');title.textContent=clip.uploader?`${clip.uploader} · ${clip.filename}`:clip.filename;
+    const meta=document.createElement('span');meta.textContent=tags(clip).slice(0,4).join(' · ') || 'Untagged';
     button.append(image,title,meta);button.onclick=()=>select(clip);return button;
   }));
-  if (!shown.length) $('#clips').textContent = videos.length ? 'No matching videos.' : 'No videos found in the configured media library.';
+  if (!shown.length) {const empty=document.createElement('div');empty.className='library-empty';const heading=document.createElement('strong'),message=document.createElement('span');heading.textContent=videos.length?'No videos match':'No videos found';message.textContent=videos.length?'Try a different search or clear the selected filters.':'No videos are available in the configured library.';empty.append(heading,message);$('#clips').replaceChildren(empty)}
 }
+function tagsFor(clip,key){return clip.catalog?.[key]||[]}
+function clipStatus(clip){const values=tags(clip);if(!values.length)return['untagged'];return clip.catalog?.reviewed?['reviewed']:['needs-review']}
+function activeFilterCount(){return Object.values(libraryFilters).reduce((sum,set)=>sum+set.size,0)}
+function buildLibraryFilters(){
+  const groups=[['themes','Theme'],['colours','Colour'],['types','Type']];
+  const root=$('#filter-groups'),openGroups=new Set([...root.querySelectorAll('details[open]')].map(item=>item.dataset.filterKey));root.replaceChildren();
+  for(const [key,label] of groups){
+    const counts=new Map();videos.forEach(clip=>tagsFor(clip,key).forEach(value=>counts.set(value,(counts.get(value)||0)+1)));
+    const details=document.createElement('details');details.className='filter-group';details.dataset.filterKey=key;details.open=openGroups.has(key);
+    const summary=document.createElement('summary');summary.textContent=label;const picked=document.createElement('span');picked.className='filter-picked';picked.textContent=libraryFilters[key].size?`${libraryFilters[key].size} selected`:'Any';summary.append(picked);
+    const list=document.createElement('div');list.className='filter-options';
+    [...counts].sort((a,b)=>a[0].localeCompare(b[0])).forEach(([value,count])=>{
+      const labelEl=document.createElement('label');labelEl.className='filter-option';const checkbox=document.createElement('input');checkbox.type='checkbox';checkbox.checked=libraryFilters[key].has(value);checkbox.value=value;checkbox.addEventListener('change',()=>{checkbox.checked?libraryFilters[key].add(value):libraryFilters[key].delete(value);buildLibraryFilters();render()});
+      const name=document.createElement('span');name.textContent=value;const amount=document.createElement('small');amount.textContent=String(count);labelEl.append(checkbox,name,amount);list.append(labelEl);
+    });
+    details.append(summary,list);root.append(details);
+  }
+  const statusCounts={reviewed:0,'needs-review':0,untagged:0};videos.forEach(clip=>clipStatus(clip).forEach(value=>statusCounts[value]++));
+  const statusDetails=document.createElement('details');statusDetails.className='filter-group';statusDetails.dataset.filterKey='status';statusDetails.open=openGroups.has('status');const statusSummary=document.createElement('summary');statusSummary.textContent='Tag status';const statusPicked=document.createElement('span');statusPicked.className='filter-picked';statusPicked.textContent=libraryFilters.status.size?`${libraryFilters.status.size} selected`:'Any';statusSummary.append(statusPicked);const statusList=document.createElement('div');statusList.className='filter-options';
+  [['needs-review','Needs review'],['reviewed','Reviewed'],['untagged','Untagged']].forEach(([value,label])=>{const labelEl=document.createElement('label');labelEl.className='filter-option';const checkbox=document.createElement('input');checkbox.type='checkbox';checkbox.checked=libraryFilters.status.has(value);checkbox.addEventListener('change',()=>{checkbox.checked?libraryFilters.status.add(value):libraryFilters.status.delete(value);buildLibraryFilters();render()});const name=document.createElement('span');name.textContent=label;const amount=document.createElement('small');amount.textContent=String(statusCounts[value]);labelEl.append(checkbox,name,amount);statusList.append(labelEl)});
+  statusDetails.append(statusSummary,statusList);root.append(statusDetails);
+}
+const filterPanel=$('#filter-panel'),filterToggle=$('#filter-toggle');
+function closeFilters(){filterPanel.hidden=true;filterToggle.setAttribute('aria-expanded','false')}
+function positionFilters(){const rect=filterToggle.getBoundingClientRect(),width=Math.min(350,innerWidth-24),left=Math.max(12,Math.min(rect.left,innerWidth-width-12));filterPanel.style.left=`${left}px`;filterPanel.style.top=`${Math.min(rect.bottom+8,innerHeight-120)}px`;filterPanel.style.width=`${width}px`;filterPanel.style.maxHeight=`${Math.max(180,Math.min(innerHeight*.72,innerHeight-rect.bottom-20))}px`}
+filterToggle.addEventListener('click',()=>{const opening=filterPanel.hidden;if(opening){positionFilters();filterPanel.hidden=false;filterToggle.setAttribute('aria-expanded','true')}else closeFilters()});
+$('#filter-close').addEventListener('click',closeFilters);
+document.addEventListener('click',event=>{const path=event.composedPath();if(!filterPanel.hidden&&!path.includes(filterPanel)&&!path.includes(filterToggle))closeFilters()});
+window.addEventListener('resize',()=>{if(!filterPanel.hidden)positionFilters()});
+window.addEventListener('scroll',event=>{if(!filterPanel.hidden&&!filterPanel.contains(event.target))closeFilters()},true);
+document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!filterPanel.hidden){closeFilters();filterToggle.focus()}});
+$('#clear-filters').addEventListener('click',()=>{$('#search').value='';Object.values(libraryFilters).forEach(set=>set.clear());buildLibraryFilters();render()});
 async function select(clip) {
   const token=++generation;selected=clip.filename;remote.refresh();render();
   syncSavedLayouts();
@@ -89,6 +132,7 @@ async function select(clip) {
 }
 $('#video').addEventListener('error',()=>{$('#status').textContent='Video could not play. Choose another clip or retry by selecting this one.'});
 $('#search').addEventListener('input',render);
+$('#library-sort').addEventListener('change',render);
 document.querySelector('[data-layout=view]').addEventListener('change',event=>{layout.view=event.target.value;showAllPatterns=false;const ids=patternIds(layout.view);if(ids.length&&!ids.includes(layout.preset))layout.preset=(recommendedIds(layout.view)[0]||ids[0]);renderPatterns();redraw()});
 $('#look').addEventListener('change',event=>{if(!looks[event.target.value])return;layout.effects={...layout.effects,...looks[event.target.value]};syncSettings();redraw()});
 $('#save-layout').addEventListener('click',()=>{if(!selected){$('#status').textContent='Choose a video before saving a layout.';return}const name=$('#preset-name').value.trim();if(!name){$('#preset-name').focus();return}const key='clubVisuals.uiV2.layouts:'+selected;try{const items=JSON.parse(localStorage.getItem(key)||'[]');items.push({name,view:layout.view,preset:layout.preset,loopMode:layout.loopMode,speed:layout.speed,zoom:layout.zoom,panX:layout.panX,panY:layout.panY,effects:{...layout.effects}});localStorage.setItem(key,JSON.stringify(items));$('#preset-name').value='';syncSavedLayouts();$('#saved-layout').value=String(items.length-1);$('#status').textContent=`Saved “${name}” in this browser for this video.`}catch{$('#status').textContent='Could not save this layout in browser storage.'}});
@@ -99,5 +143,5 @@ try {
   const info=await json('/api/ui-preview-info');
   if(info.label!=='ISOLATED TRIAL')throw new Error('An isolated trial server is required');
   $('#source-label').textContent=info.mediaSource==='reference'?'ORIGINAL MEDIA · READ ONLY TRIAL':'SAMPLE MEDIA · ISOLATED TRIAL';
-  videos=await json('/api/videos');render();$('#status').textContent=videos.length?`Choose from ${videos.length} videos to preview.`:'No videos found in this library.';
+  videos=await json('/api/videos');buildLibraryFilters();render();$('#status').textContent=videos.length?`Choose from ${videos.length} videos to preview.`:'No videos found in this library.';
 }catch(error){$('#status').textContent=error.message;$('#count').textContent='Library unavailable';}

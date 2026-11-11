@@ -5,7 +5,18 @@
 <section id="prepare-page">
 <div class="heading"><div><small>YOUR WORKSPACE</small><h1>Prepare a look</h1><p>Choose a video and audition it in a private source-format preview.</p></div><span id="count">Loading library…</span></div>
 <div class="workspace" id="prepare-workspace"></div>
-<section class="library"><div class="library-heading"><h2>Find your next look</h2><input id="search" type="search" aria-label="Search test videos" placeholder="Search names, themes, colours…"></div><div id="clips" class="clips"></div></section>
+<section class="library" aria-label="Video library">
+  <div class="library-heading">
+    <div class="library-title"><h2>Video library</h2><span id="library-summary" aria-live="polite">Loading…</span></div>
+    <label class="library-search"><span class="sr-only">Search videos</span><input id="search" type="search" aria-label="Search videos" placeholder="Search names and tags…"></label>
+    <div class="library-actions"><label class="library-sort"><span>Sort</span><select id="library-sort" aria-label="Sort videos"><option value="library">Library order</option><option value="name">Name A–Z</option><option value="theme">Theme</option><option value="colour">Colour</option><option value="type">Type</option></select></label><button id="filter-toggle" type="button" aria-expanded="false" aria-controls="filter-panel">Filters <span id="active-filter-count" hidden>0</span></button><button id="clear-filters" class="quiet" type="button" hidden>Clear</button></div>
+  </div>
+  <div id="filter-panel" class="filter-panel" role="region" aria-label="Filter videos" hidden>
+    <div class="filter-panel-heading"><strong>Filter videos</strong><button id="filter-close" type="button" aria-label="Close filters">Done</button></div>
+    <div id="filter-groups" class="filter-groups"></div>
+  </div>
+  <div id="clips" class="clips" aria-label="Videos"></div>
+</section>
 </section>
 <section id="settings-page" hidden>
 <div class="heading"><div><small>YOUR WORKSPACE / SETTINGS</small><h1>Settings</h1><p>Configure layout, playback, colour, and saved looks. Changes update the preview.</p></div><button type="button" data-page="prepare">← Back to preview</button></div>
