@@ -1,5 +1,5 @@
 // Ported from baseline bfe7912: CONFIGS, position maps and drawCompositeFrame.
-export const layout={view:'single',preset:1,loopMode:0,speed:1,zoom:1,panX:0,panY:0};
+export const layout={view:'single',preset:1,loopMode:0,speed:1,zoom:1,panX:0,panY:0,effects:{hueRotate:0,saturate:100,contrast:100,brightness:100,blur:0,invert:0,sepia:0}};
 const hRules=[[0,0,0,0],[0,0,1,1],[1,0,0,1],[0,1,1,0],[1,1,1,1],[1,1,0,0],[0,1,0,1],[1,0,1,0]];
 export function flipFor(preset,position){return [hRules[Math.floor((preset-1)/4)][position%4],[[0,0],[0,1],[1,0],[1,1]][(preset-1)%4][position>>2]]}
 export function drawFrame(ctx,source,state=layout){
@@ -7,6 +7,8 @@ export function drawFrame(ctx,source,state=layout){
  ctx.fillStyle='#000';ctx.fillRect(0,0,w,h);if(!vw||!vh)return;
  const [cols,rows]={single:[1,1],dual:[2,1],triple:[3,1],quad:[2,2],octo:[4,2]}[state.view];
  const tw=w/cols,th=h/rows;
+ const fx=state.effects||{};
+ ctx.filter=`hue-rotate(${fx.hueRotate||0}deg) saturate(${fx.saturate??100}%) contrast(${fx.contrast??100}%) brightness(${fx.brightness??100}%) blur(${fx.blur||0}px) invert(${fx.invert||0}%) sepia(${fx.sepia||0}%)`;
  for(let i=0;i<cols*rows;i++){
   const pos=state.view==='dual'?[0,3][i]:state.view==='quad'?[0,1,4,5][i]:i;
   const [fx,fy]=state.view==='single'?[0,0]:flipFor(state.preset,pos);
@@ -15,6 +17,7 @@ export function drawFrame(ctx,source,state=layout){
   else {const scale=Math.max(tw/vw,th/vh)*state.zoom,sw=Math.min(vw,tw/scale),sh=Math.min(vh,th/scale);ctx.drawImage(source,(vw-sw)*(1+state.panX)/2,(vh-sh)*(1-state.panY)/2,sw,sh,-tw/2,-th/2,tw,th)}
   ctx.restore();
  }
+ ctx.filter='none';
 }
 export function setupPreview(video,canvas){
  const ctx=canvas.getContext('2d');let frame;
@@ -26,6 +29,11 @@ export function setupPreview(video,canvas){
   video.playbackRate=layout.speed;video.loop=layout.loopMode===1;
   const output=input.parentElement.querySelector('output');if(output)output.value=input.value;
   document.querySelectorAll('[data-crop]').forEach(el=>el.disabled=layout.view==='single');redraw();
+ }));
+ document.querySelectorAll('[data-effect]').forEach(input=>input.addEventListener('input',()=>{
+  const key=input.dataset.effect,value=Number(input.value);layout.effects[key]=value;
+  const output=document.querySelector(`[data-effect-output="${key}"]`);if(output)output.value=value+(key==='hueRotate'?'°':'%');
+  document.querySelector('#look').value='custom';redraw();
  }));
  document.querySelectorAll('[data-crop]').forEach(el=>el.disabled=true);
  const play=document.querySelector('#play');play.onclick=()=>video.paused?video.play().catch(e=>document.querySelector('#status').textContent=e.message):video.pause();
