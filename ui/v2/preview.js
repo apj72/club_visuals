@@ -1,7 +1,7 @@
 // Ported from baseline bfe7912: CONFIGS, position maps and drawCompositeFrame.
 export const layout={view:'single',preset:1,loopMode:0,speed:1,zoom:1,panX:0,panY:0,effects:{hueRotate:0,saturate:100,contrast:100,brightness:100,blur:0,invert:0,sepia:0}};
-const hRules=[[0,0,0,0],[0,0,1,1],[1,0,0,1],[0,1,1,0],[1,1,1,1],[1,1,0,0],[0,1,0,1],[1,0,1,0]];
-export function flipFor(preset,position){return [hRules[Math.floor((preset-1)/4)][position%4],[[0,0],[0,1],[1,0],[1,1]][(preset-1)%4][position>>2]]}
+const hRules=[[0,0,0,0],[0,0,1,1],[1,0,0,1],[0,1,1,0],[1,1,1,1],[1,1,0,0],[0,1,0,1],[1,0,1,0]],vRules=[[0,0],[0,1],[1,0],[1,1]];
+export function flipFor(preset,position){return[hRules[Math.floor((preset-1)/4)][position%4],vRules[(preset-1)%4][position>>2]]}
 export function drawFrame(ctx,source,state=layout){
  const w=ctx.canvas.width,h=ctx.canvas.height,vw=source.videoWidth,vh=source.videoHeight;
  ctx.fillStyle='#000';ctx.fillRect(0,0,w,h);if(!vw||!vh)return;
@@ -21,15 +21,24 @@ export function drawFrame(ctx,source,state=layout){
 }
 export function setupPreview(video,canvas){
  const ctx=canvas.getContext('2d');let frame;
+ const stage=canvas.parentElement;
+ function resizeCanvas(){
+  const vw=video.videoWidth,vh=video.videoHeight,portrait=layout.view==='single'&&vw>0&&vh>vw;
+  if(portrait){let width=720,height=Math.round(width*vh/vw);if(height>1440){width=Math.round(width*1440/height);height=1440}canvas.width=width;canvas.height=height;stage.classList.add('portrait-preview');stage.style.aspectRatio=`${width} / ${height}`}
+  else{canvas.width=1280;canvas.height=720;stage.classList.remove('portrait-preview');stage.style.aspectRatio='16 / 9'}
+ }
+ resizeCanvas();
  function draw(){drawFrame(ctx,video);if(!video.paused&&!video.ended)frame=requestAnimationFrame(draw)}
  const redraw=()=>{cancelAnimationFrame(frame);draw()};
  for(const event of ['play','seeked','loadeddata','pause'])video.addEventListener(event,redraw);
  document.querySelectorAll('[data-layout]').forEach(input=>input.addEventListener('input',()=>{
   layout[input.dataset.layout]=input.tagName==='SELECT'&&input.dataset.layout==='view'?input.value:Number(input.value);
+  if(input.dataset.layout==='view')resizeCanvas();
   video.playbackRate=layout.speed;video.loop=layout.loopMode===1;
   const output=input.parentElement.querySelector('output');if(output)output.value=input.value;
   document.querySelectorAll('[data-crop]').forEach(el=>el.disabled=layout.view==='single');redraw();
  }));
+ video.addEventListener('loadedmetadata',()=>{resizeCanvas();redraw()});
  document.querySelectorAll('[data-effect]').forEach(input=>input.addEventListener('input',()=>{
   const key=input.dataset.effect,value=Number(input.value);layout.effects[key]=value;
   const output=document.querySelector(`[data-effect-output="${key}"]`);if(output)output.value=value+(key==='hueRotate'?'°':'%');
@@ -41,5 +50,6 @@ export function setupPreview(video,canvas){
  const seek=document.querySelector('#seek');video.addEventListener('timeupdate',()=>{seek.max=Number.isFinite(video.duration)?video.duration:0;seek.value=video.currentTime});seek.oninput=()=>video.currentTime=Number(seek.value);
  document.querySelector('#mute').onclick=event=>{video.muted=!video.muted;event.target.textContent=video.muted?'Unmute preview':'Mute preview'};
  document.querySelector('#expand').onclick=()=>canvas.parentElement.requestFullscreen?.().catch(e=>document.querySelector('#status').textContent=e.message);
+ redraw.resizeCanvas=resizeCanvas;
  return redraw;
 }

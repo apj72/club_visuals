@@ -55,6 +55,15 @@ and captions off. It does not yet edit creative effects, save layouts, edit
 tags/playlists, use Auto Perform or capture recordings. Bounce is deliberately
 unavailable until its preview/output behaviour is addressed.
 
+### Mirror patterns and portrait source preview
+
+Pattern cards now use the same per-layout tile position maps as the Mac
+renderer. Their asymmetric portrait thumbnail makes horizontal/vertical flips
+visible. Equivalent patterns that differ only by flipping the whole canvas are
+shown once (for example, Dual's former patterns 1/3 and 2/4). Single preview
+uses the source video's aspect ratio; composed/tiled previews retain the Mac's
+16:9 output frame.
+
 Validation: 45 Python tests passed, both existing Node checks passed, and the
 new `node test_ui_v2_preview.mjs` checks mirror mapping, crop bounds and Single
 contain rendering. Real trial-engine browser checks confirmed a Quad look with
