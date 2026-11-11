@@ -5,6 +5,8 @@ checked against the source on **10 November 2026**.
 
 | Read | Purpose |
 | --- | --- |
+| [New UI design proposal](design/README.md) | Interactive prototype, Mac/iPad mockups, wireframes and a feature-mapped design specification. Proposed design, separate from the current app. |
+| [Reversible UI implementation plan](design/implementation-plan.md) | Separate test environment, optional new UI route, preservation of the existing UI/engine, backups, phased delivery and rollback runbooks. |
 | [Product reference](product-reference.md) | What the repository does, every feature area, operating workflows, iPad control and current limitations. |
 | [UI redesign reference](ui-redesign-reference.md) | Screen inventory, action scope, control states, interaction requirements and a redesign acceptance checklist. |
 | [Technical reference](technical-reference.md) | Code ownership, rendering and command paths, APIs, saved data, browser storage, deployment and tests. |

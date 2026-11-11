@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="dark light">
+  <title>Club Visuals · UI design prototype</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23c1f477'/%3E%3Cpath d='m8 24 8-16 8 16' fill='none' stroke='%23111414' stroke-width='3'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="prototype.css">
+</head>
+<body>
+  <a class="skip" href="#workspace">Skip to workspace</a>
+  <div class="pinned">
+    <div class="design-bar"><a href="index.html">← Design overview</a><span>INTERACTIVE CONCEPT <span class="optional">/ Illustrative stills · simulated data · no Mac connection</span></span><div><label class="sr" for="scenario">Preview a system state</label><select id="scenario"><option value="ready">Connected</option><option value="offline">Mac offline</option><option value="revoked">iPad control revoked</option><option value="locked">Mac controlled by iPad</option><option value="proxy">Preparing iPad video</option><option value="conflict">Tag save conflict</option></select><button id="fidelity" aria-pressed="false">Wireframe</button></div></div>
+    <header class="app-header"><a class="brand" href="#prepare"><span class="brand-mark">⅄</span> CLUB<span>VISUALS</span></a><nav aria-label="Workspaces" id="nav"></nav><div class="utilities"><button data-screen="capture">Capture</button><button data-screen="setup">Setup</button><span class="avatar" title="Local session">V1</span></div></header>
+    <section class="live-rail" aria-label="Mac playout controls" id="live-rail"></section>
+  </div>
+  <main id="workspace" tabindex="-1"></main>
+  <div class="toast" role="status" id="toast" hidden></div>
+  <dialog id="dialog" aria-labelledby="dialog-title"></dialog>
+  <script src="transitions.js"></script><script src="prototype.js"></script>
+</body></html>
