@@ -27,7 +27,7 @@ async function json(url) {
 function render() {
   const query = $('#search').value.toLowerCase();
   const shown = videos.filter(clip => [clip.filename, clip.uploader, ...tags(clip)].join(' ').toLowerCase().includes(query));
-  $('#count').textContent = `${shown.length} copied videos`;
+  $('#count').textContent = `${shown.length} videos`;
   $('#clips').replaceChildren(...shown.map(clip => {
     const button = document.createElement('button');button.className='clip';
     button.setAttribute('aria-pressed', String(selected === clip.filename));
@@ -37,7 +37,7 @@ function render() {
     const meta=document.createElement('span');meta.textContent=tags(clip).join(' · ') || 'Untagged';
     button.append(image,title,meta);button.onclick=()=>select(clip);return button;
   }));
-  if (!shown.length) $('#clips').textContent = videos.length ? 'No matching videos.' : 'No copied videos yet. Seed the isolated media folder, then reload.';
+  if (!shown.length) $('#clips').textContent = videos.length ? 'No matching videos.' : 'No videos found in the configured media library.';
 }
 async function select(clip) {
   const token=++generation;selected=clip.filename;remote.refresh();render();
@@ -72,6 +72,7 @@ document.querySelectorAll('[data-page]').forEach(button=>button.addEventListener
 setPage('prepare');renderPatterns();
 try {
   const info=await json('/api/ui-preview-info');
-  if(info.label!=='TEST LIBRARY')throw new Error('An isolated trial server is required');
-  videos=await json('/api/videos');render();$('#status').textContent='Choose a copied video to begin.';
+  if(info.label!=='ISOLATED TRIAL')throw new Error('An isolated trial server is required');
+  $('#source-label').textContent=info.mediaSource==='reference'?'ORIGINAL MEDIA · READ ONLY TRIAL':'SAMPLE MEDIA · ISOLATED TRIAL';
+  videos=await json('/api/videos');render();$('#status').textContent=videos.length?`Choose from ${videos.length} videos to preview.`:'No videos found in this library.';
 }catch(error){$('#status').textContent=error.message;$('#count').textContent='Library unavailable';}

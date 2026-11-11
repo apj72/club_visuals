@@ -27,7 +27,7 @@ def no_links(root):
         raise ValueError('Trial directories must contain copies, not symlinks')
 
 
-def configure(data, runtime, port, enable_playout=False):
+def configure(data, runtime, port, enable_playout=False, media_root=None, catalog_file=None, order_file=None):
     if not 1 <= port <= 65535 or port == 8008:
         raise ValueError('Choose a valid trial port other than 8008')
     for root in (data, runtime):
@@ -37,6 +37,15 @@ def configure(data, runtime, port, enable_playout=False):
             raise ValueError('Trial data/runtime must be outside the code checkout')
     if data == runtime or data in runtime.parents or runtime in data.parents:
         raise ValueError('Data and runtime roots must be separate')
+    media_root = media_root or data / 'media'
+    if not media_root.is_absolute() or media_root.resolve() != media_root or not media_root.is_dir():
+        raise ValueError('Media root must be an existing absolute directory without symlink components')
+    for root in (data, runtime):
+        if root == media_root or root in media_root.parents or media_root in root.parents:
+            raise ValueError('Trial data/runtime must stay separate from the referenced media directory')
+    for external_file in (catalog_file, order_file):
+        if external_file is not None and (not external_file.is_absolute() or external_file.resolve() != external_file or not external_file.is_file()):
+            raise ValueError('Referenced library files must be existing absolute files without symlink components')
     # Refuse existing production data directories, even when running a worktree.
     import subprocess
     common = Path(subprocess.check_output(
@@ -65,10 +74,12 @@ def configure(data, runtime, port, enable_playout=False):
                     raise ValueError('Runtime profile roots and DevTools file must not be symlinks')
     for name in ('media', 'clips', 'thumbnails', 'playlists', 'video_presets'):
         (data / name).mkdir(exist_ok=True)
-    expected = {'download_dir': str(data / 'media'),
+    expected = {'download_dir': str(media_root),
                 'instagram_clip_dir': str(data / 'clips')}
     config = data / 'config.json'
-    if config.exists() and json.loads(config.read_text()) != expected:
+    if config.is_symlink():
+        raise ValueError('Trial config must not be a symlink')
+    if config.exists() and json.loads(config.read_text()) != expected and media_root == data / 'media':
         raise ValueError('Trial config must point only to its own media/clip directories')
     config.write_text(json.dumps(expected, indent=2))
     server.PORT = port
@@ -76,7 +87,8 @@ def configure(data, runtime, port, enable_playout=False):
                        ('PLAYLIST_DIR','playlists'), ('VIDEO_PRESET_DIR','video_presets'),
                        ('LIBRARY_ORDER_FILE','library_order.json'), ('COOKIE_JAR','.cookies.txt')]:
         setattr(server, attr, data / name)
-    server.LIBRARY_CATALOG = server.LibraryCatalog(data / 'library_catalog.json')
+    server.LIBRARY_CATALOG = server.LibraryCatalog(catalog_file or data / 'library_catalog.json')
+    server.LIBRARY_ORDER_FILE = order_file or data / 'library_order.json'
     server.PREVIEW_CACHE = server.PreviewCache(runtime / '.runtime/ipad-previews', server.find_working_ffmpeg)
     server.MAC_OUTPUT = server.MacOutput(runtime, port)
 
@@ -105,8 +117,9 @@ def configure(data, runtime, port, enable_playout=False):
                 self.end_headers()
                 self.wfile.write(body)
             elif parsed.path == '/api/ui-preview-info':
-                self.send_json_response({'label':'TEST LIBRARY', 'readOnly':True, 'playoutEnabled':enable_playout,
-                                         'port':port, 'dataRoot':str(data)})
+                self.send_json_response({'label':'ISOLATED TRIAL', 'mediaSource':'reference' if media_root != data / 'media' else 'sample',
+                                         'readOnly':True, 'playoutEnabled':enable_playout,
+                                         'port':port, 'dataRoot':str(data), 'mediaRoot':str(media_root)})
             elif parsed.path.startswith('/ui-v2/'):
                 self.send_error(404)
             elif parsed.path.startswith('/api/browse'):
@@ -138,13 +151,17 @@ def main():
     parser.add_argument('--bind', choices=['127.0.0.1', '0.0.0.0'], default='127.0.0.1')
     parser.add_argument('--data-root', type=Path, required=True)
     parser.add_argument('--runtime-root', type=Path, required=True)
+    parser.add_argument('--media-root', type=Path, help='Reference an existing video directory without copying its files')
+    parser.add_argument('--catalog-file', type=Path, help='Read existing video tags from this catalog file')
+    parser.add_argument('--order-file', type=Path, help='Read existing library order from this file')
     args = parser.parse_args()
     try:
-        handler = configure(args.data_root, args.runtime_root, args.port, args.enable_playout)
+        handler = configure(args.data_root, args.runtime_root, args.port, args.enable_playout,
+                            args.media_root, args.catalog_file, args.order_file)
         httpd = server.ThreadedHTTPServer((args.bind, args.port), handler)
     except (ValueError, OSError) as error:
         parser.exit(2, f'Cannot start trial: {error}\n')
-    print(f'TEST LIBRARY — SAVED EDITS DISABLED (playout={args.enable_playout})\nData: {args.data_root}\nRuntime: {args.runtime_root}\n'
+    print(f'ISOLATED UI TRIAL — SAVED EDITS DISABLED (playout={args.enable_playout})\nMedia: {args.media_root or args.data_root / "media"}\nData: {args.data_root}\nRuntime: {args.runtime_root}\n'
           f'Open http://localhost:{args.port}/ui-v2/', flush=True)
     try:
         httpd.serve_forever()

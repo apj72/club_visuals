@@ -28,6 +28,28 @@ merely from opening V2. Returning control revokes the session until explicitly
 claimed again. A Mac V2 editor becomes inert while another controller owns it;
 recovery stays available in the header. These actions affect only port 8012.
 
+### Use the existing media library
+
+To demo with the real library, point the trial at the existing downloads folder
+and read its tag catalogue/order file in place. Video files are streamed from
+their original paths; they are not copied. Keep the trial data/runtime folders
+separate so generated thumbnails, preview transcodes and output browser state
+remain private to the trial. All saved-data endpoints are still blocked.
+
+```sh
+python3 scripts/run-ui-preview.py --port 8012 --bind 0.0.0.0 --enable-playout \
+  --data-root /private/tmp/club-visuals-v2-data \
+  --runtime-root /private/tmp/club-visuals-v2-runtime \
+  --media-root /Users/antonyjoyce/git-repos/club_visuals/downloads \
+  --catalog-file /Users/antonyjoyce/git-repos/club_visuals/library_catalog.json \
+  --order-file /Users/antonyjoyce/git-repos/club_visuals/library_order.json
+```
+
+The trial serves the full current library and its current classifications. The
+catalogue/order files are read-only in this mode; thumbnail generation writes
+only to the isolated trial data folder. The production app on port 8008 is not
+reconfigured.
+
 This milestone sends layout/playback with neutral colour, disabled VFX/trails
 and captions off. It does not yet edit creative effects, save layouts, edit
 tags/playlists, use Auto Perform or capture recordings. Bounce is deliberately
@@ -87,8 +109,8 @@ and open `http://<Mac-local-IP>:8012/ui-v2/`. The initial trial was started
 with that LAN bind. Stop only this terminal's runner with Ctrl+C. Do not use
 the legacy worktree's `stop.sh`, which targets production port 8008.
 
-The media folder contains eight copied clips and matching classification
-records. Search matches names and saved tags. Selecting a video loads it into
+The default sample media folder contains eight copied clips and matching
+classification records. Search matches names and saved tags. Selecting a video loads it into
 an independent muted player with seeking and native transport. Safari requests
 the existing compatible-preview conversion API. Playback on Chromium was
 checked with a real copied file; physical Safari verification remains pending.

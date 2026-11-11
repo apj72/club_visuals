@@ -145,6 +145,10 @@ First implement a separate `scripts/run-ui-preview.py` with this contract:
   do not kill another listener.
 - Separate absolute data and runtime roots. Code/assets come from the feature
   worktree; mutable files come from the trial roots.
+- The trial may optionally reference an existing media directory and
+  read-only catalogue/order files. This streams original videos without
+  copying them; all generated files and browser/output state stay in the
+  isolated trial roots. Keep POST/DELETE blocked for this mode.
 - Construct/rebind stateful services before accepting requests. Changing only
   `server.PORT` after import will not update the existing `MacOutput.url`.
 - Create a new `MacOutput(preview_runtime_root, preview_port)` instance. Its
