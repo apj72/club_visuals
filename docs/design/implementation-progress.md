@@ -61,8 +61,17 @@ Pattern cards now use the same per-layout tile position maps as the Mac
 renderer. Their asymmetric portrait thumbnail makes horizontal/vertical flips
 visible. Equivalent patterns that differ only by flipping the whole canvas are
 shown once (for example, Dual's former patterns 1/3 and 2/4). Single preview
-uses the source video's aspect ratio; composed/tiled previews retain the Mac's
-16:9 output frame.
+uses the source video's aspect ratio in every composition mode (including
+square and portrait clips). Composed output on the Mac still uses the legacy
+16:9 output canvas.
+
+### Focused prepare/settings screens
+
+Prepare now keeps the selected-video library in a fixed-height internal
+scroller. Settings is a separate page containing the live preview and a
+vertically scrollable control panel. Native selects are replaced by compact
+menus positioned beside their trigger, avoiding browser-native oversized
+popups that can open at the edge of the screen.
 
 Validation: 45 Python tests passed, both existing Node checks passed, and the
 new `node test_ui_v2_preview.mjs` checks mirror mapping, crop bounds and Single

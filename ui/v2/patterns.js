@@ -6,5 +6,5 @@ export function tileFlips(preset,view){return(tilePositions[view]||[]).map(posit
 export function patternIds(view){const ids=patternMap[view]||[],seen=new Set();return ids.filter(id=>{const flips=tileFlips(id,view),[baseX,baseY]=flips[0]||[0,0],key=flips.map(([x,y])=>`${x^baseX}${y^baseY}`).join('');if(seen.has(key))return false;seen.add(key);return true})}
 
 // Small hand-picked starting sets favour even, mirror-balanced compositions.
-export const recommendedPatterns={dual:[1,5],triple:[1,5],quad:[1,9],octo:[6,7]};
+export const recommendedPatterns={dual:[1,5],triple:[1,5],quad:[1,9],octo:[6,25]};
 export function recommendedIds(view){const all=patternIds(view),recommended=recommendedPatterns[view]||[];return recommended.filter(id=>all.includes(id))}
