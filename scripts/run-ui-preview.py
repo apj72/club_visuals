@@ -17,6 +17,7 @@ import server
 ASSETS = {'/ui-v2/': ('index.html', 'text/html; charset=utf-8'),
           '/ui-v2/app.js': ('app.js', 'text/javascript; charset=utf-8'),
           '/ui-v2/preview.js': ('preview.js', 'text/javascript; charset=utf-8'),
+          '/ui-v2/patterns.js': ('patterns.js', 'text/javascript; charset=utf-8'),
           '/ui-v2/remote.js': ('remote.js', 'text/javascript; charset=utf-8'),
           '/ui-v2/style.css': ('style.css', 'text/css; charset=utf-8')}
 
