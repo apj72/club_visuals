@@ -1,6 +1,26 @@
 # V2 implementation progress
 
-## Current milestone — private layouts and isolated Mac control
+## Current milestone — playlist studio in the isolated V2 trial
+
+**12 November 2026.** Added a dedicated Playlists workspace with the private
+preview, a searchable video picker, an editable sequence, entry ordering and
+removal, layout and unique mirror-pattern selection, timing, playback speed,
+incoming transitions, flash reduction and timed cues. The transition browser
+reads the existing 61-item catalogue and exposes category/search filters,
+safety notes and transition parameters. By default, drafts can be edited for
+review without persistence and Mac playout remains disabled.
+
+The playlist page is fixed to the app viewport with its own sequence and
+inspector scroll regions. It uses the same preview player and existing display
+composition path as Prepare. It does not change preview/output business logic.
+Automatic sequence generation and sending playlists to Mac remain disabled
+until the isolated trial supports those workflows safely. To persist playlist
+work in the trial, start the runner with `--enable-playlist-writes`; this grants
+only playlist JSON save/delete within that runner's isolated `playlists`
+directory. Other writes and Mac controls remain disabled unless separately
+enabled. The default remains fully read-only.
+
+## Earlier milestone — private layouts and isolated Mac control
 
 **11 November 2026.** The trial now renders Single, Dual, 3×, 4× and 8×
 compositions from one decoded video. It uses the baseline's 32 mirror patterns,
@@ -150,9 +170,11 @@ needed yet.
 
 ## Deliberate limitations of this milestone
 
-- Every POST and DELETE is rejected server-side. Saved edits, remote commands,
-  ownership claims, cookie refresh, conversion uploads and output launch are
-  unavailable. The disabled Send button explains the incomplete integration.
+- Every POST and DELETE is rejected by default. With
+  `--enable-playlist-writes`, only validated playlist JSON save/delete routes
+  can write, and only below the isolated trial's `playlists` directory. Other
+  saved edits, remote commands, ownership claims, cookie refresh, conversion
+  uploads and output launch remain unavailable unless separately enabled.
 - Folder browsing is disabled. Every GET checks trial roots for symlinks;
   configuration must point only at the trial media/clip directories.
 - The old interface is served byte-for-byte for comparison, but its write/live
@@ -160,8 +182,10 @@ needed yet.
   HTTP 403 errors; this does not affect the production server.
 - Thumbnail generation and Safari proxy creation can write regenerable caches
   inside isolated roots. “Read-only” refers to saved content and live commands.
-- Persistent Mac status, actual remote control, layouts/FX/VFX, tag editing,
-  playlists, audio and capture are not implemented in V2 yet.
+- Playlist editing, isolated save/load/delete, layouts and tag editing are
+  available in V2. Playlist-to-Mac playback, automatic generation, full FX/VFX,
+  audio and capture are not implemented in V2 yet. Remote status and control
+  require the separate `--enable-playout` trial flag.
 
 Before enabling any mutations, replace the blanket write rejection with tested
 endpoint-specific path restrictions. Before live commands, implement one

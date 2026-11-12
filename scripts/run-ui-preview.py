@@ -5,8 +5,11 @@ No production launchers or server files are modified. Saved-content mutations re
 only the existing live command and engine-report endpoints on this instance.
 """
 import argparse
+import re
 import json
 import sys
+import os
+import tempfile
 from pathlib import Path
 from urllib.parse import urlsplit, parse_qs
 
@@ -18,6 +21,8 @@ ASSETS = {'/ui-v2/': ('index.html', 'text/html; charset=utf-8'),
           '/ui-v2/app.js': ('app.js', 'text/javascript; charset=utf-8'),
           '/ui-v2/preview.js': ('preview.js', 'text/javascript; charset=utf-8'),
           '/ui-v2/library-manager.js': ('library-manager.js', 'text/javascript; charset=utf-8'),
+          '/ui-v2/playlists.js': ('playlists.js', 'text/javascript; charset=utf-8'),
+          '/ui-v2/transitions.js': ('../../docs/design/transitions.js', 'text/javascript; charset=utf-8'),
           '/ui-v2/patterns.js': ('patterns.js', 'text/javascript; charset=utf-8'),
           '/ui-v2/remote.js': ('remote.js', 'text/javascript; charset=utf-8'),
           '/ui-v2/style.css': ('style.css', 'text/css; charset=utf-8')}
@@ -28,7 +33,7 @@ def no_links(root):
         raise ValueError('Trial directories must contain copies, not symlinks')
 
 
-def configure(data, runtime, port, enable_playout=False, media_root=None, catalog_file=None, order_file=None):
+def configure(data, runtime, port, enable_playout=False, media_root=None, catalog_file=None, order_file=None, enable_playlist_writes=False):
     if not 1 <= port <= 65535 or port == 8008:
         raise ValueError('Choose a valid trial port other than 8008')
     for root in (data, runtime):
@@ -119,7 +124,7 @@ def configure(data, runtime, port, enable_playout=False, media_root=None, catalo
                 self.wfile.write(body)
             elif parsed.path == '/api/ui-preview-info':
                 self.send_json_response({'label':'ISOLATED TRIAL', 'mediaSource':'reference' if media_root != data / 'media' else 'sample',
-                                         'readOnly':True, 'playoutEnabled':enable_playout,
+                                         'readOnly':True, 'playlistWrites':enable_playlist_writes, 'playoutEnabled':enable_playout,
                                          'port':port, 'dataRoot':str(data), 'mediaRoot':str(media_root)})
             elif parsed.path.startswith('/ui-v2/'):
                 self.send_error(404)
@@ -135,11 +140,52 @@ def configure(data, runtime, port, enable_playout=False, media_root=None, catalo
             except ValueError as error:
                 self.send_error(403, str(error))
                 return
-            if enable_playout and self.path in ('/api/control-session', '/api/output-window', '/api/remote-status', '/api/remote-command', '/api/state'):
+            path = urlsplit(self.path).path
+            if enable_playlist_writes and re.fullmatch(r'/api/playlist/[a-z0-9]+(?:-[a-z0-9]+)*', path):
+                target = data / 'playlists' / (path.rsplit('/', 1)[-1] + '.json')
+                if target.is_symlink() or target.resolve().parent != (data / 'playlists').resolve():
+                    self.send_error(403, 'Playlist path must stay inside isolated trial data')
+                    return
+                try:
+                    length = int(self.headers.get('Content-Length', 0))
+                    if length < 1 or length > 2_000_000:
+                        raise ValueError('Playlist must be between 1 byte and 2 MB')
+                    raw = self.rfile.read(length)
+                    payload = json.loads(raw)
+                    if not isinstance(payload, dict) or not isinstance(payload.get('name'), str) or not isinstance(payload.get('entries'), list):
+                        raise ValueError('Playlist must contain a name and entries list')
+                    target.parent.mkdir(exist_ok=True)
+                    with tempfile.NamedTemporaryFile('w', encoding='utf-8', dir=target.parent, prefix='.playlist-', suffix='.tmp', delete=False) as stream:
+                        temp = Path(stream.name)
+                        json.dump(payload, stream, indent=2)
+                        stream.flush()
+                        os.fsync(stream.fileno())
+                    os.replace(temp, target)
+                    self.send_json_response({'ok': True})
+                except (ValueError, json.JSONDecodeError) as error:
+                    self.send_error(400, str(error))
+                except OSError as error:
+                    self.send_error(500, str(error))
+                return
+            if enable_playout and path in ('/api/control-session', '/api/output-window', '/api/remote-status', '/api/remote-command', '/api/state'):
                 return super().do_POST()
             self.send_error(403, 'Read-only trial: saved data and live commands are disabled')
 
         def do_DELETE(self):
+            try:
+                no_links(data)
+            except ValueError as error:
+                self.send_error(403, str(error))
+                return
+            path = urlsplit(self.path).path
+            if enable_playlist_writes and re.fullmatch(r'/api/playlist/[a-z0-9]+(?:-[a-z0-9]+)*', path):
+                target = data / 'playlists' / (path.rsplit('/', 1)[-1] + '.json')
+                if target.is_symlink() or target.resolve().parent != (data / 'playlists').resolve():
+                    self.send_error(403, 'Playlist path must stay inside isolated trial data')
+                    return
+                target.unlink(missing_ok=True)
+                self.send_json_response({'ok': True})
+                return
             self.send_error(403, 'Read-only trial: deletion is disabled')
 
     return TrialHandler
@@ -148,6 +194,7 @@ def configure(data, runtime, port, enable_playout=False, media_root=None, catalo
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--enable-playout', action='store_true', help='Allow live commands only on this isolated instance; saved edits remain blocked')
+    parser.add_argument('--enable-playlist-writes', action='store_true', help='Allow playlist save/delete only inside the isolated trial data folder')
     parser.add_argument('--port', type=int, default=8012)
     parser.add_argument('--bind', choices=['127.0.0.1', '0.0.0.0'], default='127.0.0.1')
     parser.add_argument('--data-root', type=Path, required=True)
@@ -158,11 +205,11 @@ def main():
     args = parser.parse_args()
     try:
         handler = configure(args.data_root, args.runtime_root, args.port, args.enable_playout,
-                            args.media_root, args.catalog_file, args.order_file)
+                            args.media_root, args.catalog_file, args.order_file, args.enable_playlist_writes)
         httpd = server.ThreadedHTTPServer((args.bind, args.port), handler)
     except (ValueError, OSError) as error:
         parser.exit(2, f'Cannot start trial: {error}\n')
-    print(f'ISOLATED UI TRIAL — SAVED EDITS DISABLED (playout={args.enable_playout})\nMedia: {args.media_root or args.data_root / "media"}\nData: {args.data_root}\nRuntime: {args.runtime_root}\n'
+    print(f'ISOLATED UI TRIAL — PLAYLIST WRITES={args.enable_playlist_writes}, PLAYOUT={args.enable_playout}\nMedia: {args.media_root or args.data_root / "media"}\nData: {args.data_root}\nRuntime: {args.runtime_root}\n'
           f'Open http://localhost:{args.port}/ui-v2/', flush=True)
     try:
         httpd.serve_forever()
