@@ -8,17 +8,19 @@ removal, layout and unique mirror-pattern selection, timing, playback speed,
 incoming transitions, flash reduction and timed cues. The transition browser
 reads the existing 61-item catalogue and exposes category/search filters,
 safety notes and transition parameters. By default, drafts can be edited for
-review without persistence and Mac playout remains disabled.
+review without persistence. Starting a playlist on the isolated trial Mac is
+available after taking remote control and connecting the output.
 
 The playlist page is fixed to the app viewport with its own sequence and
 inspector scroll regions. It uses the same preview player and existing display
 composition path as Prepare. It does not change preview/output business logic.
-Automatic sequence generation and sending playlists to Mac remain disabled
-until the isolated trial supports those workflows safely. To persist playlist
-work in the trial, start the runner with `--enable-playlist-writes`; this grants
-only playlist JSON save/delete within that runner's isolated `playlists`
-directory. Other writes and Mac controls remain disabled unless separately
-enabled. The default remains fully read-only.
+Automatic sequence generation is not part of this milestone. Playlist playout
+is routed through the existing remote command and output engine, and is enabled
+only on the isolated trial when launched with `--enable-playout`. To persist
+playlist work in the trial, start the runner with `--enable-playlist-writes`;
+this grants only playlist JSON save/delete within that runner's isolated
+`playlists` directory. Other writes remain disabled. The default remains fully
+read-only.
 
 The primary workspace is now **Studio**: the video library, private preview,
 look controls and the direct **Send this look to screen**, **Add this look to a

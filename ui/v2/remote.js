@@ -4,11 +4,15 @@ export function setupRemote(scene){
  let id=sessionStorage.getItem('clubRemoteControllerId');if(!id){id=crypto.randomUUID?.()||String(Date.now())+Math.random();sessionStorage.setItem('clubRemoteControllerId',id)}
  let status={},enabled=false,busy=false,dead=false,timer;
  const identity=()=>({controllerId:id});
+ const canPlayPlaylist=()=>enabled&&status.control?.owner===id&&!!status.host?.connected&&!busy;
+ const canNextPlaylist=()=>canPlayPlaylist()&&!!status.host?.playing;
  async function request(path,data){const r=await fetch(path,data?{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)}:{});const text=await r.text();let body;try{body=JSON.parse(text)}catch{}if(!r.ok)throw Error(body?.error||text.replace(/<[^>]*>/g,' ').trim());return body}
  function refresh(){const own=status.control?.owner===id;
   const isRemote=new URLSearchParams(location.search).get('remote')==='1'||/iPad|iPhone/.test(navigator.userAgent)||(navigator.maxTouchPoints>1&&/Mac/.test(navigator.platform));
   const locked=!isRemote&&!!status.control?.remote&&!own;document.querySelector('main').inert=locked;document.querySelector('main').classList.toggle('remote-locked',locked);
   $('#send').disabled=!enabled||!own||!scene()||!status.host?.connected||busy;
+  const playlistButton=$('#playlist-play-mac');if(playlistButton)playlistButton.disabled=!canPlayPlaylist()||playlistButton.dataset.hasEntries!=='true';
+  const nextButton=$('#playlist-next-mac');if(nextButton)nextButton.disabled=!canNextPlaylist();
   $('#stop-mac').disabled=!enabled||!own||!status.host?.connected||busy;
   $('#mac-fullscreen').disabled=!enabled||!own||busy;
   $('#open-output').disabled=!enabled||busy;
@@ -36,9 +40,12 @@ export function setupRemote(scene){
   throw Error('Trial Mac has not confirmed this command. Check the output before retrying.');
  }
  $('#send').onclick=()=>action(async()=>{const prepared=scene();if(!prepared)throw Error('Choose a video first');await command('take',{scene:{...prepared,effects:{hueRotate:0,saturate:100,contrast:100,brightness:100,blur:0,invert:0,sepia:0,...prepared.layout?.effects},vfx:{enabled:false,scene:0,logo3d:{},shape:{}},trails:{enabled:false,amount:0},captionEnabled:false,transition:{type:'cut',duration:0,pace:'steady',params:{},seed:1}}})});
+ async function sendPlaylist(playlist,loop=false){if(!playlist?.entries?.length)throw Error('Add at least one video before playing this playlist.');if(!canPlayPlaylist())throw Error('Take remote control and connect the trial Mac output before playing a playlist.');await action(()=>command('playlist',{playlist:JSON.parse(JSON.stringify(playlist)),loop:!!loop}))}
+ async function nextPlaylistEntry(){if(!canNextPlaylist())throw Error('Start a playlist on the trial Mac before skipping to the next entry.');await action(()=>command('next'))}
+ $('#playlist-next-mac').onclick=()=>nextPlaylistEntry().catch(error=>message(error.message));
  $('#stop-mac').onclick=()=>action(()=>command('stop'));
  request('/api/ui-preview-info').then(info=>{enabled=!!info.playoutEnabled; if(!enabled)message('Start the trial with --enable-playout to enable isolated Mac controls.');poll()}).catch(e=>message(e.message));
  window.addEventListener('pageshow',event=>{if(event.persisted){dead=false;clearTimeout(timer);poll()}});
  window.addEventListener('pagehide',()=>{dead=true;clearTimeout(timer)});
- return {refresh};
+ return {refresh,canPlayPlaylist,canNextPlaylist,sendPlaylist,nextPlaylistEntry};
 }

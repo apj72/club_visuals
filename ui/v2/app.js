@@ -136,7 +136,7 @@ async function select(clip) {
   }catch(error){if(token===generation)$('#status').textContent=error.message;}
 }
 $('#video').addEventListener('error',()=>{$('#status').textContent='Video could not play. Choose another clip or retry by selecting this one.'});
-const playlistManager=setupPlaylists({getVideos:()=>videos,getCurrentLook:()=>selected?{filename:selected,layout:{...layout}}:null,selectVideo:(filename,entry)=>{const clip=videos.find(video=>video.filename===filename);if(!clip)return;if(entry)applyLayout(entry);select(clip)}});
+const playlistManager=setupPlaylists({getVideos:()=>videos,getCurrentLook:()=>selected?{filename:selected,layout:{...layout}}:null,selectVideo:(filename,entry)=>{const clip=videos.find(video=>video.filename===filename);if(!clip)return;if(entry)applyLayout(entry);select(clip)},canPlayPlaylist:()=>remote.canPlayPlaylist(),onPlayPlaylist:(playlist,loop)=>remote.sendPlaylist(playlist,loop)});
 const syncStudioActions=()=>{const send=$('#send-look-to-mac');if(send)send.disabled=!selected||$('#send').disabled};new MutationObserver(syncStudioActions).observe($('#send'),{attributes:true,attributeFilter:['disabled']});syncStudioActions();$('#send-look-to-mac').addEventListener('click',()=>$('#send').click());$('#add-look-to-playlist').addEventListener('click',()=>{if(!selected){$('#status').textContent='Choose a video before adding a look to a playlist.';return}playlistManager.addCurrent(true);setPage('playlists')});
 $('#search').addEventListener('input',render);
 $('#library-sort').addEventListener('change',render);
