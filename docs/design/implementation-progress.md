@@ -1,5 +1,32 @@
 # V2 implementation progress
 
+## Current trial launch and live-control procedure
+
+**13 November 2026 · branch `feature/ui-v2` at `a1f1ce3`.** The active isolated
+trial uses port **8015**, the original downloads folder as read-only media, and
+separate temporary data/runtime roots. Playlist save/delete and trial Mac
+playout are enabled for this instance only. The current UI on port 8008 remains
+the normal production interface.
+
+On the Mac, open `http://localhost:8015/ui-v2/`. On the iPad, open
+`http://<Mac-LAN-IP>:8015/ui-v2/?remote=1` while both devices share the same
+network. On the iPad, take remote control, tap **Open trial output** (which
+opens the output window on the Mac), and wait for the connected status. From
+Studio, select a video
+and configure its layout; use **Send this look to screen**, **Add this look to
+a playlist**, or save it under **Reusable looks**. In Playlists, create/select
+a playlist, add videos or the current look, save if desired, then use **Play on
+Mac**. **Next on Mac** advances the playing sequence. Return control from the
+same iPad when finished.
+
+The playlist files are stored under
+`/private/tmp/club-visuals-v2-playlists-data/playlists`; output browser state is
+under `/private/tmp/club-visuals-v2-playlists-runtime`. Do not use the production
+launcher or port 8008 to try this branch. The current browser-control service
+is unavailable, so the latest UI has not received a fresh visual check in
+Chrome; Chrome is installed on the user's Mac, and no Brave session is being
+used.
+
 ## Current milestone — playlist studio in the isolated V2 trial
 
 **12 November 2026.** Added a dedicated Playlists workspace with the private
