@@ -149,6 +149,6 @@ setPage('studio');renderPatterns();
 try {
   const info=await json('/api/ui-preview-info');
   if(info.label!=='ISOLATED TRIAL')throw new Error('An isolated trial server is required');
-  $('#source-label').textContent=info.mediaSource==='reference'?'ORIGINAL MEDIA · READ ONLY TRIAL':'SAMPLE MEDIA · ISOLATED TRIAL';
+  $('#source-label').textContent=info.mediaSource==='reference'?'ORIGINAL MEDIA · ISOLATED TRIAL':'SAMPLE MEDIA · ISOLATED TRIAL';
   videos=await json('/api/videos');playlistManager.updateVideos();buildLibraryFilters();render();$('#status').textContent=videos.length?`Choose from ${videos.length} videos to preview.`:'No videos found in this library.';
 }catch(error){$('#status').textContent=error.message;$('#count').textContent='Library unavailable';}
