@@ -5,7 +5,9 @@
 **12 November 2026.** Added a dedicated Playlists workspace with the private
 preview, a searchable video picker, an editable sequence, entry ordering and
 removal, layout and unique mirror-pattern selection, timing, playback speed,
-incoming transitions, flash reduction and timed cues. The transition browser
+incoming transitions, flash reduction and editable timed cues for scene, mirror,
+and 3D text/logo effects. Playlists can be started and advanced with the trial
+Mac controls after taking remote control. The transition browser
 reads the existing 61-item catalogue and exposes category/search filters,
 safety notes and transition parameters. By default, drafts can be edited for
 review without persistence. Starting a playlist on the isolated trial Mac is
