@@ -14,12 +14,11 @@ On the Mac, open `http://localhost:8015/ui-v2/`. On the iPad, open
 `http://<Mac-LAN-IP>:8015/ui-v2/?remote=1` while both devices share the same
 network. On the iPad, take remote control, tap **Open trial output** (which
 opens the output window on the Mac), and wait for the connected status. From
-Studio, select a video
-and configure its layout; use **Send this look to screen**, **Add this look to
-a playlist**, or save it under **Reusable looks**. In Playlists, create/select
-a playlist, add videos or the current look, save if desired, then use **Play on
-Mac**. **Next on Mac** advances the playing sequence. Return control from the
-same iPad when finished.
+Studio, select a video and configure its layout, colour and creative effect.
+Use **Send this look to screen**, **Add this look to a playlist**, or save it
+under **Reusable looks**. In Playlists, create/select a playlist, add videos or
+the current look, save if desired, then use **Play on Mac**. **Next on Mac**
+advances the playing sequence. Return control from the same iPad when finished.
 
 The playlist files are stored under
 `/private/tmp/club-visuals-v2-playlists-data/playlists`; output browser state is
@@ -73,6 +72,14 @@ in that browser and can be applied to another video. The separate Prepare and
 Settings destinations have been removed so users do not have to guess where
 video configuration lives.
 
+Studio now also exposes the existing GPU effect engine in the private preview:
+creative scenes, mirror sculpture controls, 3D text/logo placement and rotation,
+material skins, video reflection and quality. These settings are sent through
+the existing remote `take` command. Adding a Studio look to a playlist converts
+its current effect into that entry's start cue. The trial loads the existing
+`vfx_engine.js` unchanged; composition and Mac output rendering code remain
+unchanged.
+
 ## Earlier milestone — private layouts and isolated Mac control
 
 **11 November 2026.** The trial now renders Single, Dual, 3×, 4× and 8×
@@ -123,10 +130,11 @@ catalogue/order files are read-only in this mode; thumbnail generation writes
 only to the isolated trial data folder. The production app on port 8008 is not
 reconfigured.
 
-This milestone sends layout/playback with neutral colour, disabled VFX/trails
-and captions off. It does not yet edit creative effects, save layouts, edit
-tags/playlists, use Auto Perform or capture recordings. Bounce is deliberately
-unavailable until its preview/output behaviour is addressed.
+At that earlier milestone, Send used neutral colour and disabled VFX/trails and
+captions. Studio now edits colour and VFX settings, saves reusable looks, and
+sends playlists through the isolated trial. Auto Perform and recording remain
+outside this milestone. Bounce is unavailable until its preview/output
+behaviour is addressed.
 
 ### Mirror patterns and portrait source preview
 

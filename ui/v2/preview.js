@@ -3,7 +3,7 @@ export const layout={view:'single',preset:1,loopMode:0,speed:1,zoom:1,panX:0,pan
 const hRules=[[0,0,0,0],[0,0,1,1],[1,0,0,1],[0,1,1,0],[1,1,1,1],[1,1,0,0],[0,1,0,1],[1,0,1,0]],vRules=[[0,0],[0,1],[1,0],[1,1]];
 export function flipFor(preset,position){return[hRules[Math.floor((preset-1)/4)][position%4],vRules[(preset-1)%4][position>>2]]}
 export function drawFrame(ctx,source,state=layout){
- const w=ctx.canvas.width,h=ctx.canvas.height,vw=source.videoWidth,vh=source.videoHeight;
+ const w=ctx.canvas.width,h=ctx.canvas.height,vw=source.videoWidth||source.width,vh=source.videoHeight||source.height;
  ctx.fillStyle='#000';ctx.fillRect(0,0,w,h);if(!vw||!vh)return;
  const [cols,rows]={single:[1,1],dual:[2,1],triple:[3,1],quad:[2,2],octo:[4,2]}[state.view];
  const tw=w/cols,th=h/rows;
@@ -19,16 +19,18 @@ export function drawFrame(ctx,source,state=layout){
  }
  ctx.filter='none';
 }
-export function setupPreview(video,canvas){
+export function setupPreview(video,canvas,vfxCanvas,getVfxState){
  const ctx=canvas.getContext('2d');let frame;
  const stage=canvas.parentElement;
+ let vfxEngine=null;
+ try{if(window.VfxEngine&&vfxCanvas)vfxEngine=new window.VfxEngine(vfxCanvas)}catch(error){document.querySelector('#status').textContent=`Creative effects unavailable in this browser: ${error.message}`}
  function resizeCanvas(){
   const vw=video.videoWidth,vh=video.videoHeight,portrait=layout.view==='single'&&vw>0&&vh>vw;
   if(portrait){let width=720,height=Math.round(width*vh/vw);if(height>1440){width=Math.round(width*1440/height);height=1440}canvas.width=width;canvas.height=height;stage.classList.add('portrait-preview');stage.style.aspectRatio=`${width} / ${height}`}
   else{canvas.width=1280;canvas.height=720;stage.classList.remove('portrait-preview');stage.style.aspectRatio='16 / 9'}
  }
  resizeCanvas();
- function draw(){drawFrame(ctx,video);if(!video.paused&&!video.ended)frame=requestAnimationFrame(draw)}
+ function draw(){drawFrame(ctx,video);const vfx=getVfxState?.();if(vfx?.enabled&&vfxEngine){try{vfxEngine.render(canvas,vfx);stage.classList.add('vfx-active')}catch(error){stage.classList.remove('vfx-active');document.querySelector('#status').textContent=`Creative effect preview failed: ${error.message}`}}else stage.classList.remove('vfx-active');if(!video.paused&&!video.ended)frame=requestAnimationFrame(draw)}
  const redraw=()=>{cancelAnimationFrame(frame);draw()};
  for(const event of ['play','seeked','loadeddata','pause'])video.addEventListener(event,redraw);
  document.querySelectorAll('[data-layout]').forEach(input=>input.addEventListener('input',()=>{
@@ -51,5 +53,7 @@ export function setupPreview(video,canvas){
  document.querySelector('#mute').onclick=event=>{video.muted=!video.muted;event.target.textContent=video.muted?'Unmute preview':'Mute preview'};
  document.querySelector('#expand').onclick=()=>canvas.parentElement.requestFullscreen?.().catch(e=>document.querySelector('#status').textContent=e.message);
  redraw.resizeCanvas=resizeCanvas;
+ redraw.syncVfx=()=>{if(vfxEngine){const vfx=getVfxState?.()||{};vfxEngine.setShape(vfx.shape||{});vfxEngine.setLogo3d(vfx.logo3d||{})}redraw()};
+ redraw.vfxAvailable=!!vfxEngine;
  return redraw;
 }
