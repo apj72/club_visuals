@@ -46,6 +46,34 @@ main{height:calc(100vh - var(--header-height,190px))}
 #patterns[data-view=quad] .pattern,#patterns[data-view=octo] .pattern{min-height:112px;font-size:12px}
 #patterns[data-view=quad] .pattern-grid,#patterns[data-view=octo] .pattern-grid{width:min(100%,132px);height:62px}
 @media(max-width:540px){#patterns[data-view=quad] .pattern-grid,#patterns[data-view=octo] .pattern-grid{width:min(100%,116px);height:54px}}
+/* Studio keeps video choice, preview, and configuration together. */
+#prepare-page{grid-template-rows:auto minmax(0,1fr);gap:12px;overflow:hidden}
+#prepare-page[hidden]{display:none!important}
+#prepare-page .heading{margin:0;min-height:54px}
+#prepare-page .heading p{margin:3px 0 0}
+#prepare-workspace{grid-template-columns:minmax(210px,.76fr) minmax(0,1.6fr) minmax(290px,.94fr);grid-template-rows:minmax(0,1fr);gap:12px;height:100%;min-height:0;overflow:hidden}
+#prepare-workspace #stage-panel{grid-column:2;grid-row:1}
+#prepare-workspace #inspector{grid-column:3;grid-row:1;padding:14px}
+#prepare-workspace .library-panel{grid-column:1;grid-row:1;height:100%;padding:11px;gap:7px}
+#prepare-workspace .library-heading{gap:7px}
+#prepare-workspace #clips{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+#prepare-workspace .clip img{height:clamp(76px,11vh,118px)}
+#prepare-workspace #inspector>label{margin-top:10px;font-size:12px}
+#prepare-workspace #inspector select,#prepare-workspace #inspector input:not([type=range]){min-height:36px;margin-top:5px;padding:6px 9px;font-size:12px}
+#prepare-workspace #inspector .pattern-picker{margin:12px 0}
+#prepare-workspace #inspector .pattern{min-height:78px}
+#prepare-workspace #inspector .pattern-grid{width:min(100%,82px);height:38px}
+#prepare-workspace #inspector .looks,#prepare-workspace #inspector .saved-layouts{margin-top:12px;padding-top:10px}
+#prepare-workspace #inspector .looks label{margin-top:9px;font-size:12px}
+#prepare-workspace #inspector .looks input[type=range]{margin-top:3px}
+.look-actions{display:grid;gap:6px;margin-top:12px}
+.look-actions button{min-height:38px;padding:7px 10px;font-size:12px}
+#send-look-to-mac{background:#c1f477;color:#17220c;border-color:#c1f477}
+#send-look-to-mac:disabled{background:#222727;color:#a6b1ad;border-color:#46514c}
+#prepare-workspace .saved-layouts .preset-row button{min-height:36px;padding:5px 8px;font-size:11px}
+#prepare-workspace .saved-layouts p{font-size:10px}
+@media(max-width:1100px){#prepare-workspace{grid-template-columns:minmax(0,1fr) minmax(280px,38%);grid-template-rows:minmax(0,1fr) minmax(175px,24vh)}#prepare-workspace #stage-panel{grid-column:1;grid-row:1}#prepare-workspace #inspector{grid-column:2;grid-row:1}#prepare-workspace .library-panel{grid-column:1/-1;grid-row:2}#prepare-workspace .library-heading{flex-direction:row;align-items:center;flex-wrap:wrap}#prepare-workspace .library-heading input{width:100%}#prepare-workspace #clips{grid-template-columns:repeat(auto-fill,minmax(135px,1fr))}#prepare-workspace .clip img{height:clamp(72px,12vh,110px)}}
+@media(max-width:620px){#prepare-page{overflow:auto}#prepare-workspace{grid-template-columns:1fr;grid-template-rows:minmax(220px,42vh) minmax(300px,auto) minmax(190px,24vh);overflow:auto}#prepare-workspace #stage-panel{grid-column:1;grid-row:1}#prepare-workspace #inspector{grid-column:1;grid-row:2}#prepare-workspace .library-panel{grid-column:1;grid-row:3}#prepare-workspace .library-heading{flex-direction:column;align-items:stretch}#prepare-workspace #clips{grid-template-columns:repeat(2,minmax(0,1fr))}.look-actions{grid-template-columns:1fr 1fr}}
 /* Keep video browsing beside the private preview rather than below the fold. */
 #prepare-page{grid-template-rows:auto minmax(0,1fr)}
 #prepare-workspace{grid-template-columns:minmax(0,1fr) minmax(300px,350px);grid-template-rows:minmax(0,1fr);gap:14px}

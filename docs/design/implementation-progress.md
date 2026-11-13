@@ -20,6 +20,13 @@ only playlist JSON save/delete within that runner's isolated `playlists`
 directory. Other writes and Mac controls remain disabled unless separately
 enabled. The default remains fully read-only.
 
+The primary workspace is now **Studio**: the video library, private preview,
+look controls and the direct **Send this look to screen**, **Add this look to a
+playlist**, and **Save as look** actions are together. Reusable looks are saved
+in that browser and can be applied to another video. The separate Prepare and
+Settings destinations have been removed so users do not have to guess where
+video configuration lives.
+
 ## Earlier milestone — private layouts and isolated Mac control
 
 **11 November 2026.** The trial now renders Single, Dual, 3×, 4× and 8×
