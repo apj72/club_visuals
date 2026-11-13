@@ -9,6 +9,7 @@ import re
 import json
 import sys
 import os
+import shutil
 import tempfile
 from pathlib import Path
 from urllib.parse import urlsplit, parse_qs
@@ -33,7 +34,7 @@ def no_links(root):
         raise ValueError('Trial directories must contain copies, not symlinks')
 
 
-def configure(data, runtime, port, enable_playout=False, media_root=None, catalog_file=None, order_file=None, enable_playlist_writes=False):
+def configure(data, runtime, port, enable_playout=False, media_root=None, catalog_file=None, order_file=None, enable_playlist_writes=False, enable_library_writes=False):
     if not 1 <= port <= 65535 or port == 8008:
         raise ValueError('Choose a valid trial port other than 8008')
     for root in (data, runtime):
@@ -80,6 +81,17 @@ def configure(data, runtime, port, enable_playout=False, media_root=None, catalo
                     raise ValueError('Runtime profile roots and DevTools file must not be symlinks')
     for name in ('media', 'clips', 'thumbnails', 'playlists', 'video_presets'):
         (data / name).mkdir(exist_ok=True)
+    trial_catalog = data / 'library_catalog.json'
+    if trial_catalog.is_symlink():
+        raise ValueError('Trial library catalogue must not be a symlink')
+    if enable_library_writes and catalog_file and Path(catalog_file) != trial_catalog and not trial_catalog.exists():
+        with tempfile.NamedTemporaryFile(dir=data, prefix='.catalog-seed-', suffix='.tmp', delete=False) as stream:
+            seed_copy = Path(stream.name)
+        try:
+            shutil.copyfile(catalog_file, seed_copy)
+            os.replace(seed_copy, trial_catalog)
+        finally:
+            seed_copy.unlink(missing_ok=True)
     expected = {'download_dir': str(media_root),
                 'instagram_clip_dir': str(data / 'clips')}
     config = data / 'config.json'
@@ -93,7 +105,7 @@ def configure(data, runtime, port, enable_playout=False, media_root=None, catalo
                        ('PLAYLIST_DIR','playlists'), ('VIDEO_PRESET_DIR','video_presets'),
                        ('LIBRARY_ORDER_FILE','library_order.json'), ('COOKIE_JAR','.cookies.txt')]:
         setattr(server, attr, data / name)
-    server.LIBRARY_CATALOG = server.LibraryCatalog(catalog_file or data / 'library_catalog.json')
+    server.LIBRARY_CATALOG = server.LibraryCatalog(trial_catalog if enable_library_writes else (catalog_file or trial_catalog))
     server.LIBRARY_ORDER_FILE = order_file or data / 'library_order.json'
     server.PREVIEW_CACHE = server.PreviewCache(runtime / '.runtime/ipad-previews', server.find_working_ffmpeg)
     server.MAC_OUTPUT = server.MacOutput(runtime, port)
@@ -124,7 +136,8 @@ def configure(data, runtime, port, enable_playout=False, media_root=None, catalo
                 self.wfile.write(body)
             elif parsed.path == '/api/ui-preview-info':
                 self.send_json_response({'label':'ISOLATED TRIAL', 'mediaSource':'reference' if media_root != data / 'media' else 'sample',
-                                         'readOnly':True, 'playlistWrites':enable_playlist_writes, 'playoutEnabled':enable_playout,
+                                         'readOnly':not enable_library_writes, 'libraryWrites':enable_library_writes,
+                                         'playlistWrites':enable_playlist_writes, 'playoutEnabled':enable_playout,
                                          'port':port, 'dataRoot':str(data), 'mediaRoot':str(media_root)})
             elif parsed.path.startswith('/ui-v2/'):
                 self.send_error(404)
@@ -169,6 +182,12 @@ def configure(data, runtime, port, enable_playout=False, media_root=None, catalo
                 return
             if enable_playout and path in ('/api/control-session', '/api/output-window', '/api/remote-status', '/api/remote-command', '/api/state'):
                 return super().do_POST()
+            if enable_library_writes and path in ('/api/library-catalog', '/api/library-catalog/manage'):
+                catalog_path = server.LIBRARY_CATALOG.path.resolve()
+                if catalog_path.parent != data.resolve():
+                    self.send_error(403, 'Writable catalogue must stay inside isolated trial data')
+                    return
+                return super().do_POST()
             self.send_error(403, 'Read-only trial: saved data and live commands are disabled')
 
         def do_DELETE(self):
@@ -195,6 +214,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--enable-playout', action='store_true', help='Allow live commands only on this isolated instance; saved edits remain blocked')
     parser.add_argument('--enable-playlist-writes', action='store_true', help='Allow playlist save/delete only inside the isolated trial data folder')
+    parser.add_argument('--enable-library-writes', action='store_true', help='Allow tag/catalogue changes only to a trial-owned copy')
     parser.add_argument('--port', type=int, default=8012)
     parser.add_argument('--bind', choices=['127.0.0.1', '0.0.0.0'], default='127.0.0.1')
     parser.add_argument('--data-root', type=Path, required=True)
@@ -205,11 +225,12 @@ def main():
     args = parser.parse_args()
     try:
         handler = configure(args.data_root, args.runtime_root, args.port, args.enable_playout,
-                            args.media_root, args.catalog_file, args.order_file, args.enable_playlist_writes)
+                            args.media_root, args.catalog_file, args.order_file, args.enable_playlist_writes,
+                            args.enable_library_writes)
         httpd = server.ThreadedHTTPServer((args.bind, args.port), handler)
     except (ValueError, OSError) as error:
         parser.exit(2, f'Cannot start trial: {error}\n')
-    print(f'ISOLATED UI TRIAL — PLAYLIST WRITES={args.enable_playlist_writes}, PLAYOUT={args.enable_playout}\nMedia: {args.media_root or args.data_root / "media"}\nData: {args.data_root}\nRuntime: {args.runtime_root}\n'
+    print(f'ISOLATED UI TRIAL — LIBRARY WRITES={args.enable_library_writes}, PLAYLIST WRITES={args.enable_playlist_writes}, PLAYOUT={args.enable_playout}\nMedia: {args.media_root or args.data_root / "media"}\nData: {args.data_root}\nRuntime: {args.runtime_root}\n'
           f'Open http://localhost:{args.port}/ui-v2/', flush=True)
     try:
         httpd.serve_forever()

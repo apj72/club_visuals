@@ -2,10 +2,12 @@
 
 ## Current trial launch and live-control procedure
 
-**13 November 2026 · branch `feature/ui-v2` at `a1f1ce3`.** The active isolated
+**13 November 2026 · branch `feature/ui-v2`.** The isolated
 trial uses port **8015**, the original downloads folder as read-only media, and
 separate temporary data/runtime roots. Playlist save/delete and trial Mac
-playout are enabled for this instance only. The current UI on port 8008 remains
+playout are enabled for this instance only. A source copy of the tag catalogue
+is seeded into the isolated data root, where tag edits remain private to this
+trial. The current UI on port 8008 remains
 the normal production interface.
 
 On the Mac, open `http://localhost:8015/ui-v2/`. On the iPad, open
@@ -26,6 +28,17 @@ launcher or port 8008 to try this branch. The current browser-control service
 is unavailable, so the latest UI has not received a fresh visual check in
 Chrome; Chrome is installed on the user's Mac, and no Brave session is being
 used.
+
+To launch this setup from the V2 worktree after it has stopped:
+
+```sh
+python3 scripts/run-ui-preview.py --port 8015 --bind 0.0.0.0 \
+  --enable-playout --enable-playlist-writes --enable-library-writes \
+  --data-root /private/tmp/club-visuals-v2-playlists-data \
+  --runtime-root /private/tmp/club-visuals-v2-playlists-runtime \
+  --media-root /Users/antonyjoyce/git-repos/club_visuals/downloads \
+  --catalog-file /Users/antonyjoyce/git-repos/club_visuals/library_catalog.json
+```
 
 ## Current milestone — playlist studio in the isolated V2 trial
 
@@ -48,8 +61,10 @@ is routed through the existing remote command and output engine, and is enabled
 only on the isolated trial when launched with `--enable-playout`. To persist
 playlist work in the trial, start the runner with `--enable-playlist-writes`;
 this grants only playlist JSON save/delete within that runner's isolated
-`playlists` directory. Other writes remain disabled. The default remains fully
-read-only.
+`playlists` directory. To edit classifications safely, pass
+`--enable-library-writes`; when `--catalog-file` points to the source catalogue,
+the runner seeds a copy at `data-root/library_catalog.json` and writes only to
+that copy. Both flags are opt-in; the default remains read-only.
 
 The primary workspace is now **Studio**: the video library, private preview,
 look controls and the direct **Send this look to screen**, **Add this look to a
