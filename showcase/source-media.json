@@ -1,0 +1,1035 @@
+[
+  {
+    "index": 1,
+    "filename": "Video by h7_visualizer_DeE3W-tRaFP.fdash-1094560183303853v.mp4",
+    "thumb": "thumbnails/Video by h7_visualizer_DeE3W-tRaFP.fdash-1094560183303853v.jpg",
+    "duration": 37.833333,
+    "width": 1080,
+    "height": 1920,
+    "catalog": {
+      "themes": [
+        "Animals",
+        "Geometric",
+        "Minimal"
+      ],
+      "colours": [
+        "Monochrome",
+        "Black",
+        "White"
+      ],
+      "types": [
+        "Generative animation"
+      ],
+      "notes": "Initial theme/type labels from thumbnail review; colours measured at 15%, 50% and 85% of the clip. Refine after auditioning.",
+      "reviewed": false,
+      "source": "visual-draft"
+    }
+  },
+  {
+    "index": 2,
+    "filename": "Video by edmylmz_DdrSp4JN9JP.fdash-2257624091473058v.mp4",
+    "thumb": "thumbnails/Video by edmylmz_DdrSp4JN9JP.fdash-2257624091473058v.jpg",
+    "duration": 59.85,
+    "width": 1440,
+    "height": 2560,
+    "catalog": {
+      "themes": [
+        "Sculptures",
+        "Minimal"
+      ],
+      "colours": [
+        "Cyan",
+        "Orange",
+        "Black"
+      ],
+      "types": [
+        "3D animation"
+      ],
+      "notes": "Initial theme/type labels from thumbnail review; colours measured at 15%, 50% and 85% of the clip. Refine after auditioning.",
+      "reviewed": false,
+      "source": "visual-draft"
+    }
+  },
+  {
+    "index": 3,
+    "filename": "Video by v2olin_DdCERclTTB8.fdash-1765051464521683v.mp4",
+    "thumb": "thumbnails/Video by v2olin_DdCERclTTB8.fdash-1765051464521683v.jpg",
+    "duration": 26.0,
+    "width": 1080,
+    "height": 1920,
+    "catalog": {
+      "themes": [
+        "Abstract",
+        "Minimal"
+      ],
+      "colours": [
+        "Blue"
+      ],
+      "types": [
+        "2D animation"
+      ],
+      "notes": "Initial theme/type labels from thumbnail review; colours measured at 15%, 50% and 85% of the clip. Refine after auditioning.",
+      "reviewed": false,
+      "source": "visual-draft"
+    }
+  },
+  {
+    "index": 4,
+    "filename": "Video by olko_koko.ai_DZfxeDKNtKq.mp4",
+    "thumb": "thumbnails/Video by olko_koko.ai_DZfxeDKNtKq.jpg",
+    "duration": 19.805011,
+    "width": 1440,
+    "height": 2560,
+    "catalog": {
+      "themes": [
+        "Portraits & people",
+        "Minimal"
+      ],
+      "colours": [
+        "Multicolour",
+        "Orange",
+        "Yellow"
+      ],
+      "types": [
+        "Digital animation"
+      ],
+      "notes": "Initial theme/type labels from thumbnail review; colours measured at 15%, 50% and 85% of the clip. Refine after auditioning.",
+      "reviewed": false,
+      "source": "visual-draft"
+    }
+  },
+  {
+    "index": 5,
+    "filename": "Video by gromer.png_Db_Nm-diF6p.mp4",
+    "thumb": "thumbnails/Video by gromer.png_Db_Nm-diF6p.jpg",
+    "duration": 4.983333,
+    "width": 1080,
+    "height": 1350,
+    "catalog": {
+      "themes": [
+        "Geometric",
+        "Abstract",
+        "Minimal"
+      ],
+      "colours": [
+        "Multicolour",
+        "Red",
+        "Orange",
+        "Pink",
+        "Black"
+      ],
+      "types": [
+        "3D animation"
+      ],
+      "notes": "Initial theme/type labels from thumbnail review; colours measured at 15%, 50% and 85% of the clip. Refine after auditioning.",
+      "reviewed": false,
+      "source": "visual-draft"
+    }
+  },
+  {
+    "index": 6,
+    "filename": "Video by justtrip.it_Dci-u9zuIVK.mp4",
+    "thumb": "thumbnails/Video by justtrip.it_Dci-u9zuIVK.jpg",
+    "duration": 15.07,
+    "width": 1080,
+    "height": 1920,
+    "catalog": {
+      "themes": [
+        "Abstract",
+        "Minimal"
+      ],
+      "colours": [
+        "Multicolour",
+        "Purple",
+        "Blue",
+        "Cyan"
+      ],
+      "types": [
+        "Digital animation"
+      ],
+      "notes": "Initial theme/type labels from thumbnail review; colours measured at 15%, 50% and 85% of the clip. Refine after auditioning.",
+      "reviewed": false,
+      "source": "visual-draft"
+    }
+  },
+  {
+    "index": 7,
+    "filename": "Video by riebschlager_DfD77Dvxfgk.mp4",
+    "thumb": "thumbnails/Video by riebschlager_DfD77Dvxfgk.jpg",
+    "duration": 30.046621,
+    "width": 1080,
+    "height": 1920,
+    "catalog": {
+      "themes": [
+        "Dance",
+        "Light & particles"
+      ],
+      "colours": [
+        "Orange",
+        "Yellow",
+        "Black"
+      ],
+      "types": [
+        "Generative animation"
+      ],
+      "notes": "Initial theme/type labels from thumbnail review; colours measured at 15%, 50% and 85% of the clip. Refine after auditioning.",
+      "reviewed": false,
+      "source": "visual-draft"
+    }
+  },
+  {
+    "index": 8,
+    "filename": "Video by uon.visuals_Dexodx4RUrW.mp4",
+    "thumb": "thumbnails/Video by uon.visuals_Dexodx4RUrW.jpg",
+    "duration": 30.02195,
+    "width": 1080,
+    "height": 1920,
+    "catalog": {
+      "themes": [
+        "Architecture",
+        "Geometric",
+        "Light & particles"
+      ],
+      "colours": [
+        "Multicolour",
+        "Cyan",
+        "Pink",
+        "Red"
+      ],
+      "types": [
+        "3D animation"
+      ],
+      "notes": "Initial theme/type labels from thumbnail review; colours measured at 15%, 50% and 85% of the clip. Refine after auditioning.",
+      "reviewed": false,
+      "source": "visual-draft"
+    }
+  },
+  {
+    "index": 9,
+    "filename": "Video by hiten.sondagar_DeCMis7se3O.fdash-2170243176893614v.mp4",
+    "thumb": "thumbnails/Video by hiten.sondagar_DeCMis7se3O.fdash-2170243176893614v.jpg",
+    "duration": 34.167501,
+    "width": 1080,
+    "height": 1920,
+    "catalog": {
+      "themes": [
+        "Dance",
+        "Light & particles"
+      ],
+      "colours": [
+        "Monochrome",
+        "Black"
+      ],
+      "types": [
+        "Generative animation"
+      ],
+      "notes": "Initial theme/type labels from thumbnail review; colours measured at 15%, 50% and 85% of the clip. Refine after auditioning.",
+      "reviewed": false,
+      "source": "visual-draft"
+    }
+  },
+  {
+    "index": 10,
+    "filename": "Video by duncan.fewkes_Dd3wlFPKS9g.fdash-2048490832478089v.mp4",
+    "thumb": "thumbnails/Video by duncan.fewkes_Dd3wlFPKS9g.fdash-2048490832478089v.jpg",
+    "duration": 70.0,
+    "width": 1080,
+    "height": 1080,
+    "catalog": {
+      "themes": [
+        "Music & DJ",
+        "Light & particles"
+      ],
+      "colours": [
+        "Multicolour",
+        "Red",
+        "Pink",
+        "Purple",
+        "Black"
+      ],
+      "types": [
+        "Live action"
+      ],
+      "notes": "Initial theme/type labels from thumbnail review; colours measured at 15%, 50% and 85% of the clip. Refine after auditioning.",
+      "reviewed": false,
+      "source": "visual-draft"
+    }
+  },
+  {
+    "index": 11,
+    "filename": "Video by uon.visuals_DdpYDh8B-su.fdash-1713314353073142v.mp4",
+    "thumb": "thumbnails/Video by uon.visuals_DdpYDh8B-su.fdash-1713314353073142v.jpg",
+    "duration": 15.0,
+    "width": 1080,
+    "height": 1920,
+    "catalog": {
+      "themes": [
+        "Light & particles",
+        "Abstract"
+      ],
+      "colours": [
+        "Multicolour",
+        "Blue",
+        "Green",
+        "Pink",
+        "Black"
+      ],
+      "types": [
+        "Generative animation"
+      ],
+      "notes": "Initial theme/type labels from thumbnail review; colours measured at 15%, 50% and 85% of the clip. Refine after auditioning.",
+      "reviewed": false,
+      "source": "visual-draft"
+    }
+  },
+  {
+    "index": 12,
+    "filename": "Video by riebschlager_Da4LyKzRrEB.mp4",
+    "thumb": "thumbnails/Video by riebschlager_Da4LyKzRrEB.jpg",
+    "duration": 30.046621,
+    "width": 1080,
+    "height": 1920,
+    "catalog": {
+      "themes": [
+        "Dance",
+        "Light & particles"
+      ],
+      "colours": [
+        "Multicolour",
+        "Green",
+        "Yellow",
+        "Cyan",
+        "Black"
+      ],
+      "types": [
+        "Generative animation"
+      ],
+      "notes": "Initial theme/type labels from thumbnail review; colours measured at 15%, 50% and 85% of the clip. Refine after auditioning.",
+      "reviewed": false,
+      "source": "visual-draft"
+    }
+  },
+  {
+    "index": 13,
+    "filename": "Video by uon.visuals_DdkaL9MBcrv.fdash-3261056987436660v.mp4",
+    "thumb": "thumbnails/Video by uon.visuals_DdkaL9MBcrv.fdash-3261056987436660v.jpg",
+    "duration": 30.0,
+    "width": 1080,
+    "height": 1920,
+    "catalog": {
+      "themes": [
+        "Tunnels & vortices",
+        "Geometric",
+        "Psychedelic"
+      ],
+      "colours": [
+        "Multicolour",
+        "Pink",
+        "Red",
+        "Orange"
+      ],
+      "types": [
+        "3D animation"
+      ],
+      "notes": "Initial theme/type labels from thumbnail review; colours measured at 15%, 50% and 85% of the clip. Refine after auditioning.",
+      "reviewed": false,
+      "source": "visual-draft"
+    }
+  },
+  {
+    "index": 14,
+    "filename": "Video by themacrosift_Dd7IfJ7Mm5R.fdash-2959600471040532v.mp4",
+    "thumb": "thumbnails/Video by themacrosift_Dd7IfJ7Mm5R.fdash-2959600471040532v.jpg",
+    "duration": 57.966667,
+    "width": 1072,
+    "height": 1906,
+    "catalog": {
+      "themes": [
+        "Geometric",
+        "Psychedelic",
+        "Abstract"
+      ],
+      "colours": [
+        "Blue"
+      ],
+      "types": [
+        "Generative animation"
+      ],
+      "notes": "Initial theme/type labels from thumbnail review; colours measured at 15%, 50% and 85% of the clip. Refine after auditioning.",
+      "reviewed": false,
+      "source": "visual-draft"
+    }
+  },
+  {
+    "index": 15,
+    "filename": "Video by uon.visuals_Dd7oPxTh_g1.fdash-1421125976823177v.mp4",
+    "thumb": "thumbnails/Video by uon.visuals_Dd7oPxTh_g1.fdash-1421125976823177v.jpg",
+    "duration": 15.0,
+    "width": 1080,
+    "height": 1920,
+    "catalog": {
+      "themes": [
+        "Tunnels & vortices",
+        "Geometric",
+        "Psychedelic"
+      ],
+      "colours": [
+        "Multicolour",
+        "Green",
+        "Orange",
+        "Red"
+      ],
+      "types": [
+        "3D animation"
+      ],
+      "notes": "Initial theme/type labels from thumbnail review; colours measured at 15%, 50% and 85% of the clip. Refine after auditioning.",
+      "reviewed": false,
+      "source": "visual-draft"
+    }
+  },
+  {
+    "index": 16,
+    "filename": "Video by astrolionmusic_DdppZJqSlqv.fdash-28499409169711422v.mp4",
+    "thumb": "thumbnails/Video by astrolionmusic_DdppZJqSlqv.fdash-28499409169711422v.jpg",
+    "duration": 30.0,
+    "width": 720,
+    "height": 1280,
+    "catalog": {
+      "themes": [
+        "Tunnels & vortices",
+        "Geometric",
+        "Psychedelic"
+      ],
+      "colours": [
+        "Multicolour",
+        "Blue",
+        "Orange",
+        "Red"
+      ],
+      "types": [
+        "3D animation"
+      ],
+      "notes": "Initial theme/type labels from thumbnail review; colours measured at 15%, 50% and 85% of the clip. Refine after auditioning.",
+      "reviewed": false,
+      "source": "visual-draft"
+    }
+  },
+  {
+    "index": 17,
+    "filename": "Video by test23rdmay_DesPIdUsisv.mp4",
+    "thumb": "thumbnails/Video by test23rdmay_DesPIdUsisv.jpg",
+    "duration": 21.55,
+    "width": 1080,
+    "height": 1920,
+    "catalog": {
+      "themes": [
+        "Organic & fluid",
+        "Abstract"
+      ],
+      "colours": [
+        "Red",
+        "White"
+      ],
+      "types": [
+        "3D animation"
+      ],
+      "notes": "Initial theme/type labels from thumbnail review; colours measured at 15%, 50% and 85% of the clip. Refine after auditioning.",
+      "reviewed": false,
+      "source": "visual-draft"
+    }
+  },
+  {
+    "index": 18,
+    "filename": "Video by posthuman.studio_DdqU8GDEqhN.mp4",
+    "thumb": "thumbnails/Video by posthuman.studio_DdqU8GDEqhN.jpg",
+    "duration": 5.041667,
+    "width": 1076,
+    "height": 1336,
+    "catalog": {
+      "themes": [
+        "Sculptures",
+        "Organic & fluid",
+        "Abstract"
+      ],
+      "colours": [
+        "Monochrome",
+        "Green"
+      ],
+      "types": [
+        "3D animation"
+      ],
+      "notes": "Initial theme/type labels from thumbnail review; colours measured at 15%, 50% and 85% of the clip. Refine after auditioning.",
+      "reviewed": false,
+      "source": "visual-draft"
+    }
+  },
+  {
+    "index": 19,
+    "filename": "Video by posthuman.studio_DdqU7wxjpqM.mp4",
+    "thumb": "thumbnails/Video by posthuman.studio_DdqU7wxjpqM.jpg",
+    "duration": 5.041667,
+    "width": 1080,
+    "height": 1352,
+    "catalog": {
+      "themes": [
+        "Sculptures",
+        "Organic & fluid",
+        "Abstract"
+      ],
+      "colours": [
+        "Orange"
+      ],
+      "types": [
+        "3D animation"
+      ],
+      "notes": "Initial theme/type labels from thumbnail review; colours measured at 15%, 50% and 85% of the clip. Refine after auditioning.",
+      "reviewed": false,
+      "source": "visual-draft"
+    }
+  },
+  {
+    "index": 20,
+    "filename": "Video by posthuman.studio_DdqU2fjEaP8.mp4",
+    "thumb": "thumbnails/Video by posthuman.studio_DdqU2fjEaP8.jpg",
+    "duration": 5.041667,
+    "width": 1076,
+    "height": 1336,
+    "catalog": {
+      "themes": [
+        "Sculptures",
+        "Organic & fluid",
+        "Abstract"
+      ],
+      "colours": [
+        "Monochrome",
+        "White"
+      ],
+      "types": [
+        "3D animation"
+      ],
+      "notes": "Initial theme/type labels from thumbnail review; colours measured at 15%, 50% and 85% of the clip. Refine after auditioning.",
+      "reviewed": false,
+      "source": "visual-draft"
+    }
+  },
+  {
+    "index": 21,
+    "filename": "Video by posthuman.studio_DdqU2h7kSEI.mp4",
+    "thumb": "thumbnails/Video by posthuman.studio_DdqU2h7kSEI.jpg",
+    "duration": 5.041667,
+    "width": 1076,
+    "height": 1336,
+    "catalog": {
+      "themes": [
+        "Sculptures",
+        "Organic & fluid",
+        "Abstract"
+      ],
+      "colours": [
+        "Monochrome"
+      ],
+      "types": [
+        "3D animation"
+      ],
+      "notes": "Initial theme/type labels from thumbnail review; colours measured at 15%, 50% and 85% of the clip. Refine after auditioning.",
+      "reviewed": false,
+      "source": "visual-draft"
+    }
+  },
+  {
+    "index": 22,
+    "filename": "Video by posthuman.studio_DdqU214itQQ.mp4",
+    "thumb": "thumbnails/Video by posthuman.studio_DdqU214itQQ.jpg",
+    "duration": 5.041667,
+    "width": 1076,
+    "height": 1336,
+    "catalog": {
+      "themes": [
+        "Sculptures",
+        "Organic & fluid",
+        "Abstract"
+      ],
+      "colours": [
+        "Monochrome",
+        "Green",
+        "White"
+      ],
+      "types": [
+        "3D animation"
+      ],
+      "notes": "Initial theme/type labels from thumbnail review; colours measured at 15%, 50% and 85% of the clip. Refine after auditioning.",
+      "reviewed": false,
+      "source": "visual-draft"
+    }
+  },
+  {
+    "index": 23,
+    "filename": "Video by astrolionmusic_DdS67VQSvOv.mp4",
+    "thumb": "thumbnails/Video by astrolionmusic_DdS67VQSvOv.jpg",
+    "duration": 20.039002,
+    "width": 1080,
+    "height": 1920,
+    "catalog": {
+      "themes": [
+        "Tunnels & vortices",
+        "Geometric",
+        "Psychedelic"
+      ],
+      "colours": [
+        "Multicolour",
+        "Blue",
+        "Purple",
+        "Pink"
+      ],
+      "types": [
+        "3D animation"
+      ],
+      "notes": "Initial theme/type labels from thumbnail review; colours measured at 15%, 50% and 85% of the clip. Refine after auditioning.",
+      "reviewed": false,
+      "source": "visual-draft"
+    }
+  },
+  {
+    "index": 24,
+    "filename": "Video by uon.visuals_DdU-l2qAGtL.mp4",
+    "thumb": "thumbnails/Video by uon.visuals_DdU-l2qAGtL.jpg",
+    "duration": 30.021995,
+    "width": 1080,
+    "height": 1920,
+    "catalog": {
+      "themes": [
+        "Tunnels & vortices",
+        "Psychedelic",
+        "Light & particles"
+      ],
+      "colours": [
+        "Multicolour",
+        "Blue",
+        "Pink",
+        "Green"
+      ],
+      "types": [
+        "Generative animation"
+      ],
+      "notes": "Initial theme/type labels from thumbnail review; colours measured at 15%, 50% and 85% of the clip. Refine after auditioning.",
+      "reviewed": false,
+      "source": "visual-draft"
+    }
+  },
+  {
+    "index": 25,
+    "filename": "Video by justtrip.it_Dc_8Un2Tx7j.mp4",
+    "thumb": "thumbnails/Video by justtrip.it_Dc_8Un2Tx7j.jpg",
+    "duration": 18.089002,
+    "width": 1080,
+    "height": 1920,
+    "catalog": {
+      "themes": [
+        "Tunnels & vortices",
+        "Psychedelic",
+        "Light & particles"
+      ],
+      "colours": [
+        "Multicolour",
+        "Cyan",
+        "Orange",
+        "Blue",
+        "Black"
+      ],
+      "types": [
+        "Generative animation"
+      ],
+      "notes": "Initial theme/type labels from thumbnail review; colours measured at 15%, 50% and 85% of the clip. Refine after auditioning.",
+      "reviewed": false,
+      "source": "visual-draft"
+    }
+  },
+  {
+    "index": 26,
+    "filename": "Video by hypernova_ai_Dc6JUuYjVoI.mp4",
+    "thumb": "thumbnails/Video by hypernova_ai_Dc6JUuYjVoI.jpg",
+    "duration": 10.041667,
+    "width": 1080,
+    "height": 1434,
+    "catalog": {
+      "themes": [
+        "Space & cosmos",
+        "Robots & sci-fi",
+        "Portraits & people"
+      ],
+      "colours": [
+        "Multicolour",
+        "Cyan",
+        "Green",
+        "Orange"
+      ],
+      "types": [
+        "Digital animation"
+      ],
+      "notes": "Initial theme/type labels from thumbnail review; colours measured at 15%, 50% and 85% of the clip. Refine after auditioning.",
+      "reviewed": false,
+      "source": "visual-draft"
+    }
+  },
+  {
+    "index": 27,
+    "filename": "Video by hypernova_ai_Dc6JT8FDXmY.mp4",
+    "thumb": "thumbnails/Video by hypernova_ai_Dc6JT8FDXmY.jpg",
+    "duration": 10.041667,
+    "width": 1080,
+    "height": 1434,
+    "catalog": {
+      "themes": [
+        "Space & cosmos",
+        "Robots & sci-fi",
+        "Portraits & people"
+      ],
+      "colours": [
+        "Multicolour",
+        "Red",
+        "Pink",
+        "Blue"
+      ],
+      "types": [
+        "Digital animation"
+      ],
+      "notes": "Initial theme/type labels from thumbnail review; colours measured at 15%, 50% and 85% of the clip. Refine after auditioning.",
+      "reviewed": false,
+      "source": "visual-draft"
+    }
+  },
+  {
+    "index": 28,
+    "filename": "Video by hypernova_ai_Dc6JTNdDaIA.mp4",
+    "thumb": "thumbnails/Video by hypernova_ai_Dc6JTNdDaIA.jpg",
+    "duration": 10.041667,
+    "width": 1080,
+    "height": 1434,
+    "catalog": {
+      "themes": [
+        "Space & cosmos",
+        "Robots & sci-fi",
+        "Portraits & people"
+      ],
+      "colours": [
+        "Multicolour",
+        "Orange",
+        "Red",
+        "Blue"
+      ],
+      "types": [
+        "Digital animation"
+      ],
+      "notes": "Initial theme/type labels from thumbnail review; colours measured at 15%, 50% and 85% of the clip. Refine after auditioning.",
+      "reviewed": false,
+      "source": "visual-draft"
+    }
+  },
+  {
+    "index": 29,
+    "filename": "Video by hypernova_ai_Dc6JSbEje5G.mp4",
+    "thumb": "thumbnails/Video by hypernova_ai_Dc6JSbEje5G.jpg",
+    "duration": 10.041667,
+    "width": 1080,
+    "height": 1434,
+    "catalog": {
+      "themes": [
+        "Space & cosmos",
+        "Robots & sci-fi",
+        "Portraits & people"
+      ],
+      "colours": [
+        "Blue"
+      ],
+      "types": [
+        "Digital animation"
+      ],
+      "notes": "Initial theme/type labels from thumbnail review; colours measured at 15%, 50% and 85% of the clip. Refine after auditioning.",
+      "reviewed": false,
+      "source": "visual-draft"
+    }
+  },
+  {
+    "index": 30,
+    "filename": "Video by hypernova_ai_Dc6JRUvjTaL.mp4",
+    "thumb": "thumbnails/Video by hypernova_ai_Dc6JRUvjTaL.jpg",
+    "duration": 10.041667,
+    "width": 1080,
+    "height": 1434,
+    "catalog": {
+      "themes": [
+        "Space & cosmos",
+        "Robots & sci-fi",
+        "Portraits & people"
+      ],
+      "colours": [
+        "Blue",
+        "Cyan",
+        "Black"
+      ],
+      "types": [
+        "Digital animation"
+      ],
+      "notes": "Initial theme/type labels from thumbnail review; colours measured at 15%, 50% and 85% of the clip. Refine after auditioning.",
+      "reviewed": false,
+      "source": "visual-draft"
+    }
+  },
+  {
+    "index": 31,
+    "filename": "Video by hypernova_ai_Dc6JQeKDQjq.mp4",
+    "thumb": "thumbnails/Video by hypernova_ai_Dc6JQeKDQjq.jpg",
+    "duration": 10.041667,
+    "width": 1080,
+    "height": 1434,
+    "catalog": {
+      "themes": [
+        "Space & cosmos",
+        "Robots & sci-fi",
+        "Portraits & people"
+      ],
+      "colours": [
+        "Multicolour",
+        "Orange",
+        "Yellow",
+        "Blue"
+      ],
+      "types": [
+        "Digital animation"
+      ],
+      "notes": "Initial theme/type labels from thumbnail review; colours measured at 15%, 50% and 85% of the clip. Refine after auditioning.",
+      "reviewed": false,
+      "source": "visual-draft"
+    }
+  },
+  {
+    "index": 32,
+    "filename": "Video by trevyx.visual_DeU0GLtSmTu.mp4",
+    "thumb": "thumbnails/Video by trevyx.visual_DeU0GLtSmTu.jpg",
+    "duration": 20.108481,
+    "width": 1440,
+    "height": 2560,
+    "catalog": {
+      "themes": [
+        "Animals",
+        "Psychedelic",
+        "Sculptures"
+      ],
+      "colours": [
+        "Multicolour",
+        "Red",
+        "Cyan",
+        "Blue"
+      ],
+      "types": [
+        "3D animation"
+      ],
+      "notes": "Initial theme/type labels from thumbnail review; colours measured at 15%, 50% and 85% of the clip. Refine after auditioning.",
+      "reviewed": false,
+      "source": "visual-draft"
+    }
+  },
+  {
+    "index": 33,
+    "filename": "Video by kris_ai_arts_DdcI13ms06g.mp4",
+    "thumb": "thumbnails/Video by kris_ai_arts_DdcI13ms06g.jpg",
+    "duration": 15.207619,
+    "width": 1080,
+    "height": 1920,
+    "catalog": {
+      "themes": [
+        "Animals",
+        "Psychedelic",
+        "Sculptures"
+      ],
+      "colours": [
+        "Red",
+        "Black"
+      ],
+      "types": [
+        "3D animation"
+      ],
+      "notes": "Initial theme/type labels from thumbnail review; colours measured at 15%, 50% and 85% of the clip. Refine after auditioning.",
+      "reviewed": false,
+      "source": "visual-draft"
+    }
+  },
+  {
+    "index": 34,
+    "filename": "Video by neon_psychedlics_De4bzgdPqHF.mp4",
+    "thumb": "thumbnails/Video by neon_psychedlics_De4bzgdPqHF.jpg",
+    "duration": 12.537324,
+    "width": 1080,
+    "height": 1920,
+    "catalog": {
+      "themes": [
+        "Psychedelic",
+        "Portraits & people"
+      ],
+      "colours": [
+        "Multicolour",
+        "Blue",
+        "Purple",
+        "Cyan"
+      ],
+      "types": [
+        "Digital animation"
+      ],
+      "notes": "Initial theme/type labels from thumbnail review; colours measured at 15%, 50% and 85% of the clip. Refine after auditioning.",
+      "reviewed": false,
+      "source": "visual-draft"
+    }
+  },
+  {
+    "index": 35,
+    "filename": "Video by hellothoughtpalace_DfJJIr-jKnW.mp4",
+    "thumb": "thumbnails/Video by hellothoughtpalace_DfJJIr-jKnW.jpg",
+    "duration": 7.488,
+    "width": 1080,
+    "height": 1920,
+    "catalog": {
+      "themes": [
+        "Psychedelic",
+        "Portraits & people"
+      ],
+      "colours": [
+        "Multicolour",
+        "Red",
+        "Blue",
+        "Pink"
+      ],
+      "types": [
+        "Digital animation"
+      ],
+      "notes": "Initial theme/type labels from thumbnail review; colours measured at 15%, 50% and 85% of the clip. Refine after auditioning.",
+      "reviewed": false,
+      "source": "visual-draft"
+    }
+  },
+  {
+    "index": 36,
+    "filename": "Video by kingmallard_DdzY3B_vUV_.mp4",
+    "thumb": "thumbnails/Video by kingmallard_DdzY3B_vUV_.jpg",
+    "duration": 20.178141,
+    "width": 1440,
+    "height": 2560,
+    "catalog": {
+      "themes": [
+        "Portraits & people",
+        "Psychedelic"
+      ],
+      "colours": [
+        "Orange",
+        "Black"
+      ],
+      "types": [
+        "Digital animation"
+      ],
+      "notes": "Initial theme/type labels from thumbnail review; colours measured at 15%, 50% and 85% of the clip. Refine after auditioning.",
+      "reviewed": false,
+      "source": "visual-draft"
+    }
+  },
+  {
+    "index": 37,
+    "filename": "Video by hellothoughtpalace_DeIxQqMjQL2.mp4",
+    "thumb": "thumbnails/Video by hellothoughtpalace_DeIxQqMjQL2.jpg",
+    "duration": 7.168,
+    "width": 1080,
+    "height": 1920,
+    "catalog": {
+      "themes": [
+        "Psychedelic",
+        "Portraits & people"
+      ],
+      "colours": [
+        "Blue"
+      ],
+      "types": [
+        "Digital animation"
+      ],
+      "notes": "Initial theme/type labels from thumbnail review; colours measured at 15%, 50% and 85% of the clip. Refine after auditioning.",
+      "reviewed": false,
+      "source": "visual-draft"
+    }
+  },
+  {
+    "index": 38,
+    "filename": "Video by themacrosift_De5gECWMeJY.mp4",
+    "thumb": "thumbnails/Video by themacrosift_De5gECWMeJY.jpg",
+    "duration": 44.116463,
+    "width": 1044,
+    "height": 1856,
+    "catalog": {
+      "themes": [
+        "Robots & sci-fi",
+        "Portraits & people"
+      ],
+      "colours": [
+        "Multicolour",
+        "Red",
+        "Blue"
+      ],
+      "types": [
+        "3D animation"
+      ],
+      "notes": "Initial theme/type labels from thumbnail review; colours measured at 15%, 50% and 85% of the clip. Refine after auditioning.",
+      "reviewed": false,
+      "source": "visual-draft"
+    }
+  },
+  {
+    "index": 39,
+    "filename": "Video by ingi.ai_De2txUSMgY6.mp4",
+    "thumb": "thumbnails/Video by ingi.ai_De2txUSMgY6.jpg",
+    "duration": 9.933333,
+    "width": 1080,
+    "height": 1080,
+    "catalog": {
+      "themes": [
+        "Surreal",
+        "Collage",
+        "Portraits & people"
+      ],
+      "colours": [
+        "Multicolour",
+        "Pink",
+        "Purple",
+        "Blue"
+      ],
+      "types": [
+        "Mixed media"
+      ],
+      "notes": "Initial theme/type labels from thumbnail review; colours measured at 15%, 50% and 85% of the clip. Refine after auditioning.",
+      "reviewed": false,
+      "source": "visual-draft"
+    }
+  },
+  {
+    "index": 40,
+    "filename": "blue_laser.mp4",
+    "thumb": "thumbnails/blue_laser.jpg",
+    "duration": 11.114,
+    "width": 1080,
+    "height": 1920,
+    "catalog": {}
+  },
+  {
+    "index": 41,
+    "filename": "version1_insta_flyby.mp4",
+    "thumb": ".runtime/showcase-work/media-41.jpg",
+    "duration": 11.0,
+    "width": 1080,
+    "height": 1920,
+    "catalog": {}
+  },
+  {
+    "index": 42,
+    "filename": "capture_instagram_9x16_20261116_235951_411938000.mp4",
+    "thumb": "thumbnails/capture_instagram_9x16_20261116_235951_411938000.jpg",
+    "duration": 15.0,
+    "width": 1080,
+    "height": 1920,
+    "catalog": {}
+  }
+]

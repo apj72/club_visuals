@@ -57,15 +57,19 @@ def test_reject_invalid_transition(transition, seconds):
         server.instagram_conversion_args("source.webm", 4, transition, seconds)
 
 
+@pytest.mark.parametrize("profile", [
+    "instagram_4x5", "instagram_9x16", "instagram_1x1",
+    "facebook_4x5", "facebook_16x9", "facebook_9x16", "facebook_1x1",
+])
 @pytest.mark.parametrize("transition", [None, "fade", "invalid"])
-def test_convert_endpoint(footage, tmp_path, monkeypatch, transition):
+def test_convert_endpoint(footage, tmp_path, monkeypatch, transition, profile):
     ffmpeg, path = footage
     monkeypatch.setattr(server, "get_instagram_clip_dir", lambda: tmp_path)
     monkeypatch.setattr(server, "find_working_ffmpeg", lambda: ffmpeg)
     body = path.read_bytes()
     handler = server.Handler.__new__(server.Handler)
     handler.headers = {
-        "Content-Length": str(len(body)), "X-Recording-Profile": "instagram_1x1",
+        "Content-Length": str(len(body)), "X-Recording-Profile": profile,
         "X-Recording-Duration": "4",
     }
     if transition:
@@ -78,8 +82,53 @@ def test_convert_endpoint(footage, tmp_path, monkeypatch, transition):
     assert responses[0]["ok"] == (transition != "invalid")
     assert not list(tmp_path.glob("*.webm"))
     if transition != "invalid":
+        assert responses[0]["filename"].startswith(profile + "_")
         output = tmp_path / responses[0]["filename"]
         probe = subprocess.check_output([
             "ffprobe", "-v", "error", "-select_streams", "v:0",
             "-show_entries", "stream=codec_name,nb_frames", "-of", "csv=p=0", str(output)])
         assert probe.strip() == b"h264,120"
+
+
+def test_social_exports_use_shared_clip_folder_and_stay_out_of_library(tmp_path, monkeypatch):
+    media, clips = tmp_path / "media", tmp_path / "clips"
+    media.mkdir(); clips.mkdir()
+    (media / "source.mp4").touch()
+    (media / "instagram_1x1_export.mp4").touch()
+    (media / "facebook_16x9_export.mp4").touch()
+    output = clips / "facebook_4x5_export.mp4"
+    output.touch()
+    monkeypatch.setattr(server, "get_download_dir", lambda: media)
+    monkeypatch.setattr(server, "get_instagram_clip_dir", lambda: clips)
+    assert [path.name for path in server.source_video_files()] == ["source.mp4"]
+    assert server.resolve_video_path(output.name) == output
+    # Existing fallback works for clips captured before a folder change.
+    assert server.resolve_video_path("facebook_16x9_export.mp4") == media / "facebook_16x9_export.mp4"
+
+
+@pytest.mark.parametrize("profile", ["logo_render_9x16", "logo_render_16x9", "logo_render_1x1"])
+def test_reusable_logo_render_is_saved_to_source_library(footage, tmp_path, monkeypatch, profile):
+    ffmpeg, path = footage
+    media, clips = tmp_path / 'library', tmp_path / 'social'
+    media.mkdir(); clips.mkdir()
+    monkeypatch.setattr(server, 'get_download_dir', lambda: media)
+    monkeypatch.setattr(server, 'get_instagram_clip_dir', lambda: clips)
+    monkeypatch.setattr(server, 'find_working_ffmpeg', lambda: ffmpeg)
+    body = path.read_bytes()
+    handler = server.Handler.__new__(server.Handler)
+    handler.headers = {'Content-Length': str(len(body)), 'X-Recording-Profile': profile, 'X-Recording-Duration': '1'}
+    handler.rfile = BytesIO(body)
+    responses = []; handler.send_json_response = responses.append
+    handler.handle_convert()
+    assert responses[0]['ok'], responses
+    output = media / responses[0]['filename']
+    assert output.is_file() and output.name.startswith(profile + '_')
+    assert not list(clips.iterdir())
+    assert output in server.source_video_files()
+    assert server.resolve_video_path(output.name) == output
+    assert not list(media.glob('*.webm'))
+    probe = subprocess.check_output(['ffprobe','-v','error','-show_entries','stream=codec_name,codec_type,nb_frames,r_frame_rate','-of','json',str(output)])
+    import json
+    streams = json.loads(probe)['streams']
+    assert len(streams) == 1 and streams[0]['codec_type'] == 'video'
+    assert streams[0]['codec_name'] == 'h264' and streams[0]['nb_frames'] == '30' and streams[0]['r_frame_rate'] == '30/1'

@@ -24,7 +24,7 @@ remoteBar.innerHTML = `<strong>${isMacEngine ? 'Mac playout engine' : 'PRIVATE P
   <button id="remoteTake">Send to Mac ▶</button><button id="remotePlaylist">Play this playlist on Mac</button>
   <button id="remoteStop">Stop Mac</button><button id="remoteNext">Next on Mac</button>
   <button id="remoteFullscreen">Mac fullscreen</button>
-  <button id="remoteOpen">Open output screen</button></div>
+  <button id="remoteOpen">Open output screen</button><button id="ipadConnect" type="button">Connect iPad</button></div>
   <div class="control-banner" id="controlBanner" hidden role="status">
     <strong id="controlNotice"></strong>
     <button id="controlReturn" hidden>Return control to Mac</button>
@@ -73,7 +73,7 @@ function updateControlOwnership(state) {
   macEditor.querySelectorAll('dialog').forEach(dialog => { dialog.inert = locked; });
   if(locked&&macEditor.querySelector('dialog[open]')&&!remoteHandoverDialog.open)remoteHandoverDialog.showModal();
   if(!locked&&remoteHandoverDialog.open)remoteHandoverDialog.close();
-  remoteBar.querySelectorAll('.remote-actions button:not(#remoteOpen)').forEach(button => {
+  remoteBar.querySelectorAll('.remote-actions button:not(#remoteOpen):not(#ipadConnect)').forEach(button => {
     button.disabled = !controllerAllowed;
   });
   document.getElementById('controlBanner').hidden = !(locked || isRemoteController);
@@ -120,7 +120,7 @@ function previewScene() {
     transition:normaliseTransition({type:document.getElementById('manualTransitionType').value,
       duration:document.getElementById('manualTransitionDuration').value,
       pace:document.getElementById('manualTransitionPace').value, params:manualTransitionParams, seed:manualTransitionSeed}),
-    captionEnabled, time:video.ended ? 0 : video.currentTime || 0};
+    captionEnabled, time:video.ended ? playbackBounds().start : video.currentTime || 0};
 }
 async function sendMacCommand(action, payload = {}) {
   const id = remoteId + ':' + Date.now() + ':' + Math.random();
@@ -159,7 +159,7 @@ document.getElementById('remoteTake').onclick = () => {
 };
 document.getElementById('remotePlaylist').onclick = () => {
   if (!plPlaylist.entries.length) return remoteMessage('Choose or create a playlist first.');
-  sendMacCommand('playlist', {playlist:JSON.parse(JSON.stringify(plPlaylist)), loop:plLoopPlaylist});
+  sendMacCommand('playlist', {playlist:JSON.parse(JSON.stringify(plPlaylist)), loop:plLoopPlaylist, motionSource:vfxState.motion});
 };
 document.getElementById('remoteStop').onclick = () => sendMacCommand('stop');
 document.getElementById('remoteNext').onclick = () => sendMacCommand('next');
@@ -192,11 +192,11 @@ async function runMacCommand(command) {
       if (autoRun) stopAutoPerform();
       if (plPlaying) stopPlaylist();
       captionEnabled = scene.captionEnabled;
-      showVideo(scene.filename, scene.transition);
+      showVideo(scene.filename, scene.transition, scene.layout.sourceRange);
       applyLayoutConfiguration(scene.layout);
       applyEffectsFromController(scene.effects);
       setTrailsEnabled(scene.trails.enabled); setTrailAmount(scene.trails.amount);
-      setVfxLogo3d(scene.vfx.logo3d); setVfxShape(scene.vfx.shape);
+      setVfxLogo3d({...scene.vfx.logo3d, animationClock: {time: VfxEngine.animationSeconds(scene.vfx.logo3d), startedAt: Date.now(), playing: scene.vfx.logo3d.animationClock?.playing === true}}); setVfxShape(scene.vfx.shape);
       setVfxState(scene.vfx);
       await new Promise((resolve, reject) => {
       const cleanup = () => {
@@ -208,7 +208,8 @@ async function runMacCommand(command) {
       const timeout = setTimeout(failed, 10000);
       const seek = () => {
         cleanup();
-        video.currentTime = Math.min(scene.time, Number.isFinite(video.duration) ? Math.max(0, video.duration - .01) : scene.time);
+        const range = playbackBounds();
+        video.currentTime = Math.max(range.start, Math.min(scene.time, range.end === null ? scene.time : Math.max(range.start, range.end - .01)));
         video.play().catch(() => {});
         broadcastState({type:'seek', time:video.currentTime});
         broadcastState({type:'play'});
@@ -221,6 +222,7 @@ async function runMacCommand(command) {
     }
     case 'playlist':
       if (!command.playlist?.entries?.length) throw new Error('Playlist is empty.');
+      if (command.motionSource) setVfxState({motion: command.motionSource});
       plPlaylist = command.playlist; plLoopPlaylist = !!command.loop; startPlaylist(); break;
     case 'stop': if (autoRun) stopAutoPerform(); stopPlaylist(); break;
     case 'next': if (plPlaying) plNext(); else throw new Error('No playlist is playing on Mac.'); break;
@@ -269,6 +271,7 @@ if (isMacEngine) {
   commands.onerror = () => { hostClaimed = false; };
   commands.onmessage = event => {
     const command = JSON.parse(event.data);
+    cameraMotion.receive(command);
     if (command.type !== 'remoteCommand' || command.hostId !== remoteId || !hostClaimed) return;
     remoteQueue = remoteQueue.then(async () => {
       try {
@@ -331,3 +334,97 @@ async function pollMacStatus() {
 updateControlOwnership({remote:false});
 pollMacStatus();
 setInterval(pollMacStatus, 1500);
+
+// Generate fresh LAN links on the Mac; no IP address or hostname is saved.
+(() => {
+  const trigger = document.getElementById('ipadConnect');
+  trigger.hidden = isMacEngine;
+  const dialog = document.createElement('dialog');
+  dialog.id = 'ipadConnectDialog';
+  dialog.className = 'ipad-connect-dialog';
+  dialog.setAttribute('aria-labelledby', 'ipadConnectTitle');
+  dialog.innerHTML = `<h2 id="ipadConnectTitle">Connect your iPad</h2>
+    <p>Connect the iPad to the same network as this Mac, then open the link in Safari.</p>
+    <button type="button" id="ipadLinkRefresh">Generate current link</button>
+    <div id="ipadLinkNetworks" aria-label="Mac network addresses"></div>
+    <label for="ipadConnectionUrl">iPad control link</label>
+    <input id="ipadConnectionUrl" type="text" readonly spellcheck="false" autocapitalize="off">
+    <div class="ipad-link-actions"><button type="button" id="ipadLinkCopy" disabled>Copy link</button>
+    <button type="button" id="ipadLinkOtherUi" hidden>Use original V1</button>
+    <button type="button" id="ipadLinkClose">Close</button></div>
+    <p id="ipadLinkStatus" role="status" aria-live="polite"></p>
+    <p class="ipad-link-hint">Generate a fresh link after changing Wi-Fi. Guest or venue Wi-Fi may block connections between devices even with the correct IP address.</p>`;
+  document.body.append(dialog);
+  const style = document.createElement('style');
+  style.textContent = `.ipad-connect-dialog{width:min(620px,94vw);max-height:90dvh;overflow:auto;margin:auto;padding:24px;border:1px solid #86cbbd;border-radius:12px;background:#182333;color:#edf3f7;font:14px/1.5 system-ui}
+    .ipad-connect-dialog::backdrop{background:#000a}.ipad-connect-dialog h2{font-size:20px;margin:0 0 12px}.ipad-connect-dialog p{margin:12px 0}.ipad-connect-dialog label{display:block;margin-top:12px}
+    .ipad-connect-dialog button{padding:10px 12px;min-height:44px;border:1px solid #69837d;border-radius:6px;background:#233d35;color:#edf3f7;font:inherit;cursor:pointer}.ipad-connect-dialog button:disabled{opacity:.4}
+    .ipad-connect-dialog input{width:100%;padding:12px;margin:8px 0;color:white;background:#101b24;border:1px solid #69837d;border-radius:6px;font:14px/1.5 ui-monospace,monospace}
+    .ipad-connect-dialog .ipad-link-actions{display:flex;flex-wrap:wrap;gap:8px}.ipad-connect-dialog .ipad-link-hint{color:#b5c7c0;font-size:12px}
+    #ipadLinkNetworks{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px}#ipadLinkNetworks button[aria-pressed=true]{border-color:#c1f477;color:#c1f477}`;
+  document.head.append(style);
+  const field = document.getElementById('ipadConnectionUrl');
+  const status = document.getElementById('ipadLinkStatus');
+  const copy = document.getElementById('ipadLinkCopy');
+  const refresh = document.getElementById('ipadLinkRefresh');
+  const networks = document.getElementById('ipadLinkNetworks');
+  const otherUi = document.getElementById('ipadLinkOtherUi');
+  let active = null, mode = location.pathname.startsWith('/redesign') ? 'redesign' : 'v1';
+  let request = 0;
+  function showLink() {
+    field.value = active?.urls[mode] || active?.urls.v1 || '';
+    copy.disabled = !field.value;
+    otherUi.hidden = !active?.urls.redesign;
+    otherUi.textContent = mode === 'redesign' ? 'Use original V1' : 'Use redesigned UI';
+  }
+  async function generate() {
+    const run = ++request;
+    refresh.disabled = true; copy.disabled = true;
+    field.value = ''; active = null; networks.replaceChildren(); otherUi.hidden = true;
+    status.textContent = 'Finding this Mac’s current network addresses…';
+    try {
+      const response = await fetch('/api/ipad-links', {cache:'no-store'});
+      if (!response.ok) throw new Error('Could not generate a link. Restart the updated server and try again.');
+      const result = await response.json();
+      if (run !== request) return;
+      if (!result.addresses?.length) throw new Error('No usable network address found. Connect this Mac to Wi-Fi or Ethernet, then generate the link again.');
+      active = result.addresses[0];
+      for (const entry of result.addresses) {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.textContent = `${entry.interface} · ${entry.address}`;
+        button.setAttribute('aria-pressed', String(entry === active));
+        button.onclick = () => {
+          active = entry;
+          networks.querySelectorAll('button').forEach(item => item.setAttribute('aria-pressed', String(item === button)));
+          showLink(); status.textContent = 'Link updated for the selected network.';
+        };
+        networks.append(button);
+      }
+      showLink();
+      status.textContent = result.addresses.length > 1
+        ? 'Several network addresses found. Choose the interface connected to the same network as your iPad.'
+        : 'Current link ready. Copy it to the iPad and open it in Safari.';
+    } catch (error) {
+      if (run === request) status.textContent = error.message;
+    } finally { if (run === request) refresh.disabled = false; }
+  }
+  trigger.addEventListener('click', () => { if (!dialog.open) dialog.showModal(); generate(); });
+  refresh.addEventListener('click', generate);
+  otherUi.addEventListener('click', () => { mode = mode === 'redesign' ? 'v1' : 'redesign'; showLink(); });
+  field.addEventListener('click', () => field.select());
+  copy.addEventListener('click', async () => {
+    const url = field.value;
+    try {
+      if (!navigator.clipboard?.writeText) throw new Error('Clipboard unavailable');
+      await navigator.clipboard.writeText(url);
+      status.textContent = 'Link copied. Paste it into Safari on the iPad.';
+    } catch {
+      field.focus(); field.select();
+      let copied = false;
+      try { copied = document.execCommand('copy'); } catch {}
+      status.textContent = copied ? 'Link copied. Paste it into Safari on the iPad.' : 'Link selected. Use Copy, then paste it into Safari on the iPad.';
+    }
+  });
+  document.getElementById('ipadLinkClose').addEventListener('click', () => dialog.close());
+})();

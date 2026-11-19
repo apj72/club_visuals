@@ -1,0 +1,394 @@
+{
+  "checkpoints": [
+    {
+      "clip": 1,
+      "time": 4,
+      "view": "single",
+      "scene": 6,
+      "litSamples": 7142
+    },
+    {
+      "clip": 2,
+      "time": 48.0,
+      "view": "dual",
+      "scene": 2,
+      "litSamples": 191620
+    },
+    {
+      "clip": 2,
+      "time": 52.0,
+      "view": "dual",
+      "scene": 2,
+      "litSamples": 219326
+    },
+    {
+      "clip": 3,
+      "time": 72.0,
+      "view": "triple",
+      "scene": 2,
+      "litSamples": 223394
+    },
+    {
+      "clip": 4,
+      "time": 88.0,
+      "view": "dual",
+      "scene": 5,
+      "litSamples": 230400
+    },
+    {
+      "clip": 4,
+      "time": 90.0,
+      "view": "dual",
+      "scene": 5,
+      "litSamples": 230400
+    },
+    {
+      "clip": 5,
+      "time": 104.0,
+      "view": "quad",
+      "scene": 5,
+      "litSamples": 165584
+    },
+    {
+      "clip": 6,
+      "time": 120.0,
+      "view": "six",
+      "scene": 5,
+      "litSamples": 228540
+    },
+    {
+      "clip": 7,
+      "time": 146,
+      "view": "six",
+      "scene": 4,
+      "litSamples": 230400
+    },
+    {
+      "clip": 8,
+      "time": 163.0,
+      "view": "triple",
+      "scene": 6,
+      "litSamples": 4641
+    },
+    {
+      "clip": 8,
+      "time": 176.0,
+      "view": "triple",
+      "scene": 6,
+      "litSamples": 230140
+    },
+    {
+      "clip": 9,
+      "time": 210,
+      "view": "single",
+      "scene": 3,
+      "litSamples": 45856
+    },
+    {
+      "clip": 9,
+      "time": 212.0,
+      "view": "single",
+      "scene": 3,
+      "litSamples": 45802
+    },
+    {
+      "clip": 10,
+      "time": 240.0,
+      "view": "single",
+      "scene": 3,
+      "litSamples": 177245
+    },
+    {
+      "clip": 11,
+      "time": 260.0,
+      "view": "single",
+      "scene": 6,
+      "litSamples": 13948
+    },
+    {
+      "clip": 11,
+      "time": 268.0,
+      "view": "single",
+      "scene": 6,
+      "litSamples": 17536
+    },
+    {
+      "clip": 11,
+      "time": 272.0,
+      "view": "single",
+      "scene": 6,
+      "litSamples": 15327
+    },
+    {
+      "clip": 11,
+      "time": 276.0,
+      "view": "single",
+      "scene": 6,
+      "litSamples": 12044
+    },
+    {
+      "clip": 11,
+      "time": 284.0,
+      "view": "single",
+      "scene": 6,
+      "litSamples": 18402
+    },
+    {
+      "clip": 12,
+      "time": 292.0,
+      "view": "single",
+      "scene": -1,
+      "litSamples": 37721
+    },
+    {
+      "clip": 12,
+      "time": 300.0,
+      "view": "single",
+      "scene": -1,
+      "litSamples": 35889
+    },
+    {
+      "clip": 12,
+      "time": 304.0,
+      "view": "single",
+      "scene": -1,
+      "litSamples": 28571
+    },
+    {
+      "clip": 12,
+      "time": 308.0,
+      "view": "single",
+      "scene": -1,
+      "litSamples": 20830
+    },
+    {
+      "clip": 12,
+      "time": 316.0,
+      "view": "single",
+      "scene": -1,
+      "litSamples": 47191
+    },
+    {
+      "clip": 13,
+      "time": 328.0,
+      "view": "triple",
+      "scene": 4,
+      "litSamples": 177255
+    },
+    {
+      "clip": 13,
+      "time": 336.0,
+      "view": "triple",
+      "scene": -1,
+      "litSamples": 217829
+    },
+    {
+      "clip": 13,
+      "time": 344.0,
+      "view": "triple",
+      "scene": -1,
+      "litSamples": 218083
+    },
+    {
+      "clip": 14,
+      "time": 360,
+      "view": "single",
+      "scene": 6,
+      "litSamples": 151457
+    },
+    {
+      "clip": 14,
+      "time": 368.0,
+      "view": "single",
+      "scene": 6,
+      "litSamples": 0
+    },
+    {
+      "clip": 15,
+      "time": 398.0,
+      "view": "triple",
+      "scene": 3,
+      "litSamples": 225116
+    },
+    {
+      "clip": 15,
+      "time": 400.0,
+      "view": "triple",
+      "scene": 3,
+      "litSamples": 224988
+    },
+    {
+      "clip": 15,
+      "time": 412.0,
+      "view": "triple",
+      "scene": 5,
+      "litSamples": 225627
+    },
+    {
+      "clip": 16,
+      "time": 418.5,
+      "view": "single",
+      "scene": 6,
+      "litSamples": 3834
+    },
+    {
+      "clip": 16,
+      "time": 429,
+      "view": "single",
+      "scene": -1,
+      "litSamples": 230399
+    },
+    {
+      "clip": 16,
+      "time": 431.0,
+      "view": "single",
+      "scene": -1,
+      "litSamples": 230400
+    },
+    {
+      "clip": 16,
+      "time": 442.0,
+      "view": "single",
+      "scene": -1,
+      "litSamples": 230400
+    },
+    {
+      "clip": 17,
+      "time": 464.0,
+      "view": "dual",
+      "scene": -1,
+      "litSamples": 36328
+    },
+    {
+      "clip": 18,
+      "time": 488.0,
+      "view": "six",
+      "scene": 4,
+      "litSamples": 188935
+    },
+    {
+      "clip": 18,
+      "time": 489,
+      "view": "six",
+      "scene": 4,
+      "litSamples": 192575
+    },
+    {
+      "clip": 19,
+      "time": 504.0,
+      "view": "six",
+      "scene": 6,
+      "litSamples": 215823
+    },
+    {
+      "clip": 20,
+      "time": 520.0,
+      "view": "six",
+      "scene": 5,
+      "litSamples": 229091
+    },
+    {
+      "clip": 21,
+      "time": 536.0,
+      "view": "six",
+      "scene": 2,
+      "litSamples": 230400
+    },
+    {
+      "clip": 22,
+      "time": 552.0,
+      "view": "octo",
+      "scene": 1,
+      "litSamples": 230400
+    },
+    {
+      "clip": 23,
+      "time": 568.0,
+      "view": "dual",
+      "scene": 4,
+      "litSamples": 145123
+    },
+    {
+      "clip": 24,
+      "time": 584.0,
+      "view": "single",
+      "scene": 4,
+      "litSamples": 54538
+    },
+    {
+      "clip": 25,
+      "time": 600.0,
+      "view": "octo",
+      "scene": 5,
+      "litSamples": 230400
+    },
+    {
+      "clip": 26,
+      "time": 616.0,
+      "view": "triple",
+      "scene": 6,
+      "litSamples": 7
+    },
+    {
+      "clip": 27,
+      "time": 632.0,
+      "view": "triple",
+      "scene": 2,
+      "litSamples": 86261
+    },
+    {
+      "clip": 27,
+      "time": 640.0,
+      "view": "single",
+      "scene": 6,
+      "litSamples": 5659
+    },
+    {
+      "clip": 27,
+      "time": 648.0,
+      "view": "single",
+      "scene": 6,
+      "litSamples": 8770
+    },
+    {
+      "clip": 28,
+      "time": 659.0,
+      "view": "triple",
+      "scene": 6,
+      "litSamples": 4278
+    },
+    {
+      "clip": 28,
+      "time": 672.0,
+      "view": "single",
+      "scene": 6,
+      "litSamples": 28474
+    },
+    {
+      "clip": 29,
+      "time": 692.0,
+      "view": "single",
+      "scene": 6,
+      "litSamples": 10714
+    },
+    {
+      "clip": 29,
+      "time": 700,
+      "view": "single",
+      "scene": 6,
+      "litSamples": 1835
+    },
+    {
+      "clip": 29,
+      "time": 712.0,
+      "view": "single",
+      "scene": 6,
+      "litSamples": 150668
+    }
+  ],
+  "sourceCount": 23,
+  "reflectionSources": 5,
+  "runtime": 720,
+  "blackEnding": true,
+  "errors": []
+}

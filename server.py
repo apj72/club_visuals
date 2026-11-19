@@ -15,6 +15,10 @@ from socketserver import ThreadingMixIn
 from mac_output import MacOutput
 from media_preview import PreviewCache
 from library_catalog import LibraryCatalog, CatalogConflict
+from video_cues import VideoCues, CueConflict, validate_range
+from network_links import ipad_links
+import instagram_auth
+from capture_library import list_captures, import_capture
 
 
 class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
@@ -46,6 +50,7 @@ REMOTE_STATUS = {}
 CONTROL_SESSION = {'owner': None, 'seen': 0, 'revoked': set()}
 MAC_OUTPUT = MacOutput(BASE_DIR, PORT)
 LIBRARY_CATALOG = LibraryCatalog(BASE_DIR / 'library_catalog.json')
+VIDEO_CUES = VideoCues(BASE_DIR / 'video_cues')
 
 
 def control_status():
@@ -82,7 +87,7 @@ def source_video_files():
     dl = get_download_dir()
     dl.mkdir(parents=True, exist_ok=True)
     return sorted(
-        (f for f in dl.glob("*.mp4") if not f.name.startswith("instagram_")),
+        (f for f in dl.glob("*.mp4") if not f.name.startswith(("instagram_", "facebook_"))),
         key=lambda f: f.stat().st_mtime, reverse=True,
     )
 
@@ -115,7 +120,7 @@ def get_instagram_clip_dir():
 
 def resolve_video_path(filename):
     safe_name = Path(filename).name
-    if safe_name.startswith("instagram_"):
+    if safe_name.startswith(("instagram_", "facebook_")):
         clip_path = get_instagram_clip_dir() / safe_name
         if clip_path.is_file():
             return clip_path
@@ -178,42 +183,30 @@ def instagram_conversion_args(path, duration, transition="none", transition_dura
             "-i", str(path), "-filter_complex", graph, "-map", "[loop]"]
 
 
-def refresh_cookies(password=None):
-    try:
-        if password:
-            keychain = Path.home() / "Library" / "Keychains" / "login.keychain-db"
-            subprocess.run(
-                ["security", "unlock-keychain", "-p", password, str(keychain)],
-                capture_output=True, timeout=5,
-            )
-        subprocess.run(
-            ["yt-dlp", "--cookies-from-browser", "brave",
-             "--cookies", str(COOKIE_JAR),
-             "--skip-download", "https://www.instagram.com/"],
-            capture_output=True, timeout=30,
-        )
-        return COOKIE_JAR.exists()
-    except Exception as e:
-        print(f"Cookie export failed: {e}")
-        return False
+COOKIE_REFRESH_LOCK = threading.Lock()
+LAST_COOKIE_ERROR = ''
+
+
+def refresh_cookies(password=None, browser=None, profile=None):
+    global LAST_COOKIE_ERROR
+    config = load_config()
+    browser = browser or config.get('instagram_cookie_browser', 'chrome')
+    profile = config.get('instagram_cookie_profile', '') if profile is None else profile
+    with COOKIE_REFRESH_LOCK:
+        ok, LAST_COOKIE_ERROR = instagram_auth.export_cookies(COOKIE_JAR, browser, profile, password)
+        return ok
 
 
 def get_cookie_args():
-    if COOKIE_JAR.exists():
-        if time.time() - COOKIE_JAR.stat().st_mtime <= COOKIE_MAX_AGE:
-            return ["--cookies", str(COOKIE_JAR)]
-    return None
+    return ['--cookies', str(COOKIE_JAR)] if cookie_status()['fresh'] else None
 
 
 def cookie_status():
-    if not COOKIE_JAR.exists():
-        return {"exists": False, "age_hours": None, "fresh": False}
-    age = time.time() - COOKIE_JAR.stat().st_mtime
-    return {
-        "exists": True,
-        "age_hours": round(age / 3600, 1),
-        "fresh": age <= COOKIE_MAX_AGE,
-    }
+    result = instagram_auth.cookie_status(COOKIE_JAR, COOKIE_MAX_AGE)
+    config = load_config()
+    result.update(browser=config.get('instagram_cookie_browser', 'chrome'),
+                  profile=config.get('instagram_cookie_profile', ''))
+    return result
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -235,12 +228,17 @@ class Handler(BaseHTTPRequestHandler):
             self.serve_transition_engine()
         elif self.path == "/auto_perform.js":
             self.serve_javascript("auto_perform.js")
+        elif self.path in ("/source_range.js", "/video_cues.js", "/logo_motion_controls.js", "/video_framing.js", "/control_hints.js"):
+            self.serve_javascript(self.path[1:])
         elif self.path == "/remote_control.js":
             self.serve_javascript("remote_control.js")
         elif self.path == '/library_catalog.js':
             self.serve_javascript('library_catalog.js')
         elif self.path == '/tag_manager.js':
             self.serve_javascript('tag_manager.js')
+        elif self.path == '/api/ipad-links':
+            self.send_json_response(ipad_links(self.server.server_address[1],
+                                               redesigned=getattr(self, 'supports_redesign', False)))
         elif self.path == "/api/remote-status":
             with STATE_LOCK:
                 status = {role: {**value, "connected": time.time() - value["seen"] < 6}
@@ -266,6 +264,10 @@ class Handler(BaseHTTPRequestHandler):
                 self.serve_media_file(PREVIEW_CACHE.directory / name)
         elif self.path == "/auto_audio_worklet.js":
             self.serve_javascript("auto_audio_worklet.js")
+        elif self.path == '/camera_motion.js':
+            self.serve_javascript('camera_motion.js')
+        elif self.path == '/reflection_video.js':
+            self.serve_javascript('reflection_video.js')
         elif self.path == "/assets/version1-logo.png":
             self.serve_version1_logo()
         elif self.path == "/assets/version1-hero.svg":
@@ -286,6 +288,8 @@ class Handler(BaseHTTPRequestHandler):
             self.serve_thumbnail()
         elif self.path == "/api/videos":
             self.list_videos()
+        elif self.path == '/api/captures':
+            self.send_json_response({'captures': list_captures(get_instagram_clip_dir())})
         elif self.path == "/api/playlists":
             self.list_playlists()
         elif self.path == "/api/cookie-status":
@@ -298,13 +302,30 @@ class Handler(BaseHTTPRequestHandler):
             self.browse_dirs()
         elif self.path.startswith("/api/playlist/"):
             self.get_playlist()
+        elif self.path.startswith("/api/video-cues/"):
+            self.video_cues(False)
         elif self.path.startswith("/api/video-presets/"):
             self.get_video_presets()
         else:
             self.send_error(404)
 
     def do_POST(self):
-        if self.path == '/api/library-catalog/manage':
+        if self.path == '/api/library/import-capture':
+            try:
+                data = json.loads(self.rfile.read(int(self.headers.get('Content-Length', 0))))
+                if not isinstance(data, dict):
+                    raise ValueError('Choose a saved capture')
+                result = import_capture(get_instagram_clip_dir(), get_download_dir(), data.get('filename'))
+                self.send_json_response({'ok': True, **result})
+            except FileNotFoundError as error:
+                self.send_catalog_error(404, str(error))
+            except FileExistsError as error:
+                self.send_catalog_error(409, str(error))
+            except (ValueError, TypeError) as error:
+                self.send_catalog_error(400, str(error))
+            except OSError:
+                self.send_catalog_error(500, 'Could not copy the capture to the library')
+        elif self.path == '/api/library-catalog/manage':
             try:
                 data = json.loads(self.rfile.read(int(self.headers.get('Content-Length', 0))))
                 if not isinstance(data, dict):
@@ -367,6 +388,8 @@ class Handler(BaseHTTPRequestHandler):
             self.handle_convert()
         elif self.path.startswith("/api/playlist/"):
             self.save_playlist()
+        elif self.path.startswith("/api/video-cues/"):
+            self.video_cues(True)
         elif self.path.startswith("/api/video-presets/"):
             self.save_video_presets()
         else:
@@ -601,6 +624,13 @@ class Handler(BaseHTTPRequestHandler):
     def update_state(self):
         length = int(self.headers.get("Content-Length", 0))
         data = json.loads(self.rfile.read(length))
+        if data.get('type') == 'cameraMotionFrame':
+            image = data.get('image')
+            if (not isinstance(data.get('sourceId'), str) or not re.fullmatch(r'[A-Za-z0-9._:-]{1,100}', data['sourceId'])
+                    or not isinstance(data.get('seq'), int) or data['seq'] < 0
+                    or (image is not None and (not isinstance(image, str) or not image.startswith('data:image/png;base64,') or len(image) > 130000))):
+                self.send_error(400, 'Invalid camera motion frame')
+                return
         self.publish_state(data)
         self.send_json_response({"ok": True})
 
@@ -608,7 +638,7 @@ class Handler(BaseHTTPRequestHandler):
         msg = f"data: {json.dumps(data)}\n\n".encode()
         dead = []
         with STATE_LOCK:
-            if data.get("type") not in ("vfxPulse", "remoteCommand", "outputFullscreen"):
+            if data.get("type") not in ("vfxPulse", "remoteCommand", "outputFullscreen", "cameraMotionFrame"):
                 if data.get("type") == "loadVideo":
                     STATE_SNAPSHOT.pop("seek", None)
                 key = "transport" if data.get("type") in ("play", "pause") else data.get("type")
@@ -828,6 +858,31 @@ class Handler(BaseHTTPRequestHandler):
         (PLAYLIST_DIR / f"{safe}.json").write_text(json.dumps(data, indent=2))
         self.send_json_response({"ok": True})
 
+    def video_cues(self, save):
+        filename = urllib.parse.unquote(self.path[len('/api/video-cues/'):])
+        if filename != Path(filename).name or not resolve_video_path(filename).is_file():
+            self.send_error(404, 'Video not found')
+            return
+        try:
+            if save:
+                length = int(self.headers.get('Content-Length', 0))
+                if not 0 < length <= 100_000:
+                    raise ValueError('Invalid cue data')
+                data = json.loads(self.rfile.read(length))
+                if not isinstance(data, dict):
+                    raise ValueError('Invalid cue data')
+                result = VIDEO_CUES.save(filename, data)
+            else:
+                result = VIDEO_CUES.read(filename)
+            self.send_json_response(result)
+        except (ValueError, TypeError) as error:
+            content = json.dumps({'error': str(error)}).encode()
+            self.send_response(409 if isinstance(error, CueConflict) else 400)
+            self.send_header('Content-Type', 'application/json')
+            self.send_header('Content-Length', len(content))
+            self.end_headers()
+            self.wfile.write(content)
+
     def get_video_presets(self):
         filename = Path(urllib.parse.unquote(self.path[len("/api/video-presets/"):])).name
         path = video_preset_path(filename)
@@ -864,11 +919,11 @@ class Handler(BaseHTTPRequestHandler):
                 pan_y = float(preset["panY"])
                 if (not preset_id or len(preset_id) > 80 or preset_id in ids
                     or not name or len(name) > 80
-                    or view not in {"single", "dual", "triple", "quad", "octo"}
+                    or view not in {"single", "dual", "triple", "quad", "octo", "six"}
                     or not 1 <= panel <= 32 or not 0 <= loop_mode <= 2
                     or not math.isfinite(speed) or not 0.25 <= speed <= 2
                     or speed * 4 != int(speed * 4)
-                    or not math.isfinite(zoom) or not 1 <= zoom <= 4
+                    or not math.isfinite(zoom) or not 0.25 <= zoom <= 4
                     or not math.isfinite(pan_x) or not -1 <= pan_x <= 1
                     or not math.isfinite(pan_y) or not -1 <= pan_y <= 1):
                     raise ValueError("Invalid preset")
@@ -876,6 +931,8 @@ class Handler(BaseHTTPRequestHandler):
                 validated.append({"id": preset_id, "name": name, "view": view,
                                   "preset": panel, "loopMode": loop_mode,
                                   "speed": speed, "zoom": zoom, "panX": pan_x, "panY": pan_y})
+                if preset.get('sourceRange') is not None:
+                    validated[-1]['sourceRange'] = validate_range(preset['sourceRange'])
         except (KeyError, TypeError, ValueError, json.JSONDecodeError):
             self.send_error(400, "Invalid preset data")
             return
@@ -944,9 +1001,21 @@ class Handler(BaseHTTPRequestHandler):
         length = int(self.headers.get("Content-Length", 0))
         body = json.loads(self.rfile.read(length)) if length else {}
         password = body.get("password")
-        ok = refresh_cookies(password=password)
+        config = load_config()
+        browser = body.get('browser', config.get('instagram_cookie_browser', 'chrome'))
+        profile = body.get('profile', config.get('instagram_cookie_profile', ''))
+        if isinstance(profile, str):
+            profile = profile.strip()
+        try:
+            instagram_auth.validate_source(browser, profile)
+        except ValueError as error:
+            self.send_json_response({'ok':False, 'error':str(error)})
+            return
+        config.update(instagram_cookie_browser=browser, instagram_cookie_profile=profile)
+        save_config(config)
+        ok = refresh_cookies(password=password, browser=browser, profile=profile)
         result = cookie_status()
-        result["ok"] = ok
+        result.update(ok=ok, error=LAST_COOKIE_ERROR)
         self.send_json_response(result)
 
     def get_config(self):
@@ -1100,19 +1169,24 @@ class Handler(BaseHTTPRequestHandler):
             return
 
         profile = self.headers.get("X-Recording-Profile", "")
-        instagram = profile in {"instagram_4x5", "instagram_9x16", "instagram_1x1"}
-        dl = get_instagram_clip_dir() if instagram else get_download_dir()
+        social_capture = profile in {
+            "instagram_4x5", "instagram_9x16", "instagram_1x1",
+            "facebook_4x5", "facebook_16x9", "facebook_9x16", "facebook_1x1",
+        }
+        reusable_render = profile in {'logo_render_9x16', 'logo_render_16x9', 'logo_render_1x1'}
+        clip_capture = social_capture or reusable_render
+        dl = get_instagram_clip_dir() if social_capture else get_download_dir()
         dl.mkdir(parents=True, exist_ok=True)
-        prefix = profile if instagram else "recording"
+        prefix = profile if clip_capture else "recording"
         timestamp = time.strftime("%Y%m%d_%H%M%S")
-        if instagram:
+        if clip_capture:
             timestamp += f"_{time.time_ns() % 1_000_000_000:09d}"
         webm_path = dl / f"{prefix}_{timestamp}.webm"
         mp4_path = dl / f"{prefix}_{timestamp}.mp4"
 
         duration = None
         conversion_args = None
-        if instagram:
+        if clip_capture:
             try:
                 duration = float(self.headers.get("X-Recording-Duration", ""))
                 if not 0.1 <= duration <= 600 or not math.isfinite(duration):
@@ -1136,9 +1210,9 @@ class Handler(BaseHTTPRequestHandler):
             if not ffmpeg:
                 raise RuntimeError("No working FFmpeg found for recording conversion")
             command = [ffmpeg, "-y"]
-            command += conversion_args if instagram else ["-i", str(webm_path)]
-            command += ["-c:v", "libx264", "-preset", "fast", "-crf", "23", "-pix_fmt", "yuv420p"]
-            if instagram:
+            command += conversion_args if clip_capture else ["-i", str(webm_path)]
+            command += ["-c:v", "libx264", "-preset", "fast", "-crf", "18" if reusable_render else "23", "-pix_fmt", "yuv420p"]
+            if clip_capture:
                 command += ["-an", "-movflags", "+faststart"]
             else:
                 command += ["-c:a", "aac", "-b:a", "128k"]

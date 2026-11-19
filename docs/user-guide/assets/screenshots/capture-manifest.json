@@ -1,0 +1,154 @@
+{
+  "tool": "docshots",
+  "captured": "2026-11-19",
+  "isolated": true,
+  "screenshots": [
+    {
+      "name": "01-prepare",
+      "caption": "Prepare: private preview, video library and edit controls.",
+      "width": 1440,
+      "height": 1050,
+      "bytes": 671950
+    },
+    {
+      "name": "02-library",
+      "caption": "Library: newest-first sorting, combined filters and tags.",
+      "width": 1440,
+      "height": 1050,
+      "bytes": 548220
+    },
+    {
+      "name": "03-classification",
+      "caption": "Classification manager with shared tag vocabulary.",
+      "width": 1440,
+      "height": 1050,
+      "bytes": 182240
+    },
+    {
+      "name": "04-cue-ranges",
+      "caption": "Prepare: named source In/Out ranges and loop preview.",
+      "width": 1440,
+      "height": 1050,
+      "bytes": 244826
+    },
+    {
+      "name": "05-playlist",
+      "caption": "Playlist composition, green layout sections and purple effect cues.",
+      "width": 1440,
+      "height": 1050,
+      "bytes": 355871
+    },
+    {
+      "name": "06-section-edit",
+      "caption": "Edit the 24-second section without changing the earlier composition.",
+      "width": 1440,
+      "height": 1050,
+      "bytes": 423105
+    },
+    {
+      "name": "07-clip-settings",
+      "caption": "Whole-clip playback, source ranges, framing and colour controls.",
+      "width": 1440,
+      "height": 1050,
+      "bytes": 633260
+    },
+    {
+      "name": "08-effect-cue",
+      "caption": "A timed logo cue with appearance, reflection and motion settings.",
+      "width": 690,
+      "height": 946,
+      "bytes": 65894
+    },
+    {
+      "name": "09-vfx-layers",
+      "caption": "Independent video-effect and reflective-logo layers.",
+      "width": 760,
+      "height": 1000,
+      "bytes": 82436
+    },
+    {
+      "name": "10-camera",
+      "caption": "Motion-extraction settings with camera explicitly disconnected.",
+      "width": 724,
+      "height": 913,
+      "bytes": 72863
+    },
+    {
+      "name": "11-logo-appearance",
+      "caption": "3D logo orientation, material and reflection controls.",
+      "width": 760,
+      "height": 1100,
+      "bytes": 69808
+    },
+    {
+      "name": "12-logo-motion",
+      "caption": "Path, zoom and multi-axis animation controls.",
+      "width": 724,
+      "height": 1111,
+      "bytes": 58730
+    },
+    {
+      "name": "13-snake-flight",
+      "caption": "Letter wave and oblique fly-along controls.",
+      "width": 760,
+      "height": 1100,
+      "bytes": 92336
+    },
+    {
+      "name": "14-show-builder",
+      "caption": "Show Builder: reusable model sections and brick shelf.",
+      "width": 1440,
+      "height": 1050,
+      "bytes": 170774
+    },
+    {
+      "name": "15-generated-show",
+      "caption": "Resume a saved edition and review its complete journey.",
+      "width": 1440,
+      "height": 1050,
+      "bytes": 170179
+    },
+    {
+      "name": "16-auto-perform",
+      "caption": "Audio-reactive Auto Perform, kept offline for this documentation capture.",
+      "width": 1440,
+      "height": 1050,
+      "bytes": 85664
+    },
+    {
+      "name": "17-social-capture",
+      "caption": "Capture: choose output format, source time, length and loop transition.",
+      "width": 1440,
+      "height": 1050,
+      "bytes": 851692
+    },
+    {
+      "name": "18-logo-render",
+      "caption": "Reusable 9:16 logo capture and restart-cycle choice.",
+      "width": 1440,
+      "height": 1050,
+      "bytes": 162605
+    },
+    {
+      "name": "19-settings",
+      "caption": "Settings: mirror preferences, folders and Instagram connection.",
+      "width": 1440,
+      "height": 1050,
+      "bytes": 106759
+    },
+    {
+      "name": "20-ipad-playlist",
+      "caption": "The same composition editor at iPad size.",
+      "width": 834,
+      "height": 1194,
+      "bytes": 151511
+    },
+    {
+      "name": "21-transition-audition",
+      "caption": "Transition audition using actual neighbouring library videos.",
+      "width": 720,
+      "height": 797,
+      "bytes": 186724
+    }
+  ]
+}

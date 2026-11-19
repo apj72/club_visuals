@@ -1,0 +1,4963 @@
+{
+  "name": "VERSION1 · From Signal to Spectacle · 12 min",
+  "entries": [
+    {
+      "video": "blue_laser.mp4",
+      "view": "single",
+      "preset": 1,
+      "loopMode": 1,
+      "speed": 0.75,
+      "zoom": 0.48,
+      "panX": 0,
+      "panY": 0,
+      "duration": {
+        "type": "seconds",
+        "value": 32
+      },
+      "transition": {
+        "type": "fade-in",
+        "duration": 3,
+        "pace": "ease",
+        "seed": 7000,
+        "params": {},
+        "reduceFlashes": true
+      },
+      "cues": [
+        {
+          "at": 0,
+          "effect": "off"
+        },
+        {
+          "at": 0,
+          "seconds": 8,
+          "effect": "text",
+          "backdrop": "black",
+          "skin": "chrome",
+          "quality": "balanced",
+          "x": 0.5,
+          "y": 0.5,
+          "scale": 0.38,
+          "depth": 0.35,
+          "rotX": 0,
+          "rotY": -18,
+          "rotZ": 0,
+          "motion": 0,
+          "axis": "y",
+          "startAngle": -25,
+          "endAngle": 25,
+          "bevel": 0.035,
+          "roughness": 0.06,
+          "reflection": 1.15,
+          "environment": 1,
+          "exposure": 1,
+          "text": "SIGNAL",
+          "font": "bungee",
+          "reflectionSource": {
+            "filename": "blue_laser.mp4",
+            "speed": 1
+          },
+          "djText": false
+        },
+        {
+          "at": 8,
+          "effect": "off"
+        }
+      ],
+      "layoutCues": [
+        {
+          "at": 12,
+          "view": "single",
+          "preset": 1,
+          "zoom": 0.7,
+          "panX": -0.25,
+          "panY": 0.1
+        },
+        {
+          "at": 24,
+          "view": "triple",
+          "preset": 7,
+          "zoom": 1,
+          "panX": 0,
+          "panY": 0
+        }
+      ],
+      "build": {
+        "sectionId": "showcase-signal",
+        "brickId": "showcase-signal",
+        "step": 0,
+        "slot": "01 · A single light",
+        "slotKey": "showcase-signal:01 · A single light",
+        "binding": "showcase-signal:0:showcase-signal:01 · A single light"
+      },
+      "showcase": {
+        "title": "A single light",
+        "chapter": "I · A signal in the dark"
+      }
+    },
+    {
+      "video": "Video by uon.visuals_DdpYDh8B-su.fdash-1713314353073142v.mp4",
+      "view": "single",
+      "preset": 1,
+      "loopMode": 1,
+      "speed": 0.75,
+      "zoom": 0.65,
+      "panX": 0,
+      "panY": 0,
+      "duration": {
+        "type": "seconds",
+        "value": 32
+      },
+      "transition": {
+        "type": "cross-dissolve",
+        "duration": 2.5,
+        "pace": "ease",
+        "seed": 7001,
+        "params": {},
+        "reduceFlashes": true
+      },
+      "cues": [
+        {
+          "at": 0,
+          "effect": "off"
+        },
+        {
+          "at": 12,
+          "seconds": 16,
+          "effect": "scene-2",
+          "intensity": 0.38,
+          "feedback": 0.15,
+          "text": "",
+          "djText": false
+        },
+        {
+          "at": 28,
+          "effect": "off"
+        }
+      ],
+      "layoutCues": [
+        {
+          "at": 16,
+          "view": "dual",
+          "preset": 7,
+          "zoom": 1,
+          "panX": 0,
+          "panY": 0
+        }
+      ],
+      "build": {
+        "sectionId": "showcase-signal",
+        "brickId": "showcase-signal",
+        "step": 1,
+        "slot": "02 · The first constellation",
+        "slotKey": "showcase-signal:02 · The first constellation",
+        "binding": "showcase-signal:0:showcase-signal:02 · The first constellation"
+      },
+      "sourceRange": {
+        "start": 1,
+        "end": 14.5
+      },
+      "showcase": {
+        "title": "The first constellation",
+        "chapter": "I · A signal in the dark"
+      }
+    },
+    {
+      "video": "Video by themacrosift_Dd7IfJ7Mm5R.fdash-2959600471040532v.mp4",
+      "view": "triple",
+      "preset": 3,
+      "loopMode": 1,
+      "speed": 1,
+      "zoom": 1,
+      "panX": 0,
+      "panY": 0,
+      "duration": {
+        "type": "seconds",
+        "value": 16
+      },
+      "transition": {
+        "type": "hexagonal-mosaic",
+        "duration": 1.4,
+        "pace": "ease",
+        "seed": 7002,
+        "params": {},
+        "reduceFlashes": true
+      },
+      "cues": [
+        {
+          "at": 0,
+          "effect": "off"
+        }
+      ],
+      "layoutCues": [
+        {
+          "at": 8,
+          "view": "triple",
+          "preset": 7,
+          "zoom": 1.25,
+          "panX": 0.2,
+          "panY": 0
+        }
+      ],
+      "build": {
+        "sectionId": "showcase-refraction",
+        "brickId": "showcase-refraction",
+        "step": 0,
+        "slot": "03 · Three perspectives",
+        "slotKey": "showcase-refraction:03 · Three perspectives",
+        "binding": "showcase-refraction:0:showcase-refraction:03 · Three perspectives"
+      },
+      "showcase": {
+        "title": "Three perspectives",
+        "chapter": "II · One becomes many"
+      }
+    },
+    {
+      "video": "Video by astrolionmusic_DdppZJqSlqv.fdash-28499409169711422v.mp4",
+      "view": "dual",
+      "preset": 21,
+      "loopMode": 1,
+      "speed": 1,
+      "zoom": 1,
+      "panX": 0,
+      "panY": 0,
+      "duration": {
+        "type": "seconds",
+        "value": 16
+      },
+      "transition": {
+        "type": "geometric-shatter",
+        "duration": 1.3,
+        "pace": "ease",
+        "seed": 7003,
+        "params": {},
+        "reduceFlashes": true
+      },
+      "cues": [
+        {
+          "at": 0,
+          "effect": "off"
+        },
+        {
+          "at": 4,
+          "seconds": 12,
+          "effect": "scene-5",
+          "intensity": 0.4,
+          "feedback": 0.1,
+          "text": "",
+          "djText": false
+        },
+        {
+          "at": 16,
+          "effect": "off"
+        }
+      ],
+      "layoutCues": [],
+      "build": {
+        "sectionId": "showcase-refraction",
+        "brickId": "showcase-refraction",
+        "step": 1,
+        "slot": "04 · A mirrored conversation",
+        "slotKey": "showcase-refraction:04 · A mirrored conversation",
+        "binding": "showcase-refraction:0:showcase-refraction:04 · A mirrored conversation"
+      },
+      "showcase": {
+        "title": "A mirrored conversation",
+        "chapter": "II · One becomes many"
+      }
+    },
+    {
+      "video": "Video by justtrip.it_Dci-u9zuIVK.mp4",
+      "view": "quad",
+      "preset": 15,
+      "loopMode": 1,
+      "speed": 1,
+      "zoom": 1,
+      "panX": 0,
+      "panY": 0,
+      "duration": {
+        "type": "seconds",
+        "value": 16
+      },
+      "transition": {
+        "type": "cube-rotation",
+        "duration": 1.2,
+        "pace": "ease",
+        "seed": 7004,
+        "params": {},
+        "reduceFlashes": true
+      },
+      "cues": [
+        {
+          "at": 0,
+          "effect": "off"
+        }
+      ],
+      "layoutCues": [
+        {
+          "at": 8,
+          "view": "quad",
+          "preset": 19,
+          "zoom": 0.8,
+          "panX": -0.2,
+          "panY": 0.2
+        }
+      ],
+      "build": {
+        "sectionId": "showcase-refraction",
+        "brickId": "showcase-refraction",
+        "step": 2,
+        "slot": "05 · Four corners",
+        "slotKey": "showcase-refraction:05 · Four corners",
+        "binding": "showcase-refraction:0:showcase-refraction:05 · Four corners"
+      },
+      "showcase": {
+        "title": "Four corners",
+        "chapter": "II · One becomes many"
+      }
+    },
+    {
+      "video": "Video by uon.visuals_DdkaL9MBcrv.fdash-3261056987436660v.mp4",
+      "view": "six",
+      "preset": 27,
+      "loopMode": 1,
+      "speed": 1,
+      "zoom": 1,
+      "panX": 0,
+      "panY": 0,
+      "duration": {
+        "type": "seconds",
+        "value": 16
+      },
+      "transition": {
+        "type": "radial-slice",
+        "duration": 1.2,
+        "pace": "ease",
+        "seed": 7005,
+        "params": {},
+        "reduceFlashes": true
+      },
+      "cues": [
+        {
+          "at": 0,
+          "effect": "off"
+        }
+      ],
+      "layoutCues": [
+        {
+          "at": 8,
+          "view": "six",
+          "preset": 31,
+          "zoom": 1.15,
+          "panX": 0.1,
+          "panY": 0
+        }
+      ],
+      "build": {
+        "sectionId": "showcase-refraction",
+        "brickId": "showcase-refraction",
+        "step": 3,
+        "slot": "06 · Six windows",
+        "slotKey": "showcase-refraction:06 · Six windows",
+        "binding": "showcase-refraction:0:showcase-refraction:06 · Six windows"
+      },
+      "showcase": {
+        "title": "Six windows",
+        "chapter": "II · One becomes many"
+      }
+    },
+    {
+      "video": "Video by uon.visuals_DdU-l2qAGtL.mp4",
+      "view": "octo",
+      "preset": 27,
+      "loopMode": 1,
+      "speed": 1,
+      "zoom": 1,
+      "panX": 0,
+      "panY": 0,
+      "duration": {
+        "type": "seconds",
+        "value": 32
+      },
+      "transition": {
+        "type": "kaleidoscope-morph",
+        "duration": 2,
+        "pace": "ease",
+        "seed": 7006,
+        "params": {},
+        "reduceFlashes": true
+      },
+      "cues": [
+        {
+          "at": 0,
+          "effect": "off"
+        },
+        {
+          "at": 8,
+          "seconds": 20,
+          "effect": "scene-4",
+          "intensity": 0.48,
+          "feedback": 0.18,
+          "text": "",
+          "djText": false
+        },
+        {
+          "at": 28,
+          "effect": "off"
+        }
+      ],
+      "layoutCues": [
+        {
+          "at": 8,
+          "view": "octo",
+          "preset": 31,
+          "zoom": 1.2,
+          "panX": 0,
+          "panY": 0
+        },
+        {
+          "at": 16,
+          "view": "six",
+          "preset": 7,
+          "zoom": 1,
+          "panX": 0,
+          "panY": 0
+        },
+        {
+          "at": 24,
+          "view": "octo",
+          "preset": 27,
+          "zoom": 1.35,
+          "panX": 0,
+          "panY": 0
+        }
+      ],
+      "build": {
+        "sectionId": "showcase-refraction",
+        "brickId": "showcase-refraction",
+        "step": 4,
+        "slot": "07 · The room opens",
+        "slotKey": "showcase-refraction:07 · The room opens",
+        "binding": "showcase-refraction:0:showcase-refraction:07 · The room opens"
+      },
+      "showcase": {
+        "title": "The room opens",
+        "chapter": "II · One becomes many"
+      }
+    },
+    {
+      "video": "version1_showcase_ripple_study.mp4",
+      "view": "triple",
+      "preset": 7,
+      "loopMode": 1,
+      "speed": 0.5,
+      "zoom": 1,
+      "panX": 0,
+      "panY": 0,
+      "duration": {
+        "type": "seconds",
+        "value": 32
+      },
+      "transition": {
+        "type": "fluid-ripple",
+        "duration": 2.2,
+        "pace": "ease",
+        "seed": 7007,
+        "params": {},
+        "reduceFlashes": true
+      },
+      "cues": [
+        {
+          "at": 0,
+          "effect": "off"
+        },
+        {
+          "at": 0,
+          "seconds": 6,
+          "effect": "text",
+          "backdrop": "black",
+          "skin": "pearl",
+          "quality": "balanced",
+          "x": 0.5,
+          "y": 0.5,
+          "scale": 0.3,
+          "depth": 0.35,
+          "rotX": 0,
+          "rotY": -18,
+          "rotZ": 0,
+          "motion": 0,
+          "axis": "y",
+          "startAngle": -25,
+          "endAngle": 25,
+          "bevel": 0.035,
+          "roughness": 0.09,
+          "reflection": 1.15,
+          "environment": 1,
+          "exposure": 1,
+          "text": "MATTER",
+          "font": "bungee",
+          "reflectionSource": {
+            "filename": "Video by test23rdmay_DesPIdUsisv.mp4",
+            "speed": 1
+          },
+          "djText": false
+        },
+        {
+          "at": 6,
+          "effect": "off"
+        }
+      ],
+      "layoutCues": [],
+      "build": {
+        "sectionId": "showcase-matter",
+        "brickId": "showcase-matter",
+        "step": 0,
+        "slot": "08 · A surface remembers",
+        "slotKey": "showcase-matter:08 · A surface remembers",
+        "binding": "showcase-matter:0:showcase-matter:08 · A surface remembers"
+      },
+      "showcase": {
+        "title": "A surface remembers",
+        "chapter": "III · Light becomes matter"
+      }
+    },
+    {
+      "video": "version1_showcase_bounce_source.mp4",
+      "view": "single",
+      "preset": 1,
+      "loopMode": 2,
+      "speed": 1,
+      "zoom": 0.65,
+      "panX": 0,
+      "panY": 0,
+      "duration": {
+        "type": "seconds",
+        "value": 32
+      },
+      "transition": {
+        "type": "liquid-chrome",
+        "duration": 2.5,
+        "pace": "ease",
+        "seed": 7008,
+        "params": {},
+        "reduceFlashes": true
+      },
+      "cues": [
+        {
+          "at": 0,
+          "effect": "off"
+        },
+        {
+          "at": 12,
+          "seconds": 16,
+          "effect": "mirror",
+          "text": "FORM",
+          "scale": 0.55,
+          "depth": 0.65,
+          "spin": 0.18,
+          "edge": 0.6,
+          "djText": false
+        },
+        {
+          "at": 28,
+          "effect": "off"
+        }
+      ],
+      "layoutCues": [],
+      "build": {
+        "sectionId": "showcase-matter",
+        "brickId": "showcase-matter",
+        "step": 1,
+        "slot": "09 · Time folds back",
+        "slotKey": "showcase-matter:09 · Time folds back",
+        "binding": "showcase-matter:0:showcase-matter:09 · Time folds back"
+      },
+      "sourceRange": {
+        "start": 0.8,
+        "end": 2.8
+      },
+      "showcase": {
+        "title": "Time folds back",
+        "chapter": "III · Light becomes matter"
+      }
+    },
+    {
+      "video": "version1_showcase_colour_and_trails.mp4",
+      "view": "single",
+      "preset": 1,
+      "loopMode": 1,
+      "speed": 1,
+      "zoom": 1,
+      "panX": 0,
+      "panY": 0,
+      "duration": {
+        "type": "seconds",
+        "value": 32
+      },
+      "transition": {
+        "type": "ink-in-water",
+        "duration": 2,
+        "pace": "ease",
+        "seed": 7009,
+        "params": {},
+        "reduceFlashes": true
+      },
+      "cues": [
+        {
+          "at": 0,
+          "effect": "off"
+        }
+      ],
+      "layoutCues": [],
+      "build": {
+        "sectionId": "showcase-matter",
+        "brickId": "showcase-matter",
+        "step": 2,
+        "slot": "10 · Colour acquires a memory",
+        "slotKey": "showcase-matter:10 · Colour acquires a memory",
+        "binding": "showcase-matter:0:showcase-matter:10 · Colour acquires a memory"
+      },
+      "showcase": {
+        "title": "Colour acquires a memory",
+        "chapter": "III · Light becomes matter"
+      }
+    },
+    {
+      "video": "Video by uon.visuals_DdU-l2qAGtL.mp4",
+      "view": "single",
+      "preset": 1,
+      "loopMode": 1,
+      "speed": 1,
+      "zoom": 1,
+      "panX": 0,
+      "panY": 0,
+      "duration": {
+        "type": "seconds",
+        "value": 32
+      },
+      "transition": {
+        "type": "smoke-dissolve",
+        "duration": 2,
+        "pace": "ease",
+        "seed": 7010,
+        "params": {},
+        "reduceFlashes": true
+      },
+      "cues": [
+        {
+          "at": 0,
+          "effect": "off"
+        },
+        {
+          "at": 0,
+          "seconds": 8,
+          "effect": "logo",
+          "backdrop": "black",
+          "skin": "chrome",
+          "quality": "balanced",
+          "x": 0.5,
+          "y": 0.5,
+          "scale": 0.46,
+          "depth": 0.35,
+          "rotX": 0,
+          "rotY": -18,
+          "rotZ": 0,
+          "motion": 0.2,
+          "axis": "y",
+          "startAngle": -25,
+          "endAngle": 25,
+          "bevel": 0.035,
+          "roughness": 0.09,
+          "reflection": 1.15,
+          "environment": 1,
+          "exposure": 1,
+          "text": "",
+          "djText": false
+        },
+        {
+          "at": 8,
+          "effect": "off"
+        },
+        {
+          "at": 8,
+          "seconds": 8,
+          "effect": "logo",
+          "backdrop": "black",
+          "skin": "brushed",
+          "quality": "balanced",
+          "x": 0.5,
+          "y": 0.5,
+          "scale": 0.46,
+          "depth": 0.35,
+          "rotX": 0,
+          "rotY": -18,
+          "rotZ": 0,
+          "motion": 0.2,
+          "axis": "y",
+          "startAngle": -25,
+          "endAngle": 25,
+          "bevel": 0.035,
+          "roughness": 0.09,
+          "reflection": 1.15,
+          "environment": 1,
+          "exposure": 1,
+          "text": "",
+          "djText": false
+        },
+        {
+          "at": 16,
+          "effect": "off"
+        },
+        {
+          "at": 16,
+          "seconds": 8,
+          "effect": "logo",
+          "backdrop": "black",
+          "skin": "gold",
+          "quality": "balanced",
+          "x": 0.5,
+          "y": 0.5,
+          "scale": 0.46,
+          "depth": 0.35,
+          "rotX": 0,
+          "rotY": -18,
+          "rotZ": 0,
+          "motion": 0.2,
+          "axis": "y",
+          "startAngle": -25,
+          "endAngle": 25,
+          "bevel": 0.035,
+          "roughness": 0.09,
+          "reflection": 1.15,
+          "environment": 1,
+          "exposure": 1,
+          "text": "",
+          "djText": false
+        },
+        {
+          "at": 24,
+          "effect": "off"
+        },
+        {
+          "at": 24,
+          "seconds": 8,
+          "effect": "logo",
+          "backdrop": "black",
+          "skin": "original",
+          "quality": "balanced",
+          "x": 0.5,
+          "y": 0.5,
+          "scale": 0.46,
+          "depth": 0.35,
+          "rotX": 0,
+          "rotY": -18,
+          "rotZ": 0,
+          "motion": 0.2,
+          "axis": "y",
+          "startAngle": -25,
+          "endAngle": 25,
+          "bevel": 0.035,
+          "roughness": 0.09,
+          "reflection": 1.15,
+          "environment": 1,
+          "exposure": 1,
+          "text": "",
+          "djText": false
+        },
+        {
+          "at": 32,
+          "effect": "off"
+        }
+      ],
+      "layoutCues": [],
+      "build": {
+        "sectionId": "showcase-identity",
+        "brickId": "showcase-identity",
+        "step": 0,
+        "slot": "11 · The material learns to shine",
+        "slotKey": "showcase-identity:11 · The material learns to shine",
+        "binding": "showcase-identity:0:showcase-identity:11 · The material learns to shine"
+      },
+      "showcase": {
+        "title": "The material learns to shine",
+        "chapter": "IV · The identity awakens"
+      }
+    },
+    {
+      "video": "Video by gromer.png_Db_Nm-diF6p.mp4",
+      "view": "single",
+      "preset": 1,
+      "loopMode": 1,
+      "speed": 1,
+      "zoom": 1,
+      "panX": 0,
+      "panY": 0,
+      "duration": {
+        "type": "seconds",
+        "value": 32
+      },
+      "transition": {
+        "type": "light-leak",
+        "duration": 1.8,
+        "pace": "ease",
+        "seed": 7011,
+        "params": {},
+        "reduceFlashes": true
+      },
+      "cues": [
+        {
+          "at": 0,
+          "effect": "off"
+        },
+        {
+          "at": 0,
+          "seconds": 8,
+          "effect": "video",
+          "logoLayer": {
+            "effect": "logo",
+            "backdrop": "video",
+            "skin": "mirror",
+            "quality": "balanced",
+            "x": 0.5,
+            "y": 0.5,
+            "scale": 0.22,
+            "depth": 0.35,
+            "rotX": 0,
+            "rotY": -18,
+            "rotZ": 0,
+            "motion": 0,
+            "axis": "y",
+            "startAngle": -25,
+            "endAngle": 25,
+            "bevel": 0.035,
+            "roughness": 0.09,
+            "reflection": 1.15,
+            "environment": 1,
+            "exposure": 1,
+            "reflectionSource": {
+              "filename": "Video by test23rdmay_DesPIdUsisv.mp4",
+              "speed": 0.75
+            },
+            "animation": {
+              "enabled": true,
+              "path": "bounce",
+              "duration": 8,
+              "loop": true,
+              "spanX": 0.7,
+              "spanY": 0.55,
+              "zoomMin": 0.8,
+              "zoomMax": 1.2,
+              "turnX": 45,
+              "turnY": 360,
+              "turnZ": 30,
+              "keepInside": true,
+              "points": [
+                {
+                  "at": 0,
+                  "x": 0.22,
+                  "y": 0.35,
+                  "scale": 0.18,
+                  "rotX": 0,
+                  "rotY": -25,
+                  "rotZ": -12
+                },
+                {
+                  "at": 0.5,
+                  "x": 0.78,
+                  "y": 0.7,
+                  "scale": 0.3,
+                  "rotX": 35,
+                  "rotY": 25,
+                  "rotZ": 15
+                },
+                {
+                  "at": 1,
+                  "x": 0.22,
+                  "y": 0.35,
+                  "scale": 0.18,
+                  "rotX": 0,
+                  "rotY": -25,
+                  "rotZ": -12
+                }
+              ]
+            }
+          },
+          "text": "",
+          "djText": false
+        },
+        {
+          "at": 8,
+          "effect": "off"
+        },
+        {
+          "at": 8,
+          "seconds": 8,
+          "effect": "video",
+          "logoLayer": {
+            "effect": "logo",
+            "backdrop": "video",
+            "skin": "rose-gold",
+            "quality": "balanced",
+            "x": 0.5,
+            "y": 0.5,
+            "scale": 0.22,
+            "depth": 0.35,
+            "rotX": 0,
+            "rotY": -18,
+            "rotZ": 0,
+            "motion": 0,
+            "axis": "y",
+            "startAngle": -25,
+            "endAngle": 25,
+            "bevel": 0.035,
+            "roughness": 0.09,
+            "reflection": 1.15,
+            "environment": 1,
+            "exposure": 1,
+            "reflectionSource": {
+              "filename": "Video by test23rdmay_DesPIdUsisv.mp4",
+              "speed": 0.75
+            },
+            "animation": {
+              "enabled": true,
+              "path": "orbit",
+              "duration": 8,
+              "loop": true,
+              "spanX": 0.7,
+              "spanY": 0.55,
+              "zoomMin": 0.8,
+              "zoomMax": 1.2,
+              "turnX": 45,
+              "turnY": 360,
+              "turnZ": 30,
+              "keepInside": true,
+              "points": [
+                {
+                  "at": 0,
+                  "x": 0.22,
+                  "y": 0.35,
+                  "scale": 0.18,
+                  "rotX": 0,
+                  "rotY": -25,
+                  "rotZ": -12
+                },
+                {
+                  "at": 0.5,
+                  "x": 0.78,
+                  "y": 0.7,
+                  "scale": 0.3,
+                  "rotX": 35,
+                  "rotY": 25,
+                  "rotZ": 15
+                },
+                {
+                  "at": 1,
+                  "x": 0.22,
+                  "y": 0.35,
+                  "scale": 0.18,
+                  "rotX": 0,
+                  "rotY": -25,
+                  "rotZ": -12
+                }
+              ]
+            }
+          },
+          "text": "",
+          "djText": false
+        },
+        {
+          "at": 16,
+          "effect": "off"
+        },
+        {
+          "at": 16,
+          "seconds": 8,
+          "effect": "video",
+          "logoLayer": {
+            "effect": "logo",
+            "backdrop": "video",
+            "skin": "pearl",
+            "quality": "balanced",
+            "x": 0.5,
+            "y": 0.5,
+            "scale": 0.22,
+            "depth": 0.35,
+            "rotX": 0,
+            "rotY": -18,
+            "rotZ": 0,
+            "motion": 0,
+            "axis": "y",
+            "startAngle": -25,
+            "endAngle": 25,
+            "bevel": 0.035,
+            "roughness": 0.09,
+            "reflection": 1.15,
+            "environment": 1,
+            "exposure": 1,
+            "reflectionSource": {
+              "filename": "Video by test23rdmay_DesPIdUsisv.mp4",
+              "speed": 0.75
+            },
+            "animation": {
+              "enabled": true,
+              "path": "figure8",
+              "duration": 8,
+              "loop": true,
+              "spanX": 0.7,
+              "spanY": 0.55,
+              "zoomMin": 0.8,
+              "zoomMax": 1.2,
+              "turnX": 45,
+              "turnY": 360,
+              "turnZ": 30,
+              "keepInside": true,
+              "points": [
+                {
+                  "at": 0,
+                  "x": 0.22,
+                  "y": 0.35,
+                  "scale": 0.18,
+                  "rotX": 0,
+                  "rotY": -25,
+                  "rotZ": -12
+                },
+                {
+                  "at": 0.5,
+                  "x": 0.78,
+                  "y": 0.7,
+                  "scale": 0.3,
+                  "rotX": 35,
+                  "rotY": 25,
+                  "rotZ": 15
+                },
+                {
+                  "at": 1,
+                  "x": 0.22,
+                  "y": 0.35,
+                  "scale": 0.18,
+                  "rotX": 0,
+                  "rotY": -25,
+                  "rotZ": -12
+                }
+              ]
+            }
+          },
+          "text": "",
+          "djText": false
+        },
+        {
+          "at": 24,
+          "effect": "off"
+        },
+        {
+          "at": 24,
+          "seconds": 8,
+          "effect": "video",
+          "logoLayer": {
+            "effect": "logo",
+            "backdrop": "video",
+            "skin": "iridescent",
+            "quality": "balanced",
+            "x": 0.5,
+            "y": 0.5,
+            "scale": 0.22,
+            "depth": 0.35,
+            "rotX": 0,
+            "rotY": -18,
+            "rotZ": 0,
+            "motion": 0,
+            "axis": "y",
+            "startAngle": -25,
+            "endAngle": 25,
+            "bevel": 0.035,
+            "roughness": 0.09,
+            "reflection": 1.15,
+            "environment": 1,
+            "exposure": 1,
+            "reflectionSource": {
+              "filename": "Video by test23rdmay_DesPIdUsisv.mp4",
+              "speed": 0.75
+            },
+            "animation": {
+              "enabled": true,
+              "path": "custom",
+              "duration": 8,
+              "loop": true,
+              "spanX": 0.7,
+              "spanY": 0.55,
+              "zoomMin": 0.8,
+              "zoomMax": 1.2,
+              "turnX": 45,
+              "turnY": 360,
+              "turnZ": 30,
+              "keepInside": true,
+              "points": [
+                {
+                  "at": 0,
+                  "x": 0.22,
+                  "y": 0.35,
+                  "scale": 0.18,
+                  "rotX": 0,
+                  "rotY": -25,
+                  "rotZ": -12
+                },
+                {
+                  "at": 0.5,
+                  "x": 0.78,
+                  "y": 0.7,
+                  "scale": 0.3,
+                  "rotX": 35,
+                  "rotY": 25,
+                  "rotZ": 15
+                },
+                {
+                  "at": 1,
+                  "x": 0.22,
+                  "y": 0.35,
+                  "scale": 0.18,
+                  "rotX": 0,
+                  "rotY": -25,
+                  "rotZ": -12
+                }
+              ]
+            }
+          },
+          "text": "",
+          "djText": false
+        },
+        {
+          "at": 32,
+          "effect": "off"
+        }
+      ],
+      "layoutCues": [],
+      "build": {
+        "sectionId": "showcase-identity",
+        "brickId": "showcase-identity",
+        "step": 1,
+        "slot": "12 · The mark leaves its frame",
+        "slotKey": "showcase-identity:12 · The mark leaves its frame",
+        "binding": "showcase-identity:0:showcase-identity:12 · The mark leaves its frame"
+      },
+      "showcase": {
+        "title": "The mark leaves its frame",
+        "chapter": "IV · The identity awakens"
+      }
+    },
+    {
+      "video": "Video by astrolionmusic_DdS67VQSvOv.mp4",
+      "view": "triple",
+      "preset": 7,
+      "loopMode": 1,
+      "speed": 1,
+      "zoom": 1,
+      "panX": 0,
+      "panY": 0,
+      "duration": {
+        "type": "seconds",
+        "value": 32
+      },
+      "transition": {
+        "type": "mandala-rotation",
+        "duration": 1.8,
+        "pace": "ease",
+        "seed": 7012,
+        "params": {},
+        "reduceFlashes": true
+      },
+      "cues": [
+        {
+          "at": 0,
+          "effect": "off"
+        },
+        {
+          "at": 0,
+          "seconds": 16,
+          "effect": "scene-4",
+          "logoLayer": {
+            "effect": "logo",
+            "backdrop": "black",
+            "skin": "obsidian",
+            "quality": "balanced",
+            "x": 0.5,
+            "y": 0.5,
+            "scale": 0.35,
+            "depth": 0.35,
+            "rotX": 0,
+            "rotY": -18,
+            "rotZ": 0,
+            "motion": 0,
+            "axis": "y",
+            "startAngle": -25,
+            "endAngle": 25,
+            "bevel": 0.035,
+            "roughness": 0.09,
+            "reflection": 1.7,
+            "environment": 1,
+            "exposure": 1.15,
+            "reflectionSource": {
+              "filename": "Video by themacrosift_Dd7IfJ7Mm5R.fdash-2959600471040532v.mp4",
+              "speed": 1
+            },
+            "snake": {
+              "enabled": true,
+              "speed": 0.25,
+              "depth": 0.55,
+              "pulse": 0.5,
+              "wavelength": 1.5
+            },
+            "animation": {
+              "enabled": true,
+              "path": "still",
+              "duration": 16,
+              "zoomMin": 0.85,
+              "zoomMax": 1.15,
+              "keepInside": true
+            }
+          },
+          "intensity": 0.6,
+          "feedback": 0.18,
+          "text": "",
+          "djText": false
+        },
+        {
+          "at": 16,
+          "effect": "off"
+        },
+        {
+          "at": 16,
+          "seconds": 16,
+          "effect": "video",
+          "logoLayer": {
+            "effect": "logo",
+            "backdrop": "black",
+            "skin": "chrome",
+            "quality": "balanced",
+            "x": 0.5,
+            "y": 0.5,
+            "scale": 0.4,
+            "depth": 0.35,
+            "rotX": 0,
+            "rotY": -18,
+            "rotZ": 0,
+            "motion": 0,
+            "axis": "y",
+            "startAngle": -25,
+            "endAngle": 25,
+            "bevel": 0.035,
+            "roughness": 0.09,
+            "reflection": 1.15,
+            "environment": 1,
+            "exposure": 1,
+            "snake": {
+              "enabled": true,
+              "speed": 0.25,
+              "depth": 0.6,
+              "pulse": 0.55,
+              "wavelength": 1.5,
+              "reverse": true
+            },
+            "reflectionSource": {
+              "filename": "capture_instagram_9x16_20261116_235951_411938000.mp4",
+              "speed": 1
+            }
+          },
+          "text": "",
+          "djText": false
+        },
+        {
+          "at": 32,
+          "effect": "off"
+        }
+      ],
+      "layoutCues": [],
+      "build": {
+        "sectionId": "showcase-identity",
+        "brickId": "showcase-identity",
+        "step": 2,
+        "slot": "13 · The letters breathe",
+        "slotKey": "showcase-identity:13 · The letters breathe",
+        "binding": "showcase-identity:0:showcase-identity:13 · The letters breathe"
+      },
+      "showcase": {
+        "title": "The letters breathe",
+        "chapter": "IV · The identity awakens"
+      }
+    },
+    {
+      "video": "Video by test23rdmay_DesPIdUsisv.mp4",
+      "view": "single",
+      "preset": 1,
+      "loopMode": 1,
+      "speed": 1,
+      "zoom": 1,
+      "panX": 0,
+      "panY": 0,
+      "duration": {
+        "type": "seconds",
+        "value": 32
+      },
+      "transition": {
+        "type": "dimensional-portal",
+        "duration": 2,
+        "pace": "ease",
+        "seed": 7013,
+        "params": {},
+        "reduceFlashes": true
+      },
+      "cues": [
+        {
+          "at": 0,
+          "effect": "off"
+        },
+        {
+          "at": 0,
+          "seconds": 32,
+          "effect": "logo",
+          "backdrop": "black",
+          "skin": "chrome",
+          "quality": "high",
+          "x": 0.5,
+          "y": 0.5,
+          "scale": 0.4,
+          "depth": 0.35,
+          "rotX": 0,
+          "rotY": -18,
+          "rotZ": 0,
+          "motion": 0,
+          "axis": "y",
+          "startAngle": -25,
+          "endAngle": 25,
+          "bevel": 0.035,
+          "roughness": 0.09,
+          "reflection": 1.15,
+          "environment": 1,
+          "exposure": 1,
+          "reflectionSource": {
+            "filename": "capture_instagram_9x16_20261116_235951_411938000.mp4",
+            "speed": 1
+          },
+          "fly": {
+            "enabled": true,
+            "speed": 0.0625,
+            "distance": 0.65,
+            "angle": 45,
+            "mode": "bounce"
+          },
+          "text": "",
+          "djText": false
+        },
+        {
+          "at": 32,
+          "effect": "off"
+        }
+      ],
+      "layoutCues": [],
+      "build": {
+        "sectionId": "showcase-identity",
+        "brickId": "showcase-identity",
+        "step": 3,
+        "slot": "14 · Into the wordmark",
+        "slotKey": "showcase-identity:14 · Into the wordmark",
+        "binding": "showcase-identity:0:showcase-identity:14 · Into the wordmark"
+      },
+      "showcase": {
+        "title": "Into the wordmark",
+        "chapter": "IV · The identity awakens"
+      }
+    },
+    {
+      "video": "Video by themacrosift_De5gECWMeJY.mp4",
+      "view": "triple",
+      "preset": 7,
+      "loopMode": 1,
+      "speed": 1,
+      "zoom": 1,
+      "panX": 0,
+      "panY": 0,
+      "duration": {
+        "type": "seconds",
+        "value": 32
+      },
+      "transition": {
+        "type": "holographic-breakdown",
+        "duration": 1.8,
+        "pace": "ease",
+        "seed": 7014,
+        "params": {},
+        "reduceFlashes": true
+      },
+      "cues": [
+        {
+          "at": 0,
+          "effect": "off"
+        },
+        {
+          "at": 8,
+          "seconds": 12,
+          "effect": "mirror",
+          "image": "/assets/version1-logo.png",
+          "scale": 0.5,
+          "depth": 0.75,
+          "spin": 0.15,
+          "edge": 0.75,
+          "text": "",
+          "djText": false
+        },
+        {
+          "at": 20,
+          "effect": "off"
+        },
+        {
+          "at": 24,
+          "seconds": 8,
+          "effect": "scene-5",
+          "intensity": 0.35,
+          "feedback": 0.12,
+          "text": "",
+          "djText": false
+        },
+        {
+          "at": 32,
+          "effect": "off"
+        }
+      ],
+      "layoutCues": [],
+      "build": {
+        "sectionId": "showcase-human",
+        "brickId": "showcase-human",
+        "step": 0,
+        "slot": "15 · A human in the circuit",
+        "slotKey": "showcase-human:15 · A human in the circuit",
+        "binding": "showcase-human:0:showcase-human:15 · A human in the circuit"
+      },
+      "showcase": {
+        "title": "A human in the circuit",
+        "chapter": "V · The human signal"
+      }
+    },
+    {
+      "video": "version1_showcase_recorded_motion.mp4",
+      "view": "single",
+      "preset": 1,
+      "loopMode": 1,
+      "speed": 1,
+      "zoom": 1,
+      "panX": 0,
+      "panY": 0,
+      "duration": {
+        "type": "seconds",
+        "value": 32
+      },
+      "transition": {
+        "type": "spectral-frequency-shift",
+        "duration": 1.6,
+        "pace": "ease",
+        "seed": 7015,
+        "params": {},
+        "reduceFlashes": true
+      },
+      "cues": [
+        {
+          "at": 0,
+          "effect": "off"
+        },
+        {
+          "at": 0,
+          "seconds": 5,
+          "effect": "text",
+          "backdrop": "black",
+          "skin": "chrome",
+          "quality": "balanced",
+          "x": 0.5,
+          "y": 0.5,
+          "scale": 0.32,
+          "depth": 0.35,
+          "rotX": 0,
+          "rotY": -18,
+          "rotZ": 0,
+          "motion": 0,
+          "axis": "y",
+          "startAngle": -25,
+          "endAngle": 25,
+          "bevel": 0.035,
+          "roughness": 0.09,
+          "reflection": 1.15,
+          "environment": 1,
+          "exposure": 1,
+          "text": "MOVE",
+          "font": "bungee",
+          "reflectionSource": {
+            "filename": "Video by uon.visuals_DdU-l2qAGtL.mp4",
+            "speed": 1
+          },
+          "djText": false
+        },
+        {
+          "at": 5,
+          "effect": "off"
+        },
+        {
+          "at": 10,
+          "seconds": 10,
+          "effect": "video",
+          "logoLayer": {
+            "effect": "logo",
+            "backdrop": "video",
+            "skin": "chrome",
+            "quality": "balanced",
+            "x": 0.72,
+            "y": 0.65,
+            "scale": 0.24,
+            "depth": 0.35,
+            "rotX": 0,
+            "rotY": -18,
+            "rotZ": 0,
+            "motion": 0.14,
+            "axis": "y",
+            "startAngle": -25,
+            "endAngle": 25,
+            "bevel": 0.035,
+            "roughness": 0.09,
+            "reflection": 1.15,
+            "environment": 1,
+            "exposure": 1,
+            "reflectionSource": {
+              "filename": "Video by test23rdmay_DesPIdUsisv.mp4",
+              "speed": 1
+            },
+            "animation": {
+              "enabled": true,
+              "path": "orbit",
+              "duration": 10,
+              "spanX": 0.3,
+              "spanY": 0.3,
+              "keepInside": true
+            }
+          },
+          "text": "",
+          "djText": false
+        },
+        {
+          "at": 20,
+          "effect": "off"
+        },
+        {
+          "at": 20,
+          "seconds": 12,
+          "effect": "video",
+          "logoLayer": {
+            "effect": "text",
+            "backdrop": "video",
+            "skin": "chrome",
+            "quality": "balanced",
+            "x": 0.5,
+            "y": 0.5,
+            "scale": 0.23,
+            "depth": 0.35,
+            "rotX": 0,
+            "rotY": -18,
+            "rotZ": 0,
+            "motion": 0,
+            "axis": "y",
+            "startAngle": -25,
+            "endAngle": 25,
+            "bevel": 0.035,
+            "roughness": 0.09,
+            "reflection": 1.15,
+            "environment": 1,
+            "exposure": 1,
+            "text": "YOU ARE THE SIGNAL",
+            "font": "modern",
+            "reflectionSource": {
+              "filename": "Video by uon.visuals_DdU-l2qAGtL.mp4",
+              "speed": 1
+            },
+            "animation": {
+              "enabled": true,
+              "path": "still",
+              "duration": 12,
+              "keepInside": true
+            }
+          },
+          "text": "",
+          "djText": false
+        },
+        {
+          "at": 32,
+          "effect": "off"
+        }
+      ],
+      "layoutCues": [],
+      "build": {
+        "sectionId": "showcase-human",
+        "brickId": "showcase-human",
+        "step": 1,
+        "slot": "16 · Movement becomes light",
+        "slotKey": "showcase-human:16 · Movement becomes light",
+        "binding": "showcase-human:0:showcase-human:16 · Movement becomes light"
+      },
+      "showcase": {
+        "title": "Movement becomes light",
+        "chapter": "V · The human signal"
+      }
+    },
+    {
+      "video": "capture_instagram_9x16_20261116_235951_411938000.mp4",
+      "view": "triple",
+      "preset": 7,
+      "loopMode": 1,
+      "speed": 0.75,
+      "zoom": 1,
+      "panX": 0,
+      "panY": 0,
+      "duration": {
+        "type": "seconds",
+        "value": 32
+      },
+      "transition": {
+        "type": "neural-network-morph",
+        "duration": 1.8,
+        "pace": "ease",
+        "seed": 7016,
+        "params": {},
+        "reduceFlashes": true
+      },
+      "cues": [
+        {
+          "at": 0,
+          "effect": "off"
+        }
+      ],
+      "layoutCues": [
+        {
+          "at": 16,
+          "view": "dual",
+          "preset": 3,
+          "zoom": 1,
+          "panX": 0,
+          "panY": 0
+        },
+        {
+          "at": 24,
+          "view": "triple",
+          "preset": 7,
+          "zoom": 0.85,
+          "panX": 0,
+          "panY": 0
+        }
+      ],
+      "build": {
+        "sectionId": "showcase-human",
+        "brickId": "showcase-human",
+        "step": 2,
+        "slot": "17 · Made here, played here",
+        "slotKey": "showcase-human:17 · Made here, played here",
+        "binding": "showcase-human:0:showcase-human:17 · Made here, played here"
+      },
+      "showcase": {
+        "title": "Made here, played here",
+        "chapter": "V · The human signal"
+      }
+    },
+    {
+      "video": "Video by justtrip.it_Dc_8Un2Tx7j.mp4",
+      "view": "six",
+      "preset": 27,
+      "loopMode": 1,
+      "speed": 1,
+      "zoom": 1,
+      "panX": 0,
+      "panY": 0,
+      "duration": {
+        "type": "seconds",
+        "value": 16
+      },
+      "transition": {
+        "type": "bass-impact-distortion",
+        "duration": 0.8,
+        "pace": "accelerate",
+        "seed": 7017,
+        "params": {},
+        "reduceFlashes": true
+      },
+      "cues": [
+        {
+          "at": 0,
+          "effect": "off"
+        },
+        {
+          "at": 0,
+          "seconds": 16,
+          "effect": "scene-4",
+          "logoLayer": {
+            "effect": "logo",
+            "backdrop": "black",
+            "skin": "gold",
+            "quality": "balanced",
+            "x": 0.5,
+            "y": 0.5,
+            "scale": 0.35,
+            "depth": 0.35,
+            "rotX": 0,
+            "rotY": -18,
+            "rotZ": 0,
+            "motion": 0,
+            "axis": "y",
+            "startAngle": -25,
+            "endAngle": 25,
+            "bevel": 0.035,
+            "roughness": 0.09,
+            "reflection": 1.15,
+            "environment": 1,
+            "exposure": 1,
+            "snake": {
+              "enabled": true,
+              "speed": 0.5,
+              "depth": 0.55,
+              "pulse": 0.6
+            },
+            "reflectionSource": {
+              "filename": "Video by test23rdmay_DesPIdUsisv.mp4",
+              "speed": 1
+            }
+          },
+          "intensity": 0.75,
+          "feedback": 0.24,
+          "text": "",
+          "djText": false
+        },
+        {
+          "at": 16,
+          "effect": "off"
+        }
+      ],
+      "layoutCues": [],
+      "build": {
+        "sectionId": "showcase-singularity",
+        "brickId": "showcase-singularity",
+        "step": 0,
+        "slot": "18 · Ignition",
+        "slotKey": "showcase-singularity:18 · Ignition",
+        "binding": "showcase-singularity:0:showcase-singularity:18 · Ignition"
+      },
+      "showcase": {
+        "title": "Ignition",
+        "chapter": "VI · The singularity"
+      }
+    },
+    {
+      "video": "Video by uon.visuals_Dd7oPxTh_g1.fdash-1421125976823177v.mp4",
+      "view": "six",
+      "preset": 23,
+      "loopMode": 1,
+      "speed": 1,
+      "zoom": 1,
+      "panX": 0,
+      "panY": 0,
+      "duration": {
+        "type": "seconds",
+        "value": 16
+      },
+      "transition": {
+        "type": "laser-sweep",
+        "duration": 0.8,
+        "pace": "accelerate",
+        "seed": 7018,
+        "params": {},
+        "reduceFlashes": true
+      },
+      "cues": [
+        {
+          "at": 0,
+          "effect": "off"
+        },
+        {
+          "at": 0,
+          "seconds": 16,
+          "effect": "logo",
+          "backdrop": "black",
+          "skin": "chrome",
+          "quality": "balanced",
+          "x": 0.5,
+          "y": 0.5,
+          "scale": 0.4,
+          "depth": 0.35,
+          "rotX": 0,
+          "rotY": -18,
+          "rotZ": 0,
+          "motion": 0,
+          "axis": "y",
+          "startAngle": -25,
+          "endAngle": 25,
+          "bevel": 0.035,
+          "roughness": 0.09,
+          "reflection": 1.15,
+          "environment": 1,
+          "exposure": 1,
+          "reflectionSource": {
+            "filename": "Video by uon.visuals_DdU-l2qAGtL.mp4",
+            "speed": 1
+          },
+          "fly": {
+            "enabled": true,
+            "speed": 0.0625,
+            "distance": 0.6,
+            "angle": 45,
+            "mode": "once"
+          },
+          "text": "",
+          "djText": false
+        },
+        {
+          "at": 16,
+          "effect": "off"
+        }
+      ],
+      "layoutCues": [],
+      "build": {
+        "sectionId": "showcase-singularity",
+        "brickId": "showcase-singularity",
+        "step": 1,
+        "slot": "19 · A forward leap",
+        "slotKey": "showcase-singularity:19 · A forward leap",
+        "binding": "showcase-singularity:0:showcase-singularity:19 · A forward leap"
+      },
+      "showcase": {
+        "title": "A forward leap",
+        "chapter": "VI · The singularity"
+      }
+    },
+    {
+      "video": "Video by uon.visuals_DdkaL9MBcrv.fdash-3261056987436660v.mp4",
+      "view": "octo",
+      "preset": 31,
+      "loopMode": 1,
+      "speed": 1,
+      "zoom": 1,
+      "panX": 0,
+      "panY": 0,
+      "duration": {
+        "type": "seconds",
+        "value": 16
+      },
+      "transition": {
+        "type": "quantum-tiles",
+        "duration": 0.9,
+        "pace": "ease",
+        "seed": 7019,
+        "params": {},
+        "reduceFlashes": true
+      },
+      "cues": [
+        {
+          "at": 0,
+          "effect": "off"
+        },
+        {
+          "at": 0,
+          "seconds": 16,
+          "effect": "scene-5",
+          "intensity": 0.65,
+          "feedback": 0.18,
+          "text": "",
+          "djText": false
+        },
+        {
+          "at": 16,
+          "effect": "off"
+        }
+      ],
+      "layoutCues": [
+        {
+          "at": 4,
+          "view": "octo",
+          "preset": 27,
+          "zoom": 1.15,
+          "panX": 0,
+          "panY": 0
+        },
+        {
+          "at": 8,
+          "view": "six",
+          "preset": 31,
+          "zoom": 1.2,
+          "panX": 0,
+          "panY": 0
+        },
+        {
+          "at": 12,
+          "view": "octo",
+          "preset": 7,
+          "zoom": 1,
+          "panX": 0,
+          "panY": 0
+        }
+      ],
+      "build": {
+        "sectionId": "showcase-singularity",
+        "brickId": "showcase-singularity",
+        "step": 2,
+        "slot": "20 · Eightfold",
+        "slotKey": "showcase-singularity:20 · Eightfold",
+        "binding": "showcase-singularity:0:showcase-singularity:20 · Eightfold"
+      },
+      "showcase": {
+        "title": "Eightfold",
+        "chapter": "VI · The singularity"
+      }
+    },
+    {
+      "video": "Video by uon.visuals_Dexodx4RUrW.mp4",
+      "view": "six",
+      "preset": 27,
+      "loopMode": 1,
+      "speed": 1,
+      "zoom": 1,
+      "panX": 0,
+      "panY": 0,
+      "duration": {
+        "type": "seconds",
+        "value": 16
+      },
+      "transition": {
+        "type": "electric-arc",
+        "duration": 0.9,
+        "pace": "ease",
+        "seed": 7020,
+        "params": {},
+        "reduceFlashes": true
+      },
+      "cues": [
+        {
+          "at": 0,
+          "effect": "off"
+        },
+        {
+          "at": 0,
+          "seconds": 16,
+          "effect": "scene-2",
+          "logoLayer": {
+            "effect": "text",
+            "backdrop": "video",
+            "skin": "iridescent",
+            "quality": "balanced",
+            "x": 0.5,
+            "y": 0.5,
+            "scale": 0.25,
+            "depth": 0.35,
+            "rotX": 0,
+            "rotY": -18,
+            "rotZ": 0,
+            "motion": 0,
+            "axis": "y",
+            "startAngle": -25,
+            "endAngle": 25,
+            "bevel": 0.035,
+            "roughness": 0.09,
+            "reflection": 1.15,
+            "environment": 1,
+            "exposure": 1,
+            "text": "VERSION1",
+            "font": "bungee",
+            "reflectionSource": {
+              "filename": "Video by test23rdmay_DesPIdUsisv.mp4",
+              "speed": 1
+            }
+          },
+          "intensity": 0.85,
+          "feedback": 0.28,
+          "text": "",
+          "djText": false
+        },
+        {
+          "at": 16,
+          "effect": "off"
+        }
+      ],
+      "layoutCues": [],
+      "build": {
+        "sectionId": "showcase-singularity",
+        "brickId": "showcase-singularity",
+        "step": 3,
+        "slot": "21 · Ribbons of light",
+        "slotKey": "showcase-singularity:21 · Ribbons of light",
+        "binding": "showcase-singularity:0:showcase-singularity:21 · Ribbons of light"
+      },
+      "showcase": {
+        "title": "Ribbons of light",
+        "chapter": "VI · The singularity"
+      }
+    },
+    {
+      "video": "Video by astrolionmusic_DdppZJqSlqv.fdash-28499409169711422v.mp4",
+      "view": "octo",
+      "preset": 27,
+      "loopMode": 1,
+      "speed": 1,
+      "zoom": 1,
+      "panX": 0,
+      "panY": 0,
+      "duration": {
+        "type": "seconds",
+        "value": 16
+      },
+      "transition": {
+        "type": "reality-fracture",
+        "duration": 0.9,
+        "pace": "ease",
+        "seed": 7021,
+        "params": {},
+        "reduceFlashes": true
+      },
+      "cues": [
+        {
+          "at": 0,
+          "effect": "off"
+        },
+        {
+          "at": 0,
+          "seconds": 16,
+          "effect": "scene-1",
+          "intensity": 0.8,
+          "feedback": 0.8,
+          "text": "",
+          "djText": false
+        },
+        {
+          "at": 16,
+          "effect": "off"
+        }
+      ],
+      "layoutCues": [],
+      "build": {
+        "sectionId": "showcase-singularity",
+        "brickId": "showcase-singularity",
+        "step": 4,
+        "slot": "22 · A beautiful fracture",
+        "slotKey": "showcase-singularity:22 · A beautiful fracture",
+        "binding": "showcase-singularity:0:showcase-singularity:22 · A beautiful fracture"
+      },
+      "showcase": {
+        "title": "A beautiful fracture",
+        "chapter": "VI · The singularity"
+      }
+    },
+    {
+      "video": "Video by riebschlager_Da4LyKzRrEB.mp4",
+      "view": "dual",
+      "preset": 7,
+      "loopMode": 1,
+      "speed": 1,
+      "zoom": 1,
+      "panX": 0,
+      "panY": 0,
+      "duration": {
+        "type": "seconds",
+        "value": 16
+      },
+      "transition": {
+        "type": "energy-burst",
+        "duration": 0.9,
+        "pace": "ease",
+        "seed": 7022,
+        "params": {},
+        "reduceFlashes": true
+      },
+      "cues": [
+        {
+          "at": 0,
+          "effect": "off"
+        },
+        {
+          "at": 0,
+          "seconds": 16,
+          "effect": "scene-4",
+          "logoLayer": {
+            "effect": "logo",
+            "backdrop": "black",
+            "skin": "rose-gold",
+            "quality": "balanced",
+            "x": 0.5,
+            "y": 0.5,
+            "scale": 0.3,
+            "depth": 0.35,
+            "rotX": 0,
+            "rotY": -18,
+            "rotZ": 0,
+            "motion": 0.25,
+            "axis": "y",
+            "startAngle": -25,
+            "endAngle": 25,
+            "bevel": 0.035,
+            "roughness": 0.09,
+            "reflection": 1.15,
+            "environment": 1,
+            "exposure": 1,
+            "reflectionSource": {
+              "filename": "Video by uon.visuals_DdU-l2qAGtL.mp4",
+              "speed": 1
+            },
+            "snake": {
+              "enabled": true,
+              "speed": 0.4,
+              "depth": 0.4,
+              "pulse": 0.65
+            }
+          },
+          "intensity": 0.7,
+          "feedback": 0.22,
+          "text": "",
+          "djText": false
+        },
+        {
+          "at": 16,
+          "effect": "off"
+        }
+      ],
+      "layoutCues": [],
+      "build": {
+        "sectionId": "showcase-singularity",
+        "brickId": "showcase-singularity",
+        "step": 5,
+        "slot": "23 · Bodies of light",
+        "slotKey": "showcase-singularity:23 · Bodies of light",
+        "binding": "showcase-singularity:0:showcase-singularity:23 · Bodies of light"
+      },
+      "showcase": {
+        "title": "Bodies of light",
+        "chapter": "VI · The singularity"
+      }
+    },
+    {
+      "video": "Video by uon.visuals_DdU-l2qAGtL.mp4",
+      "view": "single",
+      "preset": 1,
+      "loopMode": 1,
+      "speed": 1,
+      "zoom": 1,
+      "panX": 0,
+      "panY": 0,
+      "duration": {
+        "type": "seconds",
+        "value": 16
+      },
+      "transition": {
+        "type": "infinite-zoom",
+        "duration": 1,
+        "pace": "ease",
+        "seed": 7023,
+        "params": {},
+        "reduceFlashes": true
+      },
+      "cues": [
+        {
+          "at": 0,
+          "effect": "off"
+        },
+        {
+          "at": 0,
+          "seconds": 16,
+          "effect": "scene-4",
+          "intensity": 0.85,
+          "feedback": 0.3,
+          "text": "",
+          "djText": false
+        },
+        {
+          "at": 16,
+          "effect": "off"
+        }
+      ],
+      "layoutCues": [],
+      "build": {
+        "sectionId": "showcase-singularity",
+        "brickId": "showcase-singularity",
+        "step": 6,
+        "slot": "24 · The infinite room",
+        "slotKey": "showcase-singularity:24 · The infinite room",
+        "binding": "showcase-singularity:0:showcase-singularity:24 · The infinite room"
+      },
+      "showcase": {
+        "title": "The infinite room",
+        "chapter": "VI · The singularity"
+      }
+    },
+    {
+      "video": "blue_laser.mp4",
+      "view": "octo",
+      "preset": 27,
+      "loopMode": 1,
+      "speed": 1,
+      "zoom": 1,
+      "panX": 0,
+      "panY": 0,
+      "duration": {
+        "type": "seconds",
+        "value": 16
+      },
+      "transition": {
+        "type": "gravity-well",
+        "duration": 1.2,
+        "pace": "ease",
+        "seed": 7024,
+        "params": {},
+        "reduceFlashes": true
+      },
+      "cues": [
+        {
+          "at": 0,
+          "effect": "off"
+        },
+        {
+          "at": 0,
+          "seconds": 16,
+          "effect": "scene-5",
+          "logoLayer": {
+            "effect": "logo",
+            "backdrop": "black",
+            "skin": "chrome",
+            "quality": "balanced",
+            "x": 0.5,
+            "y": 0.5,
+            "scale": 0.24,
+            "depth": 0.35,
+            "rotX": 0,
+            "rotY": -18,
+            "rotZ": 0,
+            "motion": 0,
+            "axis": "y",
+            "startAngle": -25,
+            "endAngle": 25,
+            "bevel": 0.035,
+            "roughness": 0.09,
+            "reflection": 1.15,
+            "environment": 1,
+            "exposure": 1,
+            "reflectionSource": {
+              "filename": "Video by themacrosift_Dd7IfJ7Mm5R.fdash-2959600471040532v.mp4",
+              "speed": 1
+            },
+            "animation": {
+              "enabled": true,
+              "path": "orbit",
+              "duration": 8,
+              "spanX": 0.6,
+              "spanY": 0.5,
+              "turnY": 360,
+              "keepInside": true
+            },
+            "snake": {
+              "enabled": true,
+              "speed": 0.5,
+              "depth": 0.65,
+              "pulse": 0.7
+            }
+          },
+          "intensity": 0.65,
+          "feedback": 0.2,
+          "text": "",
+          "djText": false
+        },
+        {
+          "at": 16,
+          "effect": "off"
+        }
+      ],
+      "layoutCues": [],
+      "build": {
+        "sectionId": "showcase-singularity",
+        "brickId": "showcase-singularity",
+        "step": 7,
+        "slot": "25 · A second gravity",
+        "slotKey": "showcase-singularity:25 · A second gravity",
+        "binding": "showcase-singularity:0:showcase-singularity:25 · A second gravity"
+      },
+      "showcase": {
+        "title": "A second gravity",
+        "chapter": "VI · The singularity"
+      }
+    },
+    {
+      "video": "Video by astrolionmusic_DdS67VQSvOv.mp4",
+      "view": "triple",
+      "preset": 7,
+      "loopMode": 1,
+      "speed": 1,
+      "zoom": 1,
+      "panX": 0,
+      "panY": 0,
+      "duration": {
+        "type": "seconds",
+        "value": 16
+      },
+      "transition": {
+        "type": "chromatic-implosion",
+        "duration": 1.2,
+        "pace": "ease",
+        "seed": 7025,
+        "params": {},
+        "reduceFlashes": true
+      },
+      "cues": [
+        {
+          "at": 0,
+          "effect": "off"
+        },
+        {
+          "at": 0,
+          "seconds": 16,
+          "effect": "logo",
+          "backdrop": "black",
+          "skin": "rose-gold",
+          "quality": "balanced",
+          "x": 0.5,
+          "y": 0.5,
+          "scale": 0.4,
+          "depth": 0.35,
+          "rotX": 0,
+          "rotY": -18,
+          "rotZ": 0,
+          "motion": 0,
+          "axis": "y",
+          "startAngle": -25,
+          "endAngle": 25,
+          "bevel": 0.035,
+          "roughness": 0.09,
+          "reflection": 1.15,
+          "environment": 1,
+          "exposure": 1,
+          "reflectionSource": {
+            "filename": "Video by test23rdmay_DesPIdUsisv.mp4",
+            "speed": 1
+          },
+          "animation": {
+            "enabled": true,
+            "path": "still",
+            "duration": 8,
+            "sourceMotion": "left-right",
+            "sourceScale": 1,
+            "sourceTravel": 1.5,
+            "keepInside": true
+          },
+          "fly": {
+            "enabled": true,
+            "speed": 0.125,
+            "distance": 0.7,
+            "angle": 45,
+            "mode": "repeat"
+          },
+          "text": "",
+          "djText": false
+        },
+        {
+          "at": 16,
+          "effect": "off"
+        }
+      ],
+      "layoutCues": [],
+      "build": {
+        "sectionId": "showcase-singularity",
+        "brickId": "showcase-singularity",
+        "step": 8,
+        "slot": "26 · The mark breaks free",
+        "slotKey": "showcase-singularity:26 · The mark breaks free",
+        "binding": "showcase-singularity:0:showcase-singularity:26 · The mark breaks free"
+      },
+      "showcase": {
+        "title": "The mark breaks free",
+        "chapter": "VI · The singularity"
+      }
+    },
+    {
+      "video": "Video by hypernova_ai_Dc6JRUvjTaL.mp4",
+      "view": "quad",
+      "preset": 15,
+      "loopMode": 1,
+      "speed": 0.5,
+      "zoom": 1,
+      "panX": 0,
+      "panY": 0,
+      "duration": {
+        "type": "seconds",
+        "value": 32
+      },
+      "transition": {
+        "type": "fade-out",
+        "duration": 3,
+        "pace": "ease",
+        "seed": 7026,
+        "params": {},
+        "reduceFlashes": true
+      },
+      "cues": [
+        {
+          "at": 0,
+          "effect": "off"
+        },
+        {
+          "at": 0,
+          "seconds": 16,
+          "effect": "scene-2",
+          "intensity": 0.25,
+          "feedback": 0.1,
+          "text": "",
+          "djText": false
+        },
+        {
+          "at": 16,
+          "effect": "off"
+        },
+        {
+          "at": 16,
+          "seconds": 16,
+          "effect": "logo",
+          "backdrop": "black",
+          "skin": "pearl",
+          "quality": "balanced",
+          "x": 0.5,
+          "y": 0.5,
+          "scale": 0.3,
+          "depth": 0.35,
+          "rotX": 0,
+          "rotY": -18,
+          "rotZ": 0,
+          "motion": 0,
+          "axis": "y",
+          "startAngle": -25,
+          "endAngle": 25,
+          "bevel": 0.035,
+          "roughness": 0.09,
+          "reflection": 1.15,
+          "environment": 1,
+          "exposure": 1,
+          "orientation": "top-bottom",
+          "reflectionSource": {
+            "filename": "blue_laser.mp4",
+            "speed": 1
+          },
+          "animation": {
+            "enabled": true,
+            "path": "still",
+            "duration": 16,
+            "zoomMin": 0.8,
+            "zoomMax": 1,
+            "keepInside": true
+          },
+          "text": "",
+          "djText": false
+        },
+        {
+          "at": 32,
+          "effect": "off"
+        }
+      ],
+      "layoutCues": [
+        {
+          "at": 8,
+          "view": "triple",
+          "preset": 7,
+          "zoom": 0.8,
+          "panX": 0,
+          "panY": 0
+        },
+        {
+          "at": 16,
+          "view": "single",
+          "preset": 1,
+          "zoom": 0.48,
+          "panX": 0.2,
+          "panY": 0
+        }
+      ],
+      "build": {
+        "sectionId": "showcase-home",
+        "brickId": "showcase-home",
+        "step": 0,
+        "slot": "27 · A corridor back to stillness",
+        "slotKey": "showcase-home:27 · A corridor back to stillness",
+        "binding": "showcase-home:0:showcase-home:27 · A corridor back to stillness"
+      },
+      "showcase": {
+        "title": "A corridor back to stillness",
+        "chapter": "VII · Return to the source"
+      }
+    },
+    {
+      "video": "version1_insta_flyby.mp4",
+      "view": "triple",
+      "preset": 7,
+      "loopMode": 1,
+      "speed": 0.5,
+      "zoom": 1,
+      "panX": 0,
+      "panY": 0,
+      "duration": {
+        "type": "seconds",
+        "value": 32
+      },
+      "transition": {
+        "type": "cross-dissolve",
+        "duration": 3,
+        "pace": "ease",
+        "seed": 7027,
+        "params": {},
+        "reduceFlashes": true
+      },
+      "cues": [
+        {
+          "at": 0,
+          "effect": "off"
+        },
+        {
+          "at": 0,
+          "seconds": 6,
+          "effect": "text",
+          "backdrop": "black",
+          "skin": "pearl",
+          "quality": "balanced",
+          "x": 0.5,
+          "y": 0.5,
+          "scale": 0.35,
+          "depth": 0.35,
+          "rotX": 0,
+          "rotY": -18,
+          "rotZ": 0,
+          "motion": 0,
+          "axis": "y",
+          "startAngle": -25,
+          "endAngle": 25,
+          "bevel": 0.035,
+          "roughness": 0.09,
+          "reflection": 1.15,
+          "environment": 1,
+          "exposure": 1,
+          "text": "HOME",
+          "font": "serif",
+          "reflectionSource": {
+            "filename": "Video by uon.visuals_DdU-l2qAGtL.mp4",
+            "speed": 1
+          },
+          "djText": false
+        },
+        {
+          "at": 6,
+          "effect": "off"
+        }
+      ],
+      "layoutCues": [
+        {
+          "at": 16,
+          "view": "single",
+          "preset": 1,
+          "zoom": 0.7,
+          "panX": 0,
+          "panY": 0
+        }
+      ],
+      "build": {
+        "sectionId": "showcase-home",
+        "brickId": "showcase-home",
+        "step": 1,
+        "slot": "28 · The identity comes home",
+        "slotKey": "showcase-home:28 · The identity comes home",
+        "binding": "showcase-home:0:showcase-home:28 · The identity comes home"
+      },
+      "showcase": {
+        "title": "The identity comes home",
+        "chapter": "VII · Return to the source"
+      }
+    },
+    {
+      "video": "version1_showcase_black_stage.mp4",
+      "view": "single",
+      "preset": 1,
+      "loopMode": 0,
+      "speed": 1,
+      "zoom": 1,
+      "panX": 0,
+      "panY": 0,
+      "duration": {
+        "type": "seconds",
+        "value": 32
+      },
+      "transition": {
+        "type": "cross-dissolve",
+        "duration": 2.5,
+        "pace": "ease",
+        "seed": 7028,
+        "params": {},
+        "reduceFlashes": true
+      },
+      "cues": [
+        {
+          "at": 0,
+          "effect": "off"
+        },
+        {
+          "at": 0,
+          "seconds": 8,
+          "effect": "text",
+          "backdrop": "black",
+          "skin": "chrome",
+          "quality": "balanced",
+          "x": 0.5,
+          "y": 0.5,
+          "scale": 0.4,
+          "depth": 0.35,
+          "rotX": 0,
+          "rotY": -18,
+          "rotZ": 0,
+          "motion": 0,
+          "axis": "y",
+          "startAngle": -25,
+          "endAngle": 25,
+          "bevel": 0.035,
+          "roughness": 0.09,
+          "reflection": 1.15,
+          "environment": 1,
+          "exposure": 1,
+          "text": "VERSION1",
+          "font": "bungee",
+          "reflectionSource": {
+            "filename": "blue_laser.mp4",
+            "speed": 1
+          },
+          "djText": false
+        },
+        {
+          "at": 8,
+          "effect": "off"
+        },
+        {
+          "at": 8,
+          "seconds": 8,
+          "effect": "text",
+          "backdrop": "black",
+          "skin": "chrome",
+          "quality": "balanced",
+          "x": 0.5,
+          "y": 0.5,
+          "scale": 0.2,
+          "depth": 0.35,
+          "rotX": 0,
+          "rotY": -18,
+          "rotZ": 0,
+          "motion": 0,
+          "axis": "y",
+          "startAngle": -25,
+          "endAngle": 25,
+          "bevel": 0.035,
+          "roughness": 0.09,
+          "reflection": 1.15,
+          "environment": 1,
+          "exposure": 1,
+          "text": "FROM SIGNAL TO SPECTACLE",
+          "font": "modern",
+          "reflectionSource": {
+            "filename": "Video by themacrosift_Dd7IfJ7Mm5R.fdash-2959600471040532v.mp4",
+            "speed": 1
+          },
+          "animation": {
+            "enabled": true,
+            "path": "still",
+            "duration": 8,
+            "keepInside": true
+          },
+          "djText": false
+        },
+        {
+          "at": 16,
+          "effect": "off"
+        },
+        {
+          "at": 16,
+          "seconds": 16,
+          "effect": "logo",
+          "backdrop": "black",
+          "skin": "chrome",
+          "quality": "balanced",
+          "x": 0.5,
+          "y": 0.5,
+          "scale": 0.4,
+          "depth": 0.35,
+          "rotX": 0,
+          "rotY": -18,
+          "rotZ": 0,
+          "motion": 0,
+          "axis": "y",
+          "startAngle": -25,
+          "endAngle": 25,
+          "bevel": 0.035,
+          "roughness": 0.09,
+          "reflection": 1.15,
+          "environment": 1,
+          "exposure": 1,
+          "reflectionSource": {
+            "filename": "Video by uon.visuals_DdU-l2qAGtL.mp4",
+            "speed": 1
+          },
+          "fly": {
+            "enabled": true,
+            "speed": 0.08333333333333333,
+            "distance": 0.65,
+            "angle": 45,
+            "mode": "once"
+          },
+          "text": "",
+          "djText": false
+        },
+        {
+          "at": 32,
+          "effect": "off"
+        }
+      ],
+      "layoutCues": [],
+      "build": {
+        "sectionId": "showcase-home",
+        "brickId": "showcase-home",
+        "step": 2,
+        "slot": "29 · Signal becomes silence",
+        "slotKey": "showcase-home:29 · Signal becomes silence",
+        "binding": "showcase-home:0:showcase-home:29 · Signal becomes silence"
+      },
+      "showcase": {
+        "title": "Signal becomes silence",
+        "chapter": "VII · Return to the source"
+      }
+    }
+  ],
+  "generation": {
+    "version": 1,
+    "seed": "SIGNAL-2026",
+    "modelId": "showcase-signal-to-spectacle-v1",
+    "profileId": "showcase-directed-v1",
+    "minutes": 12,
+    "sections": [
+      {
+        "id": "showcase-signal",
+        "name": "I · A signal in the dark",
+        "start": 0,
+        "end": 64,
+        "entryStart": 0,
+        "entryCount": 2
+      },
+      {
+        "id": "showcase-refraction",
+        "name": "II · One becomes many",
+        "start": 64,
+        "end": 160,
+        "entryStart": 2,
+        "entryCount": 5
+      },
+      {
+        "id": "showcase-matter",
+        "name": "III · Light becomes matter",
+        "start": 160,
+        "end": 256,
+        "entryStart": 7,
+        "entryCount": 3
+      },
+      {
+        "id": "showcase-identity",
+        "name": "IV · The identity awakens",
+        "start": 256,
+        "end": 384,
+        "entryStart": 10,
+        "entryCount": 4
+      },
+      {
+        "id": "showcase-human",
+        "name": "V · The human signal",
+        "start": 384,
+        "end": 480,
+        "entryStart": 14,
+        "entryCount": 3
+      },
+      {
+        "id": "showcase-singularity",
+        "name": "VI · The singularity",
+        "start": 480,
+        "end": 624,
+        "entryStart": 17,
+        "entryCount": 9
+      },
+      {
+        "id": "showcase-home",
+        "name": "VII · Return to the source",
+        "start": 624,
+        "end": 720,
+        "entryStart": 26,
+        "entryCount": 3
+      }
+    ],
+    "bindings": {
+      "showcase-signal:01 · A single light": "blue_laser.mp4",
+      "showcase-signal:02 · The first constellation": "Video by uon.visuals_DdpYDh8B-su.fdash-1713314353073142v.mp4",
+      "showcase-refraction:03 · Three perspectives": "Video by themacrosift_Dd7IfJ7Mm5R.fdash-2959600471040532v.mp4",
+      "showcase-refraction:04 · A mirrored conversation": "Video by astrolionmusic_DdppZJqSlqv.fdash-28499409169711422v.mp4",
+      "showcase-refraction:05 · Four corners": "Video by justtrip.it_Dci-u9zuIVK.mp4",
+      "showcase-refraction:06 · Six windows": "Video by uon.visuals_DdkaL9MBcrv.fdash-3261056987436660v.mp4",
+      "showcase-refraction:07 · The room opens": "Video by uon.visuals_DdU-l2qAGtL.mp4",
+      "showcase-matter:08 · A surface remembers": "version1_showcase_ripple_study.mp4",
+      "showcase-matter:09 · Time folds back": "version1_showcase_bounce_source.mp4",
+      "showcase-matter:10 · Colour acquires a memory": "version1_showcase_colour_and_trails.mp4",
+      "showcase-identity:11 · The material learns to shine": "Video by uon.visuals_DdU-l2qAGtL.mp4",
+      "showcase-identity:12 · The mark leaves its frame": "Video by gromer.png_Db_Nm-diF6p.mp4",
+      "showcase-identity:13 · The letters breathe": "Video by astrolionmusic_DdS67VQSvOv.mp4",
+      "showcase-identity:14 · Into the wordmark": "Video by test23rdmay_DesPIdUsisv.mp4",
+      "showcase-human:15 · A human in the circuit": "Video by themacrosift_De5gECWMeJY.mp4",
+      "showcase-human:16 · Movement becomes light": "version1_showcase_recorded_motion.mp4",
+      "showcase-human:17 · Made here, played here": "capture_instagram_9x16_20261116_235951_411938000.mp4",
+      "showcase-singularity:18 · Ignition": "Video by justtrip.it_Dc_8Un2Tx7j.mp4",
+      "showcase-singularity:19 · A forward leap": "Video by uon.visuals_Dd7oPxTh_g1.fdash-1421125976823177v.mp4",
+      "showcase-singularity:20 · Eightfold": "Video by uon.visuals_DdkaL9MBcrv.fdash-3261056987436660v.mp4",
+      "showcase-singularity:21 · Ribbons of light": "Video by uon.visuals_Dexodx4RUrW.mp4",
+      "showcase-singularity:22 · A beautiful fracture": "Video by astrolionmusic_DdppZJqSlqv.fdash-28499409169711422v.mp4",
+      "showcase-singularity:23 · Bodies of light": "Video by riebschlager_Da4LyKzRrEB.mp4",
+      "showcase-singularity:24 · The infinite room": "Video by uon.visuals_DdU-l2qAGtL.mp4",
+      "showcase-singularity:25 · A second gravity": "blue_laser.mp4",
+      "showcase-singularity:26 · The mark breaks free": "Video by astrolionmusic_DdS67VQSvOv.mp4",
+      "showcase-home:27 · A corridor back to stillness": "Video by hypernova_ai_Dc6JRUvjTaL.mp4",
+      "showcase-home:28 · The identity comes home": "version1_insta_flyby.mp4",
+      "showcase-home:29 · Signal becomes silence": "version1_showcase_black_stage.mp4"
+    },
+    "model": {
+      "id": "showcase-signal-to-spectacle-v1",
+      "name": "VERSION1 · From Signal to Spectacle · 12 min",
+      "minutes": 12,
+      "sections": [
+        {
+          "id": "showcase-signal",
+          "name": "I · A signal in the dark",
+          "weight": 8,
+          "bricks": [
+            "showcase-signal"
+          ]
+        },
+        {
+          "id": "showcase-refraction",
+          "name": "II · One becomes many",
+          "weight": 12,
+          "bricks": [
+            "showcase-refraction"
+          ]
+        },
+        {
+          "id": "showcase-matter",
+          "name": "III · Light becomes matter",
+          "weight": 12,
+          "bricks": [
+            "showcase-matter"
+          ]
+        },
+        {
+          "id": "showcase-identity",
+          "name": "IV · The identity awakens",
+          "weight": 16,
+          "bricks": [
+            "showcase-identity"
+          ]
+        },
+        {
+          "id": "showcase-human",
+          "name": "V · The human signal",
+          "weight": 12,
+          "bricks": [
+            "showcase-human"
+          ]
+        },
+        {
+          "id": "showcase-singularity",
+          "name": "VI · The singularity",
+          "weight": 18,
+          "bricks": [
+            "showcase-singularity"
+          ]
+        },
+        {
+          "id": "showcase-home",
+          "name": "VII · Return to the source",
+          "weight": 12,
+          "bricks": [
+            "showcase-home"
+          ]
+        }
+      ]
+    },
+    "profile": {
+      "id": "showcase-directed-v1",
+      "name": "VERSION1 · Directed showcase",
+      "pace": 1,
+      "avoidRepeat": 0,
+      "themes": [],
+      "colours": [],
+      "types": [],
+      "exclude": [],
+      "reviewedOnly": false,
+      "similar": false,
+      "branding": {
+        "text": "",
+        "every": 0,
+        "seconds": 8
+      }
+    },
+    "bricks": [
+      {
+        "id": "showcase-signal",
+        "name": "I · A signal in the dark",
+        "colour": "blue",
+        "steps": [
+          {
+            "slot": "01 · A single light",
+            "seconds": 32,
+            "view": "single",
+            "preset": 1,
+            "loopMode": 1,
+            "speed": 0.75,
+            "zoom": 0.48,
+            "panX": 0,
+            "panY": 0,
+            "transition": {
+              "type": "fade-in",
+              "duration": 3,
+              "pace": "ease",
+              "seed": 7000,
+              "params": {},
+              "reduceFlashes": true
+            },
+            "effects": [
+              {
+                "at": 0,
+                "seconds": 8,
+                "effect": "text",
+                "backdrop": "black",
+                "skin": "chrome",
+                "quality": "balanced",
+                "x": 0.5,
+                "y": 0.5,
+                "scale": 0.38,
+                "depth": 0.35,
+                "rotX": 0,
+                "rotY": -18,
+                "rotZ": 0,
+                "motion": 0,
+                "axis": "y",
+                "startAngle": -25,
+                "endAngle": 25,
+                "bevel": 0.035,
+                "roughness": 0.06,
+                "reflection": 1.15,
+                "environment": 1,
+                "exposure": 1,
+                "text": "SIGNAL",
+                "font": "bungee",
+                "reflectionSource": {
+                  "filename": "blue_laser.mp4",
+                  "speed": 1
+                }
+              }
+            ],
+            "layoutCues": [
+              {
+                "at": 12,
+                "view": "single",
+                "preset": 1,
+                "zoom": 0.7,
+                "panX": -0.25,
+                "panY": 0.1
+              },
+              {
+                "at": 24,
+                "view": "triple",
+                "preset": 7,
+                "zoom": 1,
+                "panX": 0,
+                "panY": 0
+              }
+            ]
+          },
+          {
+            "slot": "02 · The first constellation",
+            "seconds": 32,
+            "view": "single",
+            "preset": 1,
+            "loopMode": 1,
+            "speed": 0.75,
+            "zoom": 0.65,
+            "panX": 0,
+            "panY": 0,
+            "transition": {
+              "type": "cross-dissolve",
+              "duration": 2.5,
+              "pace": "ease",
+              "seed": 7001,
+              "params": {},
+              "reduceFlashes": true
+            },
+            "effects": [
+              {
+                "at": 12,
+                "seconds": 16,
+                "effect": "scene-2",
+                "intensity": 0.38,
+                "feedback": 0.15
+              }
+            ],
+            "layoutCues": [
+              {
+                "at": 16,
+                "view": "dual",
+                "preset": 7,
+                "zoom": 1,
+                "panX": 0,
+                "panY": 0
+              }
+            ],
+            "sourceRange": {
+              "start": 1,
+              "end": 14.5
+            }
+          }
+        ]
+      },
+      {
+        "id": "showcase-refraction",
+        "name": "II · One becomes many",
+        "colour": "sage",
+        "steps": [
+          {
+            "slot": "03 · Three perspectives",
+            "seconds": 16,
+            "view": "triple",
+            "preset": 3,
+            "loopMode": 1,
+            "speed": 1,
+            "zoom": 1,
+            "panX": 0,
+            "panY": 0,
+            "transition": {
+              "type": "hexagonal-mosaic",
+              "duration": 1.4,
+              "pace": "ease",
+              "seed": 7002,
+              "params": {},
+              "reduceFlashes": true
+            },
+            "effects": [],
+            "layoutCues": [
+              {
+                "at": 8,
+                "view": "triple",
+                "preset": 7,
+                "zoom": 1.25,
+                "panX": 0.2,
+                "panY": 0
+              }
+            ]
+          },
+          {
+            "slot": "04 · A mirrored conversation",
+            "seconds": 16,
+            "view": "dual",
+            "preset": 21,
+            "loopMode": 1,
+            "speed": 1,
+            "zoom": 1,
+            "panX": 0,
+            "panY": 0,
+            "transition": {
+              "type": "geometric-shatter",
+              "duration": 1.3,
+              "pace": "ease",
+              "seed": 7003,
+              "params": {},
+              "reduceFlashes": true
+            },
+            "effects": [
+              {
+                "at": 4,
+                "seconds": 12,
+                "effect": "scene-5",
+                "intensity": 0.4,
+                "feedback": 0.1
+              }
+            ],
+            "layoutCues": []
+          },
+          {
+            "slot": "05 · Four corners",
+            "seconds": 16,
+            "view": "quad",
+            "preset": 15,
+            "loopMode": 1,
+            "speed": 1,
+            "zoom": 1,
+            "panX": 0,
+            "panY": 0,
+            "transition": {
+              "type": "cube-rotation",
+              "duration": 1.2,
+              "pace": "ease",
+              "seed": 7004,
+              "params": {},
+              "reduceFlashes": true
+            },
+            "effects": [],
+            "layoutCues": [
+              {
+                "at": 8,
+                "view": "quad",
+                "preset": 19,
+                "zoom": 0.8,
+                "panX": -0.2,
+                "panY": 0.2
+              }
+            ]
+          },
+          {
+            "slot": "06 · Six windows",
+            "seconds": 16,
+            "view": "six",
+            "preset": 27,
+            "loopMode": 1,
+            "speed": 1,
+            "zoom": 1,
+            "panX": 0,
+            "panY": 0,
+            "transition": {
+              "type": "radial-slice",
+              "duration": 1.2,
+              "pace": "ease",
+              "seed": 7005,
+              "params": {},
+              "reduceFlashes": true
+            },
+            "effects": [],
+            "layoutCues": [
+              {
+                "at": 8,
+                "view": "six",
+                "preset": 31,
+                "zoom": 1.15,
+                "panX": 0.1,
+                "panY": 0
+              }
+            ]
+          },
+          {
+            "slot": "07 · The room opens",
+            "seconds": 32,
+            "view": "octo",
+            "preset": 27,
+            "loopMode": 1,
+            "speed": 1,
+            "zoom": 1,
+            "panX": 0,
+            "panY": 0,
+            "transition": {
+              "type": "kaleidoscope-morph",
+              "duration": 2,
+              "pace": "ease",
+              "seed": 7006,
+              "params": {},
+              "reduceFlashes": true
+            },
+            "effects": [
+              {
+                "at": 8,
+                "seconds": 20,
+                "effect": "scene-4",
+                "intensity": 0.48,
+                "feedback": 0.18
+              }
+            ],
+            "layoutCues": [
+              {
+                "at": 8,
+                "view": "octo",
+                "preset": 31,
+                "zoom": 1.2,
+                "panX": 0,
+                "panY": 0
+              },
+              {
+                "at": 16,
+                "view": "six",
+                "preset": 7,
+                "zoom": 1,
+                "panX": 0,
+                "panY": 0
+              },
+              {
+                "at": 24,
+                "view": "octo",
+                "preset": 27,
+                "zoom": 1.35,
+                "panX": 0,
+                "panY": 0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "showcase-matter",
+        "name": "III · Light becomes matter",
+        "colour": "purple",
+        "steps": [
+          {
+            "slot": "08 · A surface remembers",
+            "seconds": 32,
+            "view": "triple",
+            "preset": 7,
+            "loopMode": 1,
+            "speed": 0.5,
+            "zoom": 1,
+            "panX": 0,
+            "panY": 0,
+            "transition": {
+              "type": "fluid-ripple",
+              "duration": 2.2,
+              "pace": "ease",
+              "seed": 7007,
+              "params": {},
+              "reduceFlashes": true
+            },
+            "effects": [
+              {
+                "at": 0,
+                "seconds": 6,
+                "effect": "text",
+                "backdrop": "black",
+                "skin": "pearl",
+                "quality": "balanced",
+                "x": 0.5,
+                "y": 0.5,
+                "scale": 0.3,
+                "depth": 0.35,
+                "rotX": 0,
+                "rotY": -18,
+                "rotZ": 0,
+                "motion": 0,
+                "axis": "y",
+                "startAngle": -25,
+                "endAngle": 25,
+                "bevel": 0.035,
+                "roughness": 0.09,
+                "reflection": 1.15,
+                "environment": 1,
+                "exposure": 1,
+                "text": "MATTER",
+                "font": "bungee",
+                "reflectionSource": {
+                  "filename": "Video by test23rdmay_DesPIdUsisv.mp4",
+                  "speed": 1
+                }
+              }
+            ],
+            "layoutCues": []
+          },
+          {
+            "slot": "09 · Time folds back",
+            "seconds": 32,
+            "view": "single",
+            "preset": 1,
+            "loopMode": 2,
+            "speed": 1,
+            "zoom": 0.65,
+            "panX": 0,
+            "panY": 0,
+            "transition": {
+              "type": "liquid-chrome",
+              "duration": 2.5,
+              "pace": "ease",
+              "seed": 7008,
+              "params": {},
+              "reduceFlashes": true
+            },
+            "effects": [
+              {
+                "at": 12,
+                "seconds": 16,
+                "effect": "mirror",
+                "text": "FORM",
+                "scale": 0.55,
+                "depth": 0.65,
+                "spin": 0.18,
+                "edge": 0.6
+              }
+            ],
+            "layoutCues": [],
+            "sourceRange": {
+              "start": 0.8,
+              "end": 2.8
+            }
+          },
+          {
+            "slot": "10 · Colour acquires a memory",
+            "seconds": 32,
+            "view": "single",
+            "preset": 1,
+            "loopMode": 1,
+            "speed": 1,
+            "zoom": 1,
+            "panX": 0,
+            "panY": 0,
+            "transition": {
+              "type": "ink-in-water",
+              "duration": 2,
+              "pace": "ease",
+              "seed": 7009,
+              "params": {},
+              "reduceFlashes": true
+            },
+            "effects": [],
+            "layoutCues": []
+          }
+        ]
+      },
+      {
+        "id": "showcase-identity",
+        "name": "IV · The identity awakens",
+        "colour": "sage",
+        "steps": [
+          {
+            "slot": "11 · The material learns to shine",
+            "seconds": 32,
+            "view": "single",
+            "preset": 1,
+            "loopMode": 1,
+            "speed": 1,
+            "zoom": 1,
+            "panX": 0,
+            "panY": 0,
+            "transition": {
+              "type": "smoke-dissolve",
+              "duration": 2,
+              "pace": "ease",
+              "seed": 7010,
+              "params": {},
+              "reduceFlashes": true
+            },
+            "effects": [
+              {
+                "at": 0,
+                "seconds": 8,
+                "effect": "logo",
+                "backdrop": "black",
+                "skin": "chrome",
+                "quality": "balanced",
+                "x": 0.5,
+                "y": 0.5,
+                "scale": 0.46,
+                "depth": 0.35,
+                "rotX": 0,
+                "rotY": -18,
+                "rotZ": 0,
+                "motion": 0.2,
+                "axis": "y",
+                "startAngle": -25,
+                "endAngle": 25,
+                "bevel": 0.035,
+                "roughness": 0.09,
+                "reflection": 1.15,
+                "environment": 1,
+                "exposure": 1
+              },
+              {
+                "at": 8,
+                "seconds": 8,
+                "effect": "logo",
+                "backdrop": "black",
+                "skin": "brushed",
+                "quality": "balanced",
+                "x": 0.5,
+                "y": 0.5,
+                "scale": 0.46,
+                "depth": 0.35,
+                "rotX": 0,
+                "rotY": -18,
+                "rotZ": 0,
+                "motion": 0.2,
+                "axis": "y",
+                "startAngle": -25,
+                "endAngle": 25,
+                "bevel": 0.035,
+                "roughness": 0.09,
+                "reflection": 1.15,
+                "environment": 1,
+                "exposure": 1
+              },
+              {
+                "at": 16,
+                "seconds": 8,
+                "effect": "logo",
+                "backdrop": "black",
+                "skin": "gold",
+                "quality": "balanced",
+                "x": 0.5,
+                "y": 0.5,
+                "scale": 0.46,
+                "depth": 0.35,
+                "rotX": 0,
+                "rotY": -18,
+                "rotZ": 0,
+                "motion": 0.2,
+                "axis": "y",
+                "startAngle": -25,
+                "endAngle": 25,
+                "bevel": 0.035,
+                "roughness": 0.09,
+                "reflection": 1.15,
+                "environment": 1,
+                "exposure": 1
+              },
+              {
+                "at": 24,
+                "seconds": 8,
+                "effect": "logo",
+                "backdrop": "black",
+                "skin": "original",
+                "quality": "balanced",
+                "x": 0.5,
+                "y": 0.5,
+                "scale": 0.46,
+                "depth": 0.35,
+                "rotX": 0,
+                "rotY": -18,
+                "rotZ": 0,
+                "motion": 0.2,
+                "axis": "y",
+                "startAngle": -25,
+                "endAngle": 25,
+                "bevel": 0.035,
+                "roughness": 0.09,
+                "reflection": 1.15,
+                "environment": 1,
+                "exposure": 1
+              }
+            ],
+            "layoutCues": []
+          },
+          {
+            "slot": "12 · The mark leaves its frame",
+            "seconds": 32,
+            "view": "single",
+            "preset": 1,
+            "loopMode": 1,
+            "speed": 1,
+            "zoom": 1,
+            "panX": 0,
+            "panY": 0,
+            "transition": {
+              "type": "light-leak",
+              "duration": 1.8,
+              "pace": "ease",
+              "seed": 7011,
+              "params": {},
+              "reduceFlashes": true
+            },
+            "effects": [
+              {
+                "at": 0,
+                "seconds": 8,
+                "effect": "video",
+                "logoLayer": {
+                  "effect": "logo",
+                  "backdrop": "video",
+                  "skin": "mirror",
+                  "quality": "balanced",
+                  "x": 0.5,
+                  "y": 0.5,
+                  "scale": 0.22,
+                  "depth": 0.35,
+                  "rotX": 0,
+                  "rotY": -18,
+                  "rotZ": 0,
+                  "motion": 0,
+                  "axis": "y",
+                  "startAngle": -25,
+                  "endAngle": 25,
+                  "bevel": 0.035,
+                  "roughness": 0.09,
+                  "reflection": 1.15,
+                  "environment": 1,
+                  "exposure": 1,
+                  "reflectionSource": {
+                    "filename": "Video by test23rdmay_DesPIdUsisv.mp4",
+                    "speed": 0.75
+                  },
+                  "animation": {
+                    "enabled": true,
+                    "path": "bounce",
+                    "duration": 8,
+                    "loop": true,
+                    "spanX": 0.7,
+                    "spanY": 0.55,
+                    "zoomMin": 0.8,
+                    "zoomMax": 1.2,
+                    "turnX": 45,
+                    "turnY": 360,
+                    "turnZ": 30,
+                    "keepInside": true,
+                    "points": [
+                      {
+                        "at": 0,
+                        "x": 0.22,
+                        "y": 0.35,
+                        "scale": 0.18,
+                        "rotX": 0,
+                        "rotY": -25,
+                        "rotZ": -12
+                      },
+                      {
+                        "at": 0.5,
+                        "x": 0.78,
+                        "y": 0.7,
+                        "scale": 0.3,
+                        "rotX": 35,
+                        "rotY": 25,
+                        "rotZ": 15
+                      },
+                      {
+                        "at": 1,
+                        "x": 0.22,
+                        "y": 0.35,
+                        "scale": 0.18,
+                        "rotX": 0,
+                        "rotY": -25,
+                        "rotZ": -12
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "at": 8,
+                "seconds": 8,
+                "effect": "video",
+                "logoLayer": {
+                  "effect": "logo",
+                  "backdrop": "video",
+                  "skin": "rose-gold",
+                  "quality": "balanced",
+                  "x": 0.5,
+                  "y": 0.5,
+                  "scale": 0.22,
+                  "depth": 0.35,
+                  "rotX": 0,
+                  "rotY": -18,
+                  "rotZ": 0,
+                  "motion": 0,
+                  "axis": "y",
+                  "startAngle": -25,
+                  "endAngle": 25,
+                  "bevel": 0.035,
+                  "roughness": 0.09,
+                  "reflection": 1.15,
+                  "environment": 1,
+                  "exposure": 1,
+                  "reflectionSource": {
+                    "filename": "Video by test23rdmay_DesPIdUsisv.mp4",
+                    "speed": 0.75
+                  },
+                  "animation": {
+                    "enabled": true,
+                    "path": "orbit",
+                    "duration": 8,
+                    "loop": true,
+                    "spanX": 0.7,
+                    "spanY": 0.55,
+                    "zoomMin": 0.8,
+                    "zoomMax": 1.2,
+                    "turnX": 45,
+                    "turnY": 360,
+                    "turnZ": 30,
+                    "keepInside": true,
+                    "points": [
+                      {
+                        "at": 0,
+                        "x": 0.22,
+                        "y": 0.35,
+                        "scale": 0.18,
+                        "rotX": 0,
+                        "rotY": -25,
+                        "rotZ": -12
+                      },
+                      {
+                        "at": 0.5,
+                        "x": 0.78,
+                        "y": 0.7,
+                        "scale": 0.3,
+                        "rotX": 35,
+                        "rotY": 25,
+                        "rotZ": 15
+                      },
+                      {
+                        "at": 1,
+                        "x": 0.22,
+                        "y": 0.35,
+                        "scale": 0.18,
+                        "rotX": 0,
+                        "rotY": -25,
+                        "rotZ": -12
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "at": 16,
+                "seconds": 8,
+                "effect": "video",
+                "logoLayer": {
+                  "effect": "logo",
+                  "backdrop": "video",
+                  "skin": "pearl",
+                  "quality": "balanced",
+                  "x": 0.5,
+                  "y": 0.5,
+                  "scale": 0.22,
+                  "depth": 0.35,
+                  "rotX": 0,
+                  "rotY": -18,
+                  "rotZ": 0,
+                  "motion": 0,
+                  "axis": "y",
+                  "startAngle": -25,
+                  "endAngle": 25,
+                  "bevel": 0.035,
+                  "roughness": 0.09,
+                  "reflection": 1.15,
+                  "environment": 1,
+                  "exposure": 1,
+                  "reflectionSource": {
+                    "filename": "Video by test23rdmay_DesPIdUsisv.mp4",
+                    "speed": 0.75
+                  },
+                  "animation": {
+                    "enabled": true,
+                    "path": "figure8",
+                    "duration": 8,
+                    "loop": true,
+                    "spanX": 0.7,
+                    "spanY": 0.55,
+                    "zoomMin": 0.8,
+                    "zoomMax": 1.2,
+                    "turnX": 45,
+                    "turnY": 360,
+                    "turnZ": 30,
+                    "keepInside": true,
+                    "points": [
+                      {
+                        "at": 0,
+                        "x": 0.22,
+                        "y": 0.35,
+                        "scale": 0.18,
+                        "rotX": 0,
+                        "rotY": -25,
+                        "rotZ": -12
+                      },
+                      {
+                        "at": 0.5,
+                        "x": 0.78,
+                        "y": 0.7,
+                        "scale": 0.3,
+                        "rotX": 35,
+                        "rotY": 25,
+                        "rotZ": 15
+                      },
+                      {
+                        "at": 1,
+                        "x": 0.22,
+                        "y": 0.35,
+                        "scale": 0.18,
+                        "rotX": 0,
+                        "rotY": -25,
+                        "rotZ": -12
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "at": 24,
+                "seconds": 8,
+                "effect": "video",
+                "logoLayer": {
+                  "effect": "logo",
+                  "backdrop": "video",
+                  "skin": "iridescent",
+                  "quality": "balanced",
+                  "x": 0.5,
+                  "y": 0.5,
+                  "scale": 0.22,
+                  "depth": 0.35,
+                  "rotX": 0,
+                  "rotY": -18,
+                  "rotZ": 0,
+                  "motion": 0,
+                  "axis": "y",
+                  "startAngle": -25,
+                  "endAngle": 25,
+                  "bevel": 0.035,
+                  "roughness": 0.09,
+                  "reflection": 1.15,
+                  "environment": 1,
+                  "exposure": 1,
+                  "reflectionSource": {
+                    "filename": "Video by test23rdmay_DesPIdUsisv.mp4",
+                    "speed": 0.75
+                  },
+                  "animation": {
+                    "enabled": true,
+                    "path": "custom",
+                    "duration": 8,
+                    "loop": true,
+                    "spanX": 0.7,
+                    "spanY": 0.55,
+                    "zoomMin": 0.8,
+                    "zoomMax": 1.2,
+                    "turnX": 45,
+                    "turnY": 360,
+                    "turnZ": 30,
+                    "keepInside": true,
+                    "points": [
+                      {
+                        "at": 0,
+                        "x": 0.22,
+                        "y": 0.35,
+                        "scale": 0.18,
+                        "rotX": 0,
+                        "rotY": -25,
+                        "rotZ": -12
+                      },
+                      {
+                        "at": 0.5,
+                        "x": 0.78,
+                        "y": 0.7,
+                        "scale": 0.3,
+                        "rotX": 35,
+                        "rotY": 25,
+                        "rotZ": 15
+                      },
+                      {
+                        "at": 1,
+                        "x": 0.22,
+                        "y": 0.35,
+                        "scale": 0.18,
+                        "rotX": 0,
+                        "rotY": -25,
+                        "rotZ": -12
+                      }
+                    ]
+                  }
+                }
+              }
+            ],
+            "layoutCues": []
+          },
+          {
+            "slot": "13 · The letters breathe",
+            "seconds": 32,
+            "view": "triple",
+            "preset": 7,
+            "loopMode": 1,
+            "speed": 1,
+            "zoom": 1,
+            "panX": 0,
+            "panY": 0,
+            "transition": {
+              "type": "mandala-rotation",
+              "duration": 1.8,
+              "pace": "ease",
+              "seed": 7012,
+              "params": {},
+              "reduceFlashes": true
+            },
+            "effects": [
+              {
+                "at": 0,
+                "seconds": 16,
+                "effect": "scene-4",
+                "logoLayer": {
+                  "effect": "logo",
+                  "backdrop": "black",
+                  "skin": "obsidian",
+                  "quality": "balanced",
+                  "x": 0.5,
+                  "y": 0.5,
+                  "scale": 0.35,
+                  "depth": 0.35,
+                  "rotX": 0,
+                  "rotY": -18,
+                  "rotZ": 0,
+                  "motion": 0,
+                  "axis": "y",
+                  "startAngle": -25,
+                  "endAngle": 25,
+                  "bevel": 0.035,
+                  "roughness": 0.09,
+                  "reflection": 1.7,
+                  "environment": 1,
+                  "exposure": 1.15,
+                  "reflectionSource": {
+                    "filename": "Video by themacrosift_Dd7IfJ7Mm5R.fdash-2959600471040532v.mp4",
+                    "speed": 1
+                  },
+                  "snake": {
+                    "enabled": true,
+                    "speed": 0.25,
+                    "depth": 0.55,
+                    "pulse": 0.5,
+                    "wavelength": 1.5
+                  },
+                  "animation": {
+                    "enabled": true,
+                    "path": "still",
+                    "duration": 16,
+                    "zoomMin": 0.85,
+                    "zoomMax": 1.15,
+                    "keepInside": true
+                  }
+                },
+                "intensity": 0.6,
+                "feedback": 0.18
+              },
+              {
+                "at": 16,
+                "seconds": 16,
+                "effect": "video",
+                "logoLayer": {
+                  "effect": "logo",
+                  "backdrop": "black",
+                  "skin": "chrome",
+                  "quality": "balanced",
+                  "x": 0.5,
+                  "y": 0.5,
+                  "scale": 0.4,
+                  "depth": 0.35,
+                  "rotX": 0,
+                  "rotY": -18,
+                  "rotZ": 0,
+                  "motion": 0,
+                  "axis": "y",
+                  "startAngle": -25,
+                  "endAngle": 25,
+                  "bevel": 0.035,
+                  "roughness": 0.09,
+                  "reflection": 1.15,
+                  "environment": 1,
+                  "exposure": 1,
+                  "snake": {
+                    "enabled": true,
+                    "speed": 0.25,
+                    "depth": 0.6,
+                    "pulse": 0.55,
+                    "wavelength": 1.5,
+                    "reverse": true
+                  },
+                  "reflectionSource": {
+                    "filename": "capture_instagram_9x16_20261116_235951_411938000.mp4",
+                    "speed": 1
+                  }
+                }
+              }
+            ],
+            "layoutCues": []
+          },
+          {
+            "slot": "14 · Into the wordmark",
+            "seconds": 32,
+            "view": "single",
+            "preset": 1,
+            "loopMode": 1,
+            "speed": 1,
+            "zoom": 1,
+            "panX": 0,
+            "panY": 0,
+            "transition": {
+              "type": "dimensional-portal",
+              "duration": 2,
+              "pace": "ease",
+              "seed": 7013,
+              "params": {},
+              "reduceFlashes": true
+            },
+            "effects": [
+              {
+                "at": 0,
+                "seconds": 32,
+                "effect": "logo",
+                "backdrop": "black",
+                "skin": "chrome",
+                "quality": "high",
+                "x": 0.5,
+                "y": 0.5,
+                "scale": 0.4,
+                "depth": 0.35,
+                "rotX": 0,
+                "rotY": -18,
+                "rotZ": 0,
+                "motion": 0,
+                "axis": "y",
+                "startAngle": -25,
+                "endAngle": 25,
+                "bevel": 0.035,
+                "roughness": 0.09,
+                "reflection": 1.15,
+                "environment": 1,
+                "exposure": 1,
+                "reflectionSource": {
+                  "filename": "capture_instagram_9x16_20261116_235951_411938000.mp4",
+                  "speed": 1
+                },
+                "fly": {
+                  "enabled": true,
+                  "speed": 0.0625,
+                  "distance": 0.65,
+                  "angle": 45,
+                  "mode": "bounce"
+                }
+              }
+            ],
+            "layoutCues": []
+          }
+        ]
+      },
+      {
+        "id": "showcase-human",
+        "name": "V · The human signal",
+        "colour": "blue",
+        "steps": [
+          {
+            "slot": "15 · A human in the circuit",
+            "seconds": 32,
+            "view": "triple",
+            "preset": 7,
+            "loopMode": 1,
+            "speed": 1,
+            "zoom": 1,
+            "panX": 0,
+            "panY": 0,
+            "transition": {
+              "type": "holographic-breakdown",
+              "duration": 1.8,
+              "pace": "ease",
+              "seed": 7014,
+              "params": {},
+              "reduceFlashes": true
+            },
+            "effects": [
+              {
+                "at": 8,
+                "seconds": 12,
+                "effect": "mirror",
+                "image": "/assets/version1-logo.png",
+                "scale": 0.5,
+                "depth": 0.75,
+                "spin": 0.15,
+                "edge": 0.75
+              },
+              {
+                "at": 24,
+                "seconds": 8,
+                "effect": "scene-5",
+                "intensity": 0.35,
+                "feedback": 0.12
+              }
+            ],
+            "layoutCues": []
+          },
+          {
+            "slot": "16 · Movement becomes light",
+            "seconds": 32,
+            "view": "single",
+            "preset": 1,
+            "loopMode": 1,
+            "speed": 1,
+            "zoom": 1,
+            "panX": 0,
+            "panY": 0,
+            "transition": {
+              "type": "spectral-frequency-shift",
+              "duration": 1.6,
+              "pace": "ease",
+              "seed": 7015,
+              "params": {},
+              "reduceFlashes": true
+            },
+            "effects": [
+              {
+                "at": 0,
+                "seconds": 5,
+                "effect": "text",
+                "backdrop": "black",
+                "skin": "chrome",
+                "quality": "balanced",
+                "x": 0.5,
+                "y": 0.5,
+                "scale": 0.32,
+                "depth": 0.35,
+                "rotX": 0,
+                "rotY": -18,
+                "rotZ": 0,
+                "motion": 0,
+                "axis": "y",
+                "startAngle": -25,
+                "endAngle": 25,
+                "bevel": 0.035,
+                "roughness": 0.09,
+                "reflection": 1.15,
+                "environment": 1,
+                "exposure": 1,
+                "text": "MOVE",
+                "font": "bungee",
+                "reflectionSource": {
+                  "filename": "Video by uon.visuals_DdU-l2qAGtL.mp4",
+                  "speed": 1
+                }
+              },
+              {
+                "at": 10,
+                "seconds": 10,
+                "effect": "video",
+                "logoLayer": {
+                  "effect": "logo",
+                  "backdrop": "video",
+                  "skin": "chrome",
+                  "quality": "balanced",
+                  "x": 0.72,
+                  "y": 0.65,
+                  "scale": 0.24,
+                  "depth": 0.35,
+                  "rotX": 0,
+                  "rotY": -18,
+                  "rotZ": 0,
+                  "motion": 0.14,
+                  "axis": "y",
+                  "startAngle": -25,
+                  "endAngle": 25,
+                  "bevel": 0.035,
+                  "roughness": 0.09,
+                  "reflection": 1.15,
+                  "environment": 1,
+                  "exposure": 1,
+                  "reflectionSource": {
+                    "filename": "Video by test23rdmay_DesPIdUsisv.mp4",
+                    "speed": 1
+                  },
+                  "animation": {
+                    "enabled": true,
+                    "path": "orbit",
+                    "duration": 10,
+                    "spanX": 0.3,
+                    "spanY": 0.3,
+                    "keepInside": true
+                  }
+                }
+              },
+              {
+                "at": 20,
+                "seconds": 12,
+                "effect": "video",
+                "logoLayer": {
+                  "effect": "text",
+                  "backdrop": "video",
+                  "skin": "chrome",
+                  "quality": "balanced",
+                  "x": 0.5,
+                  "y": 0.5,
+                  "scale": 0.23,
+                  "depth": 0.35,
+                  "rotX": 0,
+                  "rotY": -18,
+                  "rotZ": 0,
+                  "motion": 0,
+                  "axis": "y",
+                  "startAngle": -25,
+                  "endAngle": 25,
+                  "bevel": 0.035,
+                  "roughness": 0.09,
+                  "reflection": 1.15,
+                  "environment": 1,
+                  "exposure": 1,
+                  "text": "YOU ARE THE SIGNAL",
+                  "font": "modern",
+                  "reflectionSource": {
+                    "filename": "Video by uon.visuals_DdU-l2qAGtL.mp4",
+                    "speed": 1
+                  },
+                  "animation": {
+                    "enabled": true,
+                    "path": "still",
+                    "duration": 12,
+                    "keepInside": true
+                  }
+                }
+              }
+            ],
+            "layoutCues": []
+          },
+          {
+            "slot": "17 · Made here, played here",
+            "seconds": 32,
+            "view": "triple",
+            "preset": 7,
+            "loopMode": 1,
+            "speed": 0.75,
+            "zoom": 1,
+            "panX": 0,
+            "panY": 0,
+            "transition": {
+              "type": "neural-network-morph",
+              "duration": 1.8,
+              "pace": "ease",
+              "seed": 7016,
+              "params": {},
+              "reduceFlashes": true
+            },
+            "effects": [],
+            "layoutCues": [
+              {
+                "at": 16,
+                "view": "dual",
+                "preset": 3,
+                "zoom": 1,
+                "panX": 0,
+                "panY": 0
+              },
+              {
+                "at": 24,
+                "view": "triple",
+                "preset": 7,
+                "zoom": 0.85,
+                "panX": 0,
+                "panY": 0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "showcase-singularity",
+        "name": "VI · The singularity",
+        "colour": "coral",
+        "steps": [
+          {
+            "slot": "18 · Ignition",
+            "seconds": 16,
+            "view": "six",
+            "preset": 27,
+            "loopMode": 1,
+            "speed": 1,
+            "zoom": 1,
+            "panX": 0,
+            "panY": 0,
+            "transition": {
+              "type": "bass-impact-distortion",
+              "duration": 0.8,
+              "pace": "accelerate",
+              "seed": 7017,
+              "params": {},
+              "reduceFlashes": true
+            },
+            "effects": [
+              {
+                "at": 0,
+                "seconds": 16,
+                "effect": "scene-4",
+                "logoLayer": {
+                  "effect": "logo",
+                  "backdrop": "black",
+                  "skin": "gold",
+                  "quality": "balanced",
+                  "x": 0.5,
+                  "y": 0.5,
+                  "scale": 0.35,
+                  "depth": 0.35,
+                  "rotX": 0,
+                  "rotY": -18,
+                  "rotZ": 0,
+                  "motion": 0,
+                  "axis": "y",
+                  "startAngle": -25,
+                  "endAngle": 25,
+                  "bevel": 0.035,
+                  "roughness": 0.09,
+                  "reflection": 1.15,
+                  "environment": 1,
+                  "exposure": 1,
+                  "snake": {
+                    "enabled": true,
+                    "speed": 0.5,
+                    "depth": 0.55,
+                    "pulse": 0.6
+                  },
+                  "reflectionSource": {
+                    "filename": "Video by test23rdmay_DesPIdUsisv.mp4",
+                    "speed": 1
+                  }
+                },
+                "intensity": 0.75,
+                "feedback": 0.24
+              }
+            ],
+            "layoutCues": []
+          },
+          {
+            "slot": "19 · A forward leap",
+            "seconds": 16,
+            "view": "six",
+            "preset": 23,
+            "loopMode": 1,
+            "speed": 1,
+            "zoom": 1,
+            "panX": 0,
+            "panY": 0,
+            "transition": {
+              "type": "laser-sweep",
+              "duration": 0.8,
+              "pace": "accelerate",
+              "seed": 7018,
+              "params": {},
+              "reduceFlashes": true
+            },
+            "effects": [
+              {
+                "at": 0,
+                "seconds": 16,
+                "effect": "logo",
+                "backdrop": "black",
+                "skin": "chrome",
+                "quality": "balanced",
+                "x": 0.5,
+                "y": 0.5,
+                "scale": 0.4,
+                "depth": 0.35,
+                "rotX": 0,
+                "rotY": -18,
+                "rotZ": 0,
+                "motion": 0,
+                "axis": "y",
+                "startAngle": -25,
+                "endAngle": 25,
+                "bevel": 0.035,
+                "roughness": 0.09,
+                "reflection": 1.15,
+                "environment": 1,
+                "exposure": 1,
+                "reflectionSource": {
+                  "filename": "Video by uon.visuals_DdU-l2qAGtL.mp4",
+                  "speed": 1
+                },
+                "fly": {
+                  "enabled": true,
+                  "speed": 0.0625,
+                  "distance": 0.6,
+                  "angle": 45,
+                  "mode": "once"
+                }
+              }
+            ],
+            "layoutCues": []
+          },
+          {
+            "slot": "20 · Eightfold",
+            "seconds": 16,
+            "view": "octo",
+            "preset": 31,
+            "loopMode": 1,
+            "speed": 1,
+            "zoom": 1,
+            "panX": 0,
+            "panY": 0,
+            "transition": {
+              "type": "quantum-tiles",
+              "duration": 0.9,
+              "pace": "ease",
+              "seed": 7019,
+              "params": {},
+              "reduceFlashes": true
+            },
+            "effects": [
+              {
+                "at": 0,
+                "seconds": 16,
+                "effect": "scene-5",
+                "intensity": 0.65,
+                "feedback": 0.18
+              }
+            ],
+            "layoutCues": [
+              {
+                "at": 4,
+                "view": "octo",
+                "preset": 27,
+                "zoom": 1.15,
+                "panX": 0,
+                "panY": 0
+              },
+              {
+                "at": 8,
+                "view": "six",
+                "preset": 31,
+                "zoom": 1.2,
+                "panX": 0,
+                "panY": 0
+              },
+              {
+                "at": 12,
+                "view": "octo",
+                "preset": 7,
+                "zoom": 1,
+                "panX": 0,
+                "panY": 0
+              }
+            ]
+          },
+          {
+            "slot": "21 · Ribbons of light",
+            "seconds": 16,
+            "view": "six",
+            "preset": 27,
+            "loopMode": 1,
+            "speed": 1,
+            "zoom": 1,
+            "panX": 0,
+            "panY": 0,
+            "transition": {
+              "type": "electric-arc",
+              "duration": 0.9,
+              "pace": "ease",
+              "seed": 7020,
+              "params": {},
+              "reduceFlashes": true
+            },
+            "effects": [
+              {
+                "at": 0,
+                "seconds": 16,
+                "effect": "scene-2",
+                "logoLayer": {
+                  "effect": "text",
+                  "backdrop": "video",
+                  "skin": "iridescent",
+                  "quality": "balanced",
+                  "x": 0.5,
+                  "y": 0.5,
+                  "scale": 0.25,
+                  "depth": 0.35,
+                  "rotX": 0,
+                  "rotY": -18,
+                  "rotZ": 0,
+                  "motion": 0,
+                  "axis": "y",
+                  "startAngle": -25,
+                  "endAngle": 25,
+                  "bevel": 0.035,
+                  "roughness": 0.09,
+                  "reflection": 1.15,
+                  "environment": 1,
+                  "exposure": 1,
+                  "text": "VERSION1",
+                  "font": "bungee",
+                  "reflectionSource": {
+                    "filename": "Video by test23rdmay_DesPIdUsisv.mp4",
+                    "speed": 1
+                  }
+                },
+                "intensity": 0.85,
+                "feedback": 0.28
+              }
+            ],
+            "layoutCues": []
+          },
+          {
+            "slot": "22 · A beautiful fracture",
+            "seconds": 16,
+            "view": "octo",
+            "preset": 27,
+            "loopMode": 1,
+            "speed": 1,
+            "zoom": 1,
+            "panX": 0,
+            "panY": 0,
+            "transition": {
+              "type": "reality-fracture",
+              "duration": 0.9,
+              "pace": "ease",
+              "seed": 7021,
+              "params": {},
+              "reduceFlashes": true
+            },
+            "effects": [
+              {
+                "at": 0,
+                "seconds": 16,
+                "effect": "scene-1",
+                "intensity": 0.8,
+                "feedback": 0.8
+              }
+            ],
+            "layoutCues": []
+          },
+          {
+            "slot": "23 · Bodies of light",
+            "seconds": 16,
+            "view": "dual",
+            "preset": 7,
+            "loopMode": 1,
+            "speed": 1,
+            "zoom": 1,
+            "panX": 0,
+            "panY": 0,
+            "transition": {
+              "type": "energy-burst",
+              "duration": 0.9,
+              "pace": "ease",
+              "seed": 7022,
+              "params": {},
+              "reduceFlashes": true
+            },
+            "effects": [
+              {
+                "at": 0,
+                "seconds": 16,
+                "effect": "scene-4",
+                "logoLayer": {
+                  "effect": "logo",
+                  "backdrop": "black",
+                  "skin": "rose-gold",
+                  "quality": "balanced",
+                  "x": 0.5,
+                  "y": 0.5,
+                  "scale": 0.3,
+                  "depth": 0.35,
+                  "rotX": 0,
+                  "rotY": -18,
+                  "rotZ": 0,
+                  "motion": 0.25,
+                  "axis": "y",
+                  "startAngle": -25,
+                  "endAngle": 25,
+                  "bevel": 0.035,
+                  "roughness": 0.09,
+                  "reflection": 1.15,
+                  "environment": 1,
+                  "exposure": 1,
+                  "reflectionSource": {
+                    "filename": "Video by uon.visuals_DdU-l2qAGtL.mp4",
+                    "speed": 1
+                  },
+                  "snake": {
+                    "enabled": true,
+                    "speed": 0.4,
+                    "depth": 0.4,
+                    "pulse": 0.65
+                  }
+                },
+                "intensity": 0.7,
+                "feedback": 0.22
+              }
+            ],
+            "layoutCues": []
+          },
+          {
+            "slot": "24 · The infinite room",
+            "seconds": 16,
+            "view": "single",
+            "preset": 1,
+            "loopMode": 1,
+            "speed": 1,
+            "zoom": 1,
+            "panX": 0,
+            "panY": 0,
+            "transition": {
+              "type": "infinite-zoom",
+              "duration": 1,
+              "pace": "ease",
+              "seed": 7023,
+              "params": {},
+              "reduceFlashes": true
+            },
+            "effects": [
+              {
+                "at": 0,
+                "seconds": 16,
+                "effect": "scene-4",
+                "intensity": 0.85,
+                "feedback": 0.3
+              }
+            ],
+            "layoutCues": []
+          },
+          {
+            "slot": "25 · A second gravity",
+            "seconds": 16,
+            "view": "octo",
+            "preset": 27,
+            "loopMode": 1,
+            "speed": 1,
+            "zoom": 1,
+            "panX": 0,
+            "panY": 0,
+            "transition": {
+              "type": "gravity-well",
+              "duration": 1.2,
+              "pace": "ease",
+              "seed": 7024,
+              "params": {},
+              "reduceFlashes": true
+            },
+            "effects": [
+              {
+                "at": 0,
+                "seconds": 16,
+                "effect": "scene-5",
+                "logoLayer": {
+                  "effect": "logo",
+                  "backdrop": "black",
+                  "skin": "chrome",
+                  "quality": "balanced",
+                  "x": 0.5,
+                  "y": 0.5,
+                  "scale": 0.24,
+                  "depth": 0.35,
+                  "rotX": 0,
+                  "rotY": -18,
+                  "rotZ": 0,
+                  "motion": 0,
+                  "axis": "y",
+                  "startAngle": -25,
+                  "endAngle": 25,
+                  "bevel": 0.035,
+                  "roughness": 0.09,
+                  "reflection": 1.15,
+                  "environment": 1,
+                  "exposure": 1,
+                  "reflectionSource": {
+                    "filename": "Video by themacrosift_Dd7IfJ7Mm5R.fdash-2959600471040532v.mp4",
+                    "speed": 1
+                  },
+                  "animation": {
+                    "enabled": true,
+                    "path": "orbit",
+                    "duration": 8,
+                    "spanX": 0.6,
+                    "spanY": 0.5,
+                    "turnY": 360,
+                    "keepInside": true
+                  },
+                  "snake": {
+                    "enabled": true,
+                    "speed": 0.5,
+                    "depth": 0.65,
+                    "pulse": 0.7
+                  }
+                },
+                "intensity": 0.65,
+                "feedback": 0.2
+              }
+            ],
+            "layoutCues": []
+          },
+          {
+            "slot": "26 · The mark breaks free",
+            "seconds": 16,
+            "view": "triple",
+            "preset": 7,
+            "loopMode": 1,
+            "speed": 1,
+            "zoom": 1,
+            "panX": 0,
+            "panY": 0,
+            "transition": {
+              "type": "chromatic-implosion",
+              "duration": 1.2,
+              "pace": "ease",
+              "seed": 7025,
+              "params": {},
+              "reduceFlashes": true
+            },
+            "effects": [
+              {
+                "at": 0,
+                "seconds": 16,
+                "effect": "logo",
+                "backdrop": "black",
+                "skin": "rose-gold",
+                "quality": "balanced",
+                "x": 0.5,
+                "y": 0.5,
+                "scale": 0.4,
+                "depth": 0.35,
+                "rotX": 0,
+                "rotY": -18,
+                "rotZ": 0,
+                "motion": 0,
+                "axis": "y",
+                "startAngle": -25,
+                "endAngle": 25,
+                "bevel": 0.035,
+                "roughness": 0.09,
+                "reflection": 1.15,
+                "environment": 1,
+                "exposure": 1,
+                "reflectionSource": {
+                  "filename": "Video by test23rdmay_DesPIdUsisv.mp4",
+                  "speed": 1
+                },
+                "animation": {
+                  "enabled": true,
+                  "path": "still",
+                  "duration": 8,
+                  "sourceMotion": "left-right",
+                  "sourceScale": 1,
+                  "sourceTravel": 1.5,
+                  "keepInside": true
+                },
+                "fly": {
+                  "enabled": true,
+                  "speed": 0.125,
+                  "distance": 0.7,
+                  "angle": 45,
+                  "mode": "repeat"
+                }
+              }
+            ],
+            "layoutCues": []
+          }
+        ]
+      },
+      {
+        "id": "showcase-home",
+        "name": "VII · Return to the source",
+        "colour": "purple",
+        "steps": [
+          {
+            "slot": "27 · A corridor back to stillness",
+            "seconds": 32,
+            "view": "quad",
+            "preset": 15,
+            "loopMode": 1,
+            "speed": 0.5,
+            "zoom": 1,
+            "panX": 0,
+            "panY": 0,
+            "transition": {
+              "type": "fade-out",
+              "duration": 3,
+              "pace": "ease",
+              "seed": 7026,
+              "params": {},
+              "reduceFlashes": true
+            },
+            "effects": [
+              {
+                "at": 0,
+                "seconds": 16,
+                "effect": "scene-2",
+                "intensity": 0.25,
+                "feedback": 0.1
+              },
+              {
+                "at": 16,
+                "seconds": 16,
+                "effect": "logo",
+                "backdrop": "black",
+                "skin": "pearl",
+                "quality": "balanced",
+                "x": 0.5,
+                "y": 0.5,
+                "scale": 0.3,
+                "depth": 0.35,
+                "rotX": 0,
+                "rotY": -18,
+                "rotZ": 0,
+                "motion": 0,
+                "axis": "y",
+                "startAngle": -25,
+                "endAngle": 25,
+                "bevel": 0.035,
+                "roughness": 0.09,
+                "reflection": 1.15,
+                "environment": 1,
+                "exposure": 1,
+                "orientation": "top-bottom",
+                "reflectionSource": {
+                  "filename": "blue_laser.mp4",
+                  "speed": 1
+                },
+                "animation": {
+                  "enabled": true,
+                  "path": "still",
+                  "duration": 16,
+                  "zoomMin": 0.8,
+                  "zoomMax": 1,
+                  "keepInside": true
+                }
+              }
+            ],
+            "layoutCues": [
+              {
+                "at": 8,
+                "view": "triple",
+                "preset": 7,
+                "zoom": 0.8,
+                "panX": 0,
+                "panY": 0
+              },
+              {
+                "at": 16,
+                "view": "single",
+                "preset": 1,
+                "zoom": 0.48,
+                "panX": 0.2,
+                "panY": 0
+              }
+            ]
+          },
+          {
+            "slot": "28 · The identity comes home",
+            "seconds": 32,
+            "view": "triple",
+            "preset": 7,
+            "loopMode": 1,
+            "speed": 0.5,
+            "zoom": 1,
+            "panX": 0,
+            "panY": 0,
+            "transition": {
+              "type": "cross-dissolve",
+              "duration": 3,
+              "pace": "ease",
+              "seed": 7027,
+              "params": {},
+              "reduceFlashes": true
+            },
+            "effects": [
+              {
+                "at": 0,
+                "seconds": 6,
+                "effect": "text",
+                "backdrop": "black",
+                "skin": "pearl",
+                "quality": "balanced",
+                "x": 0.5,
+                "y": 0.5,
+                "scale": 0.35,
+                "depth": 0.35,
+                "rotX": 0,
+                "rotY": -18,
+                "rotZ": 0,
+                "motion": 0,
+                "axis": "y",
+                "startAngle": -25,
+                "endAngle": 25,
+                "bevel": 0.035,
+                "roughness": 0.09,
+                "reflection": 1.15,
+                "environment": 1,
+                "exposure": 1,
+                "text": "HOME",
+                "font": "serif",
+                "reflectionSource": {
+                  "filename": "Video by uon.visuals_DdU-l2qAGtL.mp4",
+                  "speed": 1
+                }
+              }
+            ],
+            "layoutCues": [
+              {
+                "at": 16,
+                "view": "single",
+                "preset": 1,
+                "zoom": 0.7,
+                "panX": 0,
+                "panY": 0
+              }
+            ]
+          },
+          {
+            "slot": "29 · Signal becomes silence",
+            "seconds": 32,
+            "view": "single",
+            "preset": 1,
+            "loopMode": 0,
+            "speed": 1,
+            "zoom": 1,
+            "panX": 0,
+            "panY": 0,
+            "transition": {
+              "type": "cross-dissolve",
+              "duration": 2.5,
+              "pace": "ease",
+              "seed": 7028,
+              "params": {},
+              "reduceFlashes": true
+            },
+            "effects": [
+              {
+                "at": 0,
+                "seconds": 8,
+                "effect": "text",
+                "backdrop": "black",
+                "skin": "chrome",
+                "quality": "balanced",
+                "x": 0.5,
+                "y": 0.5,
+                "scale": 0.4,
+                "depth": 0.35,
+                "rotX": 0,
+                "rotY": -18,
+                "rotZ": 0,
+                "motion": 0,
+                "axis": "y",
+                "startAngle": -25,
+                "endAngle": 25,
+                "bevel": 0.035,
+                "roughness": 0.09,
+                "reflection": 1.15,
+                "environment": 1,
+                "exposure": 1,
+                "text": "VERSION1",
+                "font": "bungee",
+                "reflectionSource": {
+                  "filename": "blue_laser.mp4",
+                  "speed": 1
+                }
+              },
+              {
+                "at": 8,
+                "seconds": 8,
+                "effect": "text",
+                "backdrop": "black",
+                "skin": "chrome",
+                "quality": "balanced",
+                "x": 0.5,
+                "y": 0.5,
+                "scale": 0.2,
+                "depth": 0.35,
+                "rotX": 0,
+                "rotY": -18,
+                "rotZ": 0,
+                "motion": 0,
+                "axis": "y",
+                "startAngle": -25,
+                "endAngle": 25,
+                "bevel": 0.035,
+                "roughness": 0.09,
+                "reflection": 1.15,
+                "environment": 1,
+                "exposure": 1,
+                "text": "FROM SIGNAL TO SPECTACLE",
+                "font": "modern",
+                "reflectionSource": {
+                  "filename": "Video by themacrosift_Dd7IfJ7Mm5R.fdash-2959600471040532v.mp4",
+                  "speed": 1
+                },
+                "animation": {
+                  "enabled": true,
+                  "path": "still",
+                  "duration": 8,
+                  "keepInside": true
+                }
+              },
+              {
+                "at": 16,
+                "seconds": 16,
+                "effect": "logo",
+                "backdrop": "black",
+                "skin": "chrome",
+                "quality": "balanced",
+                "x": 0.5,
+                "y": 0.5,
+                "scale": 0.4,
+                "depth": 0.35,
+                "rotX": 0,
+                "rotY": -18,
+                "rotZ": 0,
+                "motion": 0,
+                "axis": "y",
+                "startAngle": -25,
+                "endAngle": 25,
+                "bevel": 0.035,
+                "roughness": 0.09,
+                "reflection": 1.15,
+                "environment": 1,
+                "exposure": 1,
+                "reflectionSource": {
+                  "filename": "Video by uon.visuals_DdU-l2qAGtL.mp4",
+                  "speed": 1
+                },
+                "fly": {
+                  "enabled": true,
+                  "speed": 0.08333333333333333,
+                  "distance": 0.65,
+                  "angle": 45,
+                  "mode": "once"
+                }
+              }
+            ],
+            "layoutCues": []
+          }
+        ]
+      }
+    ],
+    "warnings": [],
+    "mode": "fresh",
+    "eligibleVideos": 47
+  },
+  "showcase": {
+    "id": "showcase-signal-to-spectacle-v1",
+    "edition": "Directed offline edition",
+    "seconds": 720,
+    "captionEnabled": false,
+    "inputNotes": "Recorded movement study uses existing footage processed through the actual movement extractor; connect physical inputs for the live encore.",
+    "chapters": [
+      {
+        "name": "I · A signal in the dark",
+        "description": "A single light becomes an identity. Quiet, spacious and unmistakably deliberate.",
+        "start": 0,
+        "end": 64
+      },
+      {
+        "name": "II · One becomes many",
+        "description": "The same signal unfolds through every layout; symmetry gradually fills the room.",
+        "start": 64,
+        "end": 160
+      },
+      {
+        "name": "III · Light becomes matter",
+        "description": "Ripples, time reversal and colour turn patterns into something tactile.",
+        "start": 160,
+        "end": 256
+      },
+      {
+        "name": "IV · The identity awakens",
+        "description": "The film moves inside the Version1 mark. Materials, choreography, depth and flight become the main characters.",
+        "start": 256,
+        "end": 384
+      },
+      {
+        "name": "V · The human signal",
+        "description": "An apparently synthetic world reveals its human input. Movement becomes the instrument.",
+        "start": 384,
+        "end": 480
+      },
+      {
+        "name": "VI · The singularity",
+        "description": "All the languages combine: the fastest, richest and most layered passage of the show.",
+        "start": 480,
+        "end": 624
+      },
+      {
+        "name": "VII · Return to the source",
+        "description": "Space returns. The mark stands upright, becomes familiar, and finally disappears into silence.",
+        "start": 624,
+        "end": 720
+      }
+    ]
+  }
+}

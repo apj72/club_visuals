@@ -1,0 +1,48 @@
+# Proposed language: this example is intended to compile to existing V1 JSON.
+show "VERSION1 — one-minute opening" {
+  language 1
+  duration 60s
+  seed 1501
+  output 16:9
+}
+
+media liquid = file "Video by pigmentsunbound_DdMlp9ITPhu.mp4"
+media neon = file "Video by hellothoughtpalace_DbMzTEclnhS.mp4"
+media dancer = file "Video by riebschlager_Da4LyKzRrEB.mp4"
+
+look mirror4 {
+  layout 4x pattern 15
+  crop pan (50%, 50%) zoom 1
+  playback loop speed 1
+}
+look mirror8 {
+  layout 8x pattern 27
+  crop pan (50%, 50%) zoom 1
+  playback loop speed 1
+}
+overlay brand = logo version1 {
+  material chrome
+  position (50%, 50%)
+  scale 46%
+  quality high
+  reflection 1.3
+  roughness 0.07
+  rotate y -18deg
+  sweep y from -25deg to 25deg amount 0.22
+}
+
+sequence main {
+  clip liquid for 20s use mirror4 {
+    enter fade-in over 1.5s ease smooth
+  }
+  clip neon for 20s use mirror8 {
+    enter cross-dissolve over 2s ease smooth
+  }
+  clip dancer for 20s use mirror4 {
+    enter fluid-ripple over 2s ease smooth
+  }
+}
+schedule {
+  every 60s from 6s for 8s show brand
+  at 52s for 6s show brand
+}

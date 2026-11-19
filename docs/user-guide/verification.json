@@ -1,0 +1,12 @@
+{
+  "htmlPages": 13,
+  "links": "all local links and anchors valid",
+  "screenshots": 21,
+  "pdfPages": 43,
+  "pdfBytes": 6633303,
+  "responsiveChecks": [
+    "1440px",
+    "390px"
+  ],
+  "pdf": "output/pdf/club-visuals-user-guide.pdf"
+}

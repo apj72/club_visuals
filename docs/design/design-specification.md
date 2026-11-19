@@ -7,6 +7,28 @@ documents. The [prototype](prototype.html) and [mockups](index.html) illustrate
 the direction. Existing product behaviour remains the implementation contract;
 sample values and simulated interactions are not new capabilities.
 
+## Corrections after checking the V1 application
+
+Read [the V1 design audit](audit.md) before treating this proposal as an
+implementation brief. The central aspect-ratio distinction is:
+
+- The downloaded source is portrait: the current library has 159 portrait and
+  16 square MP4s (175 total; none are landscape).
+- The Mac output is a separate landscape 16:9 canvas. Single view fits the
+  source inside that canvas; multi-tile layouts crop each portrait source to
+  fill its fixed tile. Do not stretch the source or make the source itself
+  landscape.
+- A video review surface should show the original source at 9:16. A prepared
+  composition preview should show the 16:9 Mac output, with the selected
+  number of fixed-position portrait tiles.
+
+The original specification called the 16:9 composition a “source” preview,
+added a 6-up mode that V1 does not implement, and proposed a second UI route
+and new implementation architecture. Those statements are superseded by the
+audit and current reskin-only scope. Six-up remains a requested future layout;
+it needs renderer support and must not be represented as working in a UI-only
+reskin.
+
 ## 1. Design direction
 
 Give the video most of the space. Make the destination of every action easy to
@@ -54,14 +76,14 @@ Persistent shell
 ├── Capture
 │   ├── Instagram clip / crop / loop join / conversion
 │   └── Full editor recording
-└── Setup
+└── Settings
     ├── Output / iPad connection / Mac audio permission
     ├── Folders / Instagram cookies
     └── Reduce flashes / diagnostics / storage explanation
 ```
 
 The prototype has seven screen views: the four primary workspaces, Capture,
-Setup, and a contextual Transitions view reached from Playlists. The latter
+Settings, and a contextual Transitions view reached from Playlists. The latter
 does not need its own global navigation item.
 
 Use existing concepts consistently: **video**, **look**, **saved layout**,
@@ -121,16 +143,23 @@ immediate simulated confirmations are an interaction demonstration only.
 
 ### Prepare
 
-Default to a large 16:9 private player with filename, layout/loop summary,
-play/pause, seek, mute and Preview fullscreen. Allow the existing alternative
-preview frame ratios. Keep transport outside the video so it is discoverable
-on touch. On shorter landscape viewports, fit the canvas and transport into
-the available height with letterboxing; do not crop the composition to fit UI.
+Default to a large 16:9 private composition preview because the Mac output is
+16:9. This preview shows how the selected portrait source is arranged in the
+Mac frame; it does not change the source file's 9:16 aspect ratio. Keep the
+independent review player portrait at 9:16. Keep transport outside the video
+so it is discoverable on touch. On shorter landscape viewports, fit the output
+canvas and transport into the available height; never stretch the source.
 
 The inspector has four sections:
 
-- **Layout:** Single/Dual/3x/4x/8x, mirror patterns, playback mode, speed,
-  zoom/pan, captions and Reset. Saved layout menu exposes save/load/delete and
+- **Layout:** 1/2/3/4/8 fixed-position tiles in V1; mirror pattern,
+  playback mode, speed, zoom/pan, captions and Reset. Keep fixed tile
+  positions; orientation choices flip/turn each tile in place. The requested
+  unique orientation counts are 4 (single), 8 (dual), 12 (triple), 16 (four),
+  24 (six) and 32 (eight). The six-tile composition is future renderer work,
+  not part of a UI-only reskin. Show curated pleasing patterns by default and
+  put the Show all preference on Settings; Prepare chooses among the patterns
+  available under that preference. Saved layout menu exposes save/load/delete and
   add-to-playlist. Say exactly what a layout stores.
 - **Colour:** presets and common colour controls; invert, sepia and trails
   under an expanded detail section.
@@ -145,10 +174,11 @@ Implementation should remember the last inspector section per browser. The
 scene shared by logo/text should have a clear label, such as “3D logo / text”,
 while preserving the saved scene ID.
 
-Below the player, a small library shelf makes choosing the next look fast.
-Browse all videos opens Library. Selecting a video changes only preparation.
-Add current look uses the existing workflow that copies active effects to a
-playlist cue. It is not a new general-purpose saved-look format.
+Below the player, a compact horizontally browsable shelf makes choosing the
+next look fast without pushing the editor below the viewport. Browse all
+videos opens the bounded Library browser. Selecting a video changes only
+preparation. Add current look uses the existing workflow that copies active
+effects to a playlist cue. It is not a new general-purpose saved-look format.
 
 ### Playlists
 
@@ -177,9 +207,11 @@ its wording must not imply that Auto Perform is starting.
 ### Library and classification
 
 Use a visual grid with filename/display title, duration, category chips and
-Reviewed/Needs review. The mockup uses friendly invented names; production
-must derive labels from current filenames/metadata and expose full filenames.
-No new renaming or automatic title-generation capability is assumed.
+Reviewed/Needs review. Keep it to a bounded two-to-three-row scroll region so
+the operator does not have to scroll the whole screen through videos. The
+mockup uses local filenames and catalogue labels; production must derive them
+from current filenames/metadata and expose full filenames. No new renaming or
+automatic title-generation capability is assumed.
 
 Search plus common Theme and Review filters stay prominent. Colour, Visual
 type and Arrange by fit a filter drawer on small screens. Show active-filter
@@ -235,7 +267,7 @@ Mac audio setup retains the resident engine on close. First-use microphone
 permission may need local Mac interaction. Preview audio belongs to the
 preview's device; its controls must not be labelled Mac audio.
 
-### Capture and Setup
+### Capture and Settings
 
 Capture has Instagram clip and Full recording modes. Both name the source as
 **this editor's preview**. Clip capture shows frame ratio, movable crop, start,
@@ -247,7 +279,7 @@ ready/download and failure separately. Clip output is silent; full recordings
 include source audio only when unmuted and supported. Stop other local
 capture/playback modes when required by the existing workflow.
 
-Setup contains output/network, Mac input, source/clip folders, cookie status
+Settings contains output/network, Mac input, source/clip folders, cookie status
 and refresh, Reduce flashes and concise diagnostics. Folder browsing targets
 the Mac server. Group settings by scope: Mac-shared, this browser or session.
 Expose troubleshooting in context, without presenting internal API names.
@@ -258,14 +290,23 @@ Expose troubleshooting in context, without presenting internal API names.
 | --- | --- |
 | Above 1200px | Spacious two-column preparation and playlist editing; 304px inspector; 4-column library. |
 | 901–1200px | Two-column canvas/inspector with tighter spacing; compact connection summary; 3-column library. |
-| 541–900px | Navigation wraps to a dedicated row; status and live actions use two rows; inspector stacks below preview; 3-column library. |
-| 540px and below | Two-column library, stacked dialog content and wrapped live actions. Phone is a fallback, not the primary performance target. |
-| Short landscape screen | Canvas height fits the available viewport, with letterboxing. Advanced controls remain in the scrollable document. |
+| 541–900px | Navigation wraps to a dedicated row; status and live actions use two rows; inspector opens as a compact panel/drawer; 3-column library. |
+| 540px and below | Two-column library with bounded scrolling, stacked dialog content and wrapped live actions. Phone is a fallback, not the primary performance target. |
+| Short landscape screen | Keep the preview and live bar visible; bound the inspector and video selector to the remaining viewport. |
 
-Use the document as the main scroll surface. Avoid several nested vertical
-scroll areas on iPad. A timeline can have deliberate horizontal scrolling;
-the overall page must not overflow. Dialogs can scroll internally and should
-keep their action footer reachable with the onscreen keyboard.
+Keep each workspace focused within the visible viewport. Pin the Mac control
+bar and keep the composition preview and inspector in view. The inspector may
+scroll inside its own bounded panel. Keep the video chooser to a compact
+two-to-three-row area with its own scroll, and keep the playlist timeline in a
+bounded strip with deliberate horizontal scrolling. Do not require scrolling
+the whole page to reach the next video or important controls. On iPad, account
+for Safari's safe area and changing visual viewport when its keyboard opens.
+
+For frequent layout, pattern and library choices, use an in-page popover/menu
+anchored to its trigger with a maximum height and internal option scroll. Check
+the actual placement on iPad Safari; native select popovers can detach from
+their trigger and occupy the edge of the display. Dialogs can scroll internally
+and should keep their action footer reachable with the onscreen keyboard.
 
 Production requirements:
 
@@ -343,15 +384,15 @@ behaviour; moving it still requires integration and regression checks.
 | Send look, playlist, Next/Stop, ownership, fullscreen, output | Persistent shell | `remote_control.js`, `mac_output.py`; request IDs, leases, native window state. |
 | Mac handover above modals | Shell recovery dialog | Preserve inert controls, keyboard suppression and draft restoration. |
 | iPad compatible previews | All preview surfaces | `media_preview.py`; progress, cached proxy and range serving. |
-| Instagram import, streaming progress, cookies | Library import + Setup | `index.html`, `server.py`; seven-day cache, manual refresh. |
+| Instagram import, streaming progress, cookies | Library import + Settings | `index.html`, `server.py`; seven-day cache, manual refresh. |
 | Source discovery, metadata, delete, manual ordering | Library | Preserve filenames and destructive operation scope. |
 | Search, multi-category/review filters, alternate sorting | Library filter controls | `library_catalog.js`; do not rewrite My order on sorting. |
 | Individual review, notes, Reviewed, queue | Library review dialog | Independent player, filtered queue, limits and dirty guard. |
 | Bulk tags/review, vocabulary/usage, rename/merge/remove | Library selection + Tags & usage | `tag_manager.js`, `library_catalog.py`; atomic transactions. |
 | Catalogue revision/conflict/one-step Undo | Library feedback | Existing API snapshots and expectedRevision. |
-| Transport, layouts, 32 patterns, loop/bounce, speed, crop, captions | Prepare / Layout | `index.html`; preserve view IDs and reset semantics; disclose Bounce gap. |
+| Transport, layouts, deduplicated orientation patterns, loop/bounce, speed, crop, captions | Prepare / Layout | `index.html`; preserve view IDs and reset semantics; disclose Bounce gap. |
 | Save/load/delete/add per-video layouts | Prepare / Layout menu | `video_presets`; narrower than FX/VFX look. |
-| Colour FX, presets, trails | Prepare / Colour | `effects.html`; replace opener coupling through a private-editor adapter. |
+| Colour FX, presets, trails | Prepare / Colour | `effects.html`; retain its existing opener connection to the original V1 editor. |
 | Seven VFX scenes, intensity, pulse, feedback, preview audio | Prepare / VFX | `vfx.html`, `vfx_engine.js`; scene IDs and audio device scope. |
 | Mirror sculpture, logo, clip ID, transparent artwork | Prepare / VFX details | Separate from extruded 3D logo/text; preserve upload limits. |
 | 3D text/logo, fonts, nine materials, quality, motion | Prepare / 3D text + object controls | Preserve shader/material field names and cue round trips. |
@@ -365,15 +406,20 @@ behaviour; moving it still requires integration and regression checks.
 | Energy/exclusion curation and text list CRUD/Show now | Auto Perform drawers | Browser-local settings copied at remote start. |
 | Recording and loop-boundary stop | Capture / Full recording | Local editor canvas, fixed capture dimensions, conversion states. |
 | Social crop/ratio/start/duration/overlap/export | Capture / Instagram clip | Silent MP4, overlap constraints and clip-folder destination. |
-| Source/clip folders, Reduce flashes | Setup | Shared config versus browser preference. |
+| Source/clip folders, Reduce flashes | Settings | Shared config versus browser preference. |
 | Clean audience output and resident audio setup | Dedicated Mac output | Keep clean canvas; do not mount the editing shell on `/output`. |
 
 ## 9. Boundaries and build sequence
 
-Follow the [reversible implementation plan](implementation-plan.md) for the
-concrete delivery process. It adds isolation and rollback requirements to the
-feature sequence below: separate worktree/server/data/profile first, optional
-`/ui-v2/` route later, and the existing `/` editor and `/?host=1` engine retained.
+Follow the corrected [reskin implementation plan](implementation-plan.md).
+The first reskin keeps the complete original FX/VFX controller windows;
+embedding those editors is separate presentation work. Preserve the existing
+app's handlers, IDs, data contracts, playlist workflow,
+remote control and renderer. Change presentation and control placement only.
+The earlier proposal for a second `/ui-v2/` application is superseded. The
+latest requirement permits an optional launcher with a separate `/redesign`
+route, provided it reuses the original V1 document and handlers and leaves
+V1 files untouched. See the implemented connection map in `ui-redesign/`.
 
 This proposal rearranges existing capabilities. It does not assume a new live
 program stream to the iPad, remote recording/pause, independent projector
@@ -381,25 +427,9 @@ routing, a shared cloud settings database, or new automatic classification.
 Those can be separate projects. Clean-output Bounce parity is an existing gap
 and should remain a visible compatibility issue until repaired and tested.
 
-Suggested implementation sequence:
-
-1. **Shell and scope:** build navigation, pinned controls and explicit state
-   selectors in app code; adapt existing remote commands without changing
-   rendering ownership. Preserve the old UI while validating this slice.
-2. **Preparation:** extract private-editor actions behind an adapter; move
-   FX/VFX controls inline; keep existing renderer and serialization. Verify
-   that changing anything in the preview leaves playout untouched until Send.
-3. **Library:** adopt the grid and review layout using existing catalogue
-   transactions. Complete all three categories, queue navigation and conflict
-   handling before replacing the manager.
-4. **Playlists:** add the timeline/inspector structure and registry-driven
-   transition browser. Preserve cue/material round trips and distinguish Save,
-   local audition and sending an unsaved copy.
-5. **Performance and capture:** move the existing controls into their new
-   homes; verify audio ownership and local recording semantics.
-6. **Physical validation:** run on the actual iPad, Mac and venue output. Test
-   Safari preview loading, control handover above dialogs, disconnects,
-   native fullscreen, input permissions and media/GPU failures.
+Suggested sequence and rollback procedure are in the implementation plan.
+No renderer work is included. Six-up needs a separate feature change and must
+not be smuggled into the reskin under the name of layout.
 
 Use the [existing acceptance checklist](../ui-redesign-reference.md#redesign-acceptance-checklist)
 as the release gate. Keep the current Python/Node checks, then add behaviour

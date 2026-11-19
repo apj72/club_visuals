@@ -7,13 +7,13 @@
   --guide-text: #1a1d26;
   --guide-muted: #5c6370;
   --guide-border: #e2e5ec;
-  --guide-accent: #c73a55;
-  --guide-accent-hover: #a82e45;
-  --guide-callout: #fef2f4;
+  --guide-accent: #20694f;
+  --guide-accent-hover: #124c37;
+  --guide-callout: #eff8f1;
   --guide-warn: #fff8e6;
   --guide-radius: 10px;
-  --guide-max: 52rem;
-  --guide-nav-bg: #1a1a2e;
+  --guide-max: 70rem;
+  --guide-nav-bg: #101a15;
   --guide-nav-text: #e8eaef;
 }
 
@@ -232,7 +232,7 @@ pre {
 
 .callout {
   background: var(--guide-callout);
-  border: 1px solid #f0c0c8;
+  border: 1px solid #b5d9c4;
   border-radius: var(--guide-radius);
   padding: 0.85rem 1.1rem;
   margin: 1.25rem 0;
@@ -346,3 +346,38 @@ footer.guide-footer {
     text-decoration: underline;
   }
 }
+
+/* Current handbook: readable figures, chapter navigation and print pagination. */
+.edition{font-size:.82rem;text-transform:uppercase;letter-spacing:.08em;color:var(--guide-accent);font-weight:700}
+.guide-nav-wrap{position:sticky;top:0;z-index:20}
+.guide-nav-inner{max-width:76rem}
+.guide-nav{font-size:.75rem;gap:.2rem .9rem}
+.guide-nav a{color:#c0d8c9}
+.guide-figure{border-style:solid;border-radius:12px;padding:1rem;background:#fff}
+.guide-figure img{max-height:48rem;object-fit:contain;width:auto;max-width:100%}
+.guide-pager{display:flex;justify-content:space-between;gap:2rem;border-top:1px solid var(--guide-border);padding:1.5rem 0;margin-top:2rem;font-size:.9rem}
+h1,h2,h3,[id]{scroll-margin-top:9rem}
+.complete-guide .print-chapter{padding:2rem 0 3rem;border-bottom:1px solid var(--guide-border)}
+.guide-table th{white-space:normal}
+.guide-table td:first-child{font-weight:600;min-width:10rem}
+@media(max-width:650px){html{font-size:16px}.guide-nav-wrap{position:static}.guide-nav{font-size:.73rem}.guide-main{padding:1.5rem .9rem!important}.guide-figure{padding:.45rem}.guide-pager{gap:1rem;flex-wrap:wrap}.guide-table td:first-child{min-width:8rem}}
+@media print{
+ @page{size:A4;margin:15mm 14mm 18mm}
+ html{font-size:11pt;scroll-behavior:auto}body{font-size:11pt;line-height:1.5}
+ .guide-nav-wrap,.skip-link,.guide-pager,.guide-footer{display:none!important}
+ main.guide-main{max-width:none;margin:0;padding:0!important}
+ .complete-guide .print-chapter{break-before:page;border:0;padding:0}
+ .complete-guide .print-chapter:first-child{break-before:auto}
+ h1{font-size:25pt;margin:0 0 8mm}h2{font-size:16pt;margin-top:7mm;break-after:avoid}h3{font-size:12pt;break-after:avoid}
+ p{orphans:3;widows:3}pre{font-size:9pt;white-space:pre-wrap;overflow:visible;background:#f0f2f4;color:#14221b}
+ .lead{font-size:13pt}.guide-table{font-size:9pt!important}.guide-table td{padding:2mm}.guide-table-wrap{overflow:visible}
+ thead{display:table-header-group}tr{break-inside:avoid}
+ .guide-figure{break-inside:avoid;padding:2mm;margin:5mm 0;border:1px solid #ddd}
+ .guide-figure img{max-height:145mm;max-width:100%;object-fit:contain}
+ .guide-figure figcaption{font-size:9pt;font-style:normal}
+ .callout{break-inside:avoid;font-size:10pt}a{color:#174b36;text-decoration:none}
+}
+
+@media print{.toc-grid{display:block;margin:4mm 0}.toc-card{display:block;border:0;box-shadow:none;padding:2mm 0;break-inside:avoid}.toc-card h2{font-size:11pt;margin:0 0 1mm;padding:0;border:0}.toc-card p{font-size:9pt;line-height:1.35;margin:0}}
+
+@media print{.toc-card p{display:none}.toc-card{padding:1.5mm 0}}

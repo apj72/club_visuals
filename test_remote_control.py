@@ -43,6 +43,16 @@ class RemoteControlTests(unittest.TestCase):
         self.assertIn(b'macEnginePanel', self.get('/output'))
         self.assertIn(b'PRIVATE PREVIEW', self.get('/remote_control.js'))
 
+    def test_camera_motion_frames_are_transient_and_validate_source_and_size(self):
+        self.assertIn(b'class Processor', self.get('/camera_motion.js'))
+        packet = {'type': 'cameraMotionFrame', 'sourceId': 'camera-one', 'seq': 1, 'image': None}
+        self.assertTrue(self.post('/api/state', packet)['ok'])
+        self.assertFalse(any(item['type'] == 'cameraMotionFrame' for item in json.loads(self.get('/api/state-snapshot'))))
+        for patch in ({'sourceId': '../bad'}, {'seq': -1}, {'image': 'raw video'}, {'image': 'data:image/png;base64,' + 'a' * 130001}):
+            with self.subTest(patch=list(patch)), self.assertRaises(urllib.error.HTTPError) as caught:
+                self.post('/api/state', {**packet, **patch})
+            self.assertEqual(caught.exception.code, 400)
+
     def test_fullscreen_controls_mac_window_without_browser_gesture(self):
         with patch.object(server.MAC_OUTPUT, 'set_fullscreen', return_value={'connected': True, 'fullscreen': True}) as control:
             result = self.post('/api/output-window', {'enabled': True})

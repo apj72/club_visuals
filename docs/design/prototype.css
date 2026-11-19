@@ -11,3 +11,77 @@
 @media(min-width:901px) and (max-height:950px){.prepare-grid .stage{max-height:calc(100svh - 490px)}.prepare-grid .stage>img{object-fit:contain}}
 @media(max-width:1200px){.live-status .connection-summary{display:block;font-size:10px}.live-status small:not(.connection-summary){display:none}}
 @media print{.design-bar,.utilities,.toast{display:none}.pinned{position:static}body{print-color-adjust:exact;-webkit-print-color-adjust:exact}.panel,.clip{break-inside:avoid}#workspace{padding:20px}.live-rail{display:block}.live-actions{margin-top:15px}}
+
+/* V1 aspect roles: portrait source media, landscape Mac composition output. */
+.stage.output-preview{aspect-ratio:16/9;background:#030505;overflow:hidden}
+.output-tiles{display:grid;width:100%;height:100%;gap:1px;background:#030505}
+.layout-1 .output-tiles{display:flex;justify-content:center}
+.layout-1 .output-tile{height:100%;width:auto;aspect-ratio:9/16;flex:0 0 auto}
+.layout-1 .output-tile img{object-fit:contain}
+.layout-2 .output-tiles{grid-template-columns:repeat(2,minmax(0,1fr))}
+.layout-3 .output-tiles{grid-template-columns:repeat(3,minmax(0,1fr))}
+.layout-4 .output-tiles,.layout-6 .output-tiles,.layout-8 .output-tiles{grid-template-columns:repeat(4,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr))}
+.layout-4 .output-tiles{grid-template-columns:repeat(2,minmax(0,1fr))}
+.layout-6 .output-tiles{grid-template-columns:repeat(3,minmax(0,1fr))}
+.output-tile{min-width:0;min-height:0;overflow:hidden;background:#030505}
+.output-tile img{width:100%;height:100%;object-fit:cover;display:block}
+.stage.source-preview{aspect-ratio:9/16;width:min(100%,calc(62vh * 9 / 16));max-height:62vh;margin-inline:auto;background:#030505}
+.stage.source-preview>img{width:100%;height:100%;object-fit:contain}
+.review-player .stage{aspect-ratio:9/16;width:min(100%,calc(62vh * 9 / 16));max-height:62vh}
+.clip-image{aspect-ratio:9/16;height:auto;overflow:hidden;background:#030505}
+.clip-image img{width:100%;height:100%;object-fit:cover}
+.pattern-summary,.settings-help{margin-bottom:12px;color:var(--muted);font-size:12px;line-height:1.55}
+.pattern-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;max-height:260px;overflow:auto;padding:2px}
+.pattern-choice{padding:7px 6px;min-width:0;white-space:normal;font-size:11px}
+.pattern-icon{display:grid;aspect-ratio:16/9;width:100%;gap:1px;background:#53635a;overflow:hidden;margin-bottom:5px}
+.pattern-icon.tiles-1{display:flex;justify-content:center}
+.pattern-icon.tiles-1 .pattern-cell{width:56%;height:100%;aspect-ratio:9/16;flex:none}
+.pattern-icon.tiles-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.pattern-icon.tiles-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.pattern-icon.tiles-4{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr))}
+.pattern-icon.tiles-6{grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr))}
+.pattern-icon.tiles-8{grid-template-columns:repeat(4,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr))}
+.pattern-cell{display:block;position:relative;min-width:0;min-height:0;overflow:hidden;background:#060909}
+.pattern-cell img{display:block;width:100%;height:100%;object-fit:cover}
+.pattern-settings{border-top:1px solid var(--line);padding:12px 0}
+.pattern-settings summary{display:flex;justify-content:space-between;gap:12px;align-items:center;cursor:pointer;min-height:44px}
+.pattern-settings summary span{font-size:12px;color:var(--muted)}
+.pattern-settings>p{margin:7px 0 12px}
+.settings-pattern-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;max-height:330px;overflow:auto;padding:2px}
+.settings-pattern{min-width:0;padding:7px 5px;white-space:normal;display:flex;flex-direction:column;align-items:stretch;gap:4px;font-size:11px}
+.settings-pattern.selected{border-color:#a8d65e;background:#26351c;color:#ddf9b6}
+.settings-pattern small{color:inherit;font-size:9px}
+.pattern-settings-footer{display:grid;grid-template-columns:150px 1fr;gap:16px;padding:16px 0 2px;border-top:1px solid var(--line);margin-top:12px;font-size:13px}
+.pattern-settings-footer span{color:var(--muted)}
+.planned-note,.settings-note{margin-top:12px;padding:12px;border:1px solid #806c41;border-radius:7px;background:#302719;color:#f0d29a;font-size:12px;line-height:1.6}
+.settings-note{margin-top:20px}
+.effect-art{background:#101514 center/cover no-repeat!important}
+.effect-card:nth-child(8n+1) .effect-art{background-image:url('assets/library-stills/library-01.jpg')!important}
+.effect-card:nth-child(8n+2) .effect-art{background-image:url('assets/library-stills/library-02.jpg')!important}
+.effect-card:nth-child(8n+3) .effect-art{background-image:url('assets/library-stills/library-03.jpg')!important}
+.effect-card:nth-child(8n+4) .effect-art{background-image:url('assets/library-stills/library-04.jpg')!important}
+.effect-card:nth-child(8n+5) .effect-art{background-image:url('assets/library-stills/library-05.jpg')!important}
+.effect-card:nth-child(8n+6) .effect-art{background-image:url('assets/library-stills/library-06.jpg')!important}
+.effect-card:nth-child(8n+7) .effect-art{background-image:url('assets/library-stills/library-07.jpg')!important}
+.effect-card:nth-child(8n) .effect-art{background-image:url('assets/library-stills/library-08.jpg')!important}
+.wireframe .stage:after{content:'MAC OUTPUT · 16:9 / PORTRAIT SOURCE · 9:16';top:46%;font-size:12px;letter-spacing:1px;color:#fff;background:#0d1513bb;padding:10px 2px}
+.wireframe .stage.source-preview:after{content:'SOURCE VIDEO · 9:16';color:#fff;background:#0d1513bb}
+@media(max-width:900px){.settings-pattern-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.pattern-list{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:540px){.settings-pattern-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.pattern-settings summary{align-items:flex-start;flex-direction:column}.pattern-settings-footer{grid-template-columns:1fr;gap:4px}.pattern-list{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* Keep the editor focused: constrain browsing and keep the inspector in view. */
+.prepare-grid .inspector{position:sticky;top:205px;align-self:start;max-height:calc(100dvh - 350px);overflow-y:auto;overscroll-behavior:contain}
+.prepare-grid .stage.output-preview{display:inline-block;width:auto;height:min(32vh,calc(100dvh - 600px));aspect-ratio:16/9;max-width:100%;max-height:none;vertical-align:middle}
+.prepare-grid>.panel,.prepare-grid>div>.panel{text-align:center}
+.prepare-grid .stage-header,.prepare-grid .transport,.prepare-grid .footnote{text-align:left}
+.prepare-grid .shelf{max-height:200px;overflow:hidden}
+.prepare-grid .shelf-grid{display:flex;height:160px;gap:10px;overflow-x:auto;overflow-y:hidden;overscroll-behavior:contain}
+.prepare-grid .shelf-grid .clip{display:grid;grid-template-columns:88px minmax(0,1fr);grid-template-rows:1fr;gap:0;min-width:220px;max-width:250px;height:150px}
+.prepare-grid .shelf-grid .clip-image{width:88px;height:150px;aspect-ratio:9/16;grid-row:1;grid-column:1}
+.prepare-grid .shelf-grid .clip-title{min-width:0;overflow:hidden;padding:8px}
+.prepare-grid .shelf-grid .clip-title strong{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.library-grid{max-height:calc(100dvh - 430px);overflow-y:auto;overscroll-behavior:contain;align-content:start;padding-right:4px}
+.playlist-layout>div{max-height:calc(100dvh - 270px);overflow:auto;overscroll-behavior:contain}
+.pattern-preferences .panel-body{max-height:calc(100dvh - 430px);overflow-y:auto;overscroll-behavior:contain}
+.mobile-inspector-toggle{display:none}
+@media(max-width:900px){.prepare-grid .inspector{position:fixed;z-index:40;left:12px;right:12px;bottom:12px;top:auto;width:auto;max-height:150px;overflow:hidden;margin:0;box-shadow:0 8px 30px #0009}.prepare-grid .inspector:not(.open) .panel-body{display:none!important}.prepare-grid .inspector.open{max-height:40dvh}.prepare-grid .inspector.open .panel-body{display:grid!important;max-height:29dvh;overflow-y:auto;overscroll-behavior:contain}.mobile-inspector-toggle{display:inline-flex;min-height:38px;padding:7px 10px}.prepare-grid .stage.output-preview{height:min(32vh,calc(100dvh - 600px))}.prepare-grid .shelf{max-height:190px}.prepare-grid .shelf-grid{height:150px}.library-grid{max-height:calc(100dvh - 470px)}.playlist-layout>div{max-height:calc(100dvh - 310px)}.pattern-preferences .panel-body{max-height:calc(100dvh - 300px)}}

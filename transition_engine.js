@@ -814,13 +814,13 @@
     }
 
     return {
-      prepare(value) {
+      prepare(value, outgoingFrame = null) {
         clear();
         settings = window.normaliseTransition(value);
         fallbackReason = '';
         if (settings.type === 'cut') { settings = null; return false; }
         if (settings.type !== 'fade-in') {
-          frame = capture();
+          frame = outgoingFrame || capture();
           if (!frame && settings.type !== 'fade-out') { settings = null; return false; }
         }
         if (settings.type === 'pixel-scatter') {
@@ -854,10 +854,10 @@
         }
         return true;
       },
-      start(complete) {
+      start(complete, offsetSeconds = 0) {
         if (!settings) return;
         onComplete = typeof complete === 'function' ? complete : null;
-        startTime = performance.now();
+        startTime = performance.now() - Math.max(0, Number(offsetSeconds) || 0) * 1000;
         raf = requestAnimationFrame(tick);
       },
       draw(target, width, height) {

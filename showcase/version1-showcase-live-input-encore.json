@@ -1,0 +1,230 @@
+{
+  "name": "VERSION1 · Live Input Encore · connect camera first",
+  "entries": [
+    {
+      "video": "Video by uon.visuals_DdU-l2qAGtL.mp4",
+      "view": "single",
+      "preset": 1,
+      "loopMode": 1,
+      "speed": 1,
+      "zoom": 1,
+      "panX": 0,
+      "panY": 0,
+      "duration": {
+        "type": "seconds",
+        "value": 32
+      },
+      "transition": {
+        "type": "cross-dissolve",
+        "duration": 1.5,
+        "pace": "ease",
+        "seed": 7029,
+        "params": {},
+        "reduceFlashes": true
+      },
+      "cues": [
+        {
+          "at": 0,
+          "effect": "off"
+        },
+        {
+          "at": 0,
+          "effect": "camera",
+          "intensity": 1,
+          "feedback": 0,
+          "cameraMotion": {
+            "mode": "video",
+            "threshold": 0.07,
+            "gain": 5,
+            "delay": 0.18,
+            "trails": 0.5,
+            "strength": 1.1
+          },
+          "logoLayer": {
+            "effect": "logo",
+            "backdrop": "video",
+            "skin": "chrome",
+            "quality": "balanced",
+            "x": 0.5,
+            "y": 0.5,
+            "scale": 0.3,
+            "depth": 0.35,
+            "rotX": 0,
+            "rotY": -18,
+            "rotZ": 0,
+            "motion": 0.14,
+            "axis": "y",
+            "startAngle": -25,
+            "endAngle": 25,
+            "bevel": 0.035,
+            "roughness": 0.09,
+            "reflection": 1.15,
+            "environment": 1,
+            "exposure": 1,
+            "reflectionSource": {
+              "filename": "Video by test23rdmay_DesPIdUsisv.mp4",
+              "speed": 1
+            },
+            "snake": {
+              "enabled": true,
+              "speed": 0.3,
+              "depth": 0.4
+            }
+          }
+        }
+      ]
+    },
+    {
+      "video": "Video by uon.visuals_DdkaL9MBcrv.fdash-3261056987436660v.mp4",
+      "view": "single",
+      "preset": 1,
+      "loopMode": 1,
+      "speed": 1,
+      "zoom": 1,
+      "panX": 0,
+      "panY": 0,
+      "duration": {
+        "type": "seconds",
+        "value": 32
+      },
+      "transition": {
+        "type": "cross-dissolve",
+        "duration": 1.5,
+        "pace": "ease",
+        "seed": 7029,
+        "params": {},
+        "reduceFlashes": true
+      },
+      "cues": [
+        {
+          "at": 0,
+          "effect": "off"
+        },
+        {
+          "at": 0,
+          "effect": "camera",
+          "intensity": 1,
+          "cameraMotion": {
+            "mode": "glow",
+            "threshold": 0.08,
+            "gain": 4,
+            "delay": 0.2,
+            "trails": 0.8,
+            "strength": 1
+          },
+          "logoLayer": {
+            "effect": "text",
+            "backdrop": "video",
+            "skin": "chrome",
+            "quality": "balanced",
+            "x": 0.5,
+            "y": 0.5,
+            "scale": 0.23,
+            "depth": 0.35,
+            "rotX": 0,
+            "rotY": -18,
+            "rotZ": 0,
+            "motion": 0,
+            "axis": "y",
+            "startAngle": -25,
+            "endAngle": 25,
+            "bevel": 0.035,
+            "roughness": 0.09,
+            "reflection": 1.15,
+            "environment": 1,
+            "exposure": 1,
+            "text": "MOVE THE LIGHT",
+            "font": "modern",
+            "reflectionSource": {
+              "filename": "Video by uon.visuals_DdU-l2qAGtL.mp4",
+              "speed": 1
+            }
+          }
+        }
+      ]
+    },
+    {
+      "video": "Video by astrolionmusic_DdS67VQSvOv.mp4",
+      "view": "single",
+      "preset": 1,
+      "loopMode": 1,
+      "speed": 1,
+      "zoom": 1,
+      "panX": 0,
+      "panY": 0,
+      "duration": {
+        "type": "seconds",
+        "value": 32
+      },
+      "transition": {
+        "type": "cross-dissolve",
+        "duration": 1.5,
+        "pace": "ease",
+        "seed": 7029,
+        "params": {},
+        "reduceFlashes": true
+      },
+      "cues": [
+        {
+          "at": 0,
+          "effect": "off"
+        },
+        {
+          "at": 0,
+          "effect": "camera",
+          "intensity": 0.9,
+          "cameraMotion": {
+            "mode": "distort",
+            "threshold": 0.08,
+            "gain": 4,
+            "delay": 0.15,
+            "trails": 0.3,
+            "strength": 1.2
+          },
+          "logoLayer": {
+            "effect": "logo",
+            "backdrop": "video",
+            "skin": "gold",
+            "quality": "balanced",
+            "x": 0.5,
+            "y": 0.5,
+            "scale": 0.3,
+            "depth": 0.35,
+            "rotX": 0,
+            "rotY": -18,
+            "rotZ": 0,
+            "motion": 0.14,
+            "axis": "y",
+            "startAngle": -25,
+            "endAngle": 25,
+            "bevel": 0.035,
+            "roughness": 0.09,
+            "reflection": 1.15,
+            "environment": 1,
+            "exposure": 1,
+            "reflectionSource": {
+              "filename": "Video by test23rdmay_DesPIdUsisv.mp4",
+              "speed": 1
+            },
+            "animation": {
+              "enabled": true,
+              "path": "orbit",
+              "duration": 16,
+              "spanX": 0.5,
+              "spanY": 0.4,
+              "keepInside": true
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "showcase": {
+    "id": "showcase-live-encore-v1",
+    "requires": [
+      "An explicitly connected camera",
+      "External music input for the following Auto Perform handoff"
+    ],
+    "note": "After this 96-second camera sequence, follow the running sheet for a 64-second Mac Auto Perform finale."
+  }
+}

@@ -3,8 +3,15 @@
 Start here when learning the app or planning its next UI. These references were
 checked against the source on **10 November 2026**.
 
+The **[current illustrated user guide](user-guide/index.html)** was rebuilt for
+the redesigned interface on **19 November 2026**: 12 chapters, 21 Docshots images,
+complete task walkthroughs and a [printable PDF](../output/pdf/club-visuals-user-guide.pdf).
+Start there for operating the current app; the references below retain their
+own source-review dates.
+
 | Read | Purpose |
 | --- | --- |
+| [Text-driven playlist sequence builder](design/sequence-builder/README.md) | New design study: `.cvseq` show syntax, linked editor/timeline mockup, reusable looks and branding, seeded generation, and continuous layout-transition proposals. |
 | [New UI design proposal](design/README.md) | Interactive prototype, Mac/iPad mockups, wireframes and a feature-mapped design specification. Proposed design, separate from the current app. |
 | [Reversible UI implementation plan](design/implementation-plan.md) | Separate test environment, optional new UI route, preservation of the existing UI/engine, backups, phased delivery and rollback runbooks. |
 | [Product reference](product-reference.md) | What the repository does, every feature area, operating workflows, iPad control and current limitations. |
@@ -19,10 +26,8 @@ and data contracts that a replacement interface must continue to support.
 
 ## Older guides and plans
 
-- [HTML user guide](user-guide/index.html): useful task walkthroughs and older
-  screenshots. Its navigation, screenshots and terminology predate the iPad
-  ownership model, classification manager and new 3D materials. Use the three
-  references above when they differ.
+- Earlier guide screenshots remain under `docs/screenshots/` for historical
+  reference. The current guide uses `user-guide/assets/screenshots/`.
 - [Transition implementation plan](transition-roadmap.md): describes the
   delivered 50-effect catalogue and later transition automation proposals.
 - [Sound-to-visuals plan](sound-to-visuals-plan.md): research, historical baseline

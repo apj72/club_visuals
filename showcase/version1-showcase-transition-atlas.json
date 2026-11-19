@@ -1,0 +1,2046 @@
+{
+  "name": "VERSION1 · Transition Atlas · all 61 effects",
+  "entries": [
+    {
+      "video": "version1_showcase_black_stage.mp4",
+      "view": "single",
+      "preset": 1,
+      "loopMode": 1,
+      "speed": 1,
+      "zoom": 1,
+      "panX": 0,
+      "panY": 0,
+      "duration": {
+        "type": "seconds",
+        "value": 8
+      },
+      "transition": {
+        "type": "cross-dissolve",
+        "duration": 1.5,
+        "pace": "ease",
+        "seed": 7029,
+        "params": {},
+        "reduceFlashes": true
+      },
+      "cues": [
+        {
+          "at": 0,
+          "effect": "off"
+        },
+        {
+          "at": 0,
+          "effect": "text",
+          "backdrop": "black",
+          "skin": "chrome",
+          "quality": "balanced",
+          "x": 0.5,
+          "y": 0.5,
+          "scale": 0.3,
+          "depth": 0.35,
+          "rotX": 0,
+          "rotY": -18,
+          "rotZ": 0,
+          "motion": 0,
+          "axis": "y",
+          "startAngle": -25,
+          "endAngle": 25,
+          "bevel": 0.035,
+          "roughness": 0.09,
+          "reflection": 1.15,
+          "environment": 1,
+          "exposure": 1,
+          "text": "TRANSITION ATLAS",
+          "font": "bungee",
+          "reflectionSource": {
+            "filename": "Video by uon.visuals_DdU-l2qAGtL.mp4",
+            "speed": 1
+          }
+        }
+      ]
+    },
+    {
+      "video": "Video by uon.visuals_DdkaL9MBcrv.fdash-3261056987436660v.mp4",
+      "view": "single",
+      "preset": 1,
+      "loopMode": 1,
+      "speed": 1,
+      "zoom": 1,
+      "panX": 0,
+      "panY": 0,
+      "duration": {
+        "type": "seconds",
+        "value": 4
+      },
+      "transition": {
+        "type": "cut",
+        "duration": 1.4,
+        "pace": "ease",
+        "seed": 7029,
+        "params": {},
+        "reduceFlashes": true
+      },
+      "cues": [
+        {
+          "at": 0,
+          "effect": "off"
+        }
+      ],
+      "showcase": {
+        "title": "Cut",
+        "category": "Classic"
+      }
+    },
+    {
+      "video": "Video by test23rdmay_DesPIdUsisv.mp4",
+      "view": "single",
+      "preset": 1,
+      "loopMode": 1,
+      "speed": 1,
+      "zoom": 1,
+      "panX": 0,
+      "panY": 0,
+      "duration": {
+        "type": "seconds",
+        "value": 4
+      },
+      "transition": {
+        "type": "fade-in",
+        "duration": 1.4,
+        "pace": "ease",
+        "seed": 7029,
+        "params": {},
+        "reduceFlashes": true
+      },
+      "cues": [
+        {
+          "at": 0,
+          "effect": "off"
+        }
+      ],
+      "showcase": {
+        "title": "Fade In",
+        "category": "Classic"
+      }
+    },
+    {
+      "video": "Video by uon.visuals_DdU-l2qAGtL.mp4",
+      "view": "single",
+      "preset": 1,
+      "loopMode": 1,
+      "speed": 1,
+      "zoom": 1,
+      "panX": 0,
+      "panY": 0,
+      "duration": {
+        "type": "seconds",
+        "value": 4
+      },
+      "transition": {
+        "type": "fade-out",
+        "duration": 1.4,
+        "pace": "ease",
+        "seed": 7029,
+        "params": {},
+        "reduceFlashes": true
+      },
+      "cues": [
+        {
+          "at": 0,
+          "effect": "off"
+        }
+      ],
+      "showcase": {
+        "title": "Fade Out/In",
+        "category": "Classic"
+      }
+    },
+    {
+      "video": "Video by hypernova_ai_Dc6JUuYjVoI.mp4",
+      "view": "single",
+      "preset": 1,
+      "loopMode": 1,
+      "speed": 1,
+      "zoom": 1,
+      "panX": 0,
+      "panY": 0,
+      "duration": {
+        "type": "seconds",
+        "value": 4
+      },
+      "transition": {
+        "type": "cross-dissolve",
+        "duration": 1.4,
+        "pace": "ease",
+        "seed": 7029,
+        "params": {},
+        "reduceFlashes": true
+      },
+      "cues": [
+        {
+          "at": 0,
+          "effect": "off"
+        }
+      ],
+      "showcase": {
+        "title": "Cross Dissolve",
+        "category": "Classic"
+      }
+    },
+    {
+      "video": "Video by trevyx.visual_DeU0GLtSmTu.mp4",
+      "view": "single",
+      "preset": 1,
+      "loopMode": 1,
+      "speed": 1,
+      "zoom": 1,
+      "panX": 0,
+      "panY": 0,
+      "duration": {
+        "type": "seconds",
+        "value": 4
+      },
+      "transition": {
+        "type": "wipe",
+        "duration": 1.4,
+        "pace": "ease",
+        "seed": 7029,
+        "params": {},
+        "reduceFlashes": true
+      },
+      "cues": [
+        {
+          "at": 0,
+          "effect": "off"
+        }
+      ],
+      "showcase": {
+        "title": "Wipe",
+        "category": "Classic"
+      }
+    },
+    {
+      "video": "Video by themacrosift_De5gECWMeJY.mp4",
+      "view": "single",
+      "preset": 1,
+      "loopMode": 1,
+      "speed": 1,
+      "zoom": 1,
+      "panX": 0,
+      "panY": 0,
+      "duration": {
+        "type": "seconds",
+        "value": 4
+      },
+      "transition": {
+        "type": "zoom-spin",
+        "duration": 1.4,
+        "pace": "ease",
+        "seed": 7029,
+        "params": {},
+        "reduceFlashes": true
+      },
+      "cues": [
+        {
+          "at": 0,
+          "effect": "off"
+        }
+      ],
+      "showcase": {
+        "title": "Zoom / Spin",
+        "category": "Motion"
+      }
+    },
+    {
+      "video": "Video by uon.visuals_DdkaL9MBcrv.fdash-3261056987436660v.mp4",
+      "view": "single",
+      "preset": 1,
+      "loopMode": 1,
+      "speed": 1,
+      "zoom": 1,
+      "panX": 0,
+      "panY": 0,
+      "duration": {
+        "type": "seconds",
+        "value": 4
+      },
+      "transition": {
+        "type": "whip-pan",
+        "duration": 1.4,
+        "pace": "ease",
+        "seed": 7029,
+        "params": {},
+        "reduceFlashes": true
+      },
+      "cues": [
+        {
+          "at": 0,
+          "effect": "off"
+        }
+      ],
+      "showcase": {
+        "title": "Whip Pan",
+        "category": "Motion"
+      }
+    },
+    {
+      "video": "Video by test23rdmay_DesPIdUsisv.mp4",
+      "view": "single",
+      "preset": 1,
+      "loopMode": 1,
+      "speed": 1,
+      "zoom": 1,
+      "panX": 0,
+      "panY": 0,
+      "duration": {
+        "type": "seconds",
+        "value": 4
+      },
+      "transition": {
+        "type": "pixel-scatter",
+        "duration": 1.4,
+        "pace": "ease",
+        "seed": 7029,
+        "params": {},
+        "reduceFlashes": true
+      },
+      "cues": [
+        {
+          "at": 0,
+          "effect": "off"
+        }
+      ],
+      "showcase": {
+        "title": "Pixel Scatter",
+        "category": "Digital"
+      }
+    },
+    {
+      "video": "Video by uon.visuals_DdU-l2qAGtL.mp4",
+      "view": "single",
+      "preset": 1,
+      "loopMode": 1,
+      "speed": 1,
+      "zoom": 1,
+      "panX": 0,
+      "panY": 0,
+      "duration": {
+        "type": "seconds",
+        "value": 4
+      },
+      "transition": {
+        "type": "data-tear",
+        "duration": 1.4,
+        "pace": "ease",
+        "seed": 7029,
+        "params": {},
+        "reduceFlashes": true
+      },
+      "cues": [
+        {
+          "at": 0,
+          "effect": "off"
+        }
+      ],
+      "showcase": {
+        "title": "Data Tear",
+        "category": "Digital"
+      }
+    },
+    {
+      "video": "Video by hypernova_ai_Dc6JUuYjVoI.mp4",
+      "view": "single",
+      "preset": 1,
+      "loopMode": 1,
+      "speed": 1,
+      "zoom": 1,
+      "panX": 0,
+      "panY": 0,
+      "duration": {
+        "type": "seconds",
+        "value": 4
+      },
+      "transition": {
+        "type": "iris-burst",
+        "duration": 1.4,
+        "pace": "ease",
+        "seed": 7029,
+        "params": {},
+        "reduceFlashes": true
+      },
+      "cues": [
+        {
+          "at": 0,
+          "effect": "off"
+        }
+      ],
+      "showcase": {
+        "title": "Iris Burst",
+        "category": "Geometry"
+      }
+    },
+    {
+      "video": "Video by trevyx.visual_DeU0GLtSmTu.mp4",
+      "view": "single",
+      "preset": 1,
+      "loopMode": 1,
+      "speed": 1,
+      "zoom": 1,
+      "panX": 0,
+      "panY": 0,
+      "duration": {
+        "type": "seconds",
+        "value": 4
+      },
+      "transition": {
+        "type": "shutters",
+        "duration": 1.4,
+        "pace": "ease",
+        "seed": 7029,
+        "params": {},
+        "reduceFlashes": true
+      },
+      "cues": [
+        {
+          "at": 0,
+          "effect": "off"
+        }
+      ],
+      "showcase": {
+        "title": "Shutters",
+        "category": "Geometry"
+      }
+    },
+    {
+      "video": "Video by themacrosift_De5gECWMeJY.mp4",
+      "view": "single",
+      "preset": 1,
+      "loopMode": 1,
+      "speed": 1,
+      "zoom": 1,
+      "panX": 0,
+      "panY": 0,
+      "duration": {
+        "type": "seconds",
+        "value": 4
+      },
+      "transition": {
+        "type": "rgb-split",
+        "duration": 1.4,
+        "pace": "ease",
+        "seed": 7029,
+        "params": {},
+        "reduceFlashes": true
+      },
+      "cues": [
+        {
+          "at": 0,
+          "effect": "off"
+        }
+      ],
+      "showcase": {
+        "title": "RGB Split",
+        "category": "Digital"
+      }
+    },
+    {
+      "video": "Video by uon.visuals_DdkaL9MBcrv.fdash-3261056987436660v.mp4",
+      "view": "single",
+      "preset": 1,
+      "loopMode": 1,
+      "speed": 1,
+      "zoom": 1,
+      "panX": 0,
+      "panY": 0,
+      "duration": {
+        "type": "seconds",
+        "value": 4
+      },
+      "transition": {
+        "type": "infinite-zoom",
+        "duration": 1.4,
+        "pace": "ease",
+        "seed": 7029,
+        "params": {},
+        "reduceFlashes": true
+      },
+      "cues": [
+        {
+          "at": 0,
+          "effect": "off"
+        }
+      ],
+      "showcase": {
+        "title": "Infinite Zoom",
+        "category": "Motion"
+      }
+    },
+    {
+      "video": "Video by test23rdmay_DesPIdUsisv.mp4",
+      "view": "single",
+      "preset": 1,
+      "loopMode": 1,
+      "speed": 1,
+      "zoom": 1,
+      "panX": 0,
+      "panY": 0,
+      "duration": {
+        "type": "seconds",
+        "value": 4
+      },
+      "transition": {
+        "type": "neon-shockwave",
+        "duration": 1.4,
+        "pace": "ease",
+        "seed": 7029,
+        "params": {},
+        "reduceFlashes": true
+      },
+      "cues": [
+        {
+          "at": 0,
+          "effect": "off"
+        }
+      ],
+      "showcase": {
+        "title": "Neon Shockwave",
+        "category": "Light"
+      }
+    },
+    {
+      "video": "Video by uon.visuals_DdU-l2qAGtL.mp4",
+      "view": "single",
+      "preset": 1,
+      "loopMode": 1,
+      "speed": 1,
+      "zoom": 1,
+      "panX": 0,
+      "panY": 0,
+      "duration": {
+        "type": "seconds",
+        "value": 4
+      },
+      "transition": {
+        "type": "digital-glitch",
+        "duration": 1.4,
+        "pace": "ease",
+        "seed": 7029,
+        "params": {},
+        "reduceFlashes": true
+      },
+      "cues": [
+        {
+          "at": 0,
+          "effect": "off"
+        }
+      ],
+      "showcase": {
+        "title": "Digital Glitch",
+        "category": "Glitch and Digital"
+      }
+    },
+    {
+      "video": "Video by hypernova_ai_Dc6JUuYjVoI.mp4",
+      "view": "single",
+      "preset": 1,
+      "loopMode": 1,
+      "speed": 1,
+      "zoom": 1,
+      "panX": 0,
+      "panY": 0,
+      "duration": {
+        "type": "seconds",
+        "value": 4
+      },
+      "transition": {
+        "type": "datamosh",
+        "duration": 1.4,
+        "pace": "ease",
+        "seed": 7029,
+        "params": {},
+        "reduceFlashes": true
+      },
+      "cues": [
+        {
+          "at": 0,
+          "effect": "off"
+        }
+      ],
+      "showcase": {
+        "title": "Datamosh",
+        "category": "Glitch and Digital"
+      }
+    },
+    {
+      "video": "Video by trevyx.visual_DeU0GLtSmTu.mp4",
+      "view": "single",
+      "preset": 1,
+      "loopMode": 1,
+      "speed": 1,
+      "zoom": 1,
+      "panX": 0,
+      "panY": 0,
+      "duration": {
+        "type": "seconds",
+        "value": 4
+      },
+      "transition": {
+        "type": "pixel-explosion",
+        "duration": 1.4,
+        "pace": "ease",
+        "seed": 7029,
+        "params": {},
+        "reduceFlashes": true
+      },
+      "cues": [
+        {
+          "at": 0,
+          "effect": "off"
+        }
+      ],
+      "showcase": {
+        "title": "Pixel Explosion",
+        "category": "Glitch and Digital"
+      }
+    },
+    {
+      "video": "Video by themacrosift_De5gECWMeJY.mp4",
+      "view": "single",
+      "preset": 1,
+      "loopMode": 1,
+      "speed": 1,
+      "zoom": 1,
+      "panX": 0,
+      "panY": 0,
+      "duration": {
+        "type": "seconds",
+        "value": 4
+      },
+      "transition": {
+        "type": "scanline-interference",
+        "duration": 1.4,
+        "pace": "ease",
+        "seed": 7029,
+        "params": {},
+        "reduceFlashes": true
+      },
+      "cues": [
+        {
+          "at": 0,
+          "effect": "off"
+        }
+      ],
+      "showcase": {
+        "title": "Scanline Interference",
+        "category": "Glitch and Digital"
+      }
+    },
+    {
+      "video": "Video by uon.visuals_DdkaL9MBcrv.fdash-3261056987436660v.mp4",
+      "view": "single",
+      "preset": 1,
+      "loopMode": 1,
+      "speed": 1,
+      "zoom": 1,
+      "panX": 0,
+      "panY": 0,
+      "duration": {
+        "type": "seconds",
+        "value": 4
+      },
+      "transition": {
+        "type": "digital-signal-loss",
+        "duration": 1.4,
+        "pace": "ease",
+        "seed": 7029,
+        "params": {},
+        "reduceFlashes": true
+      },
+      "cues": [
+        {
+          "at": 0,
+          "effect": "off"
+        }
+      ],
+      "showcase": {
+        "title": "Digital Signal Loss",
+        "category": "Glitch and Digital"
+      }
+    },
+    {
+      "video": "Video by test23rdmay_DesPIdUsisv.mp4",
+      "view": "single",
+      "preset": 1,
+      "loopMode": 1,
+      "speed": 1,
+      "zoom": 1,
+      "panX": 0,
+      "panY": 0,
+      "duration": {
+        "type": "seconds",
+        "value": 4
+      },
+      "transition": {
+        "type": "pixel-sorting",
+        "duration": 1.4,
+        "pace": "ease",
+        "seed": 7029,
+        "params": {},
+        "reduceFlashes": true
+      },
+      "cues": [
+        {
+          "at": 0,
+          "effect": "off"
+        }
+      ],
+      "showcase": {
+        "title": "Pixel Sorting",
+        "category": "Glitch and Digital"
+      }
+    },
+    {
+      "video": "Video by uon.visuals_DdU-l2qAGtL.mp4",
+      "view": "single",
+      "preset": 1,
+      "loopMode": 1,
+      "speed": 1,
+      "zoom": 1,
+      "panX": 0,
+      "panY": 0,
+      "duration": {
+        "type": "seconds",
+        "value": 4
+      },
+      "transition": {
+        "type": "block-corruption",
+        "duration": 1.4,
+        "pace": "ease",
+        "seed": 7029,
+        "params": {},
+        "reduceFlashes": true
+      },
+      "cues": [
+        {
+          "at": 0,
+          "effect": "off"
+        }
+      ],
+      "showcase": {
+        "title": "Block Corruption",
+        "category": "Glitch and Digital"
+      }
+    },
+    {
+      "video": "Video by hypernova_ai_Dc6JUuYjVoI.mp4",
+      "view": "single",
+      "preset": 1,
+      "loopMode": 1,
+      "speed": 1,
+      "zoom": 1,
+      "panX": 0,
+      "panY": 0,
+      "duration": {
+        "type": "seconds",
+        "value": 4
+      },
+      "transition": {
+        "type": "kaleidoscope-morph",
+        "duration": 1.4,
+        "pace": "ease",
+        "seed": 7029,
+        "params": {},
+        "reduceFlashes": true
+      },
+      "cues": [
+        {
+          "at": 0,
+          "effect": "off"
+        }
+      ],
+      "showcase": {
+        "title": "Kaleidoscope Morph",
+        "category": "Psychedelic"
+      }
+    },
+    {
+      "video": "Video by trevyx.visual_DeU0GLtSmTu.mp4",
+      "view": "single",
+      "preset": 1,
+      "loopMode": 1,
+      "speed": 1,
+      "zoom": 1,
+      "panX": 0,
+      "panY": 0,
+      "duration": {
+        "type": "seconds",
+        "value": 4
+      },
+      "transition": {
+        "type": "spiral-vortex",
+        "duration": 1.4,
+        "pace": "ease",
+        "seed": 7029,
+        "params": {},
+        "reduceFlashes": true
+      },
+      "cues": [
+        {
+          "at": 0,
+          "effect": "off"
+        }
+      ],
+      "showcase": {
+        "title": "Spiral Vortex",
+        "category": "Psychedelic"
+      }
+    },
+    {
+      "video": "Video by themacrosift_De5gECWMeJY.mp4",
+      "view": "single",
+      "preset": 1,
+      "loopMode": 1,
+      "speed": 1,
+      "zoom": 1,
+      "panX": 0,
+      "panY": 0,
+      "duration": {
+        "type": "seconds",
+        "value": 4
+      },
+      "transition": {
+        "type": "liquid-morph",
+        "duration": 1.4,
+        "pace": "ease",
+        "seed": 7029,
+        "params": {},
+        "reduceFlashes": true
+      },
+      "cues": [
+        {
+          "at": 0,
+          "effect": "off"
+        }
+      ],
+      "showcase": {
+        "title": "Liquid Morph",
+        "category": "Psychedelic"
+      }
+    },
+    {
+      "video": "Video by uon.visuals_DdkaL9MBcrv.fdash-3261056987436660v.mp4",
+      "view": "single",
+      "preset": 1,
+      "loopMode": 1,
+      "speed": 1,
+      "zoom": 1,
+      "panX": 0,
+      "panY": 0,
+      "duration": {
+        "type": "seconds",
+        "value": 4
+      },
+      "transition": {
+        "type": "fractal-dissolve",
+        "duration": 1.4,
+        "pace": "ease",
+        "seed": 7029,
+        "params": {},
+        "reduceFlashes": true
+      },
+      "cues": [
+        {
+          "at": 0,
+          "effect": "off"
+        }
+      ],
+      "showcase": {
+        "title": "Fractal Dissolve",
+        "category": "Psychedelic"
+      }
+    },
+    {
+      "video": "Video by test23rdmay_DesPIdUsisv.mp4",
+      "view": "single",
+      "preset": 1,
+      "loopMode": 1,
+      "speed": 1,
+      "zoom": 1,
+      "panX": 0,
+      "panY": 0,
+      "duration": {
+        "type": "seconds",
+        "value": 4
+      },
+      "transition": {
+        "type": "psychedelic-tunnel",
+        "duration": 1.4,
+        "pace": "ease",
+        "seed": 7029,
+        "params": {},
+        "reduceFlashes": true
+      },
+      "cues": [
+        {
+          "at": 0,
+          "effect": "off"
+        }
+      ],
+      "showcase": {
+        "title": "Psychedelic Tunnel",
+        "category": "Psychedelic"
+      }
+    },
+    {
+      "video": "Video by uon.visuals_DdU-l2qAGtL.mp4",
+      "view": "single",
+      "preset": 1,
+      "loopMode": 1,
+      "speed": 1,
+      "zoom": 1,
+      "panX": 0,
+      "panY": 0,
+      "duration": {
+        "type": "seconds",
+        "value": 4
+      },
+      "transition": {
+        "type": "mandala-rotation",
+        "duration": 1.4,
+        "pace": "ease",
+        "seed": 7029,
+        "params": {},
+        "reduceFlashes": true
+      },
+      "cues": [
+        {
+          "at": 0,
+          "effect": "off"
+        }
+      ],
+      "showcase": {
+        "title": "Mandala Rotation",
+        "category": "Psychedelic"
+      }
+    },
+    {
+      "video": "Video by hypernova_ai_Dc6JUuYjVoI.mp4",
+      "view": "single",
+      "preset": 1,
+      "loopMode": 1,
+      "speed": 1,
+      "zoom": 1,
+      "panX": 0,
+      "panY": 0,
+      "duration": {
+        "type": "seconds",
+        "value": 4
+      },
+      "transition": {
+        "type": "mirror-shatter",
+        "duration": 1.4,
+        "pace": "ease",
+        "seed": 7029,
+        "params": {},
+        "reduceFlashes": true
+      },
+      "cues": [
+        {
+          "at": 0,
+          "effect": "off"
+        }
+      ],
+      "showcase": {
+        "title": "Mirror Shatter",
+        "category": "Psychedelic"
+      }
+    },
+    {
+      "video": "Video by trevyx.visual_DeU0GLtSmTu.mp4",
+      "view": "single",
+      "preset": 1,
+      "loopMode": 1,
+      "speed": 1,
+      "zoom": 1,
+      "panX": 0,
+      "panY": 0,
+      "duration": {
+        "type": "seconds",
+        "value": 4
+      },
+      "transition": {
+        "type": "waveform-warp",
+        "duration": 1.4,
+        "pace": "ease",
+        "seed": 7029,
+        "params": {},
+        "reduceFlashes": true
+      },
+      "cues": [
+        {
+          "at": 0,
+          "effect": "off"
+        }
+      ],
+      "showcase": {
+        "title": "Waveform Warp",
+        "category": "Psychedelic"
+      }
+    },
+    {
+      "video": "Video by themacrosift_De5gECWMeJY.mp4",
+      "view": "single",
+      "preset": 1,
+      "loopMode": 1,
+      "speed": 1,
+      "zoom": 1,
+      "panX": 0,
+      "panY": 0,
+      "duration": {
+        "type": "seconds",
+        "value": 4
+      },
+      "transition": {
+        "type": "white-flash",
+        "duration": 1.4,
+        "pace": "ease",
+        "seed": 7029,
+        "params": {},
+        "reduceFlashes": true
+      },
+      "cues": [
+        {
+          "at": 0,
+          "effect": "off"
+        }
+      ],
+      "showcase": {
+        "title": "White Flash",
+        "category": "Light"
+      }
+    },
+    {
+      "video": "Video by uon.visuals_DdkaL9MBcrv.fdash-3261056987436660v.mp4",
+      "view": "single",
+      "preset": 1,
+      "loopMode": 1,
+      "speed": 1,
+      "zoom": 1,
+      "panX": 0,
+      "panY": 0,
+      "duration": {
+        "type": "seconds",
+        "value": 4
+      },
+      "transition": {
+        "type": "laser-sweep",
+        "duration": 1.4,
+        "pace": "ease",
+        "seed": 7029,
+        "params": {},
+        "reduceFlashes": true
+      },
+      "cues": [
+        {
+          "at": 0,
+          "effect": "off"
+        }
+      ],
+      "showcase": {
+        "title": "Laser Sweep",
+        "category": "Light"
+      }
+    },
+    {
+      "video": "Video by test23rdmay_DesPIdUsisv.mp4",
+      "view": "single",
+      "preset": 1,
+      "loopMode": 1,
+      "speed": 1,
+      "zoom": 1,
+      "panX": 0,
+      "panY": 0,
+      "duration": {
+        "type": "seconds",
+        "value": 4
+      },
+      "transition": {
+        "type": "electric-arc",
+        "duration": 1.4,
+        "pace": "ease",
+        "seed": 7029,
+        "params": {},
+        "reduceFlashes": true
+      },
+      "cues": [
+        {
+          "at": 0,
+          "effect": "off"
+        }
+      ],
+      "showcase": {
+        "title": "Electric Arc",
+        "category": "Light"
+      }
+    },
+    {
+      "video": "Video by uon.visuals_DdU-l2qAGtL.mp4",
+      "view": "single",
+      "preset": 1,
+      "loopMode": 1,
+      "speed": 1,
+      "zoom": 1,
+      "panX": 0,
+      "panY": 0,
+      "duration": {
+        "type": "seconds",
+        "value": 4
+      },
+      "transition": {
+        "type": "strobe-cut",
+        "duration": 1.4,
+        "pace": "ease",
+        "seed": 7029,
+        "params": {},
+        "reduceFlashes": true
+      },
+      "cues": [
+        {
+          "at": 0,
+          "effect": "off"
+        }
+      ],
+      "showcase": {
+        "title": "Strobe Cut",
+        "category": "Light"
+      }
+    },
+    {
+      "video": "Video by hypernova_ai_Dc6JUuYjVoI.mp4",
+      "view": "single",
+      "preset": 1,
+      "loopMode": 1,
+      "speed": 1,
+      "zoom": 1,
+      "panX": 0,
+      "panY": 0,
+      "duration": {
+        "type": "seconds",
+        "value": 4
+      },
+      "transition": {
+        "type": "energy-burst",
+        "duration": 1.4,
+        "pace": "ease",
+        "seed": 7029,
+        "params": {},
+        "reduceFlashes": true
+      },
+      "cues": [
+        {
+          "at": 0,
+          "effect": "off"
+        }
+      ],
+      "showcase": {
+        "title": "Energy Burst",
+        "category": "Light"
+      }
+    },
+    {
+      "video": "Video by trevyx.visual_DeU0GLtSmTu.mp4",
+      "view": "single",
+      "preset": 1,
+      "loopMode": 1,
+      "speed": 1,
+      "zoom": 1,
+      "panX": 0,
+      "panY": 0,
+      "duration": {
+        "type": "seconds",
+        "value": 4
+      },
+      "transition": {
+        "type": "light-leak",
+        "duration": 1.4,
+        "pace": "ease",
+        "seed": 7029,
+        "params": {},
+        "reduceFlashes": true
+      },
+      "cues": [
+        {
+          "at": 0,
+          "effect": "off"
+        }
+      ],
+      "showcase": {
+        "title": "Light Leak",
+        "category": "Light"
+      }
+    },
+    {
+      "video": "Video by themacrosift_De5gECWMeJY.mp4",
+      "view": "single",
+      "preset": 1,
+      "loopMode": 1,
+      "speed": 1,
+      "zoom": 1,
+      "panX": 0,
+      "panY": 0,
+      "duration": {
+        "type": "seconds",
+        "value": 4
+      },
+      "transition": {
+        "type": "plasma-dissolve",
+        "duration": 1.4,
+        "pace": "ease",
+        "seed": 7029,
+        "params": {},
+        "reduceFlashes": true
+      },
+      "cues": [
+        {
+          "at": 0,
+          "effect": "off"
+        }
+      ],
+      "showcase": {
+        "title": "Plasma Dissolve",
+        "category": "Light"
+      }
+    },
+    {
+      "video": "Video by uon.visuals_DdkaL9MBcrv.fdash-3261056987436660v.mp4",
+      "view": "single",
+      "preset": 1,
+      "loopMode": 1,
+      "speed": 1,
+      "zoom": 1,
+      "panX": 0,
+      "panY": 0,
+      "duration": {
+        "type": "seconds",
+        "value": 4
+      },
+      "transition": {
+        "type": "hexagonal-mosaic",
+        "duration": 1.4,
+        "pace": "ease",
+        "seed": 7029,
+        "params": {},
+        "reduceFlashes": true
+      },
+      "cues": [
+        {
+          "at": 0,
+          "effect": "off"
+        }
+      ],
+      "showcase": {
+        "title": "Hexagonal Mosaic",
+        "category": "Geometry and Motion"
+      }
+    },
+    {
+      "video": "Video by test23rdmay_DesPIdUsisv.mp4",
+      "view": "single",
+      "preset": 1,
+      "loopMode": 1,
+      "speed": 1,
+      "zoom": 1,
+      "panX": 0,
+      "panY": 0,
+      "duration": {
+        "type": "seconds",
+        "value": 4
+      },
+      "transition": {
+        "type": "geometric-shatter",
+        "duration": 1.4,
+        "pace": "ease",
+        "seed": 7029,
+        "params": {},
+        "reduceFlashes": true
+      },
+      "cues": [
+        {
+          "at": 0,
+          "effect": "off"
+        }
+      ],
+      "showcase": {
+        "title": "Geometric Shatter",
+        "category": "Geometry and Motion"
+      }
+    },
+    {
+      "video": "Video by uon.visuals_DdU-l2qAGtL.mp4",
+      "view": "single",
+      "preset": 1,
+      "loopMode": 1,
+      "speed": 1,
+      "zoom": 1,
+      "panX": 0,
+      "panY": 0,
+      "duration": {
+        "type": "seconds",
+        "value": 4
+      },
+      "transition": {
+        "type": "cube-rotation",
+        "duration": 1.4,
+        "pace": "ease",
+        "seed": 7029,
+        "params": {},
+        "reduceFlashes": true
+      },
+      "cues": [
+        {
+          "at": 0,
+          "effect": "off"
+        }
+      ],
+      "showcase": {
+        "title": "3D Cube Rotation",
+        "category": "Geometry and Motion"
+      }
+    },
+    {
+      "video": "Video by hypernova_ai_Dc6JUuYjVoI.mp4",
+      "view": "single",
+      "preset": 1,
+      "loopMode": 1,
+      "speed": 1,
+      "zoom": 1,
+      "panX": 0,
+      "panY": 0,
+      "duration": {
+        "type": "seconds",
+        "value": 4
+      },
+      "transition": {
+        "type": "radial-slice",
+        "duration": 1.4,
+        "pace": "ease",
+        "seed": 7029,
+        "params": {},
+        "reduceFlashes": true
+      },
+      "cues": [
+        {
+          "at": 0,
+          "effect": "off"
+        }
+      ],
+      "showcase": {
+        "title": "Radial Slice",
+        "category": "Geometry and Motion"
+      }
+    },
+    {
+      "video": "Video by trevyx.visual_DeU0GLtSmTu.mp4",
+      "view": "single",
+      "preset": 1,
+      "loopMode": 1,
+      "speed": 1,
+      "zoom": 1,
+      "panX": 0,
+      "panY": 0,
+      "duration": {
+        "type": "seconds",
+        "value": 4
+      },
+      "transition": {
+        "type": "tunnel-warp",
+        "duration": 1.4,
+        "pace": "ease",
+        "seed": 7029,
+        "params": {},
+        "reduceFlashes": true
+      },
+      "cues": [
+        {
+          "at": 0,
+          "effect": "off"
+        }
+      ],
+      "showcase": {
+        "title": "Tunnel Warp",
+        "category": "Geometry and Motion"
+      }
+    },
+    {
+      "video": "Video by themacrosift_De5gECWMeJY.mp4",
+      "view": "single",
+      "preset": 1,
+      "loopMode": 1,
+      "speed": 1,
+      "zoom": 1,
+      "panX": 0,
+      "panY": 0,
+      "duration": {
+        "type": "seconds",
+        "value": 4
+      },
+      "transition": {
+        "type": "particle-disintegration",
+        "duration": 1.4,
+        "pace": "ease",
+        "seed": 7029,
+        "params": {},
+        "reduceFlashes": true
+      },
+      "cues": [
+        {
+          "at": 0,
+          "effect": "off"
+        }
+      ],
+      "showcase": {
+        "title": "Particle Disintegration",
+        "category": "Geometry and Motion"
+      }
+    },
+    {
+      "video": "Video by uon.visuals_DdkaL9MBcrv.fdash-3261056987436660v.mp4",
+      "view": "single",
+      "preset": 1,
+      "loopMode": 1,
+      "speed": 1,
+      "zoom": 1,
+      "panX": 0,
+      "panY": 0,
+      "duration": {
+        "type": "seconds",
+        "value": 4
+      },
+      "transition": {
+        "type": "motion-blur-whip",
+        "duration": 1.4,
+        "pace": "ease",
+        "seed": 7029,
+        "params": {},
+        "reduceFlashes": true
+      },
+      "cues": [
+        {
+          "at": 0,
+          "effect": "off"
+        }
+      ],
+      "showcase": {
+        "title": "Motion Blur Whip",
+        "category": "Geometry and Motion"
+      }
+    },
+    {
+      "video": "Video by test23rdmay_DesPIdUsisv.mp4",
+      "view": "single",
+      "preset": 1,
+      "loopMode": 1,
+      "speed": 1,
+      "zoom": 1,
+      "panX": 0,
+      "panY": 0,
+      "duration": {
+        "type": "seconds",
+        "value": 4
+      },
+      "transition": {
+        "type": "smoke-dissolve",
+        "duration": 1.4,
+        "pace": "ease",
+        "seed": 7029,
+        "params": {},
+        "reduceFlashes": true
+      },
+      "cues": [
+        {
+          "at": 0,
+          "effect": "off"
+        }
+      ],
+      "showcase": {
+        "title": "Smoke Dissolve",
+        "category": "Organic and Atmospheric"
+      }
+    },
+    {
+      "video": "Video by uon.visuals_DdU-l2qAGtL.mp4",
+      "view": "single",
+      "preset": 1,
+      "loopMode": 1,
+      "speed": 1,
+      "zoom": 1,
+      "panX": 0,
+      "panY": 0,
+      "duration": {
+        "type": "seconds",
+        "value": 4
+      },
+      "transition": {
+        "type": "ink-in-water",
+        "duration": 1.4,
+        "pace": "ease",
+        "seed": 7029,
+        "params": {},
+        "reduceFlashes": true
+      },
+      "cues": [
+        {
+          "at": 0,
+          "effect": "off"
+        }
+      ],
+      "showcase": {
+        "title": "Ink in Water",
+        "category": "Organic and Atmospheric"
+      }
+    },
+    {
+      "video": "Video by hypernova_ai_Dc6JUuYjVoI.mp4",
+      "view": "single",
+      "preset": 1,
+      "loopMode": 1,
+      "speed": 1,
+      "zoom": 1,
+      "panX": 0,
+      "panY": 0,
+      "duration": {
+        "type": "seconds",
+        "value": 4
+      },
+      "transition": {
+        "type": "fluid-ripple",
+        "duration": 1.4,
+        "pace": "ease",
+        "seed": 7029,
+        "params": {},
+        "reduceFlashes": true
+      },
+      "cues": [
+        {
+          "at": 0,
+          "effect": "off"
+        }
+      ],
+      "showcase": {
+        "title": "Fluid Ripple",
+        "category": "Organic and Atmospheric"
+      }
+    },
+    {
+      "video": "Video by trevyx.visual_DeU0GLtSmTu.mp4",
+      "view": "single",
+      "preset": 1,
+      "loopMode": 1,
+      "speed": 1,
+      "zoom": 1,
+      "panX": 0,
+      "panY": 0,
+      "duration": {
+        "type": "seconds",
+        "value": 4
+      },
+      "transition": {
+        "type": "fire-burn",
+        "duration": 1.4,
+        "pace": "ease",
+        "seed": 7029,
+        "params": {},
+        "reduceFlashes": true
+      },
+      "cues": [
+        {
+          "at": 0,
+          "effect": "off"
+        }
+      ],
+      "showcase": {
+        "title": "Fire Burn",
+        "category": "Organic and Atmospheric"
+      }
+    },
+    {
+      "video": "Video by themacrosift_De5gECWMeJY.mp4",
+      "view": "single",
+      "preset": 1,
+      "loopMode": 1,
+      "speed": 1,
+      "zoom": 1,
+      "panX": 0,
+      "panY": 0,
+      "duration": {
+        "type": "seconds",
+        "value": 4
+      },
+      "transition": {
+        "type": "ice-crystallisation",
+        "duration": 1.4,
+        "pace": "ease",
+        "seed": 7029,
+        "params": {},
+        "reduceFlashes": true
+      },
+      "cues": [
+        {
+          "at": 0,
+          "effect": "off"
+        }
+      ],
+      "showcase": {
+        "title": "Ice Crystallisation",
+        "category": "Organic and Atmospheric"
+      }
+    },
+    {
+      "video": "Video by uon.visuals_DdkaL9MBcrv.fdash-3261056987436660v.mp4",
+      "view": "single",
+      "preset": 1,
+      "loopMode": 1,
+      "speed": 1,
+      "zoom": 1,
+      "panX": 0,
+      "panY": 0,
+      "duration": {
+        "type": "seconds",
+        "value": 4
+      },
+      "transition": {
+        "type": "sandstorm",
+        "duration": 1.4,
+        "pace": "ease",
+        "seed": 7029,
+        "params": {},
+        "reduceFlashes": true
+      },
+      "cues": [
+        {
+          "at": 0,
+          "effect": "off"
+        }
+      ],
+      "showcase": {
+        "title": "Sandstorm",
+        "category": "Organic and Atmospheric"
+      }
+    },
+    {
+      "video": "Video by test23rdmay_DesPIdUsisv.mp4",
+      "view": "single",
+      "preset": 1,
+      "loopMode": 1,
+      "speed": 1,
+      "zoom": 1,
+      "panX": 0,
+      "panY": 0,
+      "duration": {
+        "type": "seconds",
+        "value": 4
+      },
+      "transition": {
+        "type": "liquid-chrome",
+        "duration": 1.4,
+        "pace": "ease",
+        "seed": 7029,
+        "params": {},
+        "reduceFlashes": true
+      },
+      "cues": [
+        {
+          "at": 0,
+          "effect": "off"
+        }
+      ],
+      "showcase": {
+        "title": "Liquid Chrome",
+        "category": "Organic and Atmospheric"
+      }
+    },
+    {
+      "video": "Video by uon.visuals_DdU-l2qAGtL.mp4",
+      "view": "single",
+      "preset": 1,
+      "loopMode": 1,
+      "speed": 1,
+      "zoom": 1,
+      "panX": 0,
+      "panY": 0,
+      "duration": {
+        "type": "seconds",
+        "value": 4
+      },
+      "transition": {
+        "type": "organic-cell-division",
+        "duration": 1.4,
+        "pace": "ease",
+        "seed": 7029,
+        "params": {},
+        "reduceFlashes": true
+      },
+      "cues": [
+        {
+          "at": 0,
+          "effect": "off"
+        }
+      ],
+      "showcase": {
+        "title": "Organic Cell Division",
+        "category": "Organic and Atmospheric"
+      }
+    },
+    {
+      "video": "Video by hypernova_ai_Dc6JUuYjVoI.mp4",
+      "view": "single",
+      "preset": 1,
+      "loopMode": 1,
+      "speed": 1,
+      "zoom": 1,
+      "panX": 0,
+      "panY": 0,
+      "duration": {
+        "type": "seconds",
+        "value": 4
+      },
+      "transition": {
+        "type": "reality-fracture",
+        "duration": 1.4,
+        "pace": "ease",
+        "seed": 7029,
+        "params": {},
+        "reduceFlashes": true
+      },
+      "cues": [
+        {
+          "at": 0,
+          "effect": "off"
+        }
+      ],
+      "showcase": {
+        "title": "Reality Fracture",
+        "category": "Experimental"
+      }
+    },
+    {
+      "video": "Video by trevyx.visual_DeU0GLtSmTu.mp4",
+      "view": "single",
+      "preset": 1,
+      "loopMode": 1,
+      "speed": 1,
+      "zoom": 1,
+      "panX": 0,
+      "panY": 0,
+      "duration": {
+        "type": "seconds",
+        "value": 4
+      },
+      "transition": {
+        "type": "time-echo",
+        "duration": 1.4,
+        "pace": "ease",
+        "seed": 7029,
+        "params": {},
+        "reduceFlashes": true
+      },
+      "cues": [
+        {
+          "at": 0,
+          "effect": "off"
+        }
+      ],
+      "showcase": {
+        "title": "Time Echo",
+        "category": "Experimental"
+      }
+    },
+    {
+      "video": "Video by themacrosift_De5gECWMeJY.mp4",
+      "view": "single",
+      "preset": 1,
+      "loopMode": 1,
+      "speed": 1,
+      "zoom": 1,
+      "panX": 0,
+      "panY": 0,
+      "duration": {
+        "type": "seconds",
+        "value": 4
+      },
+      "transition": {
+        "type": "chromatic-implosion",
+        "duration": 1.4,
+        "pace": "ease",
+        "seed": 7029,
+        "params": {},
+        "reduceFlashes": true
+      },
+      "cues": [
+        {
+          "at": 0,
+          "effect": "off"
+        }
+      ],
+      "showcase": {
+        "title": "Chromatic Implosion",
+        "category": "Experimental"
+      }
+    },
+    {
+      "video": "Video by uon.visuals_DdkaL9MBcrv.fdash-3261056987436660v.mp4",
+      "view": "single",
+      "preset": 1,
+      "loopMode": 1,
+      "speed": 1,
+      "zoom": 1,
+      "panX": 0,
+      "panY": 0,
+      "duration": {
+        "type": "seconds",
+        "value": 4
+      },
+      "transition": {
+        "type": "neural-network-morph",
+        "duration": 1.4,
+        "pace": "ease",
+        "seed": 7029,
+        "params": {},
+        "reduceFlashes": true
+      },
+      "cues": [
+        {
+          "at": 0,
+          "effect": "off"
+        }
+      ],
+      "showcase": {
+        "title": "Neural Network Morph",
+        "category": "Experimental"
+      }
+    },
+    {
+      "video": "Video by test23rdmay_DesPIdUsisv.mp4",
+      "view": "single",
+      "preset": 1,
+      "loopMode": 1,
+      "speed": 1,
+      "zoom": 1,
+      "panX": 0,
+      "panY": 0,
+      "duration": {
+        "type": "seconds",
+        "value": 4
+      },
+      "transition": {
+        "type": "holographic-breakdown",
+        "duration": 1.4,
+        "pace": "ease",
+        "seed": 7029,
+        "params": {},
+        "reduceFlashes": true
+      },
+      "cues": [
+        {
+          "at": 0,
+          "effect": "off"
+        }
+      ],
+      "showcase": {
+        "title": "Holographic Breakdown",
+        "category": "Experimental"
+      }
+    },
+    {
+      "video": "Video by uon.visuals_DdU-l2qAGtL.mp4",
+      "view": "single",
+      "preset": 1,
+      "loopMode": 1,
+      "speed": 1,
+      "zoom": 1,
+      "panX": 0,
+      "panY": 0,
+      "duration": {
+        "type": "seconds",
+        "value": 4
+      },
+      "transition": {
+        "type": "gravity-well",
+        "duration": 1.4,
+        "pace": "ease",
+        "seed": 7029,
+        "params": {},
+        "reduceFlashes": true
+      },
+      "cues": [
+        {
+          "at": 0,
+          "effect": "off"
+        }
+      ],
+      "showcase": {
+        "title": "Gravity Well",
+        "category": "Experimental"
+      }
+    },
+    {
+      "video": "Video by hypernova_ai_Dc6JUuYjVoI.mp4",
+      "view": "single",
+      "preset": 1,
+      "loopMode": 1,
+      "speed": 1,
+      "zoom": 1,
+      "panX": 0,
+      "panY": 0,
+      "duration": {
+        "type": "seconds",
+        "value": 4
+      },
+      "transition": {
+        "type": "quantum-tiles",
+        "duration": 1.4,
+        "pace": "ease",
+        "seed": 7029,
+        "params": {},
+        "reduceFlashes": true
+      },
+      "cues": [
+        {
+          "at": 0,
+          "effect": "off"
+        }
+      ],
+      "showcase": {
+        "title": "Quantum Tiles",
+        "category": "Experimental"
+      }
+    },
+    {
+      "video": "Video by trevyx.visual_DeU0GLtSmTu.mp4",
+      "view": "single",
+      "preset": 1,
+      "loopMode": 1,
+      "speed": 1,
+      "zoom": 1,
+      "panX": 0,
+      "panY": 0,
+      "duration": {
+        "type": "seconds",
+        "value": 4
+      },
+      "transition": {
+        "type": "spectral-frequency-shift",
+        "duration": 1.4,
+        "pace": "ease",
+        "seed": 7029,
+        "params": {},
+        "reduceFlashes": true
+      },
+      "cues": [
+        {
+          "at": 0,
+          "effect": "off"
+        }
+      ],
+      "showcase": {
+        "title": "Spectral Frequency Shift",
+        "category": "Experimental"
+      }
+    },
+    {
+      "video": "Video by themacrosift_De5gECWMeJY.mp4",
+      "view": "single",
+      "preset": 1,
+      "loopMode": 1,
+      "speed": 1,
+      "zoom": 1,
+      "panX": 0,
+      "panY": 0,
+      "duration": {
+        "type": "seconds",
+        "value": 4
+      },
+      "transition": {
+        "type": "dimensional-portal",
+        "duration": 1.4,
+        "pace": "ease",
+        "seed": 7029,
+        "params": {},
+        "reduceFlashes": true
+      },
+      "cues": [
+        {
+          "at": 0,
+          "effect": "off"
+        }
+      ],
+      "showcase": {
+        "title": "Dimensional Portal",
+        "category": "Experimental"
+      }
+    },
+    {
+      "video": "Video by uon.visuals_DdkaL9MBcrv.fdash-3261056987436660v.mp4",
+      "view": "single",
+      "preset": 1,
+      "loopMode": 1,
+      "speed": 1,
+      "zoom": 1,
+      "panX": 0,
+      "panY": 0,
+      "duration": {
+        "type": "seconds",
+        "value": 4
+      },
+      "transition": {
+        "type": "bass-impact-distortion",
+        "duration": 1.4,
+        "pace": "ease",
+        "seed": 7029,
+        "params": {},
+        "reduceFlashes": true
+      },
+      "cues": [
+        {
+          "at": 0,
+          "effect": "off"
+        }
+      ],
+      "showcase": {
+        "title": "Bass Impact Distortion",
+        "category": "Experimental"
+      }
+    },
+    {
+      "video": "version1_showcase_black_stage.mp4",
+      "view": "single",
+      "preset": 1,
+      "loopMode": 0,
+      "speed": 1,
+      "zoom": 1,
+      "panX": 0,
+      "panY": 0,
+      "duration": {
+        "type": "seconds",
+        "value": 4
+      },
+      "transition": {
+        "type": "fade-out",
+        "duration": 2,
+        "pace": "ease",
+        "seed": 7029,
+        "params": {},
+        "reduceFlashes": true
+      },
+      "cues": [
+        {
+          "at": 0,
+          "effect": "off"
+        }
+      ]
+    }
+  ],
+  "showcase": {
+    "id": "showcase-transition-atlas-v1",
+    "note": "Every native transition. Reduced-flash preference is retained."
+  }
+}

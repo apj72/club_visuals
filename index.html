@@ -212,6 +212,10 @@
     margin-bottom: 8px;
   }
 
+  .conn-source-row { flex-wrap: wrap; }
+  .conn-source-row label { display: flex; flex-direction: column; gap: 6px; flex: 1 1 180px; min-width: 0; font-size: .8rem; }
+  .conn-source-row select { width: 100%; padding: 9px; background: #1a1a2e; color: #fff; border: 1px solid #333; border-radius: 6px; font: inherit; }
+
   .conn-panel input[type="password"] {
     flex: 1;
     padding: 8px 12px;
@@ -293,6 +297,12 @@
     pointer-events: none;
   }
   .vfx-active #vfxCanvas { display: block; }
+  .reflection-only .caption-overlay, .logo-render-preview .caption-overlay { visibility: hidden; }
+  .capture-fields .capture-check {display:flex;align-items:center;gap:8px;grid-column:1/-1}
+  .capture-fields .capture-check input {width:auto}
+  #captureLogoHint {grid-column:1/-1}
+  #logoRenderPreview {display:none;position:absolute;inset:0;z-index:10;width:100%;height:100%;max-height:none;object-fit:contain;background:#000;pointer-events:none}
+  .logo-render-preview #logoRenderPreview {display:block}
 
   .capture-box {
     display: none;
@@ -346,6 +356,8 @@
   .capture-fields label { display: grid; gap: 5px; color: #b8c3d3; font-size: 0.75rem; }
   .capture-fields input, .capture-fields select { width: 125px; padding: 8px; border: 1px solid #46536c; border-radius: 5px; background: #111b32; color: #fff; font: inherit; }
   .capture-fields select { width: 145px; }
+  .capture-fields .capture-saved-picker { width: min(100%, 520px); min-width: 0; }
+  .capture-fields .capture-saved-picker select { width: 100%; }
   .capture-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; align-items: center; }
   .capture-actions button, .capture-actions a { padding: 8px 11px; border: 1px solid #4ecca3; border-radius: 5px; background: #183a3a; color: #c7ffeb; font-size: 0.78rem; font-weight: 700; text-decoration: none; cursor: pointer; }
   .capture-actions button:disabled { opacity: .5; cursor: not-allowed; }
@@ -363,12 +375,12 @@
 
   /* Dual */
   .video-wrap.dual .video-stage video,
-  .video-wrap.dual .video-stage canvas { width: 50%; height: 60vh; object-fit: cover; }
+  .video-wrap.dual .video-stage .video-clone { width: 50%; height: 60vh; object-fit: cover; }
   .video-wrap.dual .video-stage .video-clone { display: block; }
 
   /* Triple */
   .video-wrap.triple .video-stage video,
-  .video-wrap.triple .video-stage canvas { width: 33.333%; height: 60vh; object-fit: cover; }
+  .video-wrap.triple .video-stage .video-clone { width: 33.333%; height: 60vh; object-fit: cover; }
   .video-wrap.triple .video-stage .video-clone { display: block; }
 
   /* Quad */
@@ -378,7 +390,7 @@
     grid-template-rows: repeat(2, 1fr);
   }
   .video-wrap.quad .video-stage video,
-  .video-wrap.quad .video-stage canvas {
+  .video-wrap.quad .video-stage .video-clone {
     width: 100%;
     height: 30vh;
     min-width: 0;
@@ -393,7 +405,7 @@
     grid-template-rows: repeat(2, 1fr);
   }
   .video-wrap.octo .video-stage video,
-  .video-wrap.octo .video-stage canvas {
+  .video-wrap.octo .video-stage .video-clone {
     width: 100%;
     height: 30vh;
     min-width: 0;
@@ -403,7 +415,8 @@
 
   /* Fullscreen — single */
   .video-wrap:fullscreen .video-stage video,
-  .video-wrap:fullscreen .video-stage canvas {
+  .video-wrap:fullscreen .video-stage .video-clone,
+  .video-wrap:fullscreen .video-stage #bounceOverlay {
     max-height: 100vh;
     height: 100vh;
     object-fit: contain;
@@ -414,7 +427,7 @@
     height: 100vh;
   }
   .video-wrap.dual:fullscreen .video-stage video,
-  .video-wrap.dual:fullscreen .video-stage canvas {
+  .video-wrap.dual:fullscreen .video-stage .video-clone {
     height: 100vh;
     max-height: 100vh;
     object-fit: cover;
@@ -426,7 +439,7 @@
     height: 100vh;
   }
   .video-wrap.triple:fullscreen .video-stage video,
-  .video-wrap.triple:fullscreen .video-stage canvas {
+  .video-wrap.triple:fullscreen .video-stage .video-clone {
     height: 100vh;
     max-height: 100vh;
     object-fit: cover;
@@ -438,7 +451,7 @@
     height: 100vh;
   }
   .video-wrap.quad:fullscreen .video-stage video,
-  .video-wrap.quad:fullscreen .video-stage canvas {
+  .video-wrap.quad:fullscreen .video-stage .video-clone {
     height: 50vh;
     max-height: 50vh;
     min-width: 0;
@@ -451,13 +464,25 @@
     height: 100vh;
   }
   .video-wrap.octo:fullscreen .video-stage video,
-  .video-wrap.octo:fullscreen .video-stage canvas {
+  .video-wrap.octo:fullscreen .video-stage .video-clone {
     height: 50vh;
     max-height: 50vh;
     min-width: 0;
     object-fit: cover;
     object-position: center center;
   }
+
+  /* A viewport-sized preview also works when the browser denies native fullscreen. */
+  #videoWrap.preview-fullscreen {position:fixed!important;inset:0!important;left:0!important;top:0!important;width:100vw!important;height:100dvh!important;max-width:none!important;max-height:none!important;transform:none!important;margin:0!important;border-radius:0;z-index:10000;display:flex;flex-direction:column;background:#000}
+  #videoWrap.preview-fullscreen .video-stage {width:100%;height:100%;flex:1;min-height:0;overflow:hidden}
+  #videoWrap.preview-fullscreen .video-stage>video,#videoWrap.preview-fullscreen .video-stage>.video-clone,#videoWrap.preview-fullscreen #bounceOverlay {height:100%;min-height:0;max-height:100%;object-fit:contain}
+  #videoWrap.preview-fullscreen.quad .video-stage>.video-clone,#videoWrap.preview-fullscreen.octo .video-stage>.video-clone {height:50%;object-fit:cover}
+  #videoWrap.preview-fullscreen.dual .video-stage>.video-clone,#videoWrap.preview-fullscreen.triple .video-stage>.video-clone {object-fit:cover}
+  #videoWrap.preview-fullscreen #vfxCanvas,#videoWrap.preview-fullscreen #logoRenderPreview,#videoWrap.preview-fullscreen .timeline-preview-overlay {position:absolute;inset:0;width:100%;height:100%;max-height:none}
+  #videoWrap.preview-fullscreen #logoRenderPreview {object-fit:contain}
+  #videoWrap.preview-fullscreen #controls {position:absolute;bottom:0;left:0;right:0;z-index:30;margin:0;background:linear-gradient(transparent,rgba(0,0,0,.8));padding:12px 16px}
+  #videoWrap.preview-fullscreen #controls.hidden {opacity:0}
+  #videoWrap.preview-fullscreen .progress-bar {display:none}
 
   /* --- Controls --- */
 
@@ -715,7 +740,21 @@
   .timeline-marker { position: absolute; top: 4px; color: #8298ab; font-size: .65rem; transform: translateX(4px); pointer-events: none; }
   .timeline-track { position: relative; display: flex; min-height: 112px; border: 1px dashed #506982; border-radius: 5px; background: #0b1527; }
   .timeline-track.drag-over { border-color: #4ecca3; background: #12372f; }
-  .timeline-clip { position: relative; flex: 0 0 auto; min-height: 110px; overflow: hidden; border-right: 2px solid #0b1527; background: #1a2744; cursor: pointer; }
+  .timeline-clip { position: relative; flex: 0 0 auto; min-height: 184px; overflow: hidden; border-right: 2px solid #0b1527; background: #1a2744; cursor: pointer; }
+  .timeline-lane {position:absolute;left:0;right:0;height:30px;z-index:3}
+  .timeline-layout-lane {top:82px}
+  .timeline-effects-lane {top:116px}
+  .timeline-event {position:absolute;height:28px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:left;padding:4px 6px;border:1px solid #58bba2;border-radius:3px;background:#123b35ed;color:#e2fff4;font:600 11px system-ui;cursor:pointer;min-width:0}
+  .timeline-event.effect-event {background:#38234ced;border-color:#a283cf;color:#f1e6ff}
+  .timeline-event.selected {outline:2px solid #ffda65;outline-offset:-2px}
+  .timeline-legend {display:flex;gap:14px;flex-wrap:wrap;font-size:11px;color:#b8c3d3;margin-bottom:7px}
+  .timeline-legend span:first-child {color:#73d8ba}.timeline-legend span:nth-child(2){color:#c9a7ff}
+  .ins-change-tools {display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}.ins-change-tools button{font:inherit;font-size:12px;padding:6px 8px}
+  .ins-composition-scope {padding:8px;border-left:3px solid #58bba2;margin:8px 0;font-size:12px;line-height:1.5}
+  .ins-pattern-preview {display:flex;gap:5px;flex-wrap:wrap;margin:8px 0}
+  .ins-pattern-tile {position:relative;overflow:hidden;display:grid;place-items:center;width:32px;height:32px;border:1px solid #58bba2;border-radius:3px;background:#132c29;font:bold 18px system-ui}
+  .ins-pattern-tile small{font:9px system-ui;position:absolute;right:1px;bottom:1px;padding:1px;color:#c8ddd6;pointer-events:none}
+  .playlist-cue-row:focus {outline:2px solid #ffda65}
   .timeline-clip.selected { outline: 2px solid #4ecca3; outline-offset: -2px; }
   .timeline-clip.dragging { opacity: .5; }
   .timeline-clip img { width: 100%; height: 100%; position: absolute; inset: 0; object-fit: cover; opacity: .64; }
@@ -771,11 +810,13 @@
   .transition-audition-actions .dialog-primary { color: #0d1720; background: #4ecca3; border-color: #4ecca3; font-weight: 700; }
   .transition-audition-actions [hidden] { display: none; }
   .transition-audition-status { min-height: 18px; margin-top: 8px; color: #c7ffeb; font-size: .75rem; }
-  .playlist-cue-dialog { width: min(690px, calc(100vw - 28px)); max-height: calc(100vh - 28px); overflow-y: auto; padding: 18px; color: #e7eef5; background: #152039; border: 1px solid #4ecca3; border-radius: 10px; box-shadow: 0 18px 50px #000a; }
+  .playlist-cue-dialog { width: min(690px, calc(100vw - 28px)); max-height: calc(100dvh - 28px); margin:auto; overflow: hidden; padding: 18px; color: #e7eef5; background: #152039; border: 1px solid #4ecca3; border-radius: 10px; box-shadow: 0 18px 50px #000a; }
+  .playlist-cue-dialog[open] {display:flex;flex-direction:column}
+  .playlist-cue-dialog > h3, .playlist-cue-dialog > p, .playlist-cue-actions {flex-shrink:0}
   .playlist-cue-dialog::backdrop { background: #000b; }
   .playlist-cue-dialog h3 { margin: 0 0 5px; color: #4ecca3; }
   .playlist-cue-dialog p { margin: 0 0 12px; color: #aab6c4; font-size: .78rem; line-height: 1.45; }
-  .playlist-cue-list { display: grid; gap: 9px; }
+  .playlist-cue-list { display: grid; gap: 9px; min-height:0; overflow-y:auto; padding-right:5px; }
   .playlist-cue-row { padding: 10px; border: 1px solid #344b59; border-radius: 7px; background: #101a2b; }
   .playlist-cue-row-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 8px; color: #4ecca3; font-size: .76rem; font-weight: 700; }
   .playlist-cue-fields { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
@@ -1015,6 +1056,15 @@
     body.playlist-mode .playlist-library-col { width: 100%; flex-basis: auto; max-height: 220px; }
     body.playlist-mode .right-col { width: 100%; }
   }
+  .video-wrap.six .video-stage {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));}
+  .video-wrap.six .video-stage video,.video-wrap.six .video-stage .video-clone {width:100%;height:30vh;min-width:0;object-fit:cover;}
+  .video-wrap.six .video-stage .video-clone {display:block;}
+  .video-wrap.six:fullscreen .video-stage {width:100vw;height:100vh;}
+  .video-wrap.six:fullscreen .video-stage>.video-clone {width:100%;height:50vh;}
+  #videoWrap.preview-fullscreen.six .video-stage>.video-clone {height:100%;min-height:0;object-fit:cover;}
+  .video-wrap.zoomed-out .video-stage > .video-clone { display: block; }
+  .video-stage { background: #000; }
+  .video-stage video { background: transparent; object-fit: contain; }
 </style>
 </head>
 <body>
@@ -1028,7 +1078,11 @@
   </div>
 
   <div class="conn-panel" id="connPanel">
-    <p>Enter your macOS login password to export cookies from Brave without the system dialog. The password is used once and never stored.</p>
+    <p>Log into Instagram on this Mac in the browser/profile selected below, then refresh its cookies. macOS may ask for Keychain access. The optional password is used once and never stored.</p>
+    <div class="input-row conn-source-row">
+      <label>Login browser<select id="cookieBrowser"><option value="chrome">Chrome</option><option value="brave">Brave</option></select></label>
+      <label>Profile directory (optional)<input id="cookieProfile" type="text" maxlength="80" placeholder="Default or Profile 1"></label>
+    </div>
     <div class="input-row">
       <input type="password" id="connPassword" placeholder="macOS login password (optional)">
     </div>
@@ -1081,6 +1135,7 @@
         </div>
         <div class="controls" id="controls">
           <button class="btn-play" id="playBtn" onclick="togglePlay()">Play</button>
+          <button class="btn-ctrl" id="logoMotionPlayBtn" type="button" onclick="controlVfxAnimation('toggle')" disabled>Play logo motion</button>
           <span class="popup-wrap">
             <button class="btn-ctrl" id="loopBtn" onclick="togglePlaybackMenu(event)">Playback</button>
             <div class="popup-menu" id="playbackMenu">
@@ -1109,7 +1164,7 @@
           <span class="speed-control" aria-label="Playback speed"><span>Speed</span><button type="button" id="speedDown" onclick="changePlaybackSpeed(-0.25)" aria-label="Decrease playback speed">−</button><output id="speedValue">1×</output><button type="button" id="speedUp" onclick="changePlaybackSpeed(0.25)" aria-label="Increase playback speed">+</button></span>
           <button class="btn-ctrl" id="muteBtn" onclick="toggleMute()">Mute</button>
           <button class="btn-ctrl active" id="captionBtn" onclick="toggleCaption()">CC</button>
-          <button class="btn-ctrl" onclick="refreshView()">&#8635;</button>
+          <button type="button" class="btn-ctrl" id="restartVideoBtn" onclick="restartVideo()" aria-label="Restart video">&#8635; Restart video</button>
           <span class="popup-wrap">
             <button class="btn-ctrl" id="viewBtn" onclick="toggleLayoutMenu(event)">Layout</button>
             <div class="popup-menu" id="layoutMenu">
@@ -1117,20 +1172,22 @@
               <button class="popup-opt" data-mode="1" onclick="setLayout(1)">Dual</button>
               <button class="popup-opt" data-mode="2" onclick="setLayout(2)">3x</button>
               <button class="popup-opt" data-mode="3" onclick="setLayout(3)">4x</button>
-              <button class="popup-opt" data-mode="4" onclick="setLayout(4)">8x</button>
+              <button class="popup-opt" data-mode="5" onclick="setLayout(5)">6x</button><button class="popup-opt" data-mode="4" onclick="setLayout(4)">8x</button>
             </div>
           </span>
-          <span class="zoom-wrap" id="zoomWrap"><span class="zoom-label">Zoom</span><input type="range" class="zoom-slider" id="zoomSlider" min="1.0" max="4.0" step="0.1" value="1.0"><span class="zoom-label" id="zoomValue">1.0x</span><button class="zoom-reset" onclick="resetZoom()">Reset</button><span class="zoom-label">X</span><input type="range" class="zoom-slider" id="panXSlider" min="-1.0" max="1.0" step="0.05" value="0"><span class="zoom-label" id="panXValue">0</span><span class="zoom-label">Y</span><input type="range" class="zoom-slider" id="panYSlider" min="-1.0" max="1.0" step="0.05" value="0"><span class="zoom-label" id="panYValue">0</span><button class="zoom-reset" onclick="resetPan()">Reset</button></span>
+          <span class="zoom-wrap visible" id="zoomWrap"><span class="zoom-label">Zoom</span><input type="range" class="zoom-slider" id="zoomSlider" min="0.25" max="4.0" step="0.05" value="1.0"><span class="zoom-label" id="zoomValue">1.0x</span><button class="zoom-reset" onclick="resetZoom()">Reset</button><span class="zoom-label">X</span><input type="range" class="zoom-slider" id="panXSlider" min="-1.0" max="1.0" step="0.05" value="0"><span class="zoom-label" id="panXValue">0</span><span class="zoom-label">Y</span><input type="range" class="zoom-slider" id="panYSlider" min="-1.0" max="1.0" step="0.05" value="0"><span class="zoom-label" id="panYValue">0</span><button class="zoom-reset" onclick="resetPan()">Reset</button></span>
           <span class="slider-wrap" id="sliderWrap"><input type="range" class="config-slider" id="configSlider" min="1" max="32" value="1"><span class="config-label" id="configLabel">1</span><span id="presetContainer"></span></span>
           <button type="button" class="btn-ctrl" id="resetControlsBtn" onclick="resetPlayerControls()" title="Single layout, preset 1, 1× speed, no loop, centred zoom and pan, 0.8s cross dissolve">Reset controls</button>
           <button class="btn-ctrl" id="fxBtn" onclick="openFxController()">FX</button>
           <button class="btn-ctrl" id="vfxBtn" onclick="openVfxController()">VFX</button>
+          <button class="btn-ctrl" id="cameraMotionBtn" onclick="openCameraMotionController()">Camera motion…</button>
           <button class="btn-ctrl" id="mirrorBtn" onclick="activateMirrorSculpture()" title="Open reflective text and logo controls">Mirror 3D</button>
+          <button class="btn-ctrl" id="reflectionLogoBtn" onclick="activateReflectionLogo()" title="Chrome logo reflecting video against black">Chrome on black</button>
           <button class="btn-ctrl" id="logo3dBtn" onclick="activateLogo3d()" title="Show the rotatable Version1 logo">3D Logo</button>
           <button class="btn-ctrl" id="text3dBtn" onclick="activateText3d()" title="Show editable 3D Instagram text">3D Text</button>
-          <button type="button" class="btn-ctrl" id="captureToggle" aria-controls="capturePanel" aria-expanded="false" onclick="toggleInstagramCapturePanel()">Instagram clip</button>
+          <button type="button" class="btn-ctrl" id="captureToggle" aria-controls="capturePanel" aria-expanded="false" onclick="toggleInstagramCapturePanel()">Social clip</button>
           <button class="btn-ctrl btn-fullscreen" id="fsBtn" onclick="toggleFullscreen()">Mac fullscreen</button>
-          <button class="btn-ctrl" onclick="togglePreviewFullscreen()">Preview fullscreen</button>
+          <button class="btn-ctrl" id="previewFullscreenBtn" aria-pressed="false" onclick="togglePreviewFullscreen()">Preview fullscreen</button>
         </div>
       </div>
       <div class="video-presets" id="videoPresetPanel">
@@ -1203,16 +1260,31 @@
       </dialog>
       <div class="capture-panel" id="capturePanel">
         <div class="capture-panel-header">
-          <h3>Instagram background clip</h3>
-          <button type="button" onclick="toggleInstagramCapturePanel()" aria-label="Close Instagram clip panel">Close</button>
+          <h3 id="capturePanelTitle">Social media clip</h3>
+          <button type="button" onclick="toggleInstagramCapturePanel()" aria-label="Close capture panel">Close</button>
         </div>
-        <p>Drag or resize the green box to choose the visible area. The result is a silent MP4 with the selected layout and effects, ready for a video layer in Instagram Video Studio.</p>
+        <p id="captureDescription">Drag or resize the green box to choose the visible area. The result is a silent MP4 with the selected layout and effects, ready to upload to Facebook or use in Instagram Video Studio.</p>
         <div class="capture-fields">
-          <label>Format <select id="captureFormat" onchange="updateCaptureBox()">
-            <option value="4x5">Feed · 4:5 · 1080 × 1350</option>
-            <option value="9x16">Story · 9:16 · 1080 × 1920</option>
-            <option value="1x1">Square · 1:1 · 1080 × 1080</option>
+          <label>Format <select id="captureFormat" onchange="changeCaptureFormat()">
+            <optgroup label="Instagram">
+              <option value="4x5">Instagram feed · 4:5 · 1080 × 1350</option>
+              <option value="9x16">Instagram story / reel · 9:16 · 1080 × 1920</option>
+              <option value="1x1">Instagram square · 1:1 · 1080 × 1080</option>
+            </optgroup>
+            <optgroup label="Facebook">
+              <option value="facebook_4x5">Facebook feed · 4:5 · 1080 × 1350</option>
+              <option value="facebook_16x9">Facebook landscape · 16:9 · 1920 × 1080</option>
+              <option value="facebook_9x16">Facebook reel / story · 9:16 · 1080 × 1920</option>
+              <option value="facebook_1x1">Facebook square · 1:1 · 1080 × 1080</option>
+            </optgroup>
+            <optgroup label="Reusable logo renders">
+              <option value="logo_9x16">Logo render · 9:16 · 1080 × 1920</option>
+              <option value="logo_16x9">Logo render · 16:9 · 1920 × 1080</option>
+              <option value="logo_1x1">Logo render · 1:1 · 1080 × 1080</option>
+            </optgroup>
           </select></label>
+          <label id="captureRestartLogoField" class="capture-check" hidden><input id="captureRestartLogo" type="checkbox" checked> Start logo motion from the beginning</label>
+          <p id="captureLogoHint" hidden>Renders the complete logo or text effect on black at the selected size. The saved MP4 is added to your video library.</p>
           <label>Start timecode <input id="captureStart" type="text" value="00:00" placeholder="mm:ss.sss" inputmode="decimal"></label>
           <label>Length (seconds) <input id="captureDuration" type="number" min="0.1" max="600" step="0.1" value="10"></label>
           <label>Loop transition <select id="captureTransition" onchange="updateCaptureTransition()">
@@ -1235,10 +1307,22 @@
           <a id="captureDownload" style="display:none" download>Download clip</a>
         </div>
         <div class="capture-status" id="captureStatus" role="status" aria-live="polite"></div>
+        <hr>
+        <h3>Reuse a saved capture</h3>
+        <p>Add an Instagram or Facebook capture to the video library for use in playlists and new renders. Your original export is kept.</p>
+        <div class="capture-fields">
+          <label class="capture-saved-picker">Saved capture <select id="captureLibrarySelect" onchange="document.getElementById('captureLibraryAdd').disabled = captureLibraryBusy || !this.value"><option value="">Loading saved captures…</option></select></label>
+        </div>
+        <div class="capture-actions">
+          <button type="button" id="captureLibraryRefresh" onclick="loadSavedCaptures()">Refresh saved captures</button>
+          <button type="button" id="captureLibraryAdd" onclick="addCaptureToLibrary()" disabled>Add to library</button>
+        </div>
+        <div class="capture-status" id="captureLibraryStatus" role="status" aria-live="polite"></div>
       </div>
     </div>
     <section class="playlist-timeline-workspace" id="playlistTimelineWorkspace" aria-label="Playlist timeline editor">
       <div class="timeline-toolbar"><h3>Playlist timeline</h3><button type="button" id="timelineAddCurrent" title="Insert the current player video and look at the nearest clip boundary" disabled>+ Add current view</button><button type="button" id="timelineBack" aria-label="Move playhead back one second">−1s</button><output id="timelineTimecode">0:00 / 0:00</output><button type="button" id="timelineForward" aria-label="Move playhead forward one second">+1s</button><label for="playlistPreviewAspect">Preview frame</label><select id="playlistPreviewAspect" aria-label="Playlist preview aspect ratio"><option value="screen">This screen</option><option value="16:9">16:9 · widescreen</option><option value="16:10">16:10 · projector</option><option value="3:2">3:2 · laptop</option><option value="4:3">4:3 · classic</option><option value="1:1">1:1 · square</option><option value="9:16">9:16 · portrait</option></select><label>Scale <input id="timelineZoom" type="range" min="5" max="24" value="10" aria-label="Timeline scale"></label></div>
+      <div class="timeline-legend"><span>Layout / framing changes</span><span>VFX / logo / text cues</span><span>Click a block to edit it; click the ruler to choose a new change time.</span></div>
       <div class="timeline-scroll" id="timelineScroll"><div class="timeline-content" id="timelineContent"><div class="timeline-ruler" id="timelineRuler"></div><div class="timeline-track" id="timelineTrack"></div></div></div>
       <div class="timeline-status" id="timelineStatus" role="status">Drag videos from the library onto the timeline, then scrub to preview.</div>
     </section>
@@ -1269,16 +1353,37 @@
         <button type="button" class="pl-btn pl-btn-save" onclick="savePlaylist()">Save</button>
       </div>
       <div class="pl-inspector" id="plInspector"><h3>Selected clip</h3><p class="pl-inspector-name" id="plInspectorName">Select a clip on the timeline to edit its settings.</p>
+        <div id="insChangePanel" hidden>
+          <label>Layout / framing section<select id="insChangeSelect" aria-label="Layout or framing section" title="Choose which timed section to edit. Changes apply from this point until a later change overrides them."></select></label>
+          <p id="insCompositionScope" class="ins-composition-scope"></p>
+          <label>Change time · seconds into clip<input id="insChangeAt" type="number" min="0.001" step="0.1" title="Move the selected layout/framing change within this clip. The initial section starts at zero."></label>
+          <div class="ins-change-tools"><button type="button" id="insAddChange" title="Add a layout/framing change at the playhead using the settings active there.">+ Change at playhead</button><button type="button" id="insRemoveChange" title="Remove this timed change and continue the preceding section's settings.">Remove change</button><button type="button" id="insUpright" title="Set all video panels in this section upright with no horizontal or vertical mirroring.">All panels upright</button></div>
+          <div id="insPatternPreview" class="ins-pattern-preview" aria-label="Panel orientation preview"></div>
+        </div>
         <div class="pl-inspector-grid" id="plInspectorFields" hidden>
+          <label style="grid-column:1/-1">Source video<select id="insVideo" title="Replace this clip's source video, retaining its timing and scripted changes. Source In/Out resets to the full new video."></select></label>
           <label>Length mode<select id="insDurationType"><option value="seconds">Seconds</option><option value="loops">Loops</option></select></label>
           <label>Length<input id="insDurationValue" type="number" min="1" step="1"></label>
-          <label>Layout<select id="insView"><option value="single">Single</option><option value="dual">Dual</option><option value="triple">3x</option><option value="quad">4x</option><option value="octo">8x</option></select></label>
-          <label>Orientation<select id="insPreset"></select></label>
+          <label>Layout<select id="insView"><option value="single">Single</option><option value="dual">Dual</option><option value="triple">3x</option><option value="quad">4x</option><option value="six">6x</option><option value="octo">8x</option></select></label>
+          <label>Mirror / orientation pattern<select id="insPreset" title="Choose the horizontal and vertical mirroring of the numbered panels. Pattern 1 keeps every panel upright."></select></label>
           <label>Playback<select id="insLoopMode"><option value="0">No loop</option><option value="1">Loop</option><option value="2">Bounce</option></select></label>
           <label>Speed<input id="insSpeed" type="number" min="0.25" max="4" step="0.05"></label>
-          <label>Zoom<input id="insZoom" type="number" min="1" max="4" step="0.05"></label>
+          <label>Source audio<select id="insMuted"><option value="true">Muted</option><option value="false">Audible</option></select></label>
+          <label>Cue range<select id="insSourceRange"><option value="">Full video</option></select></label>
+          <label>Source In · seconds<input id="insCueIn" type="number" min="0" step="0.01" value="0"></label>
+          <label>Source Out · seconds<input id="insCueOut" type="number" min="0.1" step="0.01" placeholder="Video end"></label>
+          <label>Zoom<input id="insZoom" type="number" min="0.25" max="4" step="0.01" title="Scale this timed section. A small increase, such as 1.02 with Pan X at 0, crops narrow black borders out of tiled videos and closes their centre seam."></label>
           <label>Pan X<input id="insPanX" type="number" min="-1" max="1" step="0.05"></label>
           <label>Pan Y<input id="insPanY" type="number" min="-1" max="1" step="0.05"></label>
+          <label>Hue · degrees<input id="insHue" type="number" min="0" max="360" step="1"></label>
+          <label>Saturation · %<input id="insSaturate" type="number" min="0" max="300" step="1"></label>
+          <label>Contrast · %<input id="insContrast" type="number" min="0" max="300" step="1"></label>
+          <label>Brightness · %<input id="insBrightness" type="number" min="0" max="300" step="1"></label>
+          <label>Blur · pixels<input id="insBlur" type="number" min="0" max="20" step="0.1"></label>
+          <label>Invert · %<input id="insInvert" type="number" min="0" max="100" step="1"></label>
+          <label>Sepia · %<input id="insSepia" type="number" min="0" max="100" step="1"></label>
+          <label>Trails<select id="insTrails"><option value="false">Off</option><option value="true">On</option></select></label>
+          <label>Trail fade<input id="insTrailAmount" type="number" min="0.01" max="1" step="0.01"></label>
           <label>Transition<select id="insTransitionType"></select></label>
           <label>Transition seconds<input id="insTransitionDuration" type="number" min="0.15" max="10" step="0.05"></label>
           <label>Transition pace<select id="insTransitionPace"><option value="steady">Even</option><option value="accelerate">Build</option><option value="decelerate">Hit</option><option value="ease">Ease</option></select></label>
@@ -1304,7 +1409,7 @@
             <option value="dual">Dual</option>
             <option value="triple">3x</option>
             <option value="quad">4x</option>
-            <option value="octo">8x</option>
+            <option value="six">6x</option><option value="octo">8x</option>
           </select>
           <select id="plPreset" aria-label="Panel orientation" title="Panel orientation"></select>
         </div>
@@ -1326,7 +1431,7 @@
           <option value="1.75">1.75×</option><option value="2">2×</option>
         </select></label></div>
         <div class="pl-add-row">
-          <label>Zoom<input type="number" id="plZoom" min="1" max="4" step="0.1" value="1"></label>
+          <label>Zoom<input type="number" id="plZoom" min="0.25" max="4" step="0.05" value="1"></label>
           <label>X position<input type="number" id="plPanX" min="-1" max="1" step="0.05" value="0"></label>
           <label>Y position<input type="number" id="plPanY" min="-1" max="1" step="0.05" value="0"></label>
         </div>
@@ -1389,7 +1494,7 @@
         <button class="pl-btn pl-btn-save" onclick="selectFolder()" style="width:100%">Use this folder</button>
         <div class="settings-status" id="settingsStatus"></div>
         <div class="settings-clip">
-          <label class="settings-label">Instagram clip folder</label>
+          <label class="settings-label">Social clip folder (Instagram / Facebook)</label>
           <div class="settings-current"><span class="sc-label">Current:</span> <span id="clipFolderCurrent">Same as download folder</span></div>
           <div class="dir-browser">
             <div class="dir-path" id="clipDirPath"></div>
@@ -1407,8 +1512,13 @@
 </div>
 
 <script src="/vfx_engine.js"></script>
+<script src="/camera_motion.js"></script>
+<script src="/reflection_video.js"></script>
+<script src="/logo_motion_controls.js"></script>
 <script src="/transition_engine.js"></script>
 <script src="/auto_perform.js"></script>
+<script src="/source_range.js"></script>
+<script src="/video_framing.js"></script>
 <script>
   const isMacEngine = new URLSearchParams(location.search).get('host') === '1';
   const requiresSafariPreview = !isMacEngine && ((navigator.maxTouchPoints > 1 && /Mac|iPad|iPhone/.test(navigator.platform + navigator.userAgent))
@@ -1451,10 +1561,50 @@
   const librarySection = document.getElementById('librarySection');
   const libraryGrid = document.getElementById('libraryGrid');
 
+  let sourceRange = null;
+  let sourceRangeFinished = false;
+  function playbackBounds() { return SourceRange.bounds(sourceRange, video.duration); }
+  function setPlaybackRange(value, restart = false) {
+    const next = SourceRange.validate(value);
+    if (JSON.stringify(next) !== JSON.stringify(sourceRange)) {
+      stopBounce(); sourceRangeFinished = false; sourceRange = next;
+      broadcastState({type: 'setSourceRange', sourceRange});
+    }
+    const range = playbackBounds();
+    if (video.readyState >= 1 && (restart || video.currentTime < range.start || (range.end !== null && video.currentTime >= range.end))) {
+      sourceRangeFinished = false; video.currentTime = range.start;
+    }
+    window.syncVideoCueFields?.();
+  }
+  function finishSourceRange() {
+    if (!sourceRange || sourceRangeFinished || bounceReversing || video.seeking || video.readyState < 2) return;
+    const range = playbackBounds();
+    if (video.paused && !video.ended) return;
+    if (video.currentTime < range.start) { video.currentTime = range.start; return; }
+    if (range.end === null || video.currentTime < range.end - .015) return;
+    sourceRangeFinished = true;
+    if (loopMode === 2) { startBounce(); return; }
+    if (recStopping) { finalizeRecording(); return; }
+    const repeat = loopMode === 1 || (plPlaying && plPlaylist.entries[plEntryIdx]?.duration.type === 'loops');
+    if (repeat && onLoopComplete()) return;
+    if (repeat) {
+      video.currentTime = range.start; sourceRangeFinished = false;
+      video.play().catch(() => {});
+    } else {
+      video.pause(); video.currentTime = Math.max(range.start, range.end - .001);
+    }
+  }
+  SourceRange.watch(video, finishSourceRange);
+  video.addEventListener('seeked', () => {
+    const range = playbackBounds();
+    if (range.end === null || video.currentTime < range.end - .03) sourceRangeFinished = false;
+  });
+
   let loopMode = 0; // 0=off, 1=loop, 2=bounce
   let playbackSpeed = 1;
   let bounceReversing = false;
   let bounceFrames = [];
+  let bounceFrameGeneration = 0;
   let bounceFrameIdx = 0;
   let bounceFinishing = false;
   let bounceOverlay = null;
@@ -1464,9 +1614,9 @@
   let captionTimer = null;
   const captionOverlay = document.getElementById('captionOverlay');
 
-  // View: 0=single, 1=dual, 2=triple, 3=quad, 4=octo
+  // View: 0=single, 1=dual, 2=triple, 3=quad, 4=octo, 5=six
   let viewMode = 0;
-  const VIEW_NAMES = ['single', 'dual', 'triple', 'quad', 'octo'];
+  const VIEW_NAMES = ['single', 'dual', 'triple', 'quad', 'octo', 'six'];
 
   let configIdx = 0;
   let tileZoom = 1.0;
@@ -1474,6 +1624,54 @@
   let tilePanY = 0;
   let clones = [];
   let videoListCache = [];
+  // Keep the API's manual order intact; all library views share this preference.
+  let librarySort = 'newest';
+  try { librarySort = localStorage.getItem('clubLibrarySort') || 'newest'; } catch {}
+  const librarySortModes = ['manual', 'newest', 'name', 'themes', 'colours', 'types'];
+  if (!librarySortModes.includes(librarySort)) librarySort = 'newest';
+  function orderedLibraryVideos(videos = videoListCache) {
+    const manual = new Map(videoListCache.map((item, index) => [item.filename, index]));
+    const positions = new Map(videos.map((item, index) => [item.filename, index]));
+    const position = item => manual.get(item.filename) ?? positions.get(item.filename);
+    return [...videos].sort((a, b) => {
+      if (librarySort === 'newest') return (b.modified || 0) - (a.modified || 0) || a.filename.localeCompare(b.filename);
+      if (librarySort === 'name') return a.filename.localeCompare(b.filename);
+      if (['themes', 'colours', 'types'].includes(librarySort)) {
+        const key = item => [...(item.catalog?.[librarySort] || [])].sort().join(', ') || '\uffff';
+        return key(a).localeCompare(key(b)) || position(a) - position(b);
+      }
+      return position(a) - position(b);
+    });
+  }
+  function setLibrarySort(value) {
+    if (!librarySortModes.includes(value)) return;
+    librarySort = value;
+    try { localStorage.setItem('clubLibrarySort', value); } catch {}
+    refreshLibraryViews();
+  }
+  function refreshLibraryViews() {
+    populateVideoDropdown();
+    window.updateLibraryCatalogue?.();
+    if (autoUi('autoLibraryDialog').open) openAutoLibraryEditor();
+    if (auditionDialog.open) populateAuditionVideos();
+    window.dispatchEvent(new CustomEvent('club-library-changed', {detail: videoListCache}));
+  }
+  let libraryReloadPromise = null;
+  function reloadLibrary() {
+    if (libraryReloadPromise) return libraryReloadPromise;
+    const buttons = [...document.querySelectorAll('[data-reload-library]')];
+    const status = document.getElementById('libraryReloadStatus');
+    buttons.forEach(button => { button.disabled = true; button.textContent = 'Reloading…'; });
+    if (status) status.textContent = 'Checking the video folder…';
+    libraryReloadPromise = loadLibrary().then(ok => {
+      if (status) status.textContent = ok ? `Library reloaded · ${videoListCache.length} videos` : 'Could not reload the library. Try again.';
+      return ok;
+    }).finally(() => {
+      buttons.forEach(button => { button.disabled = false; button.textContent = 'Reload library'; });
+      libraryReloadPromise = null;
+    });
+    return libraryReloadPromise;
+  }
   let metadataCache = {};
   const videoPresetCache = new Map();
   let fxWindow = null;
@@ -1558,6 +1756,10 @@
     try {
       const res = await fetch('/api/cookie-status');
       const s = await res.json();
+      if (!document.getElementById('connPanel').classList.contains('visible')) {
+        document.getElementById('cookieBrowser').value = s.browser || 'chrome';
+        document.getElementById('cookieProfile').value = s.profile || '';
+      }
       const dot = document.getElementById('connDot');
       const label = document.getElementById('connLabel');
       const btn = document.getElementById('connBtn');
@@ -1567,11 +1769,11 @@
         const age = s.age_hours < 1 ? 'less than 1 hour' :
                     s.age_hours < 24 ? Math.round(s.age_hours) + ' hours' :
                     Math.round(s.age_hours / 24) + ' days';
-        label.textContent = `Instagram connected (${age} ago)`;
+        label.textContent = `Saved Instagram login cookies (${age} old; session not verified)`;
         btn.textContent = 'Refresh';
       } else if (s.exists) {
         dot.className = 'conn-dot amber';
-        label.textContent = 'Instagram cookies expired';
+        label.textContent = s.has_session ? 'Saved Instagram cookies are old; refresh them' : 'Saved cookies have no usable Instagram login';
         btn.textContent = 'Reconnect';
       } else {
         dot.className = 'conn-dot red';
@@ -1600,7 +1802,8 @@
   async function refreshCookies(withPassword) {
     const btn = document.getElementById('connRefreshBtn');
     const result = document.getElementById('connResult');
-    const body = {};
+    const body = {browser:document.getElementById('cookieBrowser').value, profile:document.getElementById('cookieProfile').value.trim()};
+    const browserName = body.browser === 'chrome' ? 'Chrome' : 'Brave';
 
     if (withPassword) {
       const pw = document.getElementById('connPassword').value;
@@ -1613,10 +1816,12 @@
     }
 
     btn.disabled = true;
-    result.textContent = 'Refreshing cookies from Brave...';
+    result.textContent = `Importing Instagram cookies from ${browserName}…`;
     result.className = 'conn-result';
 
     try {
+      const sourceStatus = await (await fetch('/api/cookie-status', {cache:'no-store'})).json();
+      if (!sourceStatus.browser) throw new Error('Restart the updated Mac server to enable browser selection, then refresh this page.');
       const res = await fetch('/api/refresh-cookies', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -1626,16 +1831,13 @@
       document.getElementById('connPassword').value = '';
 
       if (data.ok && data.fresh) {
-        result.textContent = 'Connected successfully!';
+        result.textContent = `Instagram login cookies imported from ${browserName}. Try your download to check the session.`;
         result.className = 'conn-result ok';
-        setTimeout(() => {
-          document.getElementById('connPanel').classList.remove('visible');
-        }, 1500);
       } else if (data.ok) {
-        result.textContent = 'Cookies exported but may be stale. Try logging into Instagram in Brave first.';
+        result.textContent = data.error || `No usable login cookies found. Log into Instagram in ${browserName} on the Mac, then refresh.`;
         result.className = 'conn-result err';
       } else {
-        result.textContent = 'Failed to export cookies. Check that Brave is installed.';
+        result.textContent = data.error || `Could not import cookies from ${browserName}. Check the Mac browser/profile and Keychain access.`;
         result.className = 'conn-result err';
       }
       checkCookieStatus();
@@ -1660,13 +1862,15 @@
   });
 
   video.addEventListener('play', () => {
-    playBtn.textContent = 'Pause';
+    playBtn.textContent = video.paused ? 'Play' : 'Pause';
     if (loopMode === 2 && !rafId) startRenderLoop();
-    syncFxTransport({ playing: true });
+    syncFxTransport({ playing: !video.paused });
+    if (playlistPreviewActive()) updatePlaylistPlaybackButton();
   });
   video.addEventListener('pause', () => {
     playBtn.textContent = 'Play';
     syncFxTransport({ playing: false });
+    if (playlistPreviewActive()) updatePlaylistPlaybackButton();
   });
   video.addEventListener('error', () => {
     if (!isMacEngine && video.getAttribute('src')) {
@@ -1675,6 +1879,7 @@
   });
 
   function stopBounce() {
+    bounceFrameGeneration++;
     bounceReversing = false;
     bounceFrameIdx = 0;
     bounceFinishing = false;
@@ -1687,7 +1892,7 @@
   }
 
   function startBounce() {
-    if (bounceFrames.length === 0) { video.currentTime = 0; video.play(); return; }
+    if (bounceFrames.length === 0) { video.currentTime = playbackBounds().start; sourceRangeFinished = false; video.play(); onLoopComplete(); return; }
     bounceReversing = true;
     bounceFrameIdx = bounceFrames.length - 1;
     video.pause();
@@ -1709,6 +1914,7 @@
   }
 
   video.addEventListener('ended', () => {
+    if (sourceRange) { finishSourceRange(); return; }
     if (loopMode === 2 && !bounceReversing) { startBounce(); return; }
     if (loopMode === 1) {
       video.currentTime = 0;
@@ -1725,8 +1931,10 @@
 
   video.addEventListener('timeupdate', () => {
     if (video.duration) {
-      progressFill.style.width = (video.currentTime / video.duration * 100) + '%';
+      const range = playbackBounds();
+      progressFill.style.width = (Math.max(0, Math.min(1, (video.currentTime - range.start) / (range.end - range.start))) * 100) + '%';
     }
+    if (sourceRange) return;
     if (!video.duration || loopMode === 0) return;
 
     if (loopMode === 1 && video.currentTime > video.duration - 0.15) {
@@ -1743,7 +1951,8 @@
     if (!video.duration) return;
     const rect = e.currentTarget.getBoundingClientRect();
     const pct = (e.clientX - rect.left) / rect.width;
-    video.currentTime = pct * video.duration;
+    const range = playbackBounds();
+    video.currentTime = range.start + Math.max(0, Math.min(1, pct)) * (range.end - range.start);
   }
 
   function onLoopComplete() {
@@ -1773,7 +1982,7 @@
   });
 
   function showControls() {
-    if (!document.fullscreenElement) return;
+    if (!document.fullscreenElement && !videoWrap.classList.contains('preview-fullscreen')) return;
     controlsEl.classList.remove('hidden');
     if (plPlaying) plIndicator.classList.remove('hidden');
     videoWrap.style.cursor = '';
@@ -1831,7 +2040,8 @@
           bounceFinishing = true;
           if (recStopping) { stopBounce(); finalizeRecording(); }
           else {
-            video.currentTime = 0;
+            video.currentTime = playbackBounds().start;
+            sourceRangeFinished = false;
             video.addEventListener('seeked', function onReady() {
               video.removeEventListener('seeked', onReady);
               stopBounce();
@@ -1883,9 +2093,13 @@
         });
         if (vfxState.enabled) renderVfxFrame();
         if (isRecording || obsOutputActive) drawCompositeFrame();
-        if (loopMode === 2 && !video.paused) {
+        if (loopMode === 2 && !video.paused && !video.seeking && video.readyState >= 2) {
           const idx = bounceFrames.length;
-          createImageBitmap(video).then(bmp => { bounceFrames[idx] = bmp; });
+          const generation = bounceFrameGeneration;
+          createImageBitmap(video).then(bmp => {
+            if (generation !== bounceFrameGeneration) { bmp.close(); return; }
+            bounceFrames[idx] = bmp;
+          }).catch(() => {}); // Loading/seeking can invalidate the source before capture completes.
         }
       }
       rafId = requestAnimationFrame(draw);
@@ -1900,21 +2114,33 @@
   const DUAL_POS_MAP = [0, 3];
   const TRIPLE_POS_MAP = [0, 1, 2];
   const QUAD_POS_MAP = [0, 1, 4, 5];
+  const SIX_POS_MAP = [0, 1, 2, 4, 5, 6];
 
   function drawZoomedTile(ctx, vw, vh, cw, ch, source = video) {
-    const coverScale = Math.max(cw / vw, ch / vh);
-    const es = coverScale * tileZoom;
-    const sw = Math.min(vw, cw / es);
-    const sh = Math.min(vh, ch / es);
-    const panRangeX = vw - sw;
-    const panRangeY = vh - sh;
-    const sx = panRangeX * (1 + tilePanX) / 2;
-    const sy = panRangeY * (1 - tilePanY) / 2;
-    ctx.drawImage(source, sx, sy, sw, sh, 0, 0, cw, ch);
+    ctx.save(); ctx.filter = buildFilterString(currentEffects);
+    VideoFraming.draw(ctx, source, vw, vh, cw, ch, tileZoom, tilePanX, tilePanY, viewMode === 0 ? 'contain' : 'cover');
+    ctx.restore();
   }
 
+  function updateSingleFraming() {
+    const smaller = viewMode === 0 && tileZoom < 1;
+    videoWrap.classList.toggle('zoomed-out',smaller || (viewMode===0 && trailsEnabled));
+    if (viewMode !== 0) return;
+    const canvasNeeded=smaller || trailsEnabled;
+    if (canvasNeeded && video.src && !clones.length) { buildClones(0); return; }
+    if (!canvasNeeded && clones.length) { destroyClones(); if (vfxState.enabled || isRecording || obsOutputActive) startRenderLoop(); }
+    const orientation=CONFIGS[configIdx]?.[0] || '';
+    const framing=smaller ? '' : VideoFraming.transform(video.videoWidth, video.videoHeight, video.clientWidth, video.clientHeight, tileZoom, tilePanX, tilePanY);
+    // Match the composite renderer: mirroring also mirrors the framed crop.
+    video.style.transform = [orientation,framing==='none'?'':framing].filter(Boolean).join(' ');
+    if(clones[0])clones[0].style.transform=orientation;
+    if (bounceOverlay) bounceOverlay.style.transform = video.style.transform;
+  }
+  new ResizeObserver(updateSingleFraming).observe(videoStage);
+  video.addEventListener('loadedmetadata', updateSingleFraming);
+
   function applyTransforms() {
-    if (viewMode === 0) { video.style.transform = ''; return; }
+    if (viewMode === 0) { updateSingleFraming(); return; }
     const cfg = CONFIGS[configIdx];
     if (viewMode === 1) {
       clones.forEach(c => {
@@ -1923,6 +2149,8 @@
       });
     } else if (viewMode === 2) {
       clones.forEach(c => { c.style.transform = cfg[TRIPLE_POS_MAP[parseInt(c.dataset.pos)]]; });
+    } else if (viewMode === 5) {
+      clones.forEach(c => { c.style.transform = cfg[SIX_POS_MAP[parseInt(c.dataset.pos)]]; });
     } else if (viewMode === 3) {
       clones.forEach(c => { c.style.transform = cfg[QUAD_POS_MAP[parseInt(c.dataset.pos)]]; });
     } else {
@@ -1945,7 +2173,7 @@
   function applyEffectFilters() {
     const f = buildFilterString(currentEffects);
     video.style.filter = f;
-    clones.forEach(c => { c.style.filter = f; });
+    clones.forEach(c => { c.style.filter = 'none'; });
     if (bounceOverlay) bounceOverlay.style.filter = f;
   }
 
@@ -1980,56 +2208,114 @@
     if (vfxWindow && !vfxWindow.closed && typeof vfxWindow.updateVfxStatus === 'function') vfxWindow.updateVfxStatus(state);
   }
 
+  const vfxControllerOwner = globalThis.crypto?.randomUUID?.() || `editor-${Date.now()}-${Math.random()}`;
+  function getVfxControllerIdentity() { return {owner: vfxControllerOwner, version: 16, renderer: VfxEngine.CONTROL_VERSION, filename: currentFilename}; }
+  function connectVfxController(controller) {
+    if (controller !== vfxWindow || controller.closed) return;
+    if (typeof controller.attachEditor === 'function') controller.attachEditor(window, vfxControllerOwner);
+  }
   function openVfxController() {
     if (vfxWindow && !vfxWindow.closed) {
-      if (vfxWindow.CLUB_VISUALS_VFX_UI_VERSION !== 6) vfxWindow.location.replace('/vfx');
-      vfxWindow.focus();
-      return;
+      if (vfxWindow.CLUB_VISUALS_VFX_UI_VERSION !== 12) {
+        const controller = vfxWindow;
+        controller.addEventListener('load', () => connectVfxController(controller), {once: true});
+        controller.location.replace('/vfx');
+      } else connectVfxController(vfxWindow);
+      vfxWindow.focus(); return;
     }
-    vfxWindow = window.open('/vfx', 'vfxController', 'width=360,height=560,resizable=yes');
-    if (!vfxWindow) return;
-    document.getElementById('vfxBtn').classList.add('active');
-    vfxWindow.addEventListener('load', () => {
-      vfxWindow.updateVfxStatus({ filename: currentFilename, vfxState: getVfxState() });
-    });
+    const controller = window.open('/vfx', `vfxController-${vfxControllerOwner}`, 'width=440,height=820,resizable=yes');
+    vfxWindow = controller;
+    if (!controller) return;
+    controller.addEventListener('load', () => connectVfxController(controller), {once: true});
+    const closed = setInterval(() => {
+      if (!controller.closed) return;
+      clearInterval(closed); onVfxWindowClosed(controller);
+    }, 400);
   }
 
+  window.addEventListener('pagehide', () => { if (vfxWindow && !vfxWindow.closed) vfxWindow.close(); });
+
   function activateMirrorSculpture() {
-    if (vfxState.enabled && vfxState.scene === 3) { deactivateVfxObject(); return; }
-    setVfxState({ enabled: true, scene: 3 });
+    if (vfxState.enabled && VfxEngine.baseEnabled(vfxState) && vfxState.scene === 3) { setVideoEffectEnabled(false); if (!vfxState.enabled) deactivateVfxObject(); return; }
+    setVfxState({ enabled: true, scene: 3, baseEnabled: true, logoEnabled: VfxEngine.logoEnabled(vfxState) });
     openVfxController();
   }
 
+  function activateReflectionLogo() {
+    if (vfxState.enabled && VfxEngine.logoEnabled(vfxState) && vfxState.logo3d.backdrop === 'black' && vfxState.logo3d.kind === 'logo') { setLogoLayerEnabled(false, true); return; }
+    setVfxLogo3d({kind: 'logo', skin: 'chrome', backdrop: 'black'}, true);
+    setLogoLayerEnabled(true);
+    openVfxController();
+  }
+  function isReflectionOnly() { return vfxState.enabled && VfxEngine.logoOnly(vfxState) && vfxState.logo3d.backdrop === 'black'; }
+  function syncReflectionBackdrop() {
+    videoWrap.classList.toggle('reflection-only', isReflectionOnly());
+    syncVfxButtons();
+  }
+  function syncVfxButtons() {
+    const object = vfxState.enabled && VfxEngine.logoEnabled(vfxState);
+    const logo = object && vfxState.logo3d.kind === 'logo';
+    for (const [id, active] of Object.entries({vfxBtn: vfxState.enabled, cameraMotionBtn: vfxState.enabled && VfxEngine.baseEnabled(vfxState) && vfxState.scene === 7, mirrorBtn: vfxState.enabled && VfxEngine.baseEnabled(vfxState) && vfxState.scene === 3,
+      logo3dBtn: logo && vfxState.logo3d.backdrop !== 'black', reflectionLogoBtn: logo && vfxState.logo3d.backdrop === 'black', text3dBtn: object && vfxState.logo3d.kind === 'text'})) {
+      const button = document.getElementById(id); button.classList.toggle('active', active); button.setAttribute('aria-pressed', String(active));
+    }
+    const play = document.getElementById('logoMotionPlayBtn');
+    const running = vfxState.logo3d.animationClock?.playing === true;
+    const composition=playlistPreviewActive();
+    play.disabled = !object || composition; play.textContent = composition?'Motion follows playlist':`${running ? 'Pause' : 'Play'} ${vfxState.logo3d.kind === 'text' ? 'text' : 'logo'} motion`;
+    play.title=composition?'Play playlist runs the video, effects and logo motion together. Use the cue editor’s private audition to inspect logo motion separately.':'Start or pause object motion independently of the source video.';
+    play.setAttribute('aria-pressed', String(running));
+  }
+  function setVfxAnimationTime(time, playing) {
+    setVfxLogo3d({animationClock: {time: Math.max(0, time), startedAt: Date.now(), playing}});
+  }
+  function controlVfxAnimation(action) {
+    const time = VfxEngine.animationSeconds(vfxState.logo3d);
+    const playing = action === 'restart' || action === 'play' || (action === 'toggle' && vfxState.logo3d.animationClock?.playing !== true);
+    setVfxAnimationTime(action === 'restart' || action === 'stop' ? 0 : time, action === 'stop' ? false : playing);
+  }
+
   function activateLogo3d() {
-    if (vfxState.enabled && vfxState.scene === 6 && vfxState.logo3d.kind === 'logo') { deactivateVfxObject(); return; }
-    setVfxLogo3d({ kind: 'logo' }, true);
-    setVfxState({ enabled: true, scene: 6 });
+    if (vfxState.enabled && VfxEngine.logoEnabled(vfxState) && vfxState.logo3d.kind === 'logo' && vfxState.logo3d.backdrop !== 'black') { setLogoLayerEnabled(false, true); return; }
+    setVfxLogo3d({ kind: 'logo', backdrop: 'video' }, true);
+    setLogoLayerEnabled(true);
     openVfxController();
   }
 
   function activateText3d() {
-    if (vfxState.enabled && vfxState.scene === 6 && vfxState.logo3d.kind === 'text') { deactivateVfxObject(); return; }
+    if (vfxState.enabled && VfxEngine.logoEnabled(vfxState) && vfxState.logo3d.kind === 'text') { setLogoLayerEnabled(false, true); return; }
     setVfxLogo3d({ kind: 'text' }, true);
-    setVfxState({ enabled: true, scene: 6 });
+    setLogoLayerEnabled(true);
     openVfxController();
+  }
+
+  function setLogoLayerEnabled(enabled, closeWhenEmpty = false) {
+    const base = vfxState.enabled && VfxEngine.baseEnabled(vfxState) && vfxState.scene !== 6;
+    setVfxState({enabled: enabled || base, logoEnabled: !!enabled, baseEnabled: base, scene: base ? vfxState.scene : 6});
+    if (!enabled && !base && closeWhenEmpty) deactivateVfxObject();
+  }
+  function setVideoEffectEnabled(enabled) {
+    const logo = vfxState.enabled && VfxEngine.logoEnabled(vfxState);
+    setVfxState({enabled: enabled || logo, logoEnabled: logo, baseEnabled: !!enabled, scene: vfxState.scene === 6 && enabled ? (vfxState.backgroundScene ?? 0) : vfxState.scene});
   }
 
   function deactivateVfxObject() {
     setVfxState({ enabled: false });
     const controller = vfxWindow;
     vfxWindow = null;
-    document.getElementById('vfxBtn').classList.remove('active');
+    syncVfxButtons();
     if (controller && !controller.closed) controller.close();
   }
 
   function onVfxWindowClosed(closedWindow) {
     if (closedWindow && closedWindow !== vfxWindow) return;
     vfxWindow = null;
-    document.getElementById('vfxBtn').classList.remove('active');
+    syncVfxButtons();
   }
 
   function setTrailsEnabled(enabled) {
     trailsEnabled = enabled;
+    updateSingleFraming();
     broadcastState({ type: 'setTrails', enabled, amount: trailAmount });
     if (trailsEnabled && !rafId) startRenderLoop();
   }
@@ -2039,12 +2325,67 @@
     broadcastState({ type: 'setTrails', enabled: trailsEnabled, amount: trailAmount });
   }
 
+  const cameraMotion = new CameraMotion.Input({getSettings: () => vfxState.motion,
+    getSourceId: () => vfxState.motion?.sourceId, onStatus: status => syncFxTransport({cameraStatus: status})});
+  const reflectionVideo = new ReflectionVideo();
+  function listReflectionVideos() { return orderedLibraryVideos().map(v => ({filename: v.filename})); }
+  function getReflectionVideoStatus() { return {message: reflectionVideo.message, ...reflectionVideo.snapshot()}; }
+  function chooseReflectionVideo(filename, speed = 1) {
+    const same = filename === vfxState.logo3d.reflectionSource?.filename, current = reflectionVideo.snapshot();
+    setVfxLogo3d({reflectionSource: ReflectionVideo.normalise({filename, speed}), reflectionClock: {time:same?current.time:0, startedAt:Date.now(), playing:same?current.playing:true}});
+  }
+  function toggleReflectionVideo() {
+    const clock = reflectionVideo.snapshot();
+    setVfxLogo3d({reflectionClock: {...clock, playing: !clock.playing}});
+  }
+  function openCameraMotionController() {
+    openVfxController();
+    const controller = vfxWindow;
+    if (!controller) return;
+    if (typeof controller.showCameraControls === 'function') controller.showCameraControls();
+    else controller.addEventListener('load', () => controller.showCameraControls?.(), {once: true});
+  }
+  function getCameraMotionStatus() {
+    const status = cameraMotion.status();
+    if (cameraMotion.linkError && status.connected) status.message += ' Motion link unavailable; local preview still works.';
+    if (!status.connected && cameraMotion.frame().image) status.message = 'Receiving live movement from the connected camera editor.';
+    return status;
+  }
+  function listCameraMotionDevices() { return cameraMotion.devices(); }
+  function drawCameraMotionMonitor(canvas) {
+    const ctx = canvas.getContext('2d'), frame = cameraMotion.frame();
+    ctx.fillStyle = '#000'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+    if (frame.image) ctx.drawImage(frame.image, 0, 0, canvas.width, canvas.height);
+  }
+  function resetCameraMotion() { cameraMotion.reset(); }
+  async function connectCameraMotion(deviceId) {
+    if (await cameraMotion.connect(deviceId)) {
+      setVfxState({enabled: true, scene: 7, intensity: 1,
+        motion: {...CameraMotion.settings(vfxState.motion), sourceId: cameraMotion.id}});
+    }
+  }
+  function disconnectCameraMotion() {
+    cameraMotion.disconnect();
+    if (vfxState.scene === 7) setVideoEffectEnabled(false);
+  }
+  function setCameraMotion(settings) {
+    const previous = CameraMotion.settings(vfxState.motion);
+    const next = CameraMotion.settings({...previous, ...settings});
+    if (previous.mirror !== next.mirror || previous.delay !== next.delay) cameraMotion.reset();
+    setVfxState({motion: {...next, sourceId: vfxState.motion?.sourceId || cameraMotion.id}});
+  }
+  function useCameraMotion() {
+    setVfxState({enabled: true, scene: 7, motion:{...CameraMotion.settings(vfxState.motion),sourceId:cameraMotion.stream ? cameraMotion.id : (vfxState.motion?.sourceId || cameraMotion.id)}});
+  }
   function setVfxState(update) {
+    if (update.scene !== undefined && update.scene !== 6) update = {...update, backgroundScene:update.scene};
+    if (update.scene !== undefined && update.baseEnabled === undefined && update.logoEnabled === undefined) {
+      update = {...update, baseEnabled: update.scene !== 6, logoEnabled: update.scene === 6 || VfxEngine.logoEnabled(vfxState)};
+    }
     Object.assign(vfxState, update);
+    syncReflectionBackdrop();
     videoWrap.classList.toggle('vfx-active', vfxState.enabled);
-    document.getElementById('mirrorBtn').classList.toggle('active', vfxState.enabled && vfxState.scene === 3);
-    document.getElementById('logo3dBtn').classList.toggle('active', vfxState.enabled && vfxState.scene === 6 && vfxState.logo3d.kind === 'logo');
-    document.getElementById('text3dBtn').classList.toggle('active', vfxState.enabled && vfxState.scene === 6 && vfxState.logo3d.kind === 'text');
+
     if (vfxState.enabled) {
       try {
         if (!vfxEngine) {
@@ -2059,11 +2400,15 @@
         syncFxTransport({ vfxError: error.message });
       }
     } else vfxFrameReady = false;
+    syncReflectionBackdrop();
+    if (vfxState.enabled && video.readyState >= 2) renderVfxFrame();
     broadcastState({ type: 'setVfx', settings: {
       enabled: vfxState.enabled, scene: vfxState.scene,
-      intensity: vfxState.intensity, feedback: vfxState.feedback
+      intensity: vfxState.intensity, feedback: vfxState.feedback, motion: vfxState.motion,
+      logoEnabled: VfxEngine.logoEnabled(vfxState), baseEnabled: VfxEngine.baseEnabled(vfxState)
     } });
     syncFxTransport({ vfxState: { ...vfxState } });
+    syncLogoRenderPreview();
   }
 
   function setVfxShape(update) {
@@ -2081,10 +2426,18 @@
     const objectChanged = (update.kind !== undefined && update.kind !== vfxState.logo3d.kind)
       || (update.text !== undefined && update.text !== vfxState.logo3d.text);
     vfxState.logo3d = { ...vfxState.logo3d, ...update };
+    vfxState.logo3d.backdrop = vfxState.logo3d.backdrop === 'black' ? 'black' : 'video';
+    vfxState.logo3d.orientation = VfxEngine.normaliseOrientation(vfxState.logo3d.orientation);
+    vfxState.logo3d.animation = VfxEngine.normaliseAnimation(vfxState.logo3d.animation);
+    vfxState.logo3d.snake = VfxEngine.normaliseSnake(vfxState.logo3d.snake); vfxState.logo3d.fly = VfxEngine.normaliseFly(vfxState.logo3d.fly);
+    vfxState.logo3d.reflectionSource = ReflectionVideo.normalise(vfxState.logo3d.reflectionSource);
+    reflectionVideo.configure(vfxState.logo3d.reflectionSource, vfxState.logo3d.reflectionClock);
+    vfxState.logo3d.animationClock ||= {time: 0, startedAt: Date.now(), playing: false};
+    syncReflectionBackdrop();
     if (vfxEngine) vfxEngine.setLogo3d(vfxState.logo3d);
     if (objectChanged || syncMirror) syncMirrorShapeFromBranding();
-    document.getElementById('logo3dBtn').classList.toggle('active', vfxState.enabled && vfxState.scene === 6 && vfxState.logo3d.kind === 'logo');
-    document.getElementById('text3dBtn').classList.toggle('active', vfxState.enabled && vfxState.scene === 6 && vfxState.logo3d.kind === 'text');
+    syncVfxButtons();
+    if (vfxState.enabled && vfxEngine && video.readyState >= 2) renderVfxFrame();
     broadcastState({ type: 'vfxLogo3d', settings: vfxState.logo3d });
     syncFxTransport({ vfxState: getVfxState() });
   }
@@ -2355,7 +2708,7 @@
     const dialog = autoUi('autoLibraryDialog');
     const list = autoUi('autoLibraryList');
     list.replaceChildren();
-    for (const item of videoListCache) {
+    for (const item of orderedLibraryVideos()) {
       const tag = autoVideoTags[item.filename] || {};
       const row = document.createElement('label'); row.className = 'auto-library-row';
       row.dataset.name = playlistVideoName(item.filename).toLowerCase();
@@ -2373,8 +2726,8 @@
       enabled.addEventListener('change', save); energy.addEventListener('change', save);
       row.append(enabled, name, energy); list.appendChild(row);
     }
-    autoUi('autoLibrarySearch').value = '';
-    dialog.showModal();
+    autoUi('autoLibrarySearch').dispatchEvent(new Event('input'));
+    if (!dialog.open) dialog.showModal();
   }
   autoUi('autoLibrarySearch').addEventListener('input', event => {
     const needle = event.target.value.toLowerCase();
@@ -2434,15 +2787,15 @@
   function autoChooseLayout(energy) {
     if (autoLayoutLocked) return;
     const profile = autoUi('autoProfile').value;
-    const modes = profile === 'ambient' ? [0, 0, 1] : profile === 'hypnotic' ? [1, 2, 3]
-      : energy > .65 ? [2, 3, 4] : [0, 1, 1, 3];
+    const modes = profile === 'ambient' ? [0, 0, 1] : profile === 'hypnotic' ? [1, 2, 3, 5]
+      : energy > .65 ? [2, 3, 5, 4] : [0, 1, 1, 3];
     let next = autoPick(modes);
     if (modes.some(mode => mode !== viewMode)) {
       for (let i = 0; i < 4 && next === viewMode; i++) next = autoPick(modes);
     }
     setViewModeTo(next);
     const choices = next === 1 ? DUAL_PRESETS : next === 2 ? TRIPLE_PRESETS
-      : next === 3 ? QUAD_PRESETS : next === 4 ? OCTO_PRESETS : [1];
+      : next === 3 ? QUAD_PRESETS : next === 4 ? OCTO_PRESETS : next === 5 ? SIX_PRESETS : [1];
     setConfig(autoPick(choices));
     applyZoomPan(next ? 1 + Math.round(autoRandom() * Math.min(1.2, energy + .2) * 10) / 10 : 1, 0, 0);
     setPlaybackSpeed(energy > .7 && profile === 'high-energy' ? 1.25 : 1);
@@ -2659,7 +3012,7 @@
   function setVfxSensitivity(value) { vfxSensitivity = value; }
 
   function getVfxState() {
-    return { ...vfxState, sensitivity: vfxSensitivity, audioConnected: !!vfxAnalyser };
+    return { ...vfxState, logo3d: {...vfxState.logo3d, reflectionClock: reflectionVideo.snapshot()}, sensitivity: vfxSensitivity, audioConnected: !!vfxAnalyser };
   }
 
   function triggerVfxPulse() {
@@ -2710,6 +3063,8 @@
       vfxState.bass *= 0.9;
       vfxState.hit *= 0.85;
     }
+    if (vfxState.scene === 7) vfxEngine.setMotionMask(cameraMotion.frame(vfxState.motion?.sourceId));
+    vfxEngine.setReflectionSource(reflectionVideo.frame(), !!vfxState.logo3d.reflectionSource?.filename);
     vfxEngine.render(vfxSource, vfxState);
     vfxFrameReady = true;
   }
@@ -2781,7 +3136,7 @@
     document.getElementById('status').className = 'status' + (type ? ' ' + type : '');
   }
 
-  function showVideo(filename, transition = undefined) {
+  function showVideo(filename, transition = undefined, range = null, {paused = false, deferTransition = false, outgoingFrame = null} = {}) {
     const wasPlaying = !video.paused && !video.ended;
     const hasOutgoing = video.readyState >= 2 && !!currentFilename;
     const chosenTransition = normaliseTransition(transition === undefined ? {
@@ -2793,10 +3148,12 @@
     } : transition);
     if (!hasOutgoing && chosenTransition.type !== 'fade-in') chosenTransition.type = 'cut';
     pixelHolding = false;
-    pixelHoldWantsPlay = wasPlaying || plPlaying || !!autoRun || !isMacEngine;
-    videoTransition.prepare(chosenTransition);
+    pixelHoldWantsPlay = !paused && (wasPlaying || plPlaying || !!autoRun || !isMacEngine);
+    videoTransition.prepare(chosenTransition,outgoingFrame);
     const loadToken = ++videoLoadToken;
     currentFilename = filename;
+    sourceRange = SourceRange.validate(range); sourceRangeFinished = false;
+    window.loadVideoCues?.(filename);
     document.getElementById('timelineAddCurrent').disabled = false;
     stopBounce();
     const previewStatus = document.getElementById('previewVideoStatus');
@@ -2820,19 +3177,21 @@
       video.removeEventListener('loadeddata', onLoaded);
       if (loadToken !== videoLoadToken) return;
       previewStatus.textContent = '';
-      video.currentTime = 0.001;
+      const initialRange = playbackBounds();
+      video.currentTime = initialRange.start + .001;
+      window.syncVideoCueFields?.();
       if (chosenTransition.type === 'pixel-scatter') {
         pixelHolding = true;
         video.pause();
         playBtn.textContent = pixelHoldWantsPlay ? 'Pause' : 'Play';
-        videoTransition.start(() => {
+        if(!deferTransition)videoTransition.start(() => {
           if (loadToken !== videoLoadToken) return;
           pixelHolding = false;
           if (pixelHoldWantsPlay) video.play().catch(() => {});
         });
       } else {
-        videoTransition.start();
-        if ((wasPlaying || !isMacEngine) && !plPlaying) video.play().catch(() => {
+        if(!deferTransition)videoTransition.start();
+        if (!paused && (wasPlaying || !isMacEngine) && !plPlaying) video.play().catch(() => {
           previewStatus.textContent = 'Preview ready. Tap Play to start it.';
         });
       }
@@ -2858,18 +3217,47 @@
     });
     showCaptionForVideo();
     applyEffectFilters();
-    broadcastState({ type: 'loadVideo', filename, transition: chosenTransition });
+    broadcastState({ type: 'loadVideo', filename, transition: chosenTransition, sourceRange });
     syncFxTransport({ filename });
   }
 
-  function refreshView() {
-    const wasPlaying = !video.paused;
-    const t = video.currentTime;
-    destroyClones();
-    const count = CLONE_COUNTS[viewMode];
-    if (count > 0) buildClones(count);
-    video.currentTime = t;
-    if (wasPlaying) video.play();
+  function restartVideo() {
+    if(playlistPreviewActive()){
+      const start=timelineSegments[plPlaying?plEntryIdx:plPreviewIdx]?.start || 0;
+      if(plPlaying)startPlaylist(start);else setTimelinePlayhead(start,{transitionPreview:false});
+      return;
+    }
+    if (video.readyState < 1) return;
+    const wasPlaying = bounceReversing || (pixelHolding ? pixelHoldWantsPlay : !video.paused);
+    videoTransition.cancel();
+    pixelHolding = false;
+    pixelHoldWantsPlay = wasPlaying;
+    stopBounce();
+    // Restart an active playlist clip's local schedule, so its old end timer
+    // or an effect from later in the clip cannot fire immediately after rewind.
+    if (plPlaying && plPlaylist.entries[plEntryIdx]) {
+      const entry = plPlaylist.entries[plEntryIdx];
+      clearTimeout(plTimer); cancelPlaylistCues(); plLoopCount = 0;
+      timelineEntryStartedAt = performance.now();
+      applyLayoutConfiguration(playlistLayoutAt(entry, 0));
+      if (plVfxBeforePlaylist) {
+        setVfxLogo3d(plVfxBeforePlaylist.logo3d);
+        setVfxShape(plVfxBeforePlaylist.shape);
+        setVfxState({...plVfxBeforePlaylist,
+          baseEnabled:VfxEngine.baseEnabled(plVfxBeforePlaylist),logoEnabled:VfxEngine.logoEnabled(plVfxBeforePlaylist)});
+      }
+      schedulePlaylistCues(entry);
+      if (entry.duration.type === 'seconds') plTimer = setTimeout(onEntryComplete, entry.duration.value * 1000);
+      updatePlIndicator();
+    }
+    sourceRangeFinished = false;
+    video.currentTime = playbackBounds().start;
+    progressFill.style.width = '0%';
+    window.syncVideoCueFields?.();
+    broadcastState({type:'seek', time:video.currentTime});
+    if (wasPlaying) video.play().catch(() => {});
+    else video.pause();
+    broadcastState({type:wasPlaying ? 'play' : 'pause'});
   }
 
   function toggleCaption() {
@@ -2902,6 +3290,7 @@
   }
 
   function togglePlay() {
+    if (playlistPreviewActive()) {togglePlaylistPreview();return;}
     if (pixelHolding) {
       pixelHoldWantsPlay = !pixelHoldWantsPlay;
       playBtn.textContent = pixelHoldWantsPlay ? 'Pause' : 'Play';
@@ -2914,20 +3303,52 @@
       broadcastState({ type: 'pause' });
       return;
     }
-    if (video.paused || video.ended) { video.play(); broadcastState({ type: 'play' }); }
+    if (video.paused || video.ended) {
+      if (sourceRange && (sourceRangeFinished || video.currentTime < playbackBounds().start || video.currentTime >= playbackBounds().end - .02)) {
+        video.currentTime = playbackBounds().start; sourceRangeFinished = false;
+      }
+      video.play().catch(() => {}); broadcastState({ type: 'play' });
+    }
     else { video.pause(); broadcastState({ type: 'pause' }); }
   }
 
   function closeAllMenus() {
-    document.querySelectorAll('.popup-menu').forEach(m => m.classList.remove('open'));
+    document.querySelectorAll('.popup-menu').forEach(menu => {
+      menu.classList.remove('open');
+      try { menu.hidePopover(); } catch {}
+      menu.popupAnchor?.setAttribute('aria-expanded','false');
+    });
+  }
+
+  function positionPlayerMenu(menu) {
+    const button = menu.popupAnchor;
+    if (!button?.isConnected || !button.getClientRects().length) { closeAllMenus(); return; }
+    const viewport = window.visualViewport;
+    const left = viewport?.offsetLeft || 0, top = viewport?.offsetTop || 0;
+    const width = viewport?.width || innerWidth, height = viewport?.height || innerHeight;
+    Object.assign(menu.style,{position:'fixed',inset:'auto',margin:'0',transform:'none',boxSizing:'border-box',
+      width:'max-content',maxWidth:Math.max(1,width-16)+'px',maxHeight:Math.max(1,Math.min(300,height-16))+'px',flexWrap:'wrap',overflow:'auto'});
+    const anchor = button.getBoundingClientRect(), bounds = menu.getBoundingClientRect();
+    const y = anchor.top - bounds.height - 8 >= top + 8 ? anchor.top - bounds.height - 8 : anchor.bottom + 8;
+    menu.style.left = Math.max(left+8,Math.min(left+width-bounds.width-8,anchor.left))+'px';
+    menu.style.top = Math.max(top+8,Math.min(top+height-bounds.height-8,y))+'px';
+  }
+
+  function togglePlayerMenu(menu, button) {
+    const wasOpen = menu.classList.contains('open');
+    closeAllMenus();
+    if (wasOpen) return;
+    menu.popupAnchor = button;
+    button.setAttribute('aria-expanded','true');
+    menu.setAttribute('popover','manual');
+    menu.classList.add('open');
+    try { menu.showPopover(); } catch {}
+    positionPlayerMenu(menu);
   }
 
   function togglePlaybackMenu(e) {
     e.stopPropagation();
-    const menu = document.getElementById('playbackMenu');
-    const wasOpen = menu.classList.contains('open');
-    closeAllMenus();
-    if (!wasOpen) menu.classList.add('open');
+    togglePlayerMenu(document.getElementById('playbackMenu'), document.getElementById('loopBtn'));
   }
 
   function setLoopMode(mode) {
@@ -2969,10 +3390,7 @@
 
   function toggleLayoutMenu(e) {
     e.stopPropagation();
-    const menu = document.getElementById('layoutMenu');
-    const wasOpen = menu.classList.contains('open');
-    closeAllMenus();
-    if (!wasOpen) menu.classList.add('open');
+    togglePlayerMenu(document.getElementById('layoutMenu'), document.getElementById('viewBtn'));
   }
 
   function setLayout(mode) {
@@ -2980,17 +3398,17 @@
     setViewModeTo(mode);
   }
 
-  const CLONE_COUNTS = [0, 1, 2, 3, 7];
+  const CLONE_COUNTS = [0, 1, 2, 3, 7, 5];
 
   function setViewModeTo(mode) {
-    videoWrap.classList.remove('dual', 'triple', 'quad', 'octo');
+    videoWrap.classList.remove('dual', 'triple', 'quad', 'octo', 'six');
     destroyClones();
     viewMode = mode;
     const name = VIEW_NAMES[viewMode];
     if (name !== 'single') videoWrap.classList.add(name);
     viewBtn.classList.toggle('active', viewMode > 0);
     sliderWrap.classList.toggle('visible', viewMode > 0);
-    document.getElementById('zoomWrap').classList.toggle('visible', viewMode > 0);
+    document.getElementById('zoomWrap').classList.add('visible');
     const hideSlider = viewMode === 1 || viewMode === 2 || viewMode === 3;
     configSlider.style.display = hideSlider ? 'none' : '';
     configLabel.style.display = hideSlider ? 'none' : '';
@@ -2998,6 +3416,7 @@
     const count = CLONE_COUNTS[viewMode];
     if (count > 0 && video.src) buildClones(count);
     else if (vfxState.enabled && !rafId) startRenderLoop();
+    updateSingleFraming();
     document.querySelectorAll('#layoutMenu .popup-opt').forEach(b => {
       b.classList.toggle('active', parseInt(b.dataset.mode) === mode);
     });
@@ -3009,11 +3428,12 @@
   const TRIPLE_PRESETS = [1, 2, 3, 4, 5, 6, 7, 8];
   const QUAD_PRESETS = [1, 2, 3, 4, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
   const OCTO_PRESETS = [1, 5, 6, 7, 21, 22, 23, 25, 26, 27, 30, 31];
+  const SIX_PRESETS = [1, 5, 6, 7, 21, 22, 23, 25, 26, 27, 30, 31];
   const presetContainer = document.getElementById('presetContainer');
 
   function buildPresetButtons() {
     presetContainer.innerHTML = '';
-    const presetMap = { 1: DUAL_PRESETS, 2: TRIPLE_PRESETS, 3: QUAD_PRESETS, 4: OCTO_PRESETS };
+    const presetMap = { 1: DUAL_PRESETS, 2: TRIPLE_PRESETS, 3: QUAD_PRESETS, 4: OCTO_PRESETS, 5: SIX_PRESETS };
     const presets = presetMap[viewMode] || OCTO_PRESETS;
     presets.forEach(val => {
       const btn = document.createElement('button');
@@ -3026,6 +3446,10 @@
   }
 
   document.addEventListener('click', closeAllMenus);
+  document.addEventListener('keydown', event => { if(event.key==='Escape')closeAllMenus(); });
+  document.addEventListener('scroll', event => { for(const menu of document.querySelectorAll('.popup-menu.open'))if(!menu.contains(event.target))positionPlayerMenu(menu); },true);
+  window.addEventListener('resize',()=>document.querySelectorAll('.popup-menu.open').forEach(positionPlayerMenu));
+  window.visualViewport?.addEventListener('resize',()=>document.querySelectorAll('.popup-menu.open').forEach(positionPlayerMenu));
 
   function setConfig(val) {
     configIdx = val - 1;
@@ -3046,8 +3470,9 @@
 
   zoomSlider.addEventListener('input', () => {
     tileZoom = parseFloat(zoomSlider.value);
-    zoomValue.textContent = tileZoom.toFixed(1) + 'x';
+    zoomValue.textContent = Number(tileZoom.toFixed(2)) + 'x';
     broadcastState({ type: 'setZoom', zoom: tileZoom });
+    updateSingleFraming();
     refreshAutoVideoPresetName();
   });
 
@@ -3057,6 +3482,7 @@
     zoomValue.textContent = '1.0x';
     resetPan();
     broadcastState({ type: 'setZoom', zoom: tileZoom });
+    updateSingleFraming();
     refreshAutoVideoPresetName();
   }
 
@@ -3069,6 +3495,7 @@
     tilePanX = parseFloat(panXSlider.value);
     panXValue.textContent = tilePanX.toFixed(1);
     broadcastState({ type: 'setPan', panX: tilePanX, panY: tilePanY });
+    updateSingleFraming();
     refreshAutoVideoPresetName();
   });
 
@@ -3076,6 +3503,7 @@
     tilePanY = parseFloat(panYSlider.value);
     panYValue.textContent = tilePanY.toFixed(1);
     broadcastState({ type: 'setPan', panX: tilePanX, panY: tilePanY });
+    updateSingleFraming();
     refreshAutoVideoPresetName();
   });
 
@@ -3084,21 +3512,25 @@
     panXSlider.value = '0'; panXValue.textContent = '0';
     panYSlider.value = '0'; panYValue.textContent = '0';
     broadcastState({ type: 'setPan', panX: 0, panY: 0 });
+    updateSingleFraming();
     refreshAutoVideoPresetName();
   }
 
   function applyZoomPan(zoom, panX, panY) {
-    tileZoom = Math.max(1, Math.min(4, Number(zoom) || 1));
+    tileZoom = VideoFraming.zoomValue(zoom);
     tilePanX = Math.max(-1, Math.min(1, Number(panX) || 0));
     tilePanY = Math.max(-1, Math.min(1, Number(panY) || 0));
     zoomSlider.value = tileZoom;
-    zoomValue.textContent = tileZoom.toFixed(1) + 'x';
+    zoomValue.textContent = Number(tileZoom.toFixed(2)) + 'x';
     panXSlider.value = tilePanX;
     panXValue.textContent = tilePanX.toFixed(1);
     panYSlider.value = tilePanY;
     panYValue.textContent = tilePanY.toFixed(1);
     broadcastState({ type: 'setZoom', zoom: tileZoom });
+    updateSingleFraming();
     broadcastState({ type: 'setPan', panX: tilePanX, panY: tilePanY });
+    updateSingleFraming();
+    updateSingleFraming();
     refreshAutoVideoPresetName();
   }
 
@@ -3108,6 +3540,7 @@
     document.getElementById('manualTransitionPace').value = 'steady';
     manualTransitionParams = {};
     manualTransitionSeed = 1;
+    setPlaybackRange(null);
     setLoopMode(0);
     setPlaybackSpeed(1);
     setViewModeTo(0);
@@ -3116,19 +3549,22 @@
   }
 
   function applyLayoutConfiguration(config) {
+    setPlaybackRange(config.sourceRange ?? null);
     document.getElementById('videoPresetName').dataset.manual = 'false';
     const mode = VIEW_NAMES.indexOf(config.view);
     setViewModeTo(mode >= 0 ? mode : 0);
     setConfig(Number(config.preset) || 1);
     setLoopMode(config.loopMode ?? 1);
     setPlaybackSpeed(config.speed ?? 1);
+    if(config.muted !== undefined){video.muted=!!config.muted;muteBtn.textContent=video.muted?'Unmute':'Mute';muteBtn.classList.toggle('active',video.muted);syncFxTransport({muted:video.muted});}
     applyZoomPan(config.zoom ?? 1, config.panX ?? 0, config.panY ?? 0);
+    if(config.duration || config.effects!==undefined || config.trailsEnabled!==undefined)applyPlaylistColour(config);
   }
 
   function suggestedVideoPresetName() {
     const playback = ['once', 'loop', 'bounce'][loopMode] || 'once';
     const layout = ['1x', '2x', '3x', '4x', '8x'][viewMode] || '1x';
-    const parts = [playback, 'zoom' + tileZoom.toFixed(1), layout];
+    const parts = [playback, 'zoom' + tileZoom.toFixed(Number.isInteger(tileZoom * 10) ? 1 : 2), layout];
     if (viewMode > 0) parts.push('P' + (configIdx + 1));
     if (playbackSpeed !== 1) parts.push('speed' + playbackSpeed);
     if (tilePanX !== 0) parts.push('X' + (tilePanX > 0 ? '+' : '') + tilePanX.toFixed(2));
@@ -3323,6 +3759,7 @@
         video: filename, view: preset.view, preset: preset.preset,
         loopMode: preset.loopMode, speed: preset.speed ?? 1,
         zoom: preset.zoom, panX: preset.panX, panY: preset.panY,
+        ...(preset.sourceRange ? {sourceRange: {...preset.sourceRange}} : {}),
         duration: { type, value },
         transition: normaliseTransition({
           type: document.getElementById('presetPlaylistTransitionType').value,
@@ -3372,7 +3809,8 @@
     const preset = {
       id: Date.now().toString(36) + '-' + Math.random().toString(36).slice(2),
       name, view: VIEW_NAMES[viewMode], preset: configIdx + 1,
-      loopMode, speed: playbackSpeed, zoom: tileZoom, panX: tilePanX, panY: tilePanY
+      loopMode, speed: playbackSpeed, zoom: tileZoom, panX: tilePanX, panY: tilePanY,
+      ...(sourceRange ? {sourceRange: {...sourceRange}} : {}),
     };
     const presets = await loadVideoPresets(filename);
     if (!videoPresetCache.has(filename)) return;
@@ -3417,22 +3855,65 @@
     requestMacFullscreen();
   }
 
-  function togglePreviewFullscreen() {
-    if (document.fullscreenElement) document.exitFullscreen();
-    else videoWrap.requestFullscreen();
+  let previewFullscreenHome = null, previewTransportHome = null, previewFullscreenMode = null;
+  function restorePreviewFullscreen() {
+    if (!previewFullscreenMode) return;
+    const playing = !video.paused;
+    previewFullscreenMode = null; videoWrap.classList.remove('preview-fullscreen');
+    document.getElementById('previewFullscreenBtn').textContent = 'Preview fullscreen';
+    document.getElementById('previewFullscreenBtn').setAttribute('aria-pressed', 'false');
+    if (previewTransportHome?.isConnected) { previewTransportHome.replaceWith(controlsEl); previewTransportHome = null; }
+    if (previewFullscreenHome?.isConnected) { previewFullscreenHome.replaceWith(videoWrap); previewFullscreenHome = null; }
+    controlsEl.classList.remove('hidden'); clearTimeout(hideTimer);
+    if (playing) video.play().catch(() => {});
+    window.dispatchEvent(new CustomEvent('club-preview-fullscreen', {detail: false}));
   }
+  async function togglePreviewFullscreen() {
+    if (previewFullscreenMode) {
+      if (document.fullscreenElement === videoWrap) await document.exitFullscreen().catch(() => {});
+      restorePreviewFullscreen(); return;
+    }
+    if (document.fullscreenElement) { await document.exitFullscreen().catch(() => {}); return; }
+    const playing = !video.paused;
+    previewFullscreenHome = document.createComment('Private preview home'); videoWrap.before(previewFullscreenHome);
+    if (!videoWrap.contains(controlsEl)) {
+      previewTransportHome = document.createComment('Private preview transport home'); controlsEl.before(previewTransportHome); videoWrap.append(controlsEl);
+    }
+    previewFullscreenMode = 'pending'; videoWrap.classList.add('preview-fullscreen'); document.body.append(videoWrap);
+    document.getElementById('previewFullscreenBtn').textContent = 'Exit preview fullscreen';
+    document.getElementById('previewFullscreenBtn').setAttribute('aria-pressed', 'true');
+    if (playing) video.play().catch(() => {});
+    window.dispatchEvent(new CustomEvent('club-preview-fullscreen', {detail: true}));
+    try {
+      if (!videoWrap.requestFullscreen) throw new Error('Fullscreen API unavailable');
+      await videoWrap.requestFullscreen(); previewFullscreenMode = 'native';
+    } catch {
+      previewFullscreenMode = 'window';
+      document.getElementById('previewVideoStatus').textContent = 'Showing a window-filling preview. Press Esc to leave.';
+    }
+    showControls();
+  }
+  document.addEventListener('fullscreenchange', () => {
+    if (document.fullscreenElement === videoWrap) previewFullscreenMode = 'native';
+    else if (previewFullscreenMode === 'native') restorePreviewFullscreen();
+  });
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && previewFullscreenMode === 'window') { event.preventDefault(); restorePreviewFullscreen(); }
+  });
 
   async function loadLibrary() {
     try {
-      const res = await fetch('/api/videos');
+      const res = await fetch('/api/videos', {cache: 'no-store'});
+      if (!res.ok) throw new Error('Could not load the library.');
       const videos = await res.json();
+      if (!Array.isArray(videos)) throw new Error('Invalid video library.');
       videoListCache = videos;
       document.getElementById('libraryOrderStatus').textContent = '';
       if (videos.length === 0) {
-        librarySection.style.display = 'none';
+        librarySection.style.display = 'block';
         libraryGrid.innerHTML = '';
-        populateVideoDropdown();
-        return;
+        refreshLibraryViews();
+        return true;
       }
       librarySection.style.display = 'block';
       libraryGrid.innerHTML = '';
@@ -3494,10 +3975,13 @@
         item.appendChild(del);
         libraryGrid.appendChild(item);
       });
-      populateVideoDropdown();
+      refreshLibraryViews();
       if (autoSelectMode) renderAutoSelectUI();
-      window.updateLibraryCatalogue?.();
-    } catch {}
+      return true;
+    } catch (error) {
+      document.getElementById('libraryOrderStatus').textContent = error.message;
+      return false;
+    }
   }
 
   let draggedLibraryItem = null;
@@ -3515,7 +3999,7 @@
     const order = libraryFilenames();
     const positions = new Map(order.map((name, index) => [name, index]));
     videoListCache.sort((a, b) => positions.get(a.filename) - positions.get(b.filename));
-    populateVideoDropdown();
+    refreshLibraryViews();
     const revision = ++libraryOrderRevision;
     const status = document.getElementById('libraryOrderStatus');
     status.textContent = 'Saving order…';
@@ -3618,18 +4102,61 @@
     itemEl.appendChild(overlay);
   }
 
-  // --- Instagram background clip capture ---
+  // --- Shared Instagram / Facebook social clip capture ---
 
   const CAPTURE_FORMATS = {
-    '4x5': { width: 1080, height: 1350, label: '4:5' },
-    '9x16': { width: 1080, height: 1920, label: '9:16' },
-    '1x1': { width: 1080, height: 1080, label: '1:1' },
+    'logo_9x16': {width: 1080, height: 1920, label: '9:16 logo render', profile: 'logo_render_9x16', reusable: true},
+    'logo_16x9': {width: 1920, height: 1080, label: '16:9 logo render', profile: 'logo_render_16x9', reusable: true},
+    'logo_1x1': {width: 1080, height: 1080, label: '1:1 logo render', profile: 'logo_render_1x1', reusable: true},
+    '4x5': { width: 1080, height: 1350, label: '4:5', profile: 'instagram_4x5' },
+    '9x16': { width: 1080, height: 1920, label: '9:16', profile: 'instagram_9x16' },
+    '1x1': { width: 1080, height: 1080, label: '1:1', profile: 'instagram_1x1' },
+    'facebook_4x5': { width: 1080, height: 1350, label: '4:5', profile: 'facebook_4x5' },
+    'facebook_16x9': { width: 1920, height: 1080, label: '16:9', profile: 'facebook_16x9' },
+    'facebook_9x16': { width: 1080, height: 1920, label: '9:16', profile: 'facebook_9x16' },
+    'facebook_1x1': { width: 1080, height: 1080, label: '1:1', profile: 'facebook_1x1' },
   };
   const captureBox = document.getElementById('captureBox');
   const capturePanel = document.getElementById('capturePanel');
   const captureFormat = document.getElementById('captureFormat');
   const captureAction = document.getElementById('captureAction');
   const captureDownload = document.getElementById('captureDownload');
+  let captureLibraryBusy = false;
+  async function loadSavedCaptures(preferred) {
+    const select = document.getElementById('captureLibrarySelect');
+    const status = document.getElementById('captureLibraryStatus');
+    const button = document.getElementById('captureLibraryAdd');
+    const previous = preferred || select.value;
+    try {
+      const response = await fetch('/api/captures', {cache: 'no-store'});
+      if (!response.ok) throw new Error('Could not load saved captures.');
+      const result = await response.json();
+      select.replaceChildren();
+      if (!result.captures.length) select.add(new Option('No saved social captures yet', ''));
+      for (const capture of result.captures) select.add(new Option(capture.filename, capture.filename));
+      if ([...select.options].some(option => option.value === previous)) select.value = previous;
+      select.dispatchEvent(new Event('change', {bubbles: true}));
+      status.textContent = '';
+    } catch (error) { status.textContent = error.message; }
+    button.disabled = captureLibraryBusy || !select.value;
+  }
+  async function addCaptureToLibrary() {
+    const filename = document.getElementById('captureLibrarySelect').value;
+    if (!filename || captureLibraryBusy) return;
+    const status = document.getElementById('captureLibraryStatus');
+    const button = document.getElementById('captureLibraryAdd');
+    captureLibraryBusy = true; button.disabled = true;
+    status.textContent = 'Adding capture to the library…';
+    try {
+      const response = await fetch('/api/library/import-capture', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({filename})});
+      const result = await response.json();
+      if (!response.ok || !result.ok) throw new Error(result.error || 'Could not add the capture.');
+      const refreshed = await reloadLibrary();
+      status.textContent = (result.added ? 'Added ' : 'Already in the library: ') + result.filename + '.' + (refreshed ? '' : ' Library refresh failed; use Reload library to try again.');
+    } catch (error) { status.textContent = error.message; }
+    finally { captureLibraryBusy = false; button.disabled = !document.getElementById('captureLibrarySelect').value; }
+  }
+  loadSavedCaptures();
   const captureState = { x: 0.5, y: 0.5, scale: 0.78 };
   let instagramRecorder = null;
   let instagramFrame = null;
@@ -3637,6 +4164,76 @@
   let instagramStarted = 0;
   let instagramStopped = false;
   let instagramCaptureBusy = false;
+  const logoRenderPreview = document.createElement('canvas'); logoRenderPreview.id = 'logoRenderPreview';
+  videoStage.append(logoRenderPreview);
+  const logoRenderSource = document.createElement('canvas');
+  const logoRenderSourceCtx = logoRenderSource.getContext('2d');
+  let logoRenderEngine = null, logoPreviewFrame = null, logoRecordingClock = null;
+  function drawLogoRender(format) {
+    if (!video.videoWidth || video.readyState < 2) return;
+    if (!logoRenderEngine) logoRenderEngine = new VfxEngine(logoRenderPreview);
+    if (!vfxState.enabled || !VfxEngine.logoEnabled(vfxState)) {
+      const gl = logoRenderEngine.gl; gl.bindFramebuffer(gl.FRAMEBUFFER, null); gl.clearColor(0,0,0,1); gl.clear(gl.COLOR_BUFFER_BIT); return;
+    }
+    const width = Math.min(1920, Math.max(2, videoStage.clientWidth));
+    const height = Math.max(2, Math.round(width * videoStage.clientHeight / Math.max(1, videoStage.clientWidth)));
+    if (logoRenderSource.width !== width || logoRenderSource.height !== height) { logoRenderSource.width = width; logoRenderSource.height = height; }
+    drawCompositeFrame(logoRenderSource, logoRenderSourceCtx, false, false, false);
+    logoRenderEngine.setLogo3d({...vfxState.logo3d, backdrop: 'black', ...(logoRecordingClock ? {animationClock: logoRecordingClock} : {})});
+    logoRenderEngine.setReflectionSource(reflectionVideo.frame(), !!vfxState.logo3d.reflectionSource?.filename);
+    logoRenderEngine.render(logoRenderSource, {...vfxState, scene: 6, enabled: true, baseEnabled:false, logoEnabled:true}, {width: format.width, height: format.height, fitObject: true});
+  }
+  function syncLogoRenderPreview() {
+    const format = CAPTURE_FORMATS[captureFormat.value];
+    const active = !!format.reusable && capturePanel.classList.contains('visible') && vfxState.enabled && VfxEngine.logoEnabled(vfxState);
+    videoWrap.classList.toggle('logo-render-preview', active);
+    captureBox.classList.toggle('visible', capturePanel.classList.contains('visible') && !format.reusable);
+    document.getElementById('captureRestartLogoField').hidden = !format.reusable;
+    document.getElementById('captureLogoHint').hidden = !format.reusable;
+    document.getElementById('capturePanelTitle').textContent = format.reusable ? 'Logo render' : 'Social media clip';
+    document.getElementById('captureDescription').textContent = format.reusable
+      ? 'Record the complete logo or text effect on black. Adjust its orientation and motion in VFX, choose a length, then capture an MP4 to reuse from your library.'
+      : 'Drag or resize the green box to choose the visible area. The result is a silent MP4 with the selected layout and effects, ready to upload to Facebook or use in Instagram Video Studio.';
+    document.getElementById('captureToggle').textContent = capturePanel.classList.contains('visible')
+      ? (format.reusable ? 'Exit logo render' : 'Exit social clip') : (format.reusable ? 'Logo render' : 'Social clip');
+    if (!active) {
+      cancelAnimationFrame(logoPreviewFrame); logoPreviewFrame = null;
+      if (!instagramCaptureBusy) captureAction.disabled = !!format.reusable;
+      return;
+    }
+    if (logoPreviewFrame !== null) return;
+    const draw = () => {
+      if (!videoWrap.classList.contains('logo-render-preview')) { logoPreviewFrame = null; return; }
+      try {
+        if (!instagramCaptureBusy) {
+          drawLogoRender(CAPTURE_FORMATS[captureFormat.value]);
+          captureAction.disabled = !logoRenderEngine?.logoSurfaceReady;
+        }
+      } catch (error) { setCaptureStatus('Could not prepare the logo render: ' + error.message); captureAction.disabled = true; logoPreviewFrame = null; return; }
+      logoPreviewFrame = requestAnimationFrame(draw);
+    };
+    logoPreviewFrame = requestAnimationFrame(draw);
+  }
+  function changeCaptureFormat() {
+    if (CAPTURE_FORMATS[captureFormat.value].reusable && (!vfxState.enabled || !VfxEngine.logoEnabled(vfxState))) {
+      setLogoLayerEnabled(true);
+    }
+    updateCaptureBox();
+  }
+  function prepareLogoRender() {
+    if (instagramCaptureBusy || isRecording || plPlaying) { setCaptureStatus('Stop the active recording or playlist before preparing a logo render.'); return; }
+    const logoSettings = {...vfxState.logo3d};
+    captureFormat.value = 'logo_9x16';
+    document.getElementById('captureStart').value = String(playbackBounds().start);
+    document.getElementById('captureDuration').value = vfxState.logo3d.animation?.enabled ? vfxState.logo3d.animation.duration : 10;
+    document.getElementById('captureTransition').value = 'none';
+    setLoopMode(1);
+    const tab = document.querySelector('.rd-nav [data-screen=capture]');
+    if (tab) tab.click(); else if (!capturePanel.classList.contains('visible')) toggleInstagramCapturePanel();
+    setVfxLogo3d(logoSettings); setVfxState({enabled: true, scene: 6});
+    updateCaptureBox(); updateCaptureTransition();
+    setCaptureStatus('Choose the length, then Capture MP4. The complete 9:16 logo render will be saved to the library.');
+  }
 
   function updateCaptureTransition() {
     document.getElementById('captureTransitionDuration').disabled = instagramCaptureBusy || document.getElementById('captureTransition').value === 'none';
@@ -3644,7 +4241,7 @@
 
   function setCaptureBusy(busy) {
     instagramCaptureBusy = busy;
-    for (const id of ['captureFormat', 'captureStart', 'captureDuration', 'captureTransition']) {
+    for (const id of ['captureFormat', 'captureStart', 'captureDuration', 'captureTransition', 'captureRestartLogo']) {
       document.getElementById(id).disabled = busy;
     }
     updateCaptureTransition();
@@ -3666,9 +4263,9 @@
     captureBox.classList.toggle('visible', visible);
     const toggle = document.getElementById('captureToggle');
     toggle.classList.toggle('active', visible);
-    toggle.textContent = visible ? 'Exit Instagram clip' : 'Instagram clip';
+    toggle.textContent = visible ? 'Exit social clip' : 'Social clip';
     toggle.setAttribute('aria-expanded', String(visible));
-    if (visible) updateCaptureBox();
+    updateCaptureBox();
   }
 
   function captureRect() {
@@ -3684,6 +4281,8 @@
   }
 
   function updateCaptureBox() {
+    syncLogoRenderPreview();
+    if (CAPTURE_FORMATS[captureFormat.value].reusable) return;
     const rect = captureRect();
     if (!rect) return;
     captureBox.style.left = rect.left + 'px';
@@ -3783,25 +4382,34 @@
     if (loopMode === 0 && start + recordingLength * playbackSpeed > video.duration + 0.02) {
       setCaptureStatus('The clip, including extra footage for the transition, runs past the source video. Choose Playback → Loop or Bounce, or shorten it.'); return;
     }
+    const formatKey = captureFormat.value;
+    const format = CAPTURE_FORMATS[formatKey];
+    if (vfxState.enabled && VfxEngine.logoEnabled(vfxState) && vfxState.logo3d.reflectionSource?.filename && !reflectionVideo.frame()) {
+      setCaptureStatus('Wait for the selected reflection video to load, or choose another reflection source in VFX.'); return;
+    }
+    if (format.reusable && !logoRenderEngine?.logoSurfaceReady) { setCaptureStatus('Wait for the logo render preview to load.'); return; }
     const rect = captureRect();
     if (!rect) { setCaptureStatus('The playback stage is not ready.'); return; }
 
-    const formatKey = captureFormat.value;
-    const format = CAPTURE_FORMATS[formatKey];
     const source = document.createElement('canvas');
     source.width = 1920;
     source.height = Math.round(1920 * rect.stageH / rect.stageW);
     const sourceCtx = source.getContext('2d');
-    const output = document.createElement('canvas');
-    output.width = format.width;
-    output.height = format.height;
-    const outputCtx = output.getContext('2d');
+    const output = format.reusable ? logoRenderPreview : document.createElement('canvas');
+    if (!format.reusable) { output.width = format.width; output.height = format.height; }
+    const outputCtx = format.reusable ? null : output.getContext('2d');
     const draw = () => {
+      if (format.reusable) drawLogoRender(format);
+      else {
+      // Read WebGL in the same callback that composites it. Its default drawing
+      // buffer may have been cleared after the previous browser paint.
+      if (vfxState.enabled) renderVfxFrame();
       drawCompositeFrame(source, sourceCtx);
       outputCtx.drawImage(source,
         rect.left / rect.stageW * source.width, rect.top / rect.stageH * source.height,
         rect.width / rect.stageW * source.width, rect.height / rect.stageH * source.height,
         0, 0, output.width, output.height);
+      }
       instagramFrame = requestAnimationFrame(draw);
     };
 
@@ -3812,6 +4420,9 @@
       video.pause();
       stopBounce();
       await waitForCaptureSeek(start);
+      if (format.reusable) {
+        logoRecordingClock = {time: document.getElementById('captureRestartLogo').checked ? 0 : VfxEngine.animationSeconds(vfxState.logo3d), startedAt: Date.now(), playing: true};
+      }
       draw();
       const stream = output.captureStream(30);
       const mimeType = ['video/webm;codecs=vp9', 'video/webm;codecs=vp8', 'video/webm'].find(type => MediaRecorder.isTypeSupported(type));
@@ -3835,7 +4446,7 @@
           setCaptureStatus(overlap ? 'Building the loop transition and converting to MP4…' : 'Converting the clip to MP4…');
           const response = await fetch('/api/convert', {
             method: 'POST',
-            headers: { 'Content-Type': mimeType, 'X-Recording-Profile': 'instagram_' + formatKey, 'X-Recording-Duration': String(clipLength),
+            headers: { 'Content-Type': mimeType, 'X-Recording-Profile': format.profile, 'X-Recording-Duration': String(clipLength),
               'X-Loop-Transition': transition, 'X-Loop-Transition-Duration': String(overlap) },
             body: new Blob(chunks, { type: mimeType }),
           });
@@ -3845,9 +4456,14 @@
           captureDownload.href = '/video/' + encodeURIComponent(result.filename);
           captureDownload.download = result.filename;
           captureDownload.style.display = '';
+          if (!format.reusable) await loadSavedCaptures(result.filename);
         } catch (error) { setCaptureStatus('Capture failed: ' + error.message); }
-        finally { setCaptureBusy(false); }
+        finally {
+          logoRecordingClock = null; setCaptureBusy(false);
+          if (format.reusable) { await loadLibrary(); syncLogoRenderPreview(); }
+        }
       };
+      if (format.reusable && logoRecordingClock) logoRecordingClock.startedAt = Date.now();
       recorder.start(250);
       instagramRecorder = recorder;
       instagramStopped = false;
@@ -3864,7 +4480,7 @@
         instagramRecorder.onstop = null;
         instagramRecorder.stop();
       }
-      instagramRecorder = null;
+      instagramRecorder = null; logoRecordingClock = null;
       setCaptureBusy(false);
       setCaptureStatus('Capture failed: ' + error.message);
     }
@@ -3892,9 +4508,12 @@
 
   function drawCompositeFrame(targetCanvas = compCanvas, targetCtx = compCtx, useVfx = true, includeCaption = true, includeTransition = true) {
     if (!targetCanvas || !targetCtx) return;
+    if (useVfx && isReflectionOnly() && !vfxFrameReady) {
+      targetCtx.fillStyle = '#000'; targetCtx.fillRect(0, 0, targetCanvas.width, targetCanvas.height); return;
+    }
     if (useVfx && vfxState.enabled && vfxFrameReady) {
       targetCtx.drawImage(vfxCanvas, 0, 0, targetCanvas.width, targetCanvas.height);
-      if (includeCaption) drawCompositeCaption(targetCanvas, targetCtx);
+      if (includeCaption && !isReflectionOnly()) drawCompositeCaption(targetCanvas, targetCtx);
       if (includeTransition) videoTransition.draw(targetCtx, targetCanvas.width, targetCanvas.height);
       return;
     }
@@ -3913,6 +4532,7 @@
     else if (viewMode === 1) { cols = 2; rows = 1; }
     else if (viewMode === 2) { cols = 3; rows = 1; }
     else if (viewMode === 3) { cols = 2; rows = 2; }
+    else if (viewMode === 5) { cols = 3; rows = 2; }
     else { cols = 4; rows = 2; }
 
     const tileW = cw / cols, tileH = ch / rows;
@@ -3922,7 +4542,7 @@
       for (let c = 0; c < cols; c++) {
         const idx = r * cols + c;
         const cfgIdx = viewMode === 1 ? DUAL_POS_MAP[idx]
-          : viewMode === 3 ? QUAD_POS_MAP[idx] : viewMode === 2 ? TRIPLE_POS_MAP[idx] : idx;
+          : viewMode === 3 ? QUAD_POS_MAP[idx] : viewMode === 2 ? TRIPLE_POS_MAP[idx] : viewMode === 5 ? SIX_POS_MAP[idx] : idx;
         const transform = cfg[cfgIdx] || '';
         const flipH = transform.includes('scaleX(-1)');
         const flipV = transform.includes('scaleY(-1)');
@@ -3933,23 +4553,12 @@
         targetCtx.scale(flipH ? -1 : 1, flipV ? -1 : 1);
 
         targetCtx.filter = buildFilterString(currentEffects);
-        if (trailsEnabled && viewMode > 0 && clones[idx] && clones[idx].width) {
+        if (trailsEnabled && clones[idx] && clones[idx].width) {
+          targetCtx.filter = 'none';
           targetCtx.drawImage(clones[idx], -tileW / 2, -tileH / 2, tileW, tileH);
-        } else if (viewMode === 0) {
-          // Single view uses object-fit: contain in the player.
-          const scale = Math.min(tileW / vw, tileH / vh);
-          const dw = vw * scale, dh = vh * scale;
-          targetCtx.drawImage(frameSource, -dw / 2, -dh / 2, dw, dh);
         } else {
-          const coverScale = Math.max(tileW / vw, tileH / vh);
-          const es = coverScale * tileZoom;
-          const sw = Math.min(vw, tileW / es);
-          const sh = Math.min(vh, tileH / es);
-          const panRangeX = vw - sw;
-          const panRangeY = vh - sh;
-          const sx = panRangeX * (1 + tilePanX) / 2;
-          const sy = panRangeY * (1 - tilePanY) / 2;
-          targetCtx.drawImage(frameSource, sx, sy, sw, sh, -tileW / 2, -tileH / 2, tileW, tileH);
+          VideoFraming.draw(targetCtx, frameSource, vw, vh, tileW, tileH, tileZoom, tilePanX, tilePanY,
+            viewMode === 0 ? 'contain' : 'cover', -tileW / 2, -tileH / 2);
         }
         targetCtx.filter = 'none';
         targetCtx.restore();
@@ -4129,6 +4738,8 @@
   let plCueTimers = [];
   let plCueRun = 0;
   let plVfxBeforePlaylist = null;
+  let plPlayheadFrame = 0;
+  let plEntryReady = false;
   let plSlug = '';
   let plLoopPlaylist = false;
 
@@ -4165,7 +4776,7 @@
     off: 'Off', 'scene-0': 'Liquid ripple', 'scene-1': 'Image smear',
     'scene-2': 'Video ribbons', mirror: 'Mirror sculpture',
     'scene-4': 'Kaleidoscope tunnel', 'scene-5': 'Prism fracture',
-    logo: '3D Version1 logo', text: '3D text',
+    logo: '3D Version1 logo', text: '3D text', camera: 'Camera motion extraction', video:'Plain background video',
   };
   const TRANSITION_ART = {
     'cut': '<path d="M5 4v24M43 4v24M20 4v24M28 4v24"/><path d="M20 16h8" stroke-dasharray="2 3"/>',
@@ -4355,22 +4966,29 @@
     }
   }
 
+  function populateAuditionVideos() {
+    const from = auditionFrom.value, to = auditionTo.value;
+    auditionFrom.replaceChildren(new Option('Black', ''));
+    auditionTo.replaceChildren();
+    orderedLibraryVideos().forEach(v => {
+      auditionFrom.add(new Option(playlistVideoName(v.filename), v.filename));
+      auditionTo.add(new Option(playlistVideoName(v.filename), v.filename));
+    });
+    auditionFrom.value = from;
+    auditionTo.value = to;
+  }
+
   function openTransitionAudition(type = plPaletteType, slotIndex = -1, target = 'palette') {
     stopAudition();
     auditionSlotIndex = slotIndex;
     auditionTarget = target;
     auditionApply.hidden = slotIndex < 0 && target !== 'manual';
     auditionApply.textContent = target === 'manual' ? 'Use for manual playback' : 'Use in slot';
-    auditionFrom.replaceChildren(new Option('Black', ''));
-    auditionTo.replaceChildren();
-    videoListCache.forEach(v => {
-      auditionFrom.add(new Option(playlistVideoName(v.filename), v.filename));
-      auditionTo.add(new Option(playlistVideoName(v.filename), v.filename));
-    });
+    populateAuditionVideos();
     const previous = slotIndex > 0 ? plPlaylist.entries[slotIndex - 1]?.video : '';
     const incoming = slotIndex >= 0 ? plPlaylist.entries[slotIndex]?.video : '';
-    auditionFrom.value = previous || (slotIndex === 0 ? '' : (currentFilename || videoListCache[0]?.filename || ''));
-    auditionTo.value = incoming || videoListCache.find(v => v.filename !== auditionFrom.value)?.filename || videoListCache[0]?.filename || '';
+    auditionFrom.value = previous || (slotIndex === 0 ? '' : (currentFilename || orderedLibraryVideos()[0]?.filename || ''));
+    auditionTo.value = incoming || orderedLibraryVideos().find(v => v.filename !== auditionFrom.value)?.filename || orderedLibraryVideos()[0]?.filename || '';
     auditionType.value = TRANSITION_NAMES[type] ? type : 'cross-dissolve';
     auditionDuration.value = slotIndex >= 0 ? normaliseTransition(plPlaylist.entries[slotIndex]?.transition).duration : normaliseTransition({ duration: plTransitionDuration.value }).duration;
     auditionPace.value = slotIndex >= 0 ? normaliseTransition(plPlaylist.entries[slotIndex]?.transition).pace : plTransitionPace.value;
@@ -4477,7 +5095,8 @@
     const speed = Math.max(0.25, Number(entry.speed) || 1);
     const reveal = index > 0 && entry.transition?.type === 'pixel-scatter'
       ? normaliseTransition(entry.transition).duration : 0;
-    return sourceSeconds * loops * (Number(entry.loopMode) === 2 ? 2 : 1) / speed + reveal;
+    const range = SourceRange.bounds(entry.sourceRange, sourceSeconds);
+    return (range.end - range.start) * loops * (Number(entry.loopMode) === 2 ? 2 : 1) / speed + reveal;
   }
 
   function playlistSourceSeconds(filename) {
@@ -4549,6 +5168,7 @@
 
   function updatePlayerPreview() {
     if (!plSelectedVideo) return;
+    setPlaybackRange(plSourceRange);
     const modeIdx = VIEW_NAMES.indexOf(plView.value);
     if (modeIdx < 0) return;
     setViewModeTo(modeIdx);
@@ -4561,14 +5181,17 @@
     plPanY.value = tilePanY;
   }
 
+  let plSourceRange = null;
   function currentPlayerLayout() {
     return {
       view: VIEW_NAMES[viewMode], preset: configIdx + 1,
       loopMode, speed: playbackSpeed, zoom: tileZoom, panX: tilePanX, panY: tilePanY,
+      ...(sourceRange ? {sourceRange: {...sourceRange}} : {}),
     };
   }
 
   function fillPlaylistLayoutFields(layout) {
+    plSourceRange = SourceRange.validate(layout.sourceRange ?? null);
     plView.value = layout.view;
     plPreset.value = layout.preset;
     plLoopMode.value = layout.loopMode;
@@ -4584,7 +5207,8 @@
       && Number(a.speed ?? 1) === Number(b.speed ?? 1)
       && Number(a.zoom) === Number(b.zoom)
       && Number(a.panX) === Number(b.panX)
-      && Number(a.panY) === Number(b.panY);
+      && Number(a.panY) === Number(b.panY)
+      && JSON.stringify(a.sourceRange ?? null) === JSON.stringify(b.sourceRange ?? null);
   }
 
   function manualPlaylistConfigChanged() {
@@ -4623,7 +5247,7 @@
     (playlistMode ? document.getElementById('playlistLibraryCol') : document.getElementById('libraryTab')).appendChild(library);
     if (playlistMode) {
       renderPlaylistTimeline();
-      if (plPlaylist.entries.length && plPreviewIdx < 0 && !plPlaying) setTimelinePlayhead(0);
+      if (plPlaylist.entries.length && !plPlaying) setTimelinePlayhead(plPreviewIdx < 0 ? 0 : timelineTime,{transitionPreview:false});
     } else {
       timelinePreviewRun++;
       timelineOverlay.hidden = true;
@@ -4631,11 +5255,12 @@
     }
     if (tab === 'settings') loadSettings();
     window.applyCatalogueFilters?.();
+    updatePlaylistPlaybackButton();
   }
 
   function populateVideoDropdown() {
     plVideoDropdown.innerHTML = '';
-    videoListCache.forEach(v => {
+    orderedLibraryVideos().forEach(v => {
       const div = document.createElement('div');
       div.className = 'pl-video-option' + (v.filename === plSelectedVideo ? ' selected' : '');
       div.dataset.filename = v.filename;
@@ -4650,10 +5275,11 @@
       div.addEventListener('click', () => selectVideo(v.filename));
       plVideoDropdown.appendChild(div);
     });
-    if (!plSelectedVideo && videoListCache.length) selectVideo(videoListCache[0].filename);
+    if (!plSelectedVideo && videoListCache.length) selectVideo(orderedLibraryVideos()[0].filename);
   }
 
   function selectVideo(filename, preview = true, preferredPresetId = '') {
+    if (plSelectedVideo !== filename) plSourceRange = null;
     plSelectedVideo = filename;
     plSavedLayout.value = '';
     refreshPlaylistSavedLayouts(filename, preferredPresetId);
@@ -4716,7 +5342,7 @@
       plPreviewIdx = -1;
       timelineTime = 0;
       renderPlaylistEntries();
-      if (document.body.classList.contains('playlist-mode')) setTimelinePlayhead(0);
+      if (document.body.classList.contains('playlist-mode')) setTimelinePlayhead(0, {transitionPreview: false});
     } catch {}
   }
 
@@ -4765,9 +5391,10 @@
       view: plView.value, preset: parseInt(plPreset.value),
       loopMode: Number(plLoopMode.value),
       speed: Number(plSpeed.value),
-      zoom: Math.max(1, Math.min(4, Number(plZoom.value) || 1)),
+      zoom: VideoFraming.zoomValue(plZoom.value),
       panX: Math.max(-1, Math.min(1, Number(plPanX.value) || 0)),
       panY: Math.max(-1, Math.min(1, Number(plPanY.value) || 0)),
+      ...(plSourceRange ? {sourceRange: {...plSourceRange}} : {}),
     };
     const selectedPreset = (videoPresetCache.get(vid) || []).find(item => item.id === plSavedLayout.value);
     const matchingPreset = selectedPreset && sameLayout(layout, selectedPreset) ? selectedPreset : null;
@@ -4782,7 +5409,7 @@
     });
     plPreviewIdx = plPlaylist.entries.length - 1;
     renderPlaylistEntries();
-    if (document.body.classList.contains('playlist-mode')) setTimelinePlayhead(timeForClip(plPreviewIdx));
+    if (document.body.classList.contains('playlist-mode')) setTimelinePlayhead(timeForClip(plPreviewIdx), {transitionPreview: false});
   }
 
   function removeEntry(idx) {
@@ -4798,8 +5425,11 @@
   function previewEntry(idx) {
     const e = plPlaylist.entries[idx];
     if (!e) return;
+    if (document.body.classList.contains('playlist-mode')) {
+      return setTimelinePlayhead(timeForClip(idx), {transitionPreview: false});
+    }
     plPreviewIdx = idx;
-    showVideo(e.video);
+    showVideo(e.video, undefined, e.sourceRange);
     applyLayoutConfiguration(e);
     const transition = normaliseTransition(e.transition);
     plTransitionType.value = transition.type;
@@ -4886,6 +5516,9 @@
       effect: PL_CUE_EFFECTS[value.effect] ? value.effect : 'off',
       intensity: cueNumber(value.intensity, 0.7, 0, 1),
       feedback: cueNumber(value.feedback, 0.72, 0, 1),
+      cameraMotion: CameraMotion.settings(value.cameraMotion),
+      logoLayer: value.logoLayer && typeof value.logoLayer === 'object' ? normalisePlaylistCue({...value.logoLayer,
+        logoLayer: null, effect: value.logoLayer.kind === 'text' || value.logoLayer.effect === 'text' ? 'text' : 'logo'}) : null,
       text: String(value.text ?? '@tonyt.dj').slice(0, 80),
       image: typeof value.image === 'string' ? value.image : '',
       x: cueNumber(value.x, 0.5, 0, 1),
@@ -4903,6 +5536,11 @@
       startAngle: cueNumber(value.startAngle, -45, -360, 360),
       endAngle: cueNumber(value.endAngle, 45, -360, 360),
       motion: cueNumber(value.motion, 0.25, 0, 2),
+      backdrop: value.backdrop === 'black' ? 'black' : 'video',
+      orientation: VfxEngine.normaliseOrientation(value.orientation),
+      animation: VfxEngine.normaliseAnimation(value.animation),
+      snake: VfxEngine.normaliseSnake(value.snake), fly: VfxEngine.normaliseFly(value.fly),
+      reflectionSource: ReflectionVideo.normalise(value.reflectionSource),
       skin: VfxEngine.materials.includes(value.skin) ? value.skin : 'chrome',
       font: ['modern','bungee','serif'].includes(value.font) ? value.font : 'modern',
       quality: ['balanced','high','ultra'].includes(value.quality) ? value.quality : 'high',
@@ -4911,26 +5549,32 @@
     };
   }
 
-  function openPlaylistCueEditor(index) {
+  function openPlaylistCueEditor(index, selectedCue = null) {
     plCueEntry = plPlaylist.entries[index] || null;
     if (!plCueEntry) return;
     if (!Array.isArray(plCueEntry.cues)) plCueEntry.cues = [];
     document.getElementById('playlistCueTitle').textContent = 'Script effects · video ' + (index + 1);
     renderPlaylistCueEditor();
     plCueDialog.showModal();
+    if (selectedCue !== null) {
+      const row=plCueList.children[selectedCue];
+      if(row){row.scrollIntoView({block:'center'});row.focus({preventScroll:true});}
+    }
   }
   function closePlaylistCueEditor() {
     plCueDialog.close();
     plCueEntry = null;
     renderPlaylistEntries();
+    if (plPreviewIdx >= 0) setTimelinePlayhead(timelineTime,{transitionPreview:false});
   }
   plCueDialog.addEventListener('close', () => {
-    if (plCueEntry) { plCueEntry = null; renderPlaylistEntries(); }
+      if (plCueEntry) { plCueEntry = null; renderPlaylistEntries(); if(plPreviewIdx>=0)setTimelinePlayhead(timelineTime,{transitionPreview:false}); }
   });
   function addPlaylistCue() {
     if (!plCueEntry) return;
     const last = plCueEntry.cues.reduce((maximum, cue) => Math.max(maximum, Number(cue.at) || 0), -5);
-    plCueEntry.cues.push(normalisePlaylistCue({ at: Math.max(0, last + 5), effect: 'scene-0' }));
+    const duration=timelineSegments[plPlaylist.entries.indexOf(plCueEntry)]?.duration || 10000;
+    plCueEntry.cues.push(normalisePlaylistCue({ at: Math.max(0, Math.min(duration-.001,last + 5)), effect: 'scene-0' }));
     renderPlaylistCueEditor();
   }
   function renderPlaylistCueEditor() {
@@ -4945,15 +5589,18 @@
     plCueEntry.cues.forEach((raw, index) => {
       const cue = normalisePlaylistCue(raw);
       Object.assign(raw, cue);
-      const row = document.createElement('div'); row.className = 'playlist-cue-row';
+      const row = document.createElement('div'); row.className = 'playlist-cue-row';row.tabIndex=-1;
       const head = document.createElement('div'); head.className = 'playlist-cue-row-head';
       const title = document.createElement('span'); title.textContent = 'Cue ' + (index + 1);
       const remove = document.createElement('button'); remove.type = 'button'; remove.textContent = 'Remove';
       remove.setAttribute('aria-label', 'Remove cue ' + (index + 1));
       remove.addEventListener('click', () => { plCueEntry.cues.splice(index, 1); renderPlaylistCueEditor(); });
       head.append(title, remove);
+      const preview=document.createElement('button');preview.type='button';preview.textContent='Preview cue';preview.title='Close this editor and preview the video at this cue, including its saved effects and layout.';
+      preview.onclick=()=>{const entryIndex=plPlaylist.entries.indexOf(plCueEntry),at=Number(raw.at)||0;closePlaylistCueEditor();setTimelinePlayhead((timelineSegments[entryIndex]?.start || 0)+at+.001,{transitionPreview:false});};head.append(preview);
       const fields = document.createElement('div'); fields.className = 'playlist-cue-fields';
       function field(label, key, kind, config = {}) {
+        const path=key.split('.'),current=path.reduce((obj,part)=>obj?.[part],cue);
         const wrapper = document.createElement('label'); wrapper.textContent = label;
         const input = document.createElement(kind === 'select' ? 'select' : 'input');
         if (kind === 'select') {
@@ -4964,41 +5611,57 @@
             input.min = config.min; input.max = config.max; input.step = config.step || '0.05';
           } else input.maxLength = config.maxLength || 80;
         }
-        input.value = cue[key];
+        if(kind==='checkbox')input.checked=!!current;else input.value=current;
+        input.dataset.cueField=key;
         input.addEventListener('change', () => {
-          raw[key] = kind === 'number' ? cueNumber(input.value, cue[key], Number(config.min), Number(config.max)) : input.value;
+          let target=raw;for(const part of path.slice(0,-1))target=target[part] ||= {};
+          target[path.at(-1)] = kind === 'number' ? cueNumber(input.value,current,Number(config.min),Number(config.max)) : kind==='checkbox'?input.checked:input.value;
           if (key === 'effect') renderPlaylistCueEditor();
-          else if (kind === 'number') input.value = raw[key];
+          else if (kind === 'number') input.value = target[path.at(-1)];
         });
         wrapper.appendChild(input); fields.appendChild(wrapper);
       }
-      field('At (seconds)', 'at', 'number', { min: '0', max: '9999', step: '0.1' });
+      const cueDuration=timelineSegments[plPlaylist.entries.indexOf(plCueEntry)]?.duration || 10000;
+      field('At (seconds)', 'at', 'number', { min: '0', max: String(Math.max(0,cueDuration-.001)), step: '0.1' });
       field('Effect', 'effect', 'select', { options: PL_CUE_EFFECTS });
       const active = cue.effect !== 'off';
       if (active) {
         field('Intensity', 'intensity', 'number', { min: '0', max: '1' });
         field('Feedback', 'feedback', 'number', { min: '0', max: '1' });
       }
-      const isObject = ['mirror', 'logo', 'text'].includes(cue.effect);
+      if (active && !['logo','text'].includes(cue.effect)) {
+        const label = document.createElement('label'); label.textContent = '3D logo overlay';
+        const toggle = document.createElement('input'); toggle.type = 'checkbox'; toggle.checked = !!cue.logoLayer;
+        toggle.onchange = () => { raw.logoLayer = toggle.checked ? normalisePlaylistCue({...vfxState.logo3d, effect:vfxState.logo3d.kind==='text'?'text':'logo',logoLayer:null}) : null; renderPlaylistCueEditor(); };
+        label.append(toggle); fields.append(label);
+        if (cue.logoLayer) {
+          const details = document.createElement('details'), title = document.createElement('summary'); title.textContent = 'Logo overlay appearance, reflections and motion'; details.style.gridColumn='1 / -1'; details.append(title);
+          window.LogoMotionControls?.mount(details, {settings:cue.logoLayer,showAppearance:true,showReflection:true,showPreview:true,getPreviewCue:()=>raw,getPreviewVideo:()=>plCueEntry?.video,onChange:patch=>Object.assign(raw.logoLayer,patch)}); fields.append(details);
+        }
+      }
+      const isObject = cue.effect === 'mirror';
       if (isObject) {
         if (cue.effect !== 'logo') field('Text', 'text', 'text');
         field('X position', 'x', 'number', { min: '0', max: '1' });
         field('Y position', 'y', 'number', { min: '0', max: '1' });
         field('Size', 'scale', 'number', { min: '0.1', max: '2' });
+        field('Image URL (empty for text)','image','text',{maxLength:2048});
+        field('Depth','depth','number',{min:'0',max:'2'});
+        field('Edge','edge','number',{min:'0',max:'2'});
+        field('Tilt','tilt','number',{min:'-360',max:'360',step:'1'});
+        field('Thickness','thickness','number',{min:'0',max:'2'});
+        field('Spin','spin','number',{min:'0',max:'2'});
+      }
+      if(cue.effect==='camera') {
+        field('Camera mode','cameraMotion.mode','select',{options:{video:'Movement mask',glow:'Movement glow',distort:'Movement distortion'}});
+        for(const [label,key,min,max] of [['Movement threshold','threshold',.01,.5],['Sensitivity / gain','gain',1,12],['Comparison delay','delay',.05,2],['Movement trails','trails',0,3],['Movement strength','strength',0,2]])field(label,'cameraMotion.'+key,'number',{min:String(min),max:String(max),step:'0.01'});
+        field('Mirror camera movement','cameraMotion.mirror','checkbox');field('Compensate for light changes','cameraMotion.compensate','checkbox');
       }
       if (cue.effect === 'logo' || cue.effect === 'text') {
-        field('Finish','skin','select',{options:{chrome:'Chrome',mirror:'Liquid mirror',brushed:'Brushed silver',gold:'Gold','rose-gold':'Rose gold',obsidian:'Black chrome',pearl:'Pearl',iridescent:'Iridescent',original:'Original colours'}});
-        if(cue.effect==='text') field('Typeface','font','select',{options:{modern:'Modern sans',bungee:'Bungee',serif:'Editorial serif'}});
-        field('Bevel','bevel','number',{min:'0',max:'.1',step:'.0025'});
-        field('Roughness','roughness','number',{min:'.025',max:'.8',step:'.005'});
-        field('Video reflection','reflection','number',{min:'0',max:'2',step:'.01'});
-        field('Environment wrap','environment','number',{min:'0',max:'2',step:'.01'});
-        field('Brightness','exposure','number',{min:'.3',max:'2',step:'.01'});
-        field('Quality','quality','select',{options:{balanced:'Balanced',high:'High definition',ultra:'Ultra'}});
-        field('Rotation axis', 'axis', 'select', { options: { x: 'X', y: 'Y', z: 'Z' } });
-        field('Start angle', 'startAngle', 'number', { min: '-360', max: '360', step: '1' });
-        field('End angle', 'endAngle', 'number', { min: '-360', max: '360', step: '1' });
-        field('Rotation speed', 'motion', 'number', { min: '0', max: '2' });
+        const automation = document.createElement('details'); automation.style.gridColumn = '1 / -1';
+        automation.append(Object.assign(document.createElement('summary'), {textContent: 'Object appearance, reflections and motion'}));
+        window.LogoMotionControls?.mount(automation, {settings: {...cue, ...raw},showAppearance:true,showReflection:true,showPreview:true,getPreviewCue:()=>raw,getPreviewVideo:()=>plCueEntry?.video, onChange: patch => Object.assign(raw, patch)});
+        fields.append(automation);
       }
       row.append(head, fields); plCueList.appendChild(row);
     });
@@ -5009,11 +5672,15 @@
     plCueTimers.forEach(clearTimeout);
     plCueTimers = [];
   }
-  function applyPlaylistCue(value) {
+  function applyPlaylistCue(value, elapsed = 0, playing = true) {
     const cue = normalisePlaylistCue(value);
     if (cue.effect === 'off') { setVfxState({ enabled: false }); return; }
     let scene = Number(cue.effect.slice(6));
-    if (cue.effect === 'mirror') {
+    if (cue.effect === 'video') {
+      scene = -1;
+    } else if (cue.effect === 'camera') {
+      scene = 7; setCameraMotion(cue.cameraMotion);
+    } else if (cue.effect === 'mirror') {
       scene = 3;
       setVfxShape({ kind: cue.image ? 'image' : 'text', image: cue.image, text: cue.text || 'CLUB',
         x: cue.x, y: cue.y, scale: cue.scale, depth: cue.depth, edge: cue.edge,
@@ -5021,23 +5688,65 @@
     } else if (cue.effect === 'logo' || cue.effect === 'text') {
       scene = 6;
       setVfxLogo3d({ kind: cue.effect === 'logo' ? 'logo' : 'text', text: cue.text || '@tonyt.dj',
+        backdrop: cue.backdrop, orientation: cue.orientation, animation: cue.animation, animationClock: {time: Math.max(0, elapsed), startedAt: Date.now(), playing},
+        snake:cue.snake,fly:cue.fly,reflectionSource:cue.reflectionSource,
+        reflectionClock:{time:Math.max(0,elapsed)*cue.reflectionSource.speed,startedAt:Date.now(),playing},
         skin:cue.skin,font:cue.font,bevel:cue.bevel,roughness:cue.roughness,reflection:cue.reflection,environment:cue.environment,exposure:cue.exposure,quality:cue.quality,
         x: cue.x, y: cue.y, scale: cue.scale, axis: cue.axis,
         depth: cue.depth, rotX: cue.rotX, rotY: cue.rotY, rotZ: cue.rotZ,
         startAngle: cue.startAngle, endAngle: cue.endAngle, motion: cue.motion }, true);
     }
-    setVfxState({ enabled: true, scene, intensity: cue.intensity, feedback: cue.feedback });
+    const primaryLogo = cue.effect === 'logo' || cue.effect === 'text';
+    if (cue.logoLayer && !primaryLogo) {
+      const overlay = cue.logoLayer;
+      setVfxLogo3d({...overlay, kind:overlay.effect==='text'?'text':'logo', animationClock:{time:Math.max(0,elapsed),startedAt:Date.now(),playing},
+        reflectionClock:{time:Math.max(0,elapsed)*overlay.reflectionSource.speed,startedAt:Date.now(),playing}}, true);
+    }
+    setVfxState({ enabled: true, scene, baseEnabled:!primaryLogo, logoEnabled:primaryLogo || !!cue.logoLayer, intensity: cue.intensity, feedback: cue.feedback });
   }
-  function schedulePlaylistCues(entry) {
+  function schedulePlaylistCues(entry, offset = 0) {
     const run = plCueRun;
     const cues = (Array.isArray(entry.cues) ? entry.cues : []).map(normalisePlaylistCue)
       .sort((a, b) => a.at - b.at);
+    const {active,elapsed}=playlistCueAt(plEntryIdx,offset);
+    if (active) applyPlaylistCue(active,elapsed);
     cues.forEach(cue => {
-      if (cue.at === 0) applyPlaylistCue(cue);
+      if (cue.at <= offset) return;
       else plCueTimers.push(setTimeout(() => {
         if (plPlaying && run === plCueRun) applyPlaylistCue(cue);
-      }, cue.at * 1000));
+      }, (cue.at - offset) * 1000));
     });
+    // Layout events change the running video's composition, retaining its time.
+    // The same setters broadcast to clean output and feed the recording canvas.
+    (entry.layoutCues || []).forEach(cue => {
+      if (!Number.isFinite(cue.at) || cue.at <= offset) return;
+      plCueTimers.push(setTimeout(() => {
+        if (!plPlaying || run !== plCueRun) return;
+        const configured = playlistLayoutAt(entry, cue.at);
+        setViewModeTo(Math.max(0, VIEW_NAMES.indexOf(configured.view)));
+        setConfig(Number(configured.preset) || 1);
+        applyZoomPan(configured.zoom ?? 1, configured.panX ?? 0, configured.panY ?? 0);
+        applyPlaylistColour(configured);
+      }, (cue.at - offset) * 1000));
+    });
+  }
+
+  function playlistLayoutAt(entry, seconds) {
+    const result = {...entry};
+    for (const cue of [...entry.layoutCues || []].sort((a, b) => a.at - b.at)) {
+      if (cue.at > seconds) break;
+      for (const key of ['view', 'preset', 'zoom', 'panX', 'panY', 'effects', 'trailsEnabled', 'trailAmount']) if (cue[key] !== undefined) result[key] = key === 'effects' ? {...result.effects, ...cue.effects} : cue[key];
+    }
+    return result;
+  }
+  const PLAYLIST_NEUTRAL_EFFECTS = {hueRotate:0,saturate:100,contrast:100,brightness:100,blur:0,invert:0,sepia:0};
+  function applyPlaylistColour(config) {
+    const effects = {...PLAYLIST_NEUTRAL_EFFECTS, ...config.effects};
+    if (JSON.stringify(effects) !== JSON.stringify(currentEffects)) applyEffectsFromController(effects);
+    const amount=config.trailAmount ?? .15;
+    if (amount !== trailAmount) setTrailAmount(amount);
+    const enabled = !!config.trailsEnabled;
+    if (enabled !== trailsEnabled) setTrailsEnabled(enabled);
   }
 
   async function autoScriptPlaylistEffects() {
@@ -5098,10 +5807,11 @@
       name.textContent = playlistVideoName(entry.video);
       const info = document.createElement('span');
       info.className = 'pl-e-info';
-      const view = entry.view === 'octo' ? '8x' : entry.view === 'quad' ? '4x'
+      const view = entry.view === 'six' ? '6x' : entry.view === 'octo' ? '8x' : entry.view === 'quad' ? '4x'
         : entry.view === 'triple' ? '3x' : entry.view === 'dual' ? 'Dual' : 'Single';
       info.textContent = (entry.layoutPresetName ? entry.layoutPresetName + ' · ' : '')
-        + view + ' · P' + (entry.preset || 1);
+        + view + ' · P' + (entry.preset || 1)
+        + (entry.layoutCues?.length ? ' · ' + entry.layoutCues.length + ' timed layout changes' : '');
       const detail = document.createElement('span');
       detail.className = 'pl-e-runtime-detail'; detail.textContent = 'Calculating run time…';
       const cuesButton = document.createElement('button');
@@ -5109,6 +5819,11 @@
       const cueCount = Array.isArray(entry.cues) ? entry.cues.length : 0;
       cuesButton.textContent = '✦ Script effects' + (cueCount ? ' · ' + cueCount + ' cue' + (cueCount === 1 ? '' : 's') : '');
       cuesButton.addEventListener('click', event => { event.stopPropagation(); openPlaylistCueEditor(index); });
+      if (entry.sourceRange) {
+        const rangeInfo = document.createElement('span'); rangeInfo.className = 'cue-range-summary';
+        rangeInfo.textContent = `Source ${entry.sourceRange.start}s → ${entry.sourceRange.end === null ? 'end' : entry.sourceRange.end + 's'}`;
+        body.append(rangeInfo);
+      }
       body.append(number, name, info, detail, cuesButton);
       const runtime = document.createElement('span');
       runtime.className = 'pl-e-runtime'; runtime.textContent = '…';
@@ -5169,6 +5884,8 @@
   videoStage.appendChild(timelineOverlay);
   const timelineFrameRenderer = createTransitionFrameRenderer();
   const timelineFrameVideos = [document.createElement('video'), document.createElement('video')];
+  const timelineReflectionSource=document.createElement('video');timelineReflectionSource.preload='auto';timelineReflectionSource.muted=true;timelineReflectionSource.playsInline=true;
+  let timelineCompositionEngine=null;
   timelineFrameVideos.forEach(source => { source.preload = 'auto'; source.muted = true; source.playsInline = true; });
   let timelineSegments = [];
   let timelineTime = 0;
@@ -5197,30 +5914,44 @@
     setVfxLogo3d(timelineVfxBeforePreview.logo3d);
     setVfxShape(timelineVfxBeforePreview.shape);
     setVfxState({ enabled: timelineVfxBeforePreview.enabled, scene: timelineVfxBeforePreview.scene,
-      intensity: timelineVfxBeforePreview.intensity, feedback: timelineVfxBeforePreview.feedback });
+      intensity: timelineVfxBeforePreview.intensity, feedback: timelineVfxBeforePreview.feedback,
+      baseEnabled:VfxEngine.baseEnabled(timelineVfxBeforePreview),logoEnabled:VfxEngine.logoEnabled(timelineVfxBeforePreview),
+      motion:timelineVfxBeforePreview.motion,backgroundScene:timelineVfxBeforePreview.backgroundScene });
     timelineVfxBeforePreview = null;
     timelineCueKey = '';
   }
-  function previewTimelineCues(index, local) {
-    let active = null, key = '';
+  function playlistCueAt(index, local) {
+    let active = null, key = '', activeTime = 0;
     for (let entryIndex = 0; entryIndex <= index; entryIndex++) {
       const entry = plPlaylist.entries[entryIndex];
       const limit = entryIndex === index ? local : timelineSegments[entryIndex]?.duration || 0;
       for (const cue of (Array.isArray(entry.cues) ? entry.cues : []).map(normalisePlaylistCue).sort((a, b) => a.at - b.at)) {
-        if (cue.at <= limit) { active = cue; key = entryIndex + ':' + cue.at + ':' + JSON.stringify(cue); }
+        if (cue.at <= limit) { active = cue; activeTime = (timelineSegments[entryIndex]?.start || 0) + cue.at; key = entryIndex + ':' + cue.at + ':' + JSON.stringify(cue); }
       }
     }
+    const elapsed = (timelineSegments[index]?.start || 0) + local - activeTime;
+    return {active,key,elapsed};
+  }
+  function previewTimelineCues(index, local) {
+    const {active,key,elapsed}=playlistCueAt(index,local);
     if (!active) { restoreTimelineVfxPreview(); return; }
-    if (key === timelineCueKey) return;
+    if (key === timelineCueKey) {
+      if (active.effect === 'logo' || active.effect === 'text' || active.logoLayer) {
+        const object=active.logoLayer || active;
+        setVfxLogo3d({animationClock:{time:Math.max(0,elapsed),startedAt:Date.now(),playing:false},
+          reflectionClock:{time:Math.max(0,elapsed)*(object.reflectionSource?.speed || 1),startedAt:Date.now(),playing:false}});
+      }
+      return;
+    }
     if (!timelineVfxBeforePreview) timelineVfxBeforePreview = JSON.parse(JSON.stringify(vfxState));
-    applyPlaylistCue(active);
+    applyPlaylistCue(active, elapsed, false);
     timelineCueKey = key;
   }
   video.addEventListener('timeupdate', () => {
     if (!plPlaying || !document.body.classList.contains('playlist-mode')) return;
     const segment = timelineSegments[plEntryIdx];
     if (!segment) return;
-    timelineTime = Math.min(segment.end, segment.start + (performance.now() - timelineEntryStartedAt) / 1000);
+    timelineTime = playlistPlaybackTime();
     updateTimelinePlayhead();
   });
 
@@ -5243,12 +5974,14 @@
       timelineSegments.push({ index, start: time, end: time + duration, duration, x, width });
       const clip = document.createElement('div');
       clip.className = 'timeline-clip' + (index === plPreviewIdx ? ' selected' : '');
+      clip.title = 'Preview this clip with its saved layout and effects. Use its transition badge to preview the change between clips.';
       clip.dataset.index = index;
       clip.style.width = width + 'px';
       clip.draggable = true;
       const thumb = document.createElement('img');
       thumb.src = '/thumbnail/' + encodeURIComponent(entry.video);
       thumb.alt = '';
+      thumb.loading = 'lazy';
       thumb.draggable = false;
       const label = document.createElement('span');
       label.className = 'timeline-clip-label';
@@ -5257,6 +5990,33 @@
       runtime.className = 'timeline-clip-time';
       runtime.textContent = formatPlaylistTime(duration);
       clip.append(thumb, label, runtime);
+      const layoutLane = document.createElement('div'); layoutLane.className = 'timeline-lane timeline-layout-lane';
+      const layoutPoints = [{at:0}, ...(entry.layoutCues || []).filter(c => c.at > 0 && c.at < duration)].sort((a,b)=>a.at-b.at);
+      layoutPoints.forEach((point, pointIndex) => {
+        const end = layoutPoints[pointIndex+1]?.at ?? duration;
+        const configured = playlistLayoutAt(entry, point.at);
+        const button = document.createElement('button'); button.type='button'; button.className='timeline-event layout-event';
+        button.dataset.at = point.at; button.style.left=(point.at/duration*100)+'%'; button.style.width=((end-point.at)/duration*100)+'%';
+        button.textContent=formatPlaylistTime(point.at)+' · '+playlistViewLabel(configured.view)+' · P'+(configured.preset || 1)+(point.zoom!==undefined?' · '+point.zoom+'× zoom':'')+(point.effects?' · Colour':'')+(point.trailsEnabled!==undefined?' · Trails '+(point.trailsEnabled?'on':'off'):'');
+        button.title=`Edit layout/framing at ${point.at}s into clip ${index+1}: ${playlistViewLabel(configured.view)}, pattern ${configured.preset || 1}, zoom ${configured.zoom ?? 1}×, X ${configured.panX ?? 0}, Y ${configured.panY ?? 0}, colour ${JSON.stringify({...PLAYLIST_NEUTRAL_EFFECTS,...configured.effects})}, trails ${configured.trailsEnabled?'on':'off'}. Applies until a later change overrides these settings.`;
+        button.setAttribute('aria-label',button.title);
+        button.addEventListener('click', event => { event.stopPropagation(); setTimelinePlayhead((timelineSegments[index]?.start || 0)+point.at+.001,{transitionPreview:false}); });
+        layoutLane.append(button);
+      });
+      const effectsLane = document.createElement('div'); effectsLane.className='timeline-lane timeline-effects-lane';
+      const effectPoints = (entry.cues || []).map((cue,cueIndex)=>({cue,cueIndex})).sort((a,b)=>a.cue.at-b.cue.at);
+      effectPoints.forEach(({cue,cueIndex},pointIndex) => {
+        const end=effectPoints[pointIndex+1]?.cue.at ?? duration;
+        if (cue.at >= duration || end <= cue.at) return;
+        const button=document.createElement('button');button.type='button';button.className='timeline-event effect-event';
+        button.dataset.cueIndex=cueIndex;button.style.left=(cue.at/duration*100)+'%';button.style.width=((end-cue.at)/duration*100)+'%';
+        button.textContent=formatPlaylistTime(cue.at)+' · '+(PL_CUE_EFFECTS[cue.effect] || cue.effect)+(cue.logoLayer?' + '+(cue.logoLayer.effect==='text'?'text':'logo'):'');
+        button.title=`Edit ${button.textContent} at ${cue.at}s into clip ${index+1}. Includes appearance, reflections and motion controls.`;
+        button.setAttribute('aria-label',button.title);
+        button.onclick=async event=>{event.stopPropagation();await setTimelinePlayhead((timelineSegments[index]?.start || 0)+cue.at+.001,{transitionPreview:false});openPlaylistCueEditor(index,cueIndex);};
+        effectsLane.append(button);
+      });
+      clip.append(layoutLane,effectsLane);
       const transition = normaliseTransition(entry.transition);
       if (transition.type !== 'cut') {
         const chip = document.createElement('button');
@@ -5269,8 +6029,9 @@
         chip.addEventListener('click', event => { event.stopPropagation(); setTimelinePlayhead(timeForTransition(index)); });
         clip.appendChild(chip);
       }
-      clip.addEventListener('click', () => setTimelinePlayhead(timeForClip(index)));
+      clip.addEventListener('click', () => setTimelinePlayhead(timeForClip(index), {transitionPreview: false}));
       clip.addEventListener('dragstart', event => {
+        if (event.target.closest('.timeline-event')) {event.preventDefault();return;}
         event.dataTransfer.effectAllowed = 'move';
         event.dataTransfer.setData('application/x-club-timeline-entry', String(index));
         clip.classList.add('dragging');
@@ -5301,12 +6062,26 @@
   }
 
   function timeForClip(index) { return (timelineSegments[index]?.start || 0) + 0.05; }
+  function playlistViewLabel(view) {return {single:'1×',dual:'2×',triple:'3×',quad:'4×',six:'6×',octo:'8×'}[view] || '1×';}
+  function selectedLayoutChange() {
+    const entry=plPlaylist.entries[plPreviewIdx];
+    const local=Math.max(0,timelineTime-(timelineSegments[plPreviewIdx]?.start || 0));
+    const cue=[...(entry?.layoutCues || [])].filter(c=>c.at<=local).sort((a,b)=>a.at-b.at).at(-1);
+    return {entry,local,cue,at:cue?.at || 0};
+  }
+  function previewTimelineEdit(message) {
+    const time=timelineTime;
+    renderPlaylistEntries();
+    return setTimelinePlayhead(Math.min(time,timelineSegments.at(-1)?.end || 0),{transitionPreview:false}).then(()=>{timelineStatus.textContent=message+' Save the playlist to keep your changes.';});
+  }
   function currentPlayerCue() {
-    const effect = !vfxState.enabled ? 'off' : vfxState.scene === 3 ? 'mirror'
-      : vfxState.scene === 6 ? vfxState.logo3d.kind === 'text' ? 'text' : 'logo' : 'scene-' + vfxState.scene;
+    const onlyLogo = VfxEngine.logoOnly(vfxState);
+    const effect = !vfxState.enabled ? 'off' : onlyLogo ? vfxState.logo3d.kind === 'text' ? 'text' : 'logo' : vfxState.scene === 3 ? 'mirror'
+      : vfxState.scene === 7 ? 'camera' : vfxState.scene === -1 ? 'video' : 'scene-' + vfxState.scene;
     const object = effect === 'mirror' ? vfxState.shape : effect === 'text' || effect === 'logo' ? vfxState.logo3d : {};
     return normalisePlaylistCue({ ...object, at: 0, effect,
-      intensity: vfxState.intensity, feedback: vfxState.feedback });
+      intensity: vfxState.intensity, feedback: vfxState.feedback, cameraMotion: vfxState.motion,
+      logoLayer: !onlyLogo && VfxEngine.logoEnabled(vfxState) ? {...vfxState.logo3d} : null });
   }
   function addCurrentViewAtPlayhead() {
     if (!currentFilename) return;
@@ -5328,7 +6103,7 @@
     });
     plPreviewIdx = insertion;
     renderPlaylistEntries();
-    setTimelinePlayhead(timeForClip(insertion)).then(() => {
+    setTimelinePlayhead(timeForClip(insertion), {transitionPreview: false}).then(() => {
       timelineStatus.textContent = 'Current view added at ' + formatPlaylistTime(timelineSegments[insertion].start)
         + ' (nearest clip boundary). Save the playlist to keep it.';
     });
@@ -5382,7 +6157,7 @@
         transition: normaliseTransition({ type: insertion ? 'cross-dissolve' : 'cut' }) });
       plPreviewIdx = insertion;
       renderPlaylistEntries();
-      setTimelinePlayhead(timeForClip(insertion));
+      setTimelinePlayhead(timeForClip(insertion), {transitionPreview: false});
       timelineStatus.textContent = 'Clip added. Configure it on the right, then save the playlist.';
       return;
     }
@@ -5395,7 +6170,7 @@
     plPlaylist.entries.splice(destination, 0, entry);
     plPreviewIdx = destination;
     renderPlaylistEntries();
-    setTimelinePlayhead(timeForClip(destination));
+    setTimelinePlayhead(timeForClip(destination), {transitionPreview: false});
   });
   let timelineScrubbing = false;
   function scrubTimeline(event) {
@@ -5416,44 +6191,109 @@
     document.getElementById('plInspectorName').textContent = entry ? playlistVideoName(entry.video) : 'Select a clip on the timeline to edit its settings.';
     document.getElementById('plInspectorFields').hidden = !entry;
     document.getElementById('plInspectorActions').hidden = !entry;
+    document.getElementById('insChangePanel').hidden = !entry;
     timelineTrack.querySelectorAll('.timeline-clip').forEach(clip => clip.classList.toggle('selected', Number(clip.dataset.index) === plPreviewIdx));
     if (!entry) return;
+    const selected=selectedLayoutChange(), composed=playlistLayoutAt(entry,selected.local);
+    const compositionChanges=[{at:0},...(entry.layoutCues || [])].sort((a,b)=>a.at-b.at);
+    const select=document.getElementById('insChangeSelect');select.replaceChildren();
+    for (const change of compositionChanges) select.add(new Option((change.at===0?'Start':formatPlaylistTime(change.at))+' · '+playlistViewLabel(playlistLayoutAt(entry,change.at).view),String(change.at)));
+    select.value=String(selected.at);
+    const next=compositionChanges.find(c=>c.at>selected.at)?.at ?? timelineSegments[plPreviewIdx]?.duration;
+    document.getElementById('insCompositionScope').textContent=`Layout, orientation, framing and colour: ${formatPlaylistTime(selected.at)}–${formatPlaylistTime(next || 0)} into this clip. Other fields apply to the whole clip.`;
+    document.getElementById('insChangeAt').value=selected.at;
+    document.getElementById('insChangeAt').disabled=!selected.cue;
+    document.getElementById('insRemoveChange').disabled=!selected.cue;
+    timelineTrack.querySelectorAll('.layout-event').forEach(button=>button.classList.toggle('selected',Number(button.closest('.timeline-clip').dataset.index)===plPreviewIdx&&Number(button.dataset.at)===selected.at));
     const transition = normaliseTransition(entry.transition);
     const values = { insDurationType: entry.duration?.type || 'seconds', insDurationValue: entry.duration?.value || 10,
-      insView: entry.view || 'single', insPreset: entry.preset || 1, insLoopMode: entry.loopMode ?? 1,
-      insSpeed: entry.speed ?? 1, insZoom: entry.zoom ?? 1, insPanX: entry.panX ?? 0, insPanY: entry.panY ?? 0,
-      insTransitionType: transition.type, insTransitionDuration: transition.duration, insTransitionPace: transition.pace };
-    const presets = document.getElementById('insPreset');
-    if (!presets.options.length) for (let i = 1; i <= 32; i++) presets.add(new Option('Option ' + i, i));
+      insView: composed.view || 'single', insPreset: composed.preset || 1, insLoopMode: entry.loopMode ?? 1,
+      insSpeed: entry.speed ?? 1, insMuted:String(entry.muted ?? video.muted), insZoom: composed.zoom ?? 1, insPanX: composed.panX ?? 0, insPanY: composed.panY ?? 0,
+      insTrails:String(!!composed.trailsEnabled),insTrailAmount:composed.trailAmount ?? .15,
+      insTransitionType: transition.type, insTransitionDuration: transition.duration, insTransitionPace: transition.pace,
+      insCueIn: entry.sourceRange?.start ?? 0, insCueOut: entry.sourceRange?.end ?? '' };
+    const effects={...PLAYLIST_NEUTRAL_EFFECTS,...composed.effects};
+    for(const [id,key] of Object.entries({insHue:'hueRotate',insSaturate:'saturate',insContrast:'contrast',insBrightness:'brightness',insBlur:'blur',insInvert:'invert',insSepia:'sepia'})) values[id]=effects[key];
+    const source=document.getElementById('insVideo');source.replaceChildren();
+    for(const filename of new Set([entry.video,...orderedLibraryVideos().map(v=>v.filename)])) source.add(new Option(playlistVideoName(filename),filename));
+    values.insVideo=entry.video;
+    const mode=VIEW_NAMES.indexOf(composed.view), maps=[[0],DUAL_POS_MAP,TRIPLE_POS_MAP,QUAD_POS_MAP,[0,1,2,3,4,5,6,7],SIX_POS_MAP],positions=maps[mode] || [0];
+    const presets = document.getElementById('insPreset');presets.replaceChildren();
+    for (let i = 1; i <= 32; i++) {
+      const signature=positions.map(p=>CONFIGS[i-1][p] || '');
+      const inverted=signature.map((t,n)=>t.includes('scaleY(-1)')?n+1:null).filter(Boolean);
+      const mirrored=signature.map((t,n)=>t.includes('scaleX(-1)')?n+1:null).filter(Boolean);
+      presets.add(new Option(`${i} · ${inverted.length?'Upside down: '+inverted.join(', '):'Upright'}${mirrored.length?' · Mirrored: '+mirrored.join(', '):''}`,i));
+    }
+    const patternPreview=document.getElementById('insPatternPreview');patternPreview.replaceChildren();
+    positions.forEach((p,index)=>{const tile=document.createElement('span');tile.className='ins-pattern-tile';const letter=document.createElement('span');letter.textContent='F';letter.style.transform=CONFIGS[(composed.preset || 1)-1]?.[p] || '';const number=document.createElement('small');number.textContent=index+1;tile.append(letter,number);patternPreview.append(tile);});
     for (const [id, value] of Object.entries(values)) document.getElementById(id).value = value;
+    window.populateVideoCueSelect?.(document.getElementById('insSourceRange'), entry.video, entry.sourceRange);
   }
   for (const [type, name] of Object.entries(TRANSITION_NAMES)) document.getElementById('insTransitionType').add(new Option(name, type));
-  document.getElementById('plInspectorFields').addEventListener('change', () => {
-    const entry = plPlaylist.entries[plPreviewIdx];
-    if (!entry) return;
-    const field = id => document.getElementById('ins' + id).value;
-    entry.duration = { type: field('DurationType'), value: Math.max(1, Number(field('DurationValue')) || 1) };
-    entry.view = field('View'); entry.preset = Number(field('Preset'));
-    entry.loopMode = Number(field('LoopMode')); entry.speed = Math.max(.25, Math.min(4, Number(field('Speed')) || 1));
-    entry.zoom = Math.max(1, Math.min(4, Number(field('Zoom')) || 1));
-    entry.panX = Math.max(-1, Math.min(1, Number(field('PanX')) || 0));
-    entry.panY = Math.max(-1, Math.min(1, Number(field('PanY')) || 0));
-    const previous = normaliseTransition(entry.transition);
-    entry.transition = normaliseTransition({ type: field('TransitionType'), duration: field('TransitionDuration'),
-      pace: field('TransitionPace'), params: previous.type === field('TransitionType') ? previous.params : {}, seed: previous.seed });
-    entry.layoutPresetId = null; entry.layoutPresetName = null;
-    renderPlaylistEntries();
-    setTimelinePlayhead(Math.min(timelineTime, timelineSegments.at(-1)?.end || 0));
-    timelineStatus.textContent = 'Clip updated. Save the playlist to keep your changes.';
+  document.getElementById('plInspectorFields').addEventListener('change', event => {
+    const {entry,cue}=selectedLayoutChange();if(!entry)return;
+    const target=cue || entry, id=event.target.id, value=event.target.value;
+    const composition={insView:'view',insPreset:'preset',insZoom:'zoom',insPanX:'panX',insPanY:'panY',insTrails:'trailsEnabled',insTrailAmount:'trailAmount'};
+    const colours={insHue:'hueRotate',insSaturate:'saturate',insContrast:'contrast',insBrightness:'brightness',insBlur:'blur',insInvert:'invert',insSepia:'sepia'};
+    const field=id=>document.getElementById('ins'+id).value;
+    try {
+      if(composition[id]) {
+        const limits={insPreset:[1,32],insZoom:[.25,4],insPanX:[-1,1],insPanY:[-1,1],insTrailAmount:[.01,1]};
+        target[composition[id]]=id==='insView'?value:id==='insTrails'?value==='true':cueNumber(value,1,...limits[id]);
+      } else if(colours[id]) {
+        const limits=id==='insHue'?[0,360]:id==='insBlur'?[0,20]:['insInvert','insSepia'].includes(id)?[0,100]:[0,300];
+        target.effects={...target.effects,[colours[id]]:cueNumber(value,0,...limits)};
+      } else if(['insSourceRange','insCueIn','insCueOut'].includes(id)) {
+        const range=id==='insSourceRange'?(value?SourceRange.validate(JSON.parse(value)):null):SourceRange.validate({start:Number(field('CueIn')),end:field('CueOut')===''?null:Number(field('CueOut'))});
+        const duration=plSourceDurationCache.get(entry.video);
+        if(range&&Number.isFinite(duration)&&(range.start>=duration-.099||(range.end!==null&&range.end>duration+.001)))throw new Error('Keep the cue range within the source video.');
+        if(range&&(range.start||range.end!==null))entry.sourceRange=range;else delete entry.sourceRange;
+      } else if(id==='insVideo') {entry.video=value;delete entry.sourceRange;}
+      else if(id==='insDurationType'||id==='insDurationValue') entry.duration={type:field('DurationType'),value:Math.max(1,Number(field('DurationValue'))||1)};
+      else if(id==='insLoopMode')entry.loopMode=Number(value);
+      else if(id==='insSpeed')entry.speed=cueNumber(value,1,.25,4);
+      else if(id==='insMuted')entry.muted=value==='true';
+      else if(id.startsWith('insTransition')) {
+        const previous=normaliseTransition(entry.transition);
+        entry.transition=normaliseTransition({type:field('TransitionType'),duration:field('TransitionDuration'),pace:field('TransitionPace'),params:previous.type===field('TransitionType')?previous.params:{},seed:previous.seed});
+      }
+      entry.layoutPresetId=null;entry.layoutPresetName=null;
+      previewTimelineEdit(id==='insVideo'?'Source replaced; source In/Out reset to the full new video.':cue&&(composition[id]||colours[id])?'Timed section updated.':'Clip updated.');
+    } catch(error) {renderTimelineInspector();timelineStatus.textContent=error.message;}
   });
+  document.getElementById('insChangeSelect').addEventListener('change',event=>setTimelinePlayhead((timelineSegments[plPreviewIdx]?.start || 0)+Number(event.target.value)+.001,{transitionPreview:false}));
+  document.getElementById('insAddChange').addEventListener('click',()=>{
+    const {entry,local}=selectedLayoutChange();if(!entry)return;
+    const at=Math.round(local*1000)/1000, duration=timelineSegments[plPreviewIdx]?.duration || 0;
+    if(at<.001||at>=duration){timelineStatus.textContent='Choose a point inside the clip on the time ruler first.';return;}
+    if((entry.layoutCues || []).some(c=>Math.abs(c.at-at)<.05)){timelineStatus.textContent='A change already exists here. Edit the selected section.';return;}
+    entry.layoutCues ||= [];entry.layoutCues.push({at});entry.layoutCues.sort((a,b)=>a.at-b.at);
+    previewTimelineEdit('Added a change at '+formatPlaylistTime(at)+'. Edit its settings on the right.');
+  });
+  document.getElementById('insRemoveChange').addEventListener('click',()=>{
+    const {entry,cue}=selectedLayoutChange();if(!cue)return;
+    entry.layoutCues=entry.layoutCues.filter(c=>c!==cue);previewTimelineEdit('Removed the timed change.');
+  });
+  document.getElementById('insChangeAt').addEventListener('change',event=>{
+    const {entry,cue}=selectedLayoutChange();if(!cue)return;
+    const at=Number(event.target.value), duration=timelineSegments[plPreviewIdx]?.duration || 0;
+    if(!Number.isFinite(at)||at<=0||at>=duration||(entry.layoutCues || []).some(c=>c!==cue&&Math.abs(c.at-at)<.001)){renderTimelineInspector();timelineStatus.textContent='Choose a unique change time greater than zero and before the clip ends.';return;}
+    cue.at=at;entry.layoutCues.sort((a,b)=>a.at-b.at);timelineTime=timelineSegments[plPreviewIdx].start+at+.001;previewTimelineEdit('Moved the timed change.');
+  });
+  document.getElementById('insUpright').addEventListener('click',()=>{const {entry,cue}=selectedLayoutChange();if(entry){(cue || entry).preset=1;previewTimelineEdit('All panels in this section are upright.');}});
   document.getElementById('insAudition').addEventListener('click', () => openTransitionAudition(normaliseTransition(plPlaylist.entries[plPreviewIdx].transition).type, plPreviewIdx));
   document.getElementById('insCues').addEventListener('click', () => openPlaylistCueEditor(plPreviewIdx));
   document.getElementById('insRemove').addEventListener('click', () => removeEntry(plPreviewIdx));
 
   function waitTimelineMedia(source, eventName) {
     return new Promise((resolve, reject) => {
+      let finished = false;
       const finish = error => {
+        if (finished) return;
+        finished = true;
         clearTimeout(timeout);
+        clearInterval(readiness);
         source.removeEventListener(eventName, succeeded);
         source.removeEventListener('error', failed);
         if (error) reject(error); else resolve();
@@ -5461,12 +6301,18 @@
       const succeeded = () => finish();
       const failed = () => finish(new Error('Video could not be loaded.'));
       const timeout = setTimeout(() => finish(new Error('Video preview timed out.')), 7000);
+      // Reparenting the shared review player can retain decoded frames without
+      // another loadeddata event. Likewise a cached seek may already be done.
+      const readiness = setInterval(() => {
+        if (source.readyState >= 2 && (eventName === 'loadeddata' || (eventName === 'seeked' && !source.seeking))) finish();
+      }, 50);
       source.addEventListener(eventName, succeeded, { once: true });
       source.addEventListener('error', failed, { once: true });
     });
   }
-  async function seekTimelineSource(source, filename, seconds) {
+  async function seekTimelineSource(source, filename, seconds, run = timelinePreviewRun) {
     const url = await compatibleVideoSource(filename, message => { timelineStatus.textContent = message; });
+    if (run !== timelinePreviewRun) return;
     if (source.dataset.filename !== filename) {
       source.dataset.filename = filename;
       const ready = waitTimelineMedia(source, 'loadeddata');
@@ -5474,6 +6320,7 @@
       source.load();
       await ready;
     }
+    if (run !== timelinePreviewRun) return;
     const end = Number.isFinite(source.duration) ? Math.max(0, source.duration - .05) : 0;
     const time = Math.max(0, Math.min(end, seconds));
     if (Math.abs(source.currentTime - time) > .04) {
@@ -5483,10 +6330,8 @@
     }
   }
   function timelineSourceTime(entry, local, sourceDuration) {
-    const elapsed = Math.max(0, local * Math.max(.25, Number(entry.speed) || 1));
-    if (!sourceDuration) return elapsed;
-    if (Number(entry.loopMode) === 2) { const turn = elapsed % (sourceDuration * 2); return turn > sourceDuration ? sourceDuration * 2 - turn : turn; }
-    return Number(entry.loopMode) === 1 ? elapsed % sourceDuration : Math.min(elapsed, sourceDuration - .05);
+    const reveal=entry.transition?.type==='pixel-scatter'?normaliseTransition(entry.transition).duration:0;
+    return SourceRange.sourceTime(entry, Math.max(0,local-reveal), sourceDuration);
   }
   function drawTimelineFrame(source, entry, canvas) {
     const ctx = canvas.getContext('2d');
@@ -5494,56 +6339,85 @@
     ctx.fillStyle = '#000'; ctx.fillRect(0, 0, width, height);
     if (!source || !source.videoWidth) return;
     const mode = VIEW_NAMES.indexOf(entry.view);
-    const cols = [1, 2, 3, 2, 4][mode] || 1;
-    const rows = [1, 1, 1, 2, 2][mode] || 1;
+    const cols = [1, 2, 3, 2, 4, 3][mode] || 1;
+    const rows = [1, 1, 1, 2, 2, 2][mode] || 1;
     const tileWidth = width / cols, tileHeight = height / rows;
     const config = CONFIGS[Math.max(0, Math.min(31, Number(entry.preset || 1) - 1))];
     for (let row = 0; row < rows; row++) for (let col = 0; col < cols; col++) {
       const index = row * cols + col;
-      const position = mode === 1 ? DUAL_POS_MAP[index] : mode === 2 ? TRIPLE_POS_MAP[index] : mode === 3 ? QUAD_POS_MAP[index] : index;
+      const position = mode === 1 ? DUAL_POS_MAP[index] : mode === 2 ? TRIPLE_POS_MAP[index] : mode === 3 ? QUAD_POS_MAP[index] : mode === 5 ? SIX_POS_MAP[index] : index;
       const flip = config[position] || '';
       ctx.save(); ctx.translate((col + .5) * tileWidth, (row + .5) * tileHeight);
       ctx.scale(flip.includes('scaleX(-1)') ? -1 : 1, flip.includes('scaleY(-1)') ? -1 : 1);
+      ctx.filter=buildFilterString({...PLAYLIST_NEUTRAL_EFFECTS,...entry.effects});
       const vw = source.videoWidth, vh = source.videoHeight;
-      if (mode <= 0) {
-        const scale = Math.min(tileWidth / vw, tileHeight / vh);
-        ctx.drawImage(source, -vw * scale / 2, -vh * scale / 2, vw * scale, vh * scale);
-      } else {
-        const scale = Math.max(tileWidth / vw, tileHeight / vh) * Math.max(1, Number(entry.zoom) || 1);
-        const sw = Math.min(vw, tileWidth / scale), sh = Math.min(vh, tileHeight / scale);
-        const sx = (vw - sw) * (1 + (Number(entry.panX) || 0)) / 2;
-        const sy = (vh - sh) * (1 - (Number(entry.panY) || 0)) / 2;
-        ctx.drawImage(source, sx, sy, sw, sh, -tileWidth / 2, -tileHeight / 2, tileWidth, tileHeight);
-      }
+      VideoFraming.draw(ctx, source, vw, vh, tileWidth, tileHeight, entry.zoom, entry.panX, entry.panY,
+        mode <= 0 ? 'contain' : 'cover', -tileWidth / 2, -tileHeight / 2);
       ctx.restore();
     }
   }
-  async function setTimelinePlayhead(seconds) {
+  async function drawTimelineComposition(source,entry,index,local,canvas,run) {
+    drawTimelineFrame(source,entry,canvas);
+    const {active,elapsed}=playlistCueAt(index,local);
+    if(!active || active.effect==='off')return;
+    const primary=['logo','text'].includes(active.effect),object=primary?active:active.logoLayer;
+    const scene=primary?6:active.effect==='video'?-1:active.effect==='mirror'?3:active.effect==='camera'?7:Number(active.effect.slice(6));
+    const engine=timelineCompositionEngine ||= new VfxEngine(document.createElement('canvas'));
+    engine.setShape({...active,kind:active.image?'image':'text'});
+    if(object){
+      engine.setLogo3d({...object,kind:object.effect==='text'?'text':'logo',animationClock:{time:Math.max(0,elapsed),startedAt:Date.now(),playing:false}});
+      const started=performance.now();
+      while(!engine.logoSurfaceReady && run===timelinePreviewRun){
+        if(performance.now()-started>7000)throw new Error('The logo or text surface is still loading.');
+        await new Promise(resolve=>requestAnimationFrame(resolve));
+      }
+      if(run!==timelinePreviewRun)return;
+      if(object.reflectionSource?.filename){
+        const filename=object.reflectionSource.filename,duration=await playlistSourceSeconds(filename);
+        await seekTimelineSource(timelineReflectionSource,filename,(Math.max(0,elapsed)*(object.reflectionSource.speed || 1))%Math.max(.001,duration),run);
+        if(run!==timelinePreviewRun)return;
+        engine.setReflectionSource(timelineReflectionSource,true);
+      } else engine.setReflectionSource(null,false);
+    } else engine.setReflectionSource(null,false);
+    if(scene===7)engine.setMotionMask(cameraMotion.frame(vfxState.motion?.sourceId));
+    // A seek starts a new still, rather than feeding the last clip's history into it.
+    engine.resize(1,1);
+    engine.render(canvas,{enabled:true,scene,baseEnabled:!primary,logoEnabled:!!object,intensity:active.intensity,feedback:active.feedback,motion:active.cameraMotion});
+    canvas.getContext('2d').drawImage(engine.canvas,0,0,canvas.width,canvas.height);
+  }
+  async function setTimelinePlayhead(seconds, {transitionPreview = true} = {}) {
+    if (plPlaying) stopPlaylist();
     const total = timelineSegments.at(-1)?.end || 0;
     timelineTime = Math.max(0, Math.min(total, seconds));
     updateTimelinePlayhead();
     const segment = timelineSegments.find(item => timelineTime < item.end) || timelineSegments.at(-1);
     if (!segment) return;
     const run = ++timelinePreviewRun;
-    if (plPlaying) stopPlaylist();
-    const entry = plPlaylist.entries[segment.index];
     plPreviewIdx = segment.index;
     renderTimelineInspector();
     const local = timelineTime - segment.start;
+    const entry = playlistLayoutAt(plPlaylist.entries[segment.index], local);
     const transition = normaliseTransition(entry.transition);
-    const inTransition = transition.type !== 'cut' && local < transition.duration;
+    const inTransition = transitionPreview && transition.type !== 'cut' && local < transition.duration;
+    videoTransition.cancel();
     timelineOverlay.hidden = true;
     previewTimelineCues(segment.index, local);
     video.pause();
     const changingVideo = currentFilename !== entry.video;
-    const ready = changingVideo || video.readyState < 2 ? waitTimelineMedia(video, 'loadeddata') : null;
-    if (changingVideo) showVideo(entry.video, { type: 'cut' });
+    if (changingVideo) showVideo(entry.video, { type: 'cut' }, entry.sourceRange, {paused: true});
+    // Register after showVideo's initial loadeddata handler. Its In-point seek
+    // must not overwrite the requested review position or restart playback.
+    const ready = video.readyState < 2 ? waitTimelineMedia(video, 'loadeddata') : null;
     applyLayoutConfiguration(entry);
     video.pause();
     try {
       if (ready) await ready;
       if (run !== timelinePreviewRun) return;
-      video.currentTime = timelineSourceTime(entry, local, video.duration);
+      const targetTime = timelineSourceTime(entry, local, video.duration);
+      const sought = video.seeking || Math.abs(video.currentTime - targetTime) > .001
+        ? waitTimelineMedia(video, 'seeked') : null;
+      if (sought) { video.currentTime = targetTime; await sought; }
+      if (run !== timelinePreviewRun) return;
       video.pause();
       if (!inTransition) {
         timelineOverlay.hidden = true;
@@ -5559,14 +6433,16 @@
         const source = timelineFrameVideos[0];
         const sourceDuration = await playlistSourceSeconds(previous.video);
         const previousLength = timelineSegments[segment.index - 1]?.duration || 0;
-        await seekTimelineSource(source, previous.video, timelineSourceTime(previous, Math.max(0, previousLength - .05), sourceDuration));
+        await seekTimelineSource(source, previous.video, timelineSourceTime(previous, Math.max(0, previousLength - .05), sourceDuration), run);
         if (run !== timelinePreviewRun) return;
-        drawTimelineFrame(source, previous, from);
+        await drawTimelineComposition(source,playlistLayoutAt(previous,previousLength),segment.index-1,Math.max(0,previousLength-.05),from,run);
+        if(run!==timelinePreviewRun)return;
       } else drawTimelineFrame(null, entry, from);
       const incoming = timelineFrameVideos[1];
-      await seekTimelineSource(incoming, entry.video, timelineSourceTime(entry, local, await playlistSourceSeconds(entry.video)));
+      await seekTimelineSource(incoming, entry.video, timelineSourceTime(entry, local, await playlistSourceSeconds(entry.video)), run);
       if (run !== timelinePreviewRun) return;
-      drawTimelineFrame(incoming, entry, to);
+      await drawTimelineComposition(incoming,entry,segment.index,local,to,run);
+      if(run!==timelinePreviewRun)return;
       const linear = Math.max(0, Math.min(1, local / transition.duration));
       const progress = transition.pace === 'accelerate' ? linear * linear
         : transition.pace === 'decelerate' ? 1 - (1 - linear) * (1 - linear)
@@ -5583,17 +6459,74 @@
 
   function updatePlaylistPlaybackButton() {
     const button = document.getElementById('plPlayBtn');
-    button.textContent = plPlaying ? 'Stop' : 'Play';
+    const preview=playlistPreviewActive();
+    button.textContent = plPlaying ? (preview?'Pause playlist':'Stop') : (preview?'Play from playhead':'Play');
     button.classList.toggle('is-stopping', plPlaying);
-    button.setAttribute('aria-label', plPlaying ? 'Stop playlist' : 'Play playlist');
+    button.setAttribute('aria-label', plPlaying ? (preview?'Pause playlist preview':'Stop playlist') : (preview?'Play playlist from playhead':'Play playlist'));
+    if(preview){
+      playBtn.textContent=plPlaying?'Pause playlist':'Play playlist';
+      playBtn.title=plPlaying?'Pause the full playlist composition and keep the playhead here.':'Play the full playlist composition from the playhead, including layouts, transitions, VFX and logo motion.';
+      playBtn.setAttribute('aria-label',plPlaying?'Pause playlist preview':'Play playlist from playhead');
+      document.getElementById('restartVideoBtn').textContent='↻ Restart clip';
+      document.getElementById('restartVideoBtn').setAttribute('aria-label','Restart playlist clip');
+      document.getElementById('restartVideoBtn').title='Return the playlist playhead to this clip’s start, keeping the current playing or paused state.';
+    } else {
+      playBtn.textContent=video.paused?'Play':'Pause';playBtn.title='Play or pause the selected video.';playBtn.removeAttribute('aria-label');
+      document.getElementById('restartVideoBtn').textContent='↻ Restart video';
+      document.getElementById('restartVideoBtn').setAttribute('aria-label','Restart video');
+      document.getElementById('restartVideoBtn').removeAttribute('title');
+    }
+    syncVfxButtons();
+  }
+
+  function playlistPreviewActive() {return !isMacEngine && document.body.classList.contains('playlist-mode') && plPlaylist.entries.length>0;}
+  function playlistPlaybackTime() {
+    const segment=timelineSegments[plEntryIdx];
+    return plPlaying&&plEntryReady&&segment ? Math.min(segment.end,segment.start+Math.max(0,(performance.now()-timelineEntryStartedAt)/1000)) : timelineTime;
+  }
+  function followPlaylistPlayhead() {
+    cancelAnimationFrame(plPlayheadFrame);
+    let inspectorKey='';
+    const tick=()=>{
+      if(!plPlaying){plPlayheadFrame=0;return;}
+      timelineTime=playlistPlaybackTime();updateTimelinePlayhead();
+      if(playlistPreviewActive()){
+        const selected=selectedLayoutChange(),key=plEntryIdx+':'+selected.at;
+        if(key!==inspectorKey){plPreviewIdx=plEntryIdx;renderTimelineInspector();inspectorKey=key;}
+        timelineStatus.textContent=(plEntryReady?'Playing playlist composition':'Loading playlist composition')+' · clip '+(plEntryIdx+1)+' · '+formatPlaylistTime(timelineTime);
+      }
+      plPlayheadFrame=requestAnimationFrame(tick);
+    };tick();
+  }
+  async function pausePlaylistPreview() {
+    const position=playlistPlaybackTime();
+    let frozen=null;
+    if(plEntryReady&&video.readyState>=2){
+      if(vfxState.enabled)renderVfxFrame();
+      frozen=document.createElement('canvas');frozen.width=Math.max(1,videoStage.clientWidth);frozen.height=Math.max(1,videoStage.clientHeight);
+      drawCompositeFrame(frozen,frozen.getContext('2d'),true,true,true);
+    }
+    stopPlaylist();
+    const preview=setTimelinePlayhead(position,{transitionPreview:false}),run=timelinePreviewRun;
+    await preview;
+    if(run!==timelinePreviewRun)return;
+    if(frozen){timelineOverlay.width=frozen.width;timelineOverlay.height=frozen.height;timelineOverlay.getContext('2d').drawImage(frozen,0,0);timelineOverlay.hidden=false;}
+    timelineStatus.textContent='Playlist composition paused at '+formatPlaylistTime(timelineTime)+'. Play continues from here.';
+    updatePlaylistPlaybackButton();
+  }
+  function togglePlaylistPreview() {
+    if(plPlaying)return pausePlaylistPreview();
+    const total=timelineSegments.at(-1)?.end || 0;
+    return startPlaylist(timelineTime>=total-.001?0:timelineTime);
   }
 
   function togglePlaylistPlayback() {
+    if(playlistPreviewActive()){togglePlaylistPreview();return;}
     if (plPlaying) stopPlaylist();
     else startPlaylist();
   }
 
-  function startPlaylist() {
+  async function startPlaylist(seconds = 0) {
     if (plPlaylist.entries.length === 0) return;
     if (autoRun) stopAutoPerform();
     timelinePreviewRun++;
@@ -5601,31 +6534,83 @@
     restoreTimelineVfxPreview();
     if (!plPlaying) plVfxBeforePlaylist = JSON.parse(JSON.stringify(vfxState));
     plPlaying = true;
+    renderPlaylistTimeline();
+    timelineTime=Math.max(0,Math.min(timelineSegments.at(-1)?.end || 0,seconds));
     updatePlaylistPlaybackButton();
-    playEntry(0);
+    followPlaylistPlayhead();
+    if (seconds > 0) {
+      const segment = timelineSegments.find(item => seconds < item.end);
+      if (segment) return playEntry(segment.index, Math.max(0, seconds - segment.start));
+    }
+    return playEntry(0);
   }
 
-  function playEntry(idx) {
+  async function playEntry(idx, offset = 0) {
     if (idx >= plPlaylist.entries.length) { stopPlaylist(); return; }
     const entry = plPlaylist.entries[idx];
+    plEntryReady=false;
     plEntryIdx = idx;
     plPreviewIdx = idx;
-    timelineEntryStartedAt = performance.now();
+    timelineEntryStartedAt = performance.now() - offset * 1000;
+    timelineTime=(timelineSegments[idx]?.start || 0)+offset;updateTimelinePlayhead();
     plLoopCount = 0;
     clearTimeout(plTimer);
     cancelPlaylistCues();
 
-    showVideo(entry.video, entry.transition || { type: 'cut' });
-    applyLayoutConfiguration(entry);
-    video.play().catch(() => {});
-    schedulePlaylistCues(entry);
+    const transition=normaliseTransition(entry.transition);
+    const insideTransition=offset<transition.duration&&transition.type!=='cut';
+    let outgoingFrame=null;
+    try{if(offset>0&&insideTransition&&idx>0){
+      const run=timelinePreviewRun,previous=plPlaylist.entries[idx-1],previousLength=timelineSegments[idx-1]?.duration || 0;
+      const duration=await playlistSourceSeconds(previous.video);
+      await seekTimelineSource(timelineFrameVideos[0],previous.video,timelineSourceTime(previous,Math.max(0,previousLength-.05),duration),run);
+      if(!plPlaying||plEntryIdx!==idx||run!==timelinePreviewRun)return;
+      outgoingFrame=document.createElement('canvas');outgoingFrame.width=640;outgoingFrame.height=Math.round(640/playlistPreviewRatio());
+      await drawTimelineComposition(timelineFrameVideos[0],playlistLayoutAt(previous,previousLength),idx-1,Math.max(0,previousLength-.05),outgoingFrame,run);
+      if(!plPlaying||plEntryIdx!==idx||run!==timelinePreviewRun)return;
+    }}catch(error){if(plPlaying&&plEntryIdx===idx){stopPlaylist();timelineStatus.textContent='Could not prepare the playlist transition: '+error.message;}return;}
+
+    showVideo(entry.video, offset > 0 && !insideTransition ? {type:'cut'} : transition, entry.sourceRange,{deferTransition:true,outgoingFrame});
+    const ready = waitTimelineMedia(video, 'loadeddata');
+    const load = videoLoadToken;
+    applyLayoutConfiguration(playlistLayoutAt(entry, offset));
+    if (ready) {
+      video.pause();
+      try {
+        await ready;
+        if (!plPlaying || plEntryIdx !== idx || videoLoadToken !== load) return;
+        const sought=waitTimelineMedia(video,'seeked');
+        video.currentTime = timelineSourceTime(entry, offset, video.duration);
+        await sought;
+        if (!plPlaying || plEntryIdx !== idx || videoLoadToken !== load) return;
+        if (entry.duration.type === 'loops' && offset > 0) {
+          const range = playbackBounds();
+          const cycle = (range.end - range.start) * (Number(entry.loopMode) === 2 ? 2 : 1) / playbackSpeed;
+          const reveal=transition.type==='pixel-scatter'?transition.duration:0;
+          if (cycle > 0) plLoopCount = Math.floor(Math.max(0,offset-reveal) / cycle);
+        }
+        timelineEntryStartedAt = performance.now() - offset * 1000;
+      } catch (error) {
+        if (plPlaying && videoLoadToken === load) { stopPlaylist(); timelineStatus.textContent = 'Could not start here: ' + error.message; }
+        return;
+      }
+    }
+    if (!pixelHolding) video.play().catch(() => {});
+    schedulePlaylistCues(entry, offset);
+    videoTransition.start(()=>{
+      if(load!==videoLoadToken)return;
+      if(pixelHolding){pixelHolding=false;if(pixelHoldWantsPlay)video.play().catch(()=>{});}
+    },insideTransition?offset:0);
+    timelineEntryStartedAt=performance.now()-offset*1000;
+    plEntryReady=true;
 
     if (entry.duration.type === 'seconds') {
-      plTimer = setTimeout(onEntryComplete, entry.duration.value * 1000);
+      plTimer = setTimeout(onEntryComplete, Math.max(0, entry.duration.value - offset) * 1000);
     }
 
     updatePlIndicator();
     renderPlaylistEntries();
+    updatePlaylistPlaybackButton();
   }
 
   function onEntryComplete() {
@@ -5635,7 +6620,7 @@
     } else if (plLoopPlaylist) {
       playEntry(0);
     } else {
-      stopPlaylist();
+      if(playlistPreviewActive())pausePlaylistPreview();else stopPlaylist();
     }
   }
 
@@ -5652,7 +6637,10 @@
   }
 
   function stopPlaylist() {
+    if(plPlaying)timelineTime=playlistPlaybackTime();
     plPlaying = false;
+    plEntryReady=false;
+    cancelAnimationFrame(plPlayheadFrame);plPlayheadFrame=0;
     clearTimeout(plTimer);
     cancelPlaylistCues();
     videoLoadToken++;
@@ -5666,7 +6654,9 @@
       setVfxLogo3d(plVfxBeforePlaylist.logo3d);
       setVfxShape(plVfxBeforePlaylist.shape);
       setVfxState({ enabled: plVfxBeforePlaylist.enabled, scene: plVfxBeforePlaylist.scene,
-        intensity: plVfxBeforePlaylist.intensity, feedback: plVfxBeforePlaylist.feedback });
+        intensity: plVfxBeforePlaylist.intensity, feedback: plVfxBeforePlaylist.feedback,
+        baseEnabled:VfxEngine.baseEnabled(plVfxBeforePlaylist),logoEnabled:VfxEngine.logoEnabled(plVfxBeforePlaylist),
+        motion:plVfxBeforePlaylist.motion,backgroundScene:plVfxBeforePlaylist.backgroundScene });
       plVfxBeforePlaylist = null;
     }
     plIndicator.style.display = 'none';
@@ -5752,8 +6742,8 @@
       return;
     }
 
-    const VIEW_MODES = ['single', 'dual', 'triple', 'quad', 'octo'];
-    const PRESET_MAP = { dual: DUAL_PRESETS, triple: TRIPLE_PRESETS, quad: QUAD_PRESETS, octo: OCTO_PRESETS };
+    const VIEW_MODES = ['single', 'dual', 'triple', 'quad', 'octo', 'six'];
+    const PRESET_MAP = { dual: DUAL_PRESETS, triple: TRIPLE_PRESETS, quad: QUAD_PRESETS, octo: OCTO_PRESETS, six: SIX_PRESETS };
     const entries = [];
     let totalTime = 0;
 
@@ -5811,7 +6801,7 @@
     } else {
       dt = entry.duration.value + 's';
     }
-    const vl = entry.view === 'octo' ? '8x' : entry.view === 'quad' ? '4x' : entry.view === 'triple' ? '3x' : entry.view === 'dual' ? 'Dual' : 'Single';
+    const vl = entry.view === 'six' ? '6x' : entry.view === 'octo' ? '8x' : entry.view === 'quad' ? '4x' : entry.view === 'triple' ? '3x' : entry.view === 'dual' ? 'Dual' : 'Single';
     plIndicatorText.textContent = (plEntryIdx + 1) + '/' + total + ' • ' + vl + ' P' + entry.preset + ' • ' + dt;
   }
 
@@ -5913,6 +6903,8 @@
 </script>
 <script src="/library_catalog.js"></script>
 <script src="/tag_manager.js"></script>
+<script src="/video_cues.js"></script>
 <script src="/remote_control.js"></script>
+<script src="/control_hints.js"></script>
 </body>
 </html>

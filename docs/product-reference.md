@@ -101,8 +101,12 @@ inline; iPadOS can still require pressing Play.
 Paste an Instagram reel/post URL and press **Download**. The server runs
 `yt-dlp`, streams progress and authentication messages, and adds completed
 videos to the library. Thumbnails are created with FFmpeg. Cookie status and
-refresh actions live in the connection panel. The current cookie-export
-implementation uses Brave; its cookie cache has a seven-day age limit.
+refresh actions live in the connection panel. Cookie export defaults to Chrome;
+Brave is an explicit alternative, and an optional profile directory identifies
+which Mac browser profile holds the Instagram login. The cookie cache has a
+seven-day age limit and requires a locally unexpired Instagram session cookie.
+Its status describes saved cookies, not a verified live Instagram login. Failed
+imports retain the prior jar. Only Instagram cookies are retained after import.
 The optional password field unlocks the Mac login keychain for a refresh.
 
 `./ig-save.sh <instagram-url>` is an alternative command-line downloader. The
@@ -337,7 +341,7 @@ Remote Auto Perform start copies the editor's playlist pool, enabled text
 entries and curation preferences to the engine. These browser-local settings
 are not a continuously synchronised shared settings database.
 
-## 10. Recording and Instagram clip capture
+## 10. Recording and social clip capture
 
 **Record** records the composition in the editor where it is pressed, including
 its effects, transitions and captions. Standard capture is 1920×1080 at 30 fps,
@@ -349,13 +353,15 @@ library entry are shown.
 There is currently no remote Record Mac action. Recording an iPad private
 preview is not a recording of the independently running Mac show.
 
-**Instagram clip** captures a movable, resizable crop from the prepared view:
+**Social clip** captures a movable, resizable crop from the prepared view for
+Instagram or Facebook. The redesigned UI exposes the same controls in Capture:
 
 | Format | Output |
 | --- | --- |
-| Feed 4:5 | 1080×1350 |
-| Story 9:16 | 1080×1920 |
-| Square 1:1 | 1080×1080 |
+| Instagram / Facebook feed 4:5 | 1080×1350 |
+| Instagram / Facebook story or reel 9:16 | 1080×1920 |
+| Instagram / Facebook square 1:1 | 1080×1080 |
+| Facebook landscape 16:9 | 1920×1080 |
 
 Choose source timecode and 0.1–600 seconds duration. Use current time copies
 the playhead. Loop/Bounce can provide footage past a source boundary.
@@ -369,14 +375,15 @@ across repeat playback; capture needs the extra overlap. Output is a silent
 H.264 MP4 with finished duration rounded to 30 fps. A shortened/stopped capture
 needs enough footage for its overlap or reports an error.
 
-Clips use the configured Instagram clip folder, falling back to the download
-folder. `instagram_` outputs are kept out of the source library. The app offers
+Clips use the configured Social clip folder, falling back to the download
+folder. The existing `instagram_clip_dir` setting is retained for compatibility.
+Both `instagram_` and `facebook_` outputs are kept out of the source library. The app offers
 a download link; Instagram Video Studio import/layering happens outside this
 repository and is not an embedded editor feature.
 
 ## 11. Settings, persistence and current limits
 
-Settings expose the source folder, Instagram clip folder and Reduce flashes.
+Settings expose the source folder, Social clip folder and Reduce flashes.
 Folder browsing operates on the Mac server's filesystem, even from an iPad.
 Source order, classifications, layout presets and playlists are shared disk
 data. Audio preferences, text lists and some display preferences are stored
@@ -403,3 +410,12 @@ Important limits for a redesign:
 - Offline audio look-ahead, editable performance replay, true 3D scene recovery,
   arbitrary 3D mesh import and independent multi-projector routing are not
   implemented features.
+
+## Current-IP iPad connection links
+
+**Connect iPad** in the persistent toolbar generates the Mac's current IPv4
+control link, supports copying it and choosing among active adapters, and can
+refresh after Wi-Fi changes. It is available in both V1 and the redesigned UI,
+including while the Mac editor is locked by a remote controller. The original
+server offers a V1 link; the optional launcher also offers the redesigned URL.
+No IP address is stored. See [connection guidance](ipad-connection.md).

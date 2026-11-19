@@ -23,7 +23,7 @@
   .wide { width: 100%; }
   .meter { height: 14px; background: #0d1117; border-radius: 6px; overflow: hidden; margin: 12px 0; }
   .meter > div { width: 0; height: 100%; background: #4ecca3; }
-  .status { min-height: 30px; font-size: 12px; color: #aab6c4; }
+  .status { min-height: 30px; font-size: 12px; color: #aab6c4; overflow-wrap: anywhere; }
   .disconnected { display: none; color: #e94560; margin-top: 15px; }
   .disconnected.visible { display: block; }
   .shape-controls, .logo3d-controls { display: none; border-top: 1px solid #3c5261; margin-top: 18px; padding-top: 2px; }
@@ -32,16 +32,39 @@
   input[type=text] { padding: 9px; border: 1px solid #3c5261; border-radius: 6px; background: #0d1117; font: inherit; }
   .hint { font-size: 12px; }
   #logo3dTextField { display: none; }
+  #cameraMaskPreview {width:100%;max-height:160px;object-fit:contain;background:#000;border:1px solid #3c5261;border-radius:6px}
+  #cameraControls label span:has(input[type=checkbox]) {justify-content:flex-start;gap:8px}
 </style>
 </head>
 <body>
 <h1>Live VFX</h1>
 <p id="filename">The current player, layout and playlist supply the image.</p>
-<div class="row"><button id="enableBtn" onclick="toggleVfx()">VFX Off</button><button onclick="sendPulse()">Fire ripple / smear</button></div>
+<div class="row"><button id="enableBtn" onclick="toggleVfx()" aria-pressed="false">Turn VFX on</button><button id="vfxPulseBtn" onclick="sendPulse()">Fire ripple / smear</button></div>
 <p class="hint">Performance keys: 1–7 switch scenes; Space fires a pulse when this window has focus.</p>
-<label><span>Scene</span><select id="scene" onchange="sendSettings()"><option value="0">Liquid ripple</option><option value="1">Image smear</option><option value="2">Video ribbons</option><option value="3">Mirror sculpture</option><option value="4">Kaleidoscope tunnel</option><option value="5">Prism fracture</option><option value="6">3D Version1 logo</option></select></label>
+<div class="row"><button id="videoLayerBtn" onclick="toggleVideoLayer()">Turn video effect on</button><button id="logoLayerBtn" onclick="toggleLogoLayer()">Turn 3D logo on</button></div>
+<p class="hint">Video effects render behind an independent 3D logo/text layer. Turn either layer off without stopping the other.</p>
+<label><span>Video effect</span><select id="scene" onchange="sendSettings()"><option value="-1">Plain background video</option><option value="0">Liquid ripple</option><option value="1">Image smear</option><option value="2">Video ribbons</option><option value="3">Mirror sculpture</option><option value="4">Kaleidoscope tunnel</option><option value="5">Prism fracture</option><option value="6">3D logo only</option><option value="7">Camera motion extraction</option></select></label>
 <label><span>Intensity <output id="intensityValue">0.70</output></span><input id="intensity" type="range" min="0" max="2" step="0.01" value="0.7" oninput="sendSettings()"></label>
 <label><span>Feedback trails <output id="feedbackValue">0.72</output></span><input id="feedback" type="range" min="0" max="0.96" step="0.01" value="0.72" oninput="sendSettings()"></label>
+<details id="cameraControls">
+<summary>Camera motion extraction</summary>
+<p class="hint">Movement from a camera shapes the playing video. Connect on the Mac at localhost; keep this editor open while sending its motion to Mac output.</p>
+<label><span>Camera input</span><select id="cameraDevice"><option value="">Default camera</option></select></label>
+<div class="row"><button id="cameraConnect" onclick="toggleCamera()">Connect camera</button><button id="cameraRefresh" onclick="loadCameraDevices()">Refresh cameras</button></div>
+<p id="cameraStatus" class="status" role="status">Camera disconnected.</p>
+<canvas id="cameraMaskPreview" width="160" height="90" aria-label="Extracted camera movement"></canvas>
+<div class="meter"><div id="cameraMotionFill"></div></div>
+<label><span>Motion look</span><select id="cameraMode" onchange="sendCameraSettings()"><option value="video">Video-filled movement on black</option><option value="glow">Motion glow over video</option><option value="distort">Motion-driven distortion</option></select></label>
+<label><span>Noise threshold <output id="cameraThresholdValue">8%</output></span><input id="cameraThreshold" type="range" min="1" max="50" value="8" oninput="sendCameraSettings()"></label>
+<label><span>Movement sensitivity <output id="cameraGainValue">4.0x</output></span><input id="cameraGain" type="range" min="1" max="12" step="0.1" value="4" oninput="sendCameraSettings()"></label>
+<label><span>Frame comparison delay <output id="cameraDelayValue">200 ms</output></span><input id="cameraDelay" type="range" min="50" max="2000" step="50" value="200" oninput="sendCameraSettings()"></label>
+<label><span>Motion trails <output id="cameraTrailsValue">0.4 s</output></span><input id="cameraTrails" type="range" min="0" max="3" step="0.1" value="0.4" oninput="sendCameraSettings()"></label>
+<label><span>Effect strength <output id="cameraStrengthValue">1.0x</output></span><input id="cameraStrength" type="range" min="0" max="2" step="0.05" value="1" oninput="sendCameraSettings()"></label>
+<label><span><input id="cameraMirror" type="checkbox" checked onchange="sendCameraSettings()"> Mirror camera movement</span></label>
+<label><span><input id="cameraCompensate" type="checkbox" checked onchange="sendCameraSettings()"> Suppress uniform lighting changes</span></label>
+<div class="row"><button id="cameraUse" onclick="useCameraEffect()">Use camera effect</button><button id="cameraReset" onclick="resetCameraMotion()">Reset motion history</button></div>
+<p class="hint">The monitor shows movement only. Longer delays pick up slower movement; raise the threshold to reject camera noise. This detects changing pixels, rather than tracking whole people. Feedback trails above apply to other scenes; use Motion trails here.</p>
+</details>
 <section class="shape-controls" id="shapeControls">
   <h2>Mirror sculpture</h2>
   <button class="wide" onclick="useVersion1Logo()">Use Version1 logo</button>
@@ -61,8 +84,11 @@
 </section>
 <section class="logo3d-controls" id="logo3dControls">
   <h2>3D branding</h2>
-  <p class="hint">Rounded, high-definition 3D text with live-video reflections. Choose a finish, then tune its polish and bevel. Original colours keeps the red @ and white handle.</p>
+  <p class="hint">Reflect the playing video in the Version1 logo or text. Choose Black · reflections only below for a chrome object on black, then add a path, zoom, multi-axis turns or hidden-video movement.</p>
   <label><span>Object</span><select id="logo3dKind" onchange="sendLogo3d()"><option value="logo">Version1 logo</option><option value="text">Instagram ID</option></select></label>
+  <label><span>Orientation</span><select id="logo3dOrientation" onchange="sendLogo3d()"><option value="horizontal">Horizontal · left → right</option><option value="top-bottom">Vertical · top → bottom</option><option value="bottom-top">Vertical · bottom → top</option></select></label>
+  <button class="wide" id="logoMotionPlay" onclick="controlLogoMotion()" aria-pressed="false">Play logo motion</button>
+  <button class="wide" id="logoPortraitRender" onclick="preparePortraitRender()">Record a 9:16 logo video…</button>
   <label id="logo3dTextField"><span>Text / Instagram ID</span><input id="logo3dText" type="text" maxlength="80" value="@tonyt.dj" oninput="scheduleLogo3dText()" spellcheck="false" autocomplete="off"></label>
   <label id="logo3dFontField"><span>Typeface</span><select id="logo3dFont" onchange="sendLogo3d()"><option value="modern">Modern sans</option><option value="bungee">Bungee · original block style</option><option value="serif">Editorial serif</option></select></label>
   <label><span>Surface finish</span><select id="logo3dSkin" onchange="applyLogoMaterial()"><option value="chrome">Polished chrome</option><option value="mirror">Liquid mirror · live video</option><option value="brushed">Brushed silver</option><option value="gold">Gold</option><option value="rose-gold">Rose gold</option><option value="obsidian">Black chrome</option><option value="pearl">Pearl ceramic</option><option value="iridescent">Iridescent metal</option><option value="original">Original colours</option></select></label>
@@ -83,6 +109,14 @@
   <label><span>Auto rotation axis</span><select id="logo3dAxis" onchange="sendLogo3d()"><option value="x">X — tip</option><option value="y" selected>Y — turn</option><option value="z">Z — spin</option></select></label>
   <label><span>Start angle <output id="logo3dStartAngleValue">-45°</output></span><input id="logo3dStartAngle" type="range" min="-180" max="180" step="1" value="-45" oninput="sendLogo3d()"></label>
   <label><span>End angle <output id="logo3dEndAngleValue">45°</output></span><input id="logo3dEndAngle" type="range" min="-180" max="180" step="1" value="45" oninput="sendLogo3d()"></label>
+<div id="logoMotionControls"></div>
+<details id="reflectionSourceControls"><summary>Independent reflection video</summary>
+<p class="hint">Choose a different library video to light the chrome while the main player supplies the background. Black backdrop applies when the video effect layer is off; active effects remain visible behind the logo.</p>
+<label><span>Reflection source</span><select id="reflectionVideo" onchange="chooseReflection()"><option value="">Same as playing video</option></select></label>
+<label><span>Reflection playback speed</span><input id="reflectionSpeed" type="range" min=".25" max="4" step=".25" value="1" oninput="chooseReflection()"></label>
+<div class="row"><button id="reflectionRefresh" onclick="loadReflectionVideos()">Refresh videos</button><button id="reflectionPlay" onclick="playReflection()" disabled>Pause reflection video</button></div>
+<p id="reflectionStatus" class="status" role="status"></p></details>
+<p class="hint">To keep this look, open Playlists → Add current view, then save the playlist. You can capture its effects as a reusable Show Builder brick.</p>
 </section>
 <h2>Venue sound</h2>
 <div class="row"><select id="audioDevice" aria-label="Audio input"><option value="">Default microphone</option></select><button id="audioBtn" onclick="toggleAudio()">Connect</button></div>
@@ -90,27 +124,76 @@
 <label><span>Input sensitivity <output id="sensitivityValue">1.0x</output></span><input id="sensitivity" type="range" min="0.2" max="4" step="0.1" value="1" oninput="sendSensitivity()"></label>
 <p class="status" id="audioStatus">The selected microphone or USB input is analysed only. Video audio does not drive VFX.</p>
 <div class="disconnected" id="disconnected">Main window disconnected. Reopen VFX from the player.</div>
+<script src="/vfx_engine.js"></script>
+<script src="/logo_motion_controls.js"></script>
 <script>
-  window.CLUB_VISUALS_VFX_UI_VERSION = 6;
+  window.CLUB_VISUALS_VFX_UI_VERSION = 16;
+  let editorWindow = null, editorOwner = null;
   let enabled = false;
   let audioConnected = false;
   let shapeImage = '';
   const $ = id => document.getElementById(id);
+  const motionEditor = window.LogoMotionControls?.mount($('logoMotionControls'), {showOrientation: false,
+    onChange: (patch, meta) => { if (connectedEditor()) editorWindow.setVfxLogo3d(meta.restart ? {...patch, animationClock: {time: 0, startedAt: Date.now(), playing: editorWindow.getVfxState().logo3d.animationClock?.playing === true}} : patch); },
+    onTransport: action => { if (connectedEditor()) editorWindow.controlVfxAnimation(action); }
+  });
 
+  function connectedEditor() {
+    try {
+      const identity = editorWindow && !editorWindow.closed && editorWindow.getVfxControllerIdentity?.();
+      return !!identity && identity.owner === editorOwner && identity.version === 16 && identity.renderer === 16;
+    } catch { return false; }
+  }
+  function updateConnection() {
+    const connected = connectedEditor();
+    $('disconnected').classList.toggle('visible', !connected);
+    $('disconnected').textContent = 'Editor unavailable or updated. Refresh the editor, then reopen VFX from its controls.';
+    if (document.body.dataset.connected !== String(connected)) {
+      document.body.dataset.connected = String(connected);
+      document.querySelectorAll('button,input,select').forEach(control => control.disabled = !connected);
+    }
+    return connected;
+  }
+  function attachEditor(editor, owner) {
+    editorWindow = editor; editorOwner = owner;
+    if (!updateConnection()) return false;
+    updateVfxStatus({filename: editorWindow.getVfxControllerIdentity().filename, vfxState: editorWindow.getVfxState()});
+    return true;
+  }
+  function controlLogoMotion() { if (connectedEditor()) editorWindow.controlVfxAnimation('toggle'); }
+  if (!motionEditor) {
+    $('logoMotionControls').textContent = 'Path controls could not load. Restart the local server, refresh the editor and reopen VFX. Basic effect and motion controls remain available.';
+  }
   function updateVfxStatus(state) {
     if (state.filename !== undefined) $('filename').textContent = state.filename || 'No video loaded';
     if (state.vfxState) {
       const vfx = state.vfxState;
       enabled = !!vfx.enabled;
-      $('enableBtn').textContent = enabled ? 'VFX On' : 'VFX Off';
+      $('enableBtn').textContent = enabled ? 'Turn VFX off' : 'Turn VFX on';
+      $('enableBtn').setAttribute('aria-pressed', String(enabled));
       $('enableBtn').classList.toggle('active', enabled);
       $('scene').value = vfx.scene;
+      if (vfx.scene === 7) $('cameraControls').open = true;
+      $('feedback').disabled = vfx.scene === 7;
+      $('vfxPulseBtn').disabled = vfx.scene === 7;
       $('shapeControls').classList.toggle('visible', Number(vfx.scene) === 3);
-      $('logo3dControls').classList.toggle('visible', Number(vfx.scene) === 6);
+      $('logo3dControls').classList.toggle('visible', VfxEngine.logoEnabled(vfx));
+      $('videoLayerBtn').textContent = vfx.enabled && VfxEngine.baseEnabled(vfx) ? 'Turn video effect off' : 'Turn video effect on';
+      $('logoLayerBtn').textContent = vfx.enabled && VfxEngine.logoEnabled(vfx) ? 'Turn 3D logo off' : 'Turn 3D logo on';
       $('intensity').value = vfx.intensity;
       $('feedback').value = vfx.feedback;
       $('intensityValue').textContent = Number(vfx.intensity).toFixed(2);
       $('feedbackValue').textContent = Number(vfx.feedback).toFixed(2);
+      const camera = editorWindow.CameraMotion.settings(vfx.motion);
+      $('cameraMode').value = camera.mode;
+      $('cameraThreshold').value = camera.threshold * 100;
+      $('cameraGain').value = camera.gain;
+      $('cameraDelay').value = camera.delay * 1000;
+      $('cameraTrails').value = camera.trails;
+      $('cameraStrength').value = camera.strength;
+      $('cameraMirror').checked = camera.mirror;
+      $('cameraCompensate').checked = camera.compensate;
+      cameraLabels();
       if (vfx.shape) {
         const shape = vfx.shape;
         shapeImage = shape.image || '';
@@ -120,12 +203,20 @@
         updateShapeLabels();
       }
       if (vfx.logo3d) {
+        motionEditor?.update(vfx.logo3d);
+        const running = vfx.logo3d.animationClock?.playing === true;
+        $('logoMotionPlay').textContent = `${running ? 'Pause' : 'Play'} ${vfx.logo3d.kind === 'text' ? 'text' : 'logo'} motion`;
+        $('logoMotionPlay').setAttribute('aria-pressed', String(running));
         $('logo3dKind').value = vfx.logo3d.kind || 'logo';
+        $('logo3dOrientation').value = VfxEngine.normaliseOrientation(vfx.logo3d.orientation);
         if (document.activeElement !== $('logo3dText')) $('logo3dText').value = vfx.logo3d.text || '@tonyt.dj';
         $('logo3dAxis').value = vfx.logo3d.axis || 'y';
         $('logo3dFont').value = vfx.logo3d.font || 'modern';
         $('logo3dSkin').value = vfx.logo3d.skin || 'chrome';
         $('logo3dQuality').value = vfx.logo3d.quality || 'high';
+        const source = vfx.logo3d.reflectionSource || {};
+        if (source.filename && ![...$('reflectionVideo').options].some(o => o.value === source.filename)) $('reflectionVideo').add(new Option(source.filename, source.filename));
+        $('reflectionVideo').value = source.filename || ''; $('reflectionSpeed').value = source.speed || 1;
         for (const [key,fallback] of [['bevel',.035],['roughness',.14],['reflection',1],['environment',1],['exposure',1]]) $('logo3d'+key[0].toUpperCase()+key.slice(1)).value=vfx.logo3d[key]??fallback;
         for (const [key, id] of [['x', 'logo3dX'], ['y', 'logo3dY'], ['scale', 'logo3dScale'], ['depth', 'logo3dDepth'], ['rotX', 'logo3dRotX'], ['rotY', 'logo3dRotY'], ['rotZ', 'logo3dRotZ'], ['motion', 'logo3dMotion'], ['startAngle', 'logo3dStartAngle'], ['endAngle', 'logo3dEndAngle']]) $(id).value = vfx.logo3d[key];
         updateLogo3dLabels();
@@ -142,18 +233,80 @@
     if (state.vfxAudioStatus) $('audioStatus').textContent = state.vfxAudioStatus;
     if (state.vfxError) $('audioStatus').textContent = state.vfxError;
     if (state.vfxBass !== undefined) $('bassFill').style.width = Math.min(100, state.vfxBass * 100) + '%';
+    updateCameraStatus();
   }
+
+  function cameraLabels() {
+    $('cameraThresholdValue').textContent = $('cameraThreshold').value + '%';
+    $('cameraGainValue').textContent = Number($('cameraGain').value).toFixed(1) + 'x';
+    $('cameraDelayValue').textContent = $('cameraDelay').value + ' ms';
+    $('cameraTrailsValue').textContent = Number($('cameraTrails').value).toFixed(1) + ' s';
+    $('cameraStrengthValue').textContent = Number($('cameraStrength').value).toFixed(1) + 'x';
+  }
+  function showCameraControls() { $('cameraControls').open = true; $('cameraControls').scrollIntoView({block:'start'}); }
+  function sendCameraSettings() {
+    cameraLabels();
+    if (connectedEditor()) editorWindow.setCameraMotion({mode: $('cameraMode').value,
+      threshold: Number($('cameraThreshold').value) / 100, gain: Number($('cameraGain').value),
+      delay: Number($('cameraDelay').value) / 1000, trails: Number($('cameraTrails').value),
+      strength: Number($('cameraStrength').value), mirror: $('cameraMirror').checked, compensate: $('cameraCompensate').checked});
+  }
+  async function loadCameraDevices() {
+    if (!connectedEditor()) return;
+    try {
+      const previous = $('cameraDevice').value, devices = await editorWindow.listCameraMotionDevices();
+      $('cameraDevice').replaceChildren(new Option('Default camera', ''));
+      devices.forEach(device => $('cameraDevice').add(new Option(device.label || 'Camera ' + ($('cameraDevice').options.length), device.deviceId)));
+      $('cameraDevice').value = previous;
+    } catch (error) { $('cameraStatus').textContent = error.message; }
+  }
+  async function toggleCamera() {
+    if (!connectedEditor()) return;
+    const status = editorWindow.getCameraMotionStatus();
+    if (status.connected || status.connecting) editorWindow.disconnectCameraMotion();
+    else {
+      try { await editorWindow.connectCameraMotion($('cameraDevice').value); await loadCameraDevices(); }
+      catch (error) { $('cameraStatus').textContent = error.message; }
+    }
+    updateCameraStatus();
+  }
+  function useCameraEffect() { if (connectedEditor()) editorWindow.useCameraMotion(); }
+  function resetCameraMotion() { if (connectedEditor()) editorWindow.resetCameraMotion(); }
+  function updateCameraStatus() {
+    if (!connectedEditor()) return;
+    const status = editorWindow.getCameraMotionStatus();
+    $('cameraConnect').textContent = status.connected ? 'Disconnect camera' : status.connecting ? 'Cancel camera request' : 'Connect camera';
+    $('cameraStatus').textContent = status.message;
+    $('cameraMotionFill').style.width = Math.min(100, status.energy * 300) + '%';
+    editorWindow.drawCameraMotionMonitor($('cameraMaskPreview'));
+    const reflection = editorWindow.getReflectionVideoStatus();
+    $('reflectionStatus').textContent = reflection.message;
+    $('reflectionPlay').disabled = !editorWindow.getVfxState().logo3d.reflectionSource?.filename;
+    $('reflectionPlay').textContent = reflection.playing ? 'Pause reflection video' : 'Play reflection video';
+  }
+  function loadReflectionVideos() {
+    if (!connectedEditor()) return;
+    const value = editorWindow.getVfxState().logo3d.reflectionSource?.filename || '';
+    $('reflectionVideo').replaceChildren(new Option('Same as playing video', ''));
+    editorWindow.listReflectionVideos().forEach(video => $('reflectionVideo').add(new Option(video.filename, video.filename)));
+    if (value && ![...$('reflectionVideo').options].some(o => o.value === value)) $('reflectionVideo').add(new Option(value, value));
+    $('reflectionVideo').value = value;
+  }
+  function chooseReflection() { if (connectedEditor()) editorWindow.chooseReflectionVideo($('reflectionVideo').value, Number($('reflectionSpeed').value)); }
+  function playReflection() { if (connectedEditor()) editorWindow.toggleReflectionVideo(); }
+  setInterval(updateCameraStatus, 150);
 
   function sendSettings() {
     $('intensityValue').textContent = Number($('intensity').value).toFixed(2);
     $('feedbackValue').textContent = Number($('feedback').value).toFixed(2);
     $('shapeControls').classList.toggle('visible', Number($('scene').value) === 3);
-    $('logo3dControls').classList.toggle('visible', Number($('scene').value) === 6);
-    if (window.opener && !window.opener.closed) window.opener.setVfxState({
-      enabled, scene: Number($('scene').value),
+    if (connectedEditor()) editorWindow.setVfxState({
+      scene: Number($('scene').value),
       intensity: Number($('intensity').value), feedback: Number($('feedback').value)
     });
   }
+  function toggleLogoLayer() { if (connectedEditor()) editorWindow.setLogoLayerEnabled(!(editorWindow.getVfxState().enabled && VfxEngine.logoEnabled(editorWindow.getVfxState()))); }
+  function toggleVideoLayer() { if (connectedEditor()) editorWindow.setVideoEffectEnabled(!(editorWindow.getVfxState().enabled && VfxEngine.baseEnabled(editorWindow.getVfxState()))); }
   function updateShapeLabels() {
     $('textField').style.display = $('shapeKind').value === 'text' ? '' : 'none';
     $('currentIdBtn').style.display = $('shapeKind').value === 'text' ? '' : 'none';
@@ -165,7 +318,7 @@
     updateShapeLabels();
     const kind = $('shapeKind').value;
     if (kind === 'text') shapeImage = '';
-    if (window.opener && !window.opener.closed) window.opener.setVfxShape({
+    if (connectedEditor()) editorWindow.setVfxShape({
       kind, text: $('shapeText').value, image: shapeImage,
       x: Number($('shapeX').value), y: Number($('shapeY').value),
       scale: Number($('shapeScale').value), depth: Number($('shapeDepth').value), edge: Number($('shapeEdge').value),
@@ -191,8 +344,8 @@
   function sendLogo3d() {
     clearTimeout(logoTextTimer);
     updateLogo3dLabels();
-    if (window.opener && !window.opener.closed) window.opener.setVfxLogo3d({
-      kind: $('logo3dKind').value, text: $('logo3dText').value, axis: $('logo3dAxis').value,
+    if (connectedEditor()) editorWindow.setVfxLogo3d({
+      kind: $('logo3dKind').value, orientation: $('logo3dOrientation').value, text: $('logo3dText').value, axis: $('logo3dAxis').value,
       font: $('logo3dFont').value, skin: $('logo3dSkin').value, quality: $('logo3dQuality').value,
       bevel: Number($('logo3dBevel').value), roughness: Number($('logo3dRoughness').value),
       reflection: Number($('logo3dReflection').value), environment: Number($('logo3dEnvironment').value), exposure: Number($('logo3dExposure').value),
@@ -203,9 +356,12 @@
       startAngle: Number($('logo3dStartAngle').value), endAngle: Number($('logo3dEndAngle').value)
     });
   }
+  function preparePortraitRender() {
+    if (connectedEditor()) { editorWindow.prepareLogoRender(); editorWindow.focus(); }
+  }
   async function useCurrentInstagramId() {
-    if (!window.opener || window.opener.closed) return;
-    const handle = await window.opener.getCurrentVfxInstagramId();
+    if (!connectedEditor()) return;
+    const handle = await editorWindow.getCurrentVfxInstagramId();
     if (!handle) { $('shapeStatus').textContent = 'This video has no Instagram ID in its metadata.'; return; }
     $('shapeKind').value = 'text';
     $('shapeText').value = handle;
@@ -251,17 +407,17 @@
       $('shapeStatus').textContent = 'Could not read that image.';
     }
   }
-  function toggleVfx() { enabled = !enabled; sendSettings(); }
-  function sendPulse() { if (window.opener && !window.opener.closed) window.opener.triggerVfxPulse(); }
+  function toggleVfx() { if (connectedEditor()) editorWindow.setVfxState({enabled: !editorWindow.getVfxState().enabled}); }
+  function sendPulse() { if (connectedEditor()) editorWindow.triggerVfxPulse(); }
   function sendSensitivity() {
     const value = Number($('sensitivity').value);
     $('sensitivityValue').textContent = value.toFixed(1) + 'x';
-    if (window.opener && !window.opener.closed) window.opener.setVfxSensitivity(value);
+    if (connectedEditor()) editorWindow.setVfxSensitivity(value);
   }
   async function loadDevices() {
-    if (!window.opener || window.opener.closed) return;
+    if (!connectedEditor()) return;
     try {
-      const devices = await window.opener.listVfxAudioDevices();
+      const devices = await editorWindow.listVfxAudioDevices();
       const previous = $('audioDevice').value;
       $('audioDevice').replaceChildren(new Option('Default microphone', ''));
       devices.forEach(device => $('audioDevice').add(new Option(device.label, device.id)));
@@ -269,22 +425,24 @@
     } catch (error) { $('audioStatus').textContent = error.message; }
   }
   async function toggleAudio() {
-    if (!window.opener || window.opener.closed) return;
+    if (!connectedEditor()) return;
     if (audioConnected) {
-      window.opener.disconnectVfxAudio();
+      editorWindow.disconnectVfxAudio();
       audioConnected = false;
     } else {
       try {
-        await window.opener.connectVfxAudio($('audioDevice').value);
+        await editorWindow.connectVfxAudio($('audioDevice').value);
         audioConnected = true;
         await loadDevices();
       } catch { audioConnected = false; }
     }
     $('audioBtn').textContent = audioConnected ? 'Disconnect' : 'Connect';
   }
-  if (window.opener && !window.opener.closed) {
-    updateVfxStatus({ vfxState: window.opener.getVfxState() });
+  const initialEditor = window.opener;
+  if (initialEditor && !initialEditor.closed) {
+    try { attachEditor(initialEditor, initialEditor.getVfxControllerIdentity?.().owner); } catch {}
   }
+  updateConnection();
   window.addEventListener('keydown', event => {
     if (event.target.matches('input, select, textarea')) return;
     if (/^[1-7]$/.test(event.key)) {
@@ -295,11 +453,9 @@
       sendPulse();
     }
   });
-  loadDevices();
-  setInterval(() => $('disconnected').classList.toggle('visible', !window.opener || window.opener.closed), 1000);
-  window.addEventListener('beforeunload', () => {
-    if (window.opener && !window.opener.closed) window.opener.onVfxWindowClosed(window);
-  });
+  loadDevices(); loadCameraDevices(); loadReflectionVideos();
+  setInterval(updateConnection, 500);
 </script>
+<script src="/control_hints.js"></script>
 </body>
 </html>

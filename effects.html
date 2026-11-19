@@ -187,6 +187,7 @@
     slider.step = ef.step;
     slider.value = ef.def;
     slider.dataset.key = ef.key;
+    slider.setAttribute('aria-label', ef.label);
 
     const val = document.createElement('span');
     val.className = 'fx-value';
@@ -331,5 +332,6 @@
     }
   });
 </script>
+<script src="/control_hints.js"></script>
 </body>
 </html>
