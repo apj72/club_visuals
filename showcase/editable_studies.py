@@ -8,8 +8,10 @@ from datetime import datetime
 import json
 from pathlib import Path
 import shutil
+import sys
 
 ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(ROOT))
 SOURCES = {m['index']: m['filename'] for m in json.loads((ROOT / 'showcase/source-media.json').read_text())}
 RIPPLE = 'version1_showcase_ripple_study.mp4'
 COLOUR = 'version1_showcase_colour_and_trails.mp4'
