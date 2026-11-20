@@ -1,0 +1,18 @@
+{
+  "playlists": [
+    "version1-showcase-signal-to-spectacle-12min",
+    "version1-showcase-transition-atlas",
+    "version1-showcase-live-input-encore",
+    "version1-showcase-trailer"
+  ],
+  "model": "showcase-signal-to-spectacle-v1",
+  "profile": "showcase-directed-v1",
+  "libraryRevision": 1,
+  "existingPlaylistsPreserved": 12,
+  "playlistSha256": {
+    "version1-showcase-signal-to-spectacle-12min": "13d656d7b3fc5ac5595b5c0c522e5474385e77e6f240ac82fe525b082990b4d6",
+    "version1-showcase-transition-atlas": "99f7e999c1e7dacbeedd8c9402dc53d260ad810675b0d6c1dcdb60d318ed37cc",
+    "version1-showcase-live-input-encore": "dc89cca6c97d4b67e601a62c3e38ebd91c81fdb1e57f4d42f6fefc779a696d79",
+    "version1-showcase-trailer": "690ad259bca139d6fc2bb7a2659f6276482d7c0623087c60b31368b8b62915b5"
+  }
+}

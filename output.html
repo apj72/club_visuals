@@ -16,6 +16,7 @@
   }
   #vfxCanvas { display: none; position: absolute; inset: 0; z-index: 4; width: 100%; height: 100%; object-fit: fill; }
   .vfx-active #vfxCanvas { display: block; }
+  .reflection-only .caption-overlay { visibility: hidden; }
 
   .video-stage video, .video-stage canvas {
     width: 100%;
@@ -74,6 +75,12 @@
     border-radius: 6px; pointer-events: none; z-index: 5;
   }
   .caption-overlay.visible { display: block; }
+  .video-wrap.six .video-stage {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));}
+  .video-wrap.six .video-stage video,.video-wrap.six .video-stage canvas {width:100%;height:50vh;min-width:0;object-fit:cover;}
+  .video-wrap.six .video-stage .video-clone {display:block;}
+  .video-wrap.zoomed-out .video-stage > .video-clone { display: block; }
+  .video-stage { background: #000; }
+  .video-stage video { background: transparent; object-fit: contain; }
 </style>
 </head>
 <body>
@@ -94,17 +101,24 @@
 </div>
 
 <script src="/vfx_engine.js"></script>
+<script src="/camera_motion.js"></script>
+<script src="/reflection_video.js"></script>
 <script src="/transition_engine.js"></script>
+<script src="/source_range.js"></script>
+<script src="/video_framing.js"></script>
 <script>
   const videoStage = document.getElementById('videoStage');
   const videoWrap = document.getElementById('videoWrap');
   const video = document.getElementById('video');
   const captionOverlay = document.getElementById('captionOverlay');
 
+  const cameraMotion = new CameraMotion.Input({getSettings: () => vfxState.motion, getSourceId: () => vfxState.motion?.sourceId});
+  const reflectionVideo = new ReflectionVideo();
   let viewMode = 0;
   let configIdx = 0;
   let clones = [];
   let rafId = null;
+  let sourceRange = null;
   let looping = true;
   let playbackSpeed = 1;
   let outputWantsPlay = true;
@@ -137,7 +151,7 @@
     for (const element of [video, ...clones]) {
       const style = getComputedStyle(element);
       if (style.display === 'none') continue;
-      const rect = element.getBoundingClientRect();
+      const rect = element === video && viewMode === 0 ? videoStage.getBoundingClientRect() : element.getBoundingClientRect();
       const x = (rect.left - stageRect.left) * scale;
       const y = (rect.top - stageRect.top) * scale;
       const w = rect.width * scale, h = rect.height * scale;
@@ -154,7 +168,8 @@
       const fit = style.objectFit;
       const ratio = fit === 'contain' ? Math.min(w / sw, h / sh) : Math.max(w / sw, h / sh);
       const dw = sw * ratio, dh = sh * ratio;
-      context.drawImage(element, -dw / 2, -dh / 2, dw, dh);
+      if (element === video && viewMode === 0) VideoFraming.draw(context,video,sw,sh,w,h,tileZoom,tilePanX,tilePanY,'contain',-w/2,-h/2);
+      else context.drawImage(element, -dw / 2, -dh / 2, dw, dh);
       context.restore();
     }
     return snapshot;
@@ -171,8 +186,8 @@
     shape: { kind: 'text', text: 'CLUB', image: '', x: 0.5, y: 0.5, scale: 0.7, depth: 1, edge: 0.7, tilt: 0, thickness: 0.8, spin: 0.3 } };
   let vfxEngine = null;
 
-  const VIEW_NAMES = ['single', 'dual', 'triple', 'quad', 'octo'];
-  const CLONE_COUNTS = [0, 1, 2, 3, 7];
+  const VIEW_NAMES = ['single', 'dual', 'triple', 'quad', 'octo', 'six'];
+  const CLONE_COUNTS = [0, 1, 2, 3, 7, 5];
 
   const H_RULES = [
     [0,0,0,0], [0,0,1,1], [1,0,0,1], [0,1,1,0],
@@ -192,6 +207,7 @@
   }
   const TRIPLE_POS_MAP = [0, 1, 2];
   const QUAD_POS_MAP = [0, 1, 4, 5];
+  const SIX_POS_MAP = [0, 1, 2, 4, 5, 6];
 
   function buildClones(count) {
     destroyClones();
@@ -218,15 +234,9 @@
   }
 
   function drawZoomedTile(ctx, vw, vh, cw, ch) {
-    const coverScale = Math.max(cw / vw, ch / vh);
-    const es = coverScale * tileZoom;
-    const sw = Math.min(vw, cw / es);
-    const sh = Math.min(vh, ch / es);
-    const panRangeX = vw - sw;
-    const panRangeY = vh - sh;
-    const sx = panRangeX * (1 + tilePanX) / 2;
-    const sy = panRangeY * (1 - tilePanY) / 2;
-    ctx.drawImage(video, sx, sy, sw, sh, 0, 0, cw, ch);
+    ctx.save(); ctx.filter = video.style.filter || 'none';
+    VideoFraming.draw(ctx, video, vw, vh, cw, ch, tileZoom, tilePanX, tilePanY, viewMode === 0 ? 'contain' : 'cover');
+    ctx.restore();
   }
 
   function startRenderLoop() {
@@ -234,7 +244,7 @@
     function draw() {
       if (clones.length === 0 && !trailsEnabled && !vfxState.enabled) return;
       const vw = video.videoWidth, vh = video.videoHeight;
-      if (vw && vh && !video.paused) {
+      if (vw && vh) {
         clones.forEach(c => {
           const cw = c.clientWidth, ch = c.clientHeight;
           if (!cw || !ch) return;
@@ -260,8 +270,19 @@
     if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
   }
 
+  function updateSingleFraming() {
+    const smaller = viewMode === 0 && tileZoom < 1;
+    videoWrap.classList.toggle('zoomed-out',smaller);
+    if (viewMode !== 0) return;
+    if (smaller && video.src && !clones.length) { buildClones(0); return; }
+    if (!smaller && clones.length) { destroyClones(); if (vfxState.enabled) startRenderLoop(); }
+    video.style.transform = smaller ? '' : VideoFraming.transform(video.videoWidth, video.videoHeight, video.clientWidth, video.clientHeight, tileZoom, tilePanX, tilePanY);
+  }
+  new ResizeObserver(updateSingleFraming).observe(videoStage);
+  video.addEventListener('loadedmetadata', updateSingleFraming);
+
   function applyTransforms() {
-    if (viewMode === 0) { video.style.transform = ''; return; }
+    if (viewMode === 0) { updateSingleFraming(); return; }
     const cfg = CONFIGS[configIdx];
     if (viewMode === 1) {
       clones.forEach(c => {
@@ -270,6 +291,8 @@
       });
     } else if (viewMode === 2) {
       clones.forEach(c => { c.style.transform = cfg[TRIPLE_POS_MAP[parseInt(c.dataset.pos)]]; });
+    } else if (viewMode === 5) {
+      clones.forEach(c => { c.style.transform = cfg[SIX_POS_MAP[parseInt(c.dataset.pos)]]; });
     } else if (viewMode === 3) {
       clones.forEach(c => { c.style.transform = cfg[QUAD_POS_MAP[parseInt(c.dataset.pos)]]; });
     } else {
@@ -277,7 +300,9 @@
     }
   }
 
-  function showVideo(filename, transition = null) {
+  function showVideo(filename, transition = null, range = null) {
+    sourceRange = SourceRange.validate(range);
+    video.loop = looping && !sourceRange;
     const chosenTransition = normaliseTransition(transition);
     if (video.readyState < 2 && chosenTransition.type !== 'fade-in') chosenTransition.type = 'cut';
     pixelHolding = false;
@@ -289,10 +314,9 @@
     video.addEventListener('loadeddata', function onLoaded() {
       video.removeEventListener('loadeddata', onLoaded);
       if (loadToken !== videoLoadToken) return;
-      if (outputSeek !== null) {
-        video.currentTime = Math.min(outputSeek, Math.max(0, video.duration - .01));
-        outputSeek = null;
-      }
+      const range = SourceRange.bounds(sourceRange, video.duration);
+      video.currentTime = Math.max(range.start, Math.min(outputSeek ?? range.start, Math.max(range.start, range.end - .001)));
+      outputSeek = null;
       if (chosenTransition.type === 'pixel-scatter') {
         pixelHolding = true;
         video.pause();
@@ -309,10 +333,11 @@
   }
 
   function setViewModeTo(mode) {
-    videoWrap.classList.remove('dual', 'triple', 'quad', 'octo');
+    videoWrap.classList.remove('dual', 'triple', 'quad', 'octo', 'six');
     destroyClones();
     viewMode = mode;
     const name = VIEW_NAMES[viewMode];
+    updateSingleFraming();
     if (name !== 'single') videoWrap.classList.add(name);
     const count = CLONE_COUNTS[viewMode];
     if (count > 0 && video.src) buildClones(count);
@@ -346,7 +371,7 @@
     if (e.sepia !== 0) parts.push(`sepia(${e.sepia}%)`);
     const f = parts.length > 0 ? parts.join(' ') : 'none';
     video.style.filter = f;
-    clones.forEach(c => { c.style.filter = f; });
+    clones.forEach(c => { c.style.filter = 'none'; });
   }
 
   function renderOutputVfx() {
@@ -366,15 +391,15 @@
     const cw = vfxSource.width, ch = vfxSource.height;
     vfxSourceCtx.fillStyle = '#000';
     vfxSourceCtx.fillRect(0, 0, cw, ch);
-    const cols = [1, 2, 3, 2, 4][viewMode];
-    const rows = [1, 1, 1, 2, 2][viewMode];
+    const cols = [1, 2, 3, 2, 4, 3][viewMode];
+    const rows = [1, 1, 1, 2, 2, 2][viewMode];
     const tileW = cw / cols, tileH = ch / rows;
     const cfg = CONFIGS[configIdx];
     for (let row = 0; row < rows; row++) {
       for (let col = 0; col < cols; col++) {
         const index = row * cols + col;
         const configPosition = viewMode === 1 ? (index === 0 ? 0 : 3)
-          : viewMode === 2 ? TRIPLE_POS_MAP[index] : viewMode === 3 ? QUAD_POS_MAP[index] : index;
+          : viewMode === 2 ? TRIPLE_POS_MAP[index] : viewMode === 3 ? QUAD_POS_MAP[index] : viewMode === 5 ? SIX_POS_MAP[index] : index;
         const transform = cfg[configPosition] || '';
         vfxSourceCtx.save();
         vfxSourceCtx.translate((col + 0.5) * tileW, (row + 0.5) * tileH);
@@ -382,26 +407,35 @@
           transform.includes('scaleY(-1)') ? -1 : 1);
         vfxSourceCtx.filter = video.style.filter || 'none';
         if (trailsEnabled && clones[index] && clones[index].width) {
+          vfxSourceCtx.filter = 'none';
           vfxSourceCtx.drawImage(clones[index], -tileW / 2, -tileH / 2, tileW, tileH);
         } else {
-          const cover = Math.max(tileW / vw, tileH / vh) * tileZoom;
-          const sw = Math.min(vw, tileW / cover), sh = Math.min(vh, tileH / cover);
-          const sx = (vw - sw) * (1 + tilePanX) / 2;
-          const sy = (vh - sh) * (1 - tilePanY) / 2;
-          vfxSourceCtx.drawImage(video, sx, sy, sw, sh, -tileW / 2, -tileH / 2, tileW, tileH);
+          VideoFraming.draw(vfxSourceCtx, video, vw, vh, tileW, tileH, tileZoom, tilePanX, tilePanY,
+            viewMode === 0 ? 'contain' : 'cover', -tileW / 2, -tileH / 2);
         }
         vfxSourceCtx.restore();
       }
     }
+    if (vfxState.scene === 7) vfxEngine.setMotionMask(cameraMotion.frame(vfxState.motion?.sourceId));
+    vfxEngine.setReflectionSource(reflectionVideo.frame(), !!vfxState.logo3d.reflectionSource?.filename);
     vfxEngine.render(vfxSource, vfxState);
     vfxState.hit *= 0.88;
   }
 
   video.addEventListener('timeupdate', () => {
-    if (looping && video.duration && video.currentTime > video.duration - 0.15) {
+    if (!sourceRange && looping && video.duration && video.currentTime > video.duration - 0.15) {
       video.currentTime = 0;
       video.play();
     }
+  });
+
+  SourceRange.watch(video, () => {
+    if (!sourceRange || video.seeking || (video.paused && !video.ended)) return;
+    const range = SourceRange.bounds(sourceRange, video.duration);
+    if (video.currentTime < range.start) { video.currentTime = range.start; return; }
+    if (range.end === null || video.currentTime < range.end - .015) return;
+    if (looping) { video.currentTime = range.start; video.play().catch(() => {}); }
+    else { video.pause(); video.currentTime = Math.max(range.start, range.end - .001); }
   });
 
   const evtSource = new EventSource('/api/state-stream');
@@ -411,7 +445,12 @@
       if (response.ok) (await response.json()).forEach(handleOutputCommand);
     } catch (error) { console.warn('Could not restore output state:', error); }
   };
-  evtSource.onmessage = (e) => handleOutputCommand(JSON.parse(e.data));
+  evtSource.onmessage = (e) => {
+    const command = JSON.parse(e.data); cameraMotion.receive(command); handleOutputCommand(command);
+  };
+  function syncReflectionBackdrop() {
+    videoWrap.classList.toggle('reflection-only', vfxState.enabled && VfxEngine.logoOnly(vfxState) && vfxState.logo3d.backdrop === 'black');
+  }
   function handleOutputCommand(cmd) {
     switch (cmd.type) {
       case 'outputFullscreen':
@@ -421,9 +460,17 @@
         if (video.readyState >= 2) video.currentTime = Math.min(cmd.time, Math.max(0, video.duration - .01));
         else outputSeek = cmd.time;
         break;
+      case 'setSourceRange':
+        sourceRange = SourceRange.validate(cmd.sourceRange);
+        video.loop = looping && !sourceRange;
+        if (video.readyState >= 1) {
+          const range = SourceRange.bounds(sourceRange, video.duration);
+          if (video.currentTime < range.start || (range.end !== null && video.currentTime >= range.end)) video.currentTime = range.start;
+        }
+        break;
       case 'loadVideo':
         outputWantsPlay = true;
-        showVideo(cmd.filename, cmd.transition);
+        showVideo(cmd.filename, cmd.transition, cmd.sourceRange);
         video.play().catch(() => {});
         break;
       case 'play':
@@ -439,7 +486,7 @@
         break;
       case 'setPlaybackMode':
         looping = cmd.mode !== 0;
-        video.loop = looping;
+        video.loop = looping && !sourceRange;
         break;
       case 'setSpeed':
         playbackSpeed = cmd.speed;
@@ -456,11 +503,13 @@
         applyOutputEffects();
         break;
       case 'setZoom':
-        tileZoom = cmd.zoom;
+        tileZoom = VideoFraming.zoomValue(cmd.zoom);
+        updateSingleFraming();
         break;
       case 'setPan':
         tilePanX = cmd.panX;
         tilePanY = cmd.panY;
+        updateSingleFraming();
         break;
       case 'setTrails':
         trailsEnabled = cmd.enabled;
@@ -469,6 +518,7 @@
         break;
       case 'setVfx':
         Object.assign(vfxState, cmd.settings);
+        syncReflectionBackdrop();
         videoWrap.classList.toggle('vfx-active', vfxState.enabled);
         if (vfxState.enabled) {
           try {
@@ -482,6 +532,8 @@
             console.error('VFX unavailable:', error);
           }
         }
+        syncReflectionBackdrop();
+        if (vfxState.enabled && video.readyState >= 2) renderOutputVfx();
         break;
       case 'vfxShape':
         vfxState.shape = { ...vfxState.shape, ...cmd.shape };
@@ -493,7 +545,10 @@
         break;
       case 'vfxLogo3d':
         vfxState.logo3d = { ...vfxState.logo3d, ...cmd.settings };
+        reflectionVideo.configure(vfxState.logo3d.reflectionSource, vfxState.logo3d.reflectionClock);
         if (vfxEngine) vfxEngine.setLogo3d(vfxState.logo3d);
+        syncReflectionBackdrop();
+        if (vfxState.enabled && video.readyState >= 2) renderOutputVfx();
         break;
       case 'vfxAudio':
         vfxState.bass = cmd.bass;
@@ -551,7 +606,7 @@
     // One resident editor executes playlists and analyses the Mac's audio input.
     const engine = document.createElement('iframe');
     engine.src = '/?host=1'; engine.title = 'Mac playout and audio engine';
-    engine.allow = 'microphone; autoplay';
+    engine.allow = 'microphone; camera; autoplay';
     engine.style.cssText = 'display:block;width:100%;height:calc(100% - 45px);border:0';
     document.getElementById('macEnginePanel').append(engine);
     document.getElementById('outputAudioButton').onclick = () => {

@@ -4,6 +4,7 @@ playlists/
 video_presets/
 library_order.json
 library_catalog.json
+show_models.json
 .playwright-mcp/
 config.json
 .cookies.txt
@@ -12,3 +13,4 @@ __pycache__/
 *.pyc
 .DS_Store
 .runtime/
+video_cues/

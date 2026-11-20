@@ -2,22 +2,44 @@
 
 **10 November 2026 · Design for review, not a replacement application.**
 
+For the newer text-authoring concept, see the [Playlist Sequence builder design
+study](sequence-builder/README.md) (15 November 2026): language, interactive sketch,
+integration plan and animated 4×↔2× / 8×↔4× layout transitions. This is a separate
+feature proposal; the current reskin and playback behavior remain the baseline.
+
+## Introduction for the next development pass
+
+The implementation is a separate, reversible presentation route over the
+existing V1 document. Start with the [working UI instructions](../../ui-redesign/README.md)
+and [connection map](../../ui-redesign/connection-map.md), then review the
+[V1 design audit](audit.md), [implementation plan](implementation-plan.md),
+[design specification](design-specification.md) and
+[technical reference](../technical-reference.md). The [visual overview](index.html)
+and [prototype](prototype.html) remain design references with simulated actions.
+
+The optional launcher serves the real redesigned interface at `/redesign` and
+original V1 at `/` on the same server. V1 source files, playback engine, APIs,
+playlists and data contracts stay intact. All normal edits in either real UI
+use the same saved data. Source clips are primarily portrait 9:16; the Mac
+output composition is separate. Six-tile playout remains future engine work.
+
 Start with the [visual overview](index.html), then explore the
 [interactive prototype](prototype.html). Both work directly from disk in a
 browser; there are no dependencies, external fonts, build steps or API calls.
-The prototype uses eight invented clips and original SVG illustrations. It
-does not load personal media, change tags or send commands to the Mac.
+The updated mockups use still frames from eight real portrait videos in the
+local library and labels from its catalogue snapshot. They do not load or
+duplicate the original MP4s, play video, change saved tags or send commands to
+the Mac.
 
 The direction is a quiet charcoal workspace with a large video canvas, a lime
 live action, and contextual editing. Four main destinations are **Prepare**,
-**Playlists**, **Library** and **Auto Perform**. **Capture** and **Setup** are
+**Playlists**, **Library** and **Auto Perform**. **Capture** and **Settings** are
 secondary destinations. The Mac control bar stays visible across all of them.
 
-For implementation, follow the [reversible implementation plan](implementation-plan.md).
-It specifies an isolated test installation, an optional `/ui-v2/` route,
-preservation of the current interface and engine, data backups and rollback.
-Those implementation safeguards are instructions to build, not features already
-provided by this static prototype.
+For implementation, follow the [corrected V1 reskin plan](implementation-plan.md)
+and first read the [V1 design audit](audit.md). The earlier proposal to build a
+second app at `/ui-v2/` was superseded by the shared V1 presentation route. Keep the V1 renderer, playlist workflow,
+remote control and data contracts intact.
 
 ## Open it
 
@@ -51,9 +73,9 @@ Ctrl+C when finished.
 5. **System states:** use the concept toolbar at the very top to try Mac
    offline, revoked iPad control, Mac handover, preparing a Safari video and
    tag-save conflict. Return control through the handover dialog.
-6. **iPad:** narrow the browser or open the prototype on the device. Scroll
-   while watching the pinned live controls. In portrait, the inspector moves
-   below the preview.
+6. **iPad:** narrow the browser or open the prototype on the device. Check
+   that the live bar stays visible, the video shelf scrolls inside its fixed
+   area, and portrait controls open without pushing the preview off screen.
 7. **Wireframes:** press **Wireframe** in the top toolbar. Navigation and the
    same interactions remain available with the styling reduced.
 
@@ -68,6 +90,8 @@ Ctrl+C when finished.
 - Save & next, bulk mark reviewed, theme rename/removal and one-step undo.
 - Searching all 61 actual transition definitions, category filters, parameter
   fields and the selected-transition/unsaved-playlist interaction.
+- Selecting sample orientations, changing the per-layout featured list in
+  Settings and revealing the full unique pattern count.
 - Offline, revoked-control, handover, proxy-preparation and conflict examples.
 
 State is in memory and resets on reload. In this small demo, each category has
@@ -90,19 +114,22 @@ deliberately does not import production scripts or contact port 8008.
 | [Visual overview](index.html) | Presentation with linked mockups, iPad views and wireframes. |
 | [Interactive prototype](prototype.html) | Explore seven screens and system states. |
 | [Interactive wireframes](prototype.html?wireframe=1) | The same layout and navigation in low fidelity. |
-| [Design specification](design-specification.md) | Information architecture, interaction contracts, tokens, feature mapping and implementation phases. |
-| [Reversible implementation plan](implementation-plan.md) | How to build alongside the existing UI, isolate development, preserve data compatibility and back out. |
+| [V1 design audit](audit.md) | Corrections to the original mockups, aspect ratios, pattern counts and scope. |
+| [Design specification](design-specification.md) | Proposed visual structure and interaction contract, corrected against V1. |
+| [V1 reskin plan](implementation-plan.md) | How to change presentation while preserving V1 behaviour and roll back cleanly. |
 | [Annotated layout map](wireframes/layout-map.svg) | Numbered Mac/iPad structural diagrams in editable vector form. |
 | [Prepare / Mac](mockups/01-prepare-mac.png) | Detailed desktop preparation workspace. |
+| [Layout patterns](mockups/14-layout-patterns.png) | Fixed four-tile positions, portrait source frames and unique orientation choices. |
 | [Playlists](mockups/02-playlists.png) | Timeline, preview and selected-entry inspector. |
 | [Library](mockups/03-library.png) | Browse, classification and bulk selection. |
 | [Tag review](mockups/04-review-tags.png) | Independent review player and editing form. |
 | [Transitions](mockups/05-transitions.png) | Searchable catalogue and audition inspector. |
 | [Auto Perform](mockups/06-auto-perform.png) | Mac audio status and performance controls. |
 | [Capture](mockups/07-capture.png) | Crop and export controls. |
-| [Setup](mockups/08-setup.png) | Connections, folders and persistence scope. |
-| [iPad landscape](mockups/09-ipad-landscape.png) | 1194px viewport width, full-page capture. |
-| [iPad portrait](mockups/10-ipad-portrait.png) | 834px viewport width, full-page capture. |
+| [Settings](mockups/08-setup.png) | Pattern preferences by tile count, existing preferences and scope. |
+| [iPad landscape](mockups/09-ipad-landscape.png) | 1194 × 834 viewport capture. |
+| [iPad portrait](mockups/10-ipad-portrait.png) | 834 × 1194 viewport capture. |
+| [iPad controls open](mockups/15-ipad-edit-controls.png) | Portrait preview with the fixed editing panel open. |
 | [Mac handover](mockups/11-mac-handover.png) | Dimmed editor with reachable recovery actions. |
 | [Offline](mockups/12-offline.png) | Uncertain Mac status and disabled live commands. |
 | [Conflict](mockups/13-conflict.png) | Preserved tag draft and reload/reconcile guidance. |
@@ -111,10 +138,10 @@ deliberately does not import production scripts or contact port 8008.
 | [Playlist wireframe](wireframes/03-playlists.png) | Low-fidelity sequence structure. |
 | [iPad wireframe](wireframes/04-ipad.png) | Low-fidelity portrait flow. |
 
-PNG exports are screen documents, not device photographs. Most use full-page
-captures to show below-the-fold controls; the transition and state examples
-use viewport captures. The **1194 × 834** and **834 × 1194** labels identify the
-browser viewports used, not necessarily the exported PNG height.
+PNG exports are screen documents, not device photographs. The main views are
+viewport captures to keep the intended screen focus clear. Library cards and
+Settings pattern lists scroll inside bounded regions. The **1194 × 834** and
+**834 × 1194** iPad images use those exact viewport dimensions.
 
 ## Source and validation
 
@@ -123,6 +150,10 @@ The design was informed by the [product reference](../product-reference.md),
 [technical reference](../technical-reference.md) and
 [transition catalogue](../transition-catalogue.md). `transitions.js` is a
 read-only snapshot of the real registry; the design does not load its renderer.
+
+The [V1 design audit](audit.md) records verified corrections and capability
+boundaries. In particular, the Mac composition is 16:9 while source videos
+are primarily portrait 9:16. The refreshed previews keep those roles distinct.
 
 Browser checks cover navigation, all 61 transition entries, preview/live
 separation, tag correction/undo, connection states, responsive overflow and

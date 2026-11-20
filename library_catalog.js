@@ -4,6 +4,7 @@ const catalogueTools = document.createElement('section');
 catalogueTools.className = 'catalog-tools';
 catalogueTools.setAttribute('aria-label', 'Browse video categories');
 catalogueTools.innerHTML = `<input id="catalogSearch" type="search" placeholder="Search videos and tags…" aria-label="Search videos and tags">
+  <button type="button" data-reload-library onclick="reloadLibrary()">Reload library</button><p id="libraryReloadStatus" role="status" aria-live="polite"></p>
   <button id="catalogManage" type="button" style="width:100%;min-height:44px;margin-top:8px">Manage classification tags</button>
   <div class="catalog-filters"><label>Theme<select id="catalogThemes"></select></label>
   <label>Colour<select id="catalogColours"></select></label><label>Visual type<select id="catalogTypes"></select></label>
@@ -37,6 +38,7 @@ let catalogueEditing = null;
 let catalogueEditingRevision = null, catalogueEditorToken = 0, catalogueQueue = [], catalogueQueueIndex = -1, catalogueOriginalForm = '';
 const catSelects = {themes:catElement('catalogThemes'), colours:catElement('catalogColours'), types:catElement('catalogTypes')};
 const catSort = catElement('catalogSort');
+catSort.value = librarySort;
 function catalogueRestricted() {
   return !!catElement('catalogSearch').value.trim() || !!catElement('catalogReview').value
     || catalogueFields.some(field => catSelects[field].value) || catSort.value !== 'manual';
@@ -48,18 +50,8 @@ function applyCatalogueFilters() {
   const entries = new Map(videoListCache.map(video => [video.filename, video]));
   let visible = 0;
   const cards = [...libraryGrid.children];
-  const manual = new Map(videoListCache.map((video,index) => [video.filename,index]));
-  cards.sort((a,b) => {
-    const va=entries.get(a.dataset.filename), vb=entries.get(b.dataset.filename);
-    if (!va || !vb) return 0;
-    if (catSort.value === 'newest') return vb.modified - va.modified;
-    if (catSort.value === 'name') return va.filename.localeCompare(vb.filename);
-    if (catalogueFields.includes(catSort.value)) {
-      const key = video => [...(video.catalog?.[catSort.value] || [])].sort().join(', ') || '\uffff';
-      return key(va).localeCompare(key(vb)) || manual.get(va.filename) - manual.get(vb.filename);
-    }
-    return manual.get(va.filename) - manual.get(vb.filename);
-  });
+  const positions = new Map(orderedLibraryVideos().map((video, index) => [video.filename, index]));
+  cards.sort((a, b) => positions.get(a.dataset.filename) - positions.get(b.dataset.filename));
   for (const card of cards) {
     const video = entries.get(card.dataset.filename);
     if (!video) continue;
@@ -77,6 +69,7 @@ function applyCatalogueFilters() {
   catElement('catalogCount').textContent = `${visible} of ${videoListCache.length} videos${visible===0 ? ' · Try clearing a filter.' : ''}${catalogueRestricted() ? ' · Clear filters and choose My order to reorder.' : ''}`;
 }
 window.updateLibraryCatalogue = () => {
+  catSort.value = librarySort;
   for (const field of catalogueFields) {
     const selected = catSelects[field].value;
     const values = [...new Set(videoListCache.flatMap(video=>video.catalog?.[field] || []))].sort((a,b)=>a.localeCompare(b));
@@ -175,9 +168,10 @@ catElement('catalogForm').onsubmit=async event=>{
   finally{if(catalogueEditingRevision!==null){catElement('catalogSave').disabled=false;catElement('catalogSaveNext').disabled=false;}}
 };
 catElement('catalogSearch').oninput=applyCatalogueFilters;
-for(const select of [...Object.values(catSelects),catSort,catElement('catalogReview')])select.onchange=applyCatalogueFilters;
+for(const select of [...Object.values(catSelects),catElement('catalogReview')])select.onchange=applyCatalogueFilters;
+catSort.onchange=()=>setLibrarySort(catSort.value);
 catElement('catalogClear').onclick=()=>{
-  catElement('catalogSearch').value='';catElement('catalogReview').value='';catSort.value='manual';
+  catElement('catalogSearch').value='';catElement('catalogReview').value='';
   Object.values(catSelects).forEach(select=>select.value='');applyCatalogueFilters();
 };
 updateLibraryCatalogue();

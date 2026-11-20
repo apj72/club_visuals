@@ -1,156 +1,21 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Playlists — Club Visuals User Guide</title>
-  <link rel="stylesheet" href="assets/guide.css">
-</head>
-<body>
-  <a class="skip-link" href="#main">Skip to content</a>
-  <div class="guide-shell">
-    <div class="guide-nav-wrap">
-      <div class="guide-nav-inner">
-        <a class="guide-brand" href="index.html">Club Visuals — User Guide</a>
-        <nav class="guide-nav" aria-label="Guide pages">
-          <a href="index.html">Home</a>
-          <a href="install-and-setup.html">Install</a>
-          <a href="downloading.html">Downloading</a>
-          <a href="playback.html">Playback</a>
-          <a href="effects.html">Effects</a>
-          <a href="playlists.html" aria-current="page">Playlists</a>
-          <a href="output-and-recording.html">Output &amp; Recording</a>
-          <a href="reference.html">Reference</a>
-        </nav>
-      </div>
-    </div>
-
-    <main id="main" class="guide-main">
-      <p class="breadcrumb"><a href="index.html">Home</a> &rsaquo; Playlists</p>
-      <h1>Playlists</h1>
-      <p class="lead">
-        Playlists let you build cue lists where each entry specifies a video, view mode, mirror preset, loop mode, and duration. Playlists auto-advance through entries and are saved as JSON for reuse across sessions.
-      </p>
-
-      <figure class="guide-figure">
-        <img src="../screenshots/08-playlist-tab.png" width="1400" height="850" alt="Playlist tab showing entries and add-entry form">
-        <figcaption><span class="fig-label">Figure 8.</span> The Playlist tab with entries, video picker, and layout controls (<code>08-playlist-tab.png</code>).</figcaption>
-      </figure>
-
-      <h2>Creating a playlist</h2>
-      <ol>
-        <li>Click the <strong>Playlist</strong> tab in the right sidebar</li>
-        <li>Click <strong>New</strong> to start a fresh playlist</li>
-        <li>Type a name in the playlist name field</li>
-      </ol>
-
-      <h2>Adding entries</h2>
-      <p>To reuse a layout you developed for a video, select that video and choose one of its named saved layouts. The form fills in layout, panel orientation, playback method, speed, zoom, and X/Y position. You can also load a saved layout below the main player; this selects the same video and layout in the playlist form. <strong>Add</strong> captures the visible player layout for the selected video, including any changes made after loading it. The playlist entry stores those values, so it keeps its look even if you later change or delete the saved layout.</p>
-      <p>For a quicker route, right-click a saved layout below the player (or click its <strong>⋯</strong> button) and choose <strong>Add to playlist…</strong>. You can also select a video in the Library sidebar and click its <strong>+ Playlist</strong> button, or right-click any Library video. The button appears only on the selected video. Select an existing playlist or create a new one, choose a duration and transition, then click <strong>Add to playlist</strong>. The entry is saved immediately; <strong>Open playlist</strong> takes you to the result. A Library video uses its current player layout if selected, or a Single layout otherwise.</p>
-      <p>Each playlist entry defines a complete visual treatment. To add one:</p>
-      <ol>
-        <li>Click the <strong>video picker</strong> to open the dropdown and select a video (thumbnail previews are shown). The selected video also loads in the player so you can preview it.</li>
-        <li>Choose a <strong>view mode</strong>: Single, Dual, 3x, 4x, or 8x</li>
-        <li>Choose a <strong>preset</strong>: P1 through P32</li>
-        <li>Set the <strong>duration type</strong>: Loops (number of full video loops) or Seconds (wall-clock time)</li>
-        <li>Set the <strong>duration value</strong></li>
-        <li>Choose the <strong>transition in</strong>, duration in seconds, and speed curve</li>
-        <li>Choose the <strong>loop mode</strong>: Loop or Bounce</li>
-        <li>Click <strong>Add</strong></li>
-      </ol>
-      <p>
-        Changing the view or preset selector immediately previews the change in the player, so you can see the treatment before adding it.
-      </p>
-      <p>Available transitions are Cut, Fade In, Fade Out/In, Cross Dissolve, Wipe, Zoom / Spin, Whip Pan, Pixel Scatter, Data Tear, Iris Burst, and Shutters. Pixel Scatter removes shuffled blocks of the outgoing image to reveal the next clip; the incoming clip stays on its first frame until the reveal finishes. Data Tear displaces and removes horizontal strips with colour flashes; Iris Burst opens from the centre; Shutters collapse strips to reveal the image underneath. The effect belongs to the incoming entry and plays when the playlist advances, including when you press Next. Fade In starts from black; Fade Out/In passes through black. Set a duration from 0.15 to 10 seconds. The speed curve controls how motion develops within that exact duration: Even, Build (slow to fast), Hit (fast to slow), or Ease (smooth start and finish). The default for new entries is Cross Dissolve at 0.8 seconds with an Even curve. Existing playlist entries without a transition continue to use Cut. The outgoing frame is held while the next video loads, then the effect runs over the incoming video. The main player's Transition control sets the effect for manually selected videos. Transitions also appear in the clean output and recordings.</p>
-      <p>
-        The same video can appear multiple times in a playlist with different treatments. For example:
-      </p>
-      <ul>
-        <li>Dual mode, preset 5, loop, 10 loops</li>
-        <li>8x mode, preset 22, loop, 30 seconds</li>
-        <li>8x mode, preset 7, bounce, 5 loops</li>
-      </ul>
-
-      <h2>Entry list</h2>
-      <p>
-        The timeline shows each video's thumbnail, name, layout, configured run time, and a remove button. A leading "Video by" is hidden from the displayed name. The total at the top estimates the full playlist length. For loop-based entries, the estimate uses source duration, loop count, speed, and Bounce playback; seconds-based entries use their specified slot length. If source duration is unavailable, the card says so and the total shows the known minimum.
-      </p>
-      <ul>
-        <li><strong>Drag and drop</strong> video cards to reorder them</li>
-        <li>Drag an effect icon from the palette into a transition slot between cards, or select an icon and click a slot</li>
-        <li>Click an entry to <strong>preview</strong> it in the player (outlined in red while previewing)</li>
-        <li>Click a transition slot to edit its incoming effect, duration, and speed curve, then click <strong>Save</strong> to keep the change</li>
-        <li>Click <strong>Audition</strong> above the transition icons to preview the selected effect with library clips. Click <strong>▶ Preview</strong> on a slot to start with the two videos around it; the first slot starts from black. In the audition window, choose clips, effect, duration, and speed curve, then click <strong>▶ Replay</strong>. <strong>Use in slot</strong> applies the settings to that entry; click <strong>Save</strong> to keep it. The preview does not interrupt the main player or clean output.</li>
-        <li>Click <strong>✦ Script effects</strong> on a video card to add timed VFX cues. Each cue starts a scene, mirror, 3D logo, or 3D text at a chosen number of seconds into that video. Set intensity and feedback, and for objects set text, position, size, rotation axis, angles, and rotation speed. Add an <strong>Off</strong> cue to end the effect. Cues run in time order and follow the video if you reorder the cards.</li>
-        <li>Click <strong>✦ Auto-script effects</strong> to add a varied set of VFX cues to videos that have none. Longer entries get a second cue later in the video. Existing cue scripts are preserved. Review each video's cues, then click <strong>Save</strong>.</li>
-        <li>Click the <strong>&times;</strong> button to remove an entry</li>
-      </ul>
-
-      <h2>Saving and loading</h2>
-      <ul>
-        <li>Click <strong>Save</strong> to persist the playlist to the server as a JSON file</li>
-        <li>Use the <strong>playlist dropdown</strong> at the top to load a previously saved playlist</li>
-        <li>Click <strong>Del</strong> to delete the current playlist (a confirmation dialog appears)</li>
-      </ul>
-      <p>
-        Playlists are saved in the <code>playlists/</code> directory as JSON files named by a slug derived from the playlist name. They survive server restarts and page reloads.
-      </p>
-
-      <h2>Playing a playlist</h2>
-      <ol>
-        <li>Click <strong>Play</strong> to start from the first entry</li>
-        <li>The <strong>playlist indicator bar</strong> appears above the video showing: current entry number, view/preset info, and loop progress</li>
-        <li>Entries auto-advance when their duration expires</li>
-        <li>Click <strong>Next</strong> in the indicator bar to skip to the next entry</li>
-        <li>Click <strong>Stop</strong> to exit playlist mode</li>
-      </ol>
-      <p>
-        During playback, the current entry is highlighted with a green border in the entry list.
-      </p>
-      <p>Timed effect cues run relative to the start of their video. Pressing Next cancels pending cues for the previous entry. Stopping the playlist restores the VFX settings that were active before playback. Cue changes are sent to the clean output and included in recordings.</p>
-
-      <h3>Playlist looping</h3>
-      <p>
-        Click <strong>Loop: Off</strong> to toggle playlist looping. When on, the playlist restarts from the first entry after the last one completes. The button shows <strong>Loop: On</strong> when active.
-      </p>
-
-      <h2>Auto-generating playlists</h2>
-
-      <figure class="guide-figure">
-        <img src="../screenshots/09-playlist-autogen.png" width="1400" height="850" alt="Auto-generate form with duration and video selection">
-        <figcaption><span class="fig-label">Figure 9.</span> The auto-generate form for creating randomised playlists to a target duration (<code>09-playlist-autogen.png</code>).</figcaption>
-      </figure>
-
-      <p>
-        Click <strong>Auto</strong> to reveal the auto-generate form:
-      </p>
-      <ol>
-        <li>Set the target <strong>duration</strong> in minutes (1–480, default 30)</li>
-        <li>Optionally tick <strong>Select videos</strong> to choose which videos to include. An "All" / "None" bar appears with checkboxes on each library item.</li>
-        <li>Click <strong>Generate</strong></li>
-      </ol>
-      <p>
-        The generator:
-      </p>
-      <ul>
-        <li>Fetches duration metadata for the selected (or all) videos</li>
-        <li>Shuffles videos randomly</li>
-        <li>For each entry: picks a random view mode, a random preset from that mode's curated set, and 1–5 random loops</li>
-        <li>Fills entries until the total estimated time exceeds the target</li>
-        <li>Names the playlist "Auto <em>N</em>min"</li>
-      </ul>
-      <p>
-        A status message shows the result: e.g. "15 entries, ~32 minutes total". Click <strong>Save</strong> to keep the generated playlist.
-      </p>
-
-      <div class="callout">
-        <strong>Tip.</strong> Auto-generate is great for building a baseline set. Generate a 30-minute playlist, then manually edit individual entries — swap presets, adjust durations, reorder the sequence — to fine-tune the visual story.
-      </div>
-    </main>
-
-    <footer class="guide-footer">
-      <p>Club Visuals user guide &middot; Modular HTML in <code>docs/user-guide/</code></p>
-    </footer>
-  </div>
-</body>
-</html>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>4. Edit and rehearse a playlist | Club Visuals</title><meta name="description" content="Current illustrated Club Visuals handbook: playlist composition, timed editing, effects, Show Builder, capture and Mac/iPad output."><link rel="stylesheet" href="assets/guide.css"></head><body><a class="skip-link" href="#main">Skip to content</a><div class="guide-shell"><header class="guide-nav-wrap"><div class="guide-nav-inner"><a class="guide-brand" href="index.html">CLUB VISUALS / USER GUIDE</a><nav class="guide-nav" aria-label="Guide chapters"><a href="index.html">Club Visuals user guide</a><a href="install-and-setup.html">1. Install and start</a><a href="downloading.html">2. Build and organise the library</a><a href="playback.html">3. Prepare layouts, framing and cue ranges</a><a href="playlists.html" aria-current="page">4. Edit and rehearse a playlist</a><a href="effects.html">5. Video effects, chrome and text</a><a href="logo-animation.html">6. Animate and render the logo</a><a href="show-builder.html">7. Generate shows with Show Builder</a><a href="live-inputs.html">8. Camera movement and music</a><a href="output-and-recording.html">9. Capture, record and reuse</a><a href="mac-ipad.html">10. Mac output and iPad control</a><a href="reference.html">11. Reference, troubleshooting and backups</a></nav></div></header><main id="main" class="guide-main"><article><h1>4. Edit and rehearse a playlist</h1><p class="lead">See every scripted change, edit the right section and play the actual composition.</p>
+<h2>Create, open and save</h2><p>Choose <strong>Playlists</strong>. Select a saved playlist, or click <strong>New</strong>, name it and add videos from the library/add-entry controls. Drag clip bodies to reorder them. A clip can appear several times with different settings. <strong>Add current view</strong> inserts the prepared source/look near the playhead. Removing a timeline clip removes only that entry. Click <strong>Save</strong> beside the name to keep your edits.</p>
+<figure class="guide-figure"><a href="assets/screenshots/05-playlist.png"><img src="assets/screenshots/05-playlist.png" width="1440" height="1050" alt="The timeline contains incoming transition badges, green layout/framing sections and purple effect cues." loading="lazy"></a><figcaption>The timeline contains incoming transition badges, green layout/framing sections and purple effect cues. Click the image in the web guide to inspect it at full size.</figcaption></figure>
+<h2>Read the three parts of a clip</h2><ul><li><strong>Thumbnail/body:</strong> click to select this clip's own composition directly, paused for editing.</li><li><strong>Transition badge:</strong> click to inspect the incoming change from the preceding clip. The first transition can start from black.</li><li><strong>Green and purple rows:</strong> select a specific composition section or effect cue, rather than changing the whole clip by accident.</li></ul>
+<p>The time ruler sets the full-show playhead. The scale slider changes timeline magnification without changing video zoom. Use the ±1s buttons for small time steps. Horizontal scrolling reveals later clips. The library, preview/timeline and inspector have separate bounded scroll areas.</p>
+<h2>Play the composition from the playhead</h2><p><strong>Play playlist</strong> below the preview runs the complete authored composition: source video, timed layouts, colour, trails, VFX, reflections and logo motion. It continues through clip boundaries. The playlist panel's <strong>Play from playhead</strong> uses the same transport. <strong>Pause playlist</strong> freezes the composed image and keeps the show position; Play resumes there. The playhead follows playback, including during source loops.</p>
+<p>In this workspace, <strong>Motion follows playlist</strong> indicates that the playlist transport owns object motion. Use the cue editor's private audition or Prepare for separate logo-motion rehearsals. <strong>Restart clip</strong> returns to the selected clip's beginning while retaining whether the playlist was playing or paused. With playlist Loop off, the last composition is held at the end; Play then begins the show again. Preview fullscreen expands this private composition and does not send it to the Mac output.</p>
+<h2>Edit a timed section</h2>
+<figure class="guide-figure"><a href="assets/screenshots/06-section-edit.png"><img src="assets/screenshots/06-section-edit.png" width="1440" height="1050" alt="The selected green section has its own start time and settings; the earlier section remains intact." loading="lazy"></a><figcaption>The selected green section has its own start time and settings; the earlier section remains intact. Click the image in the web guide to inspect it at full size.</figcaption></figure>
+<ol><li>Click the green block at the change you want to edit. For the opening showcase lasers, choose <strong>0:24</strong>.</li><li>Check <strong>Layout / framing section</strong> and its displayed time span.</li><li>Choose <strong>Dual</strong> or <strong>4×</strong>, or adjust pattern, zoom, pan, colour and trails. The private preview updates.</li><li>Inspect the numbered F diagram. Use <strong>All panels upright</strong> if you want no mirroring in that section.</li><li>Preview before and after the boundary, then save.</li></ol>
+<p>A section's settings apply from its change point until a later change overrides them. Some later changes specify only particular fields, so other settings continue to carry forward. The section selector lists every change even if a timeline block is too narrow to show its whole label. Hover a block for its detailed settings.</p>
+<h3>Add, move or remove a change</h3><p>Click the ruler inside a clip, then <strong>+ Change at playhead</strong>. Edit that new section's parameters. Change <strong>Change time · seconds into clip</strong> to move the event. Times must be unique, greater than zero and before the clip's end. <strong>Remove change</strong> continues the preceding settings through that point. The initial Start section cannot be removed or moved. These actions do not split or restart the source video.</p>
+<h2>Know the editing scope</h2>
+<div class="guide-table-wrap"><table class="guide-table"><thead><tr><th>Selected timed section</th><th>Whole clip</th></tr></thead><tbody><tr><td>Layout and mirror/orientation pattern</td><td>Source video and total slot length</td></tr><tr><td>Zoom and Pan X/Y</td><td>Once/Loop/Bounce and playback speed</td></tr><tr><td>Hue, saturation, contrast, brightness, blur, invert and sepia</td><td>Source audio mute and virtual In/Out range</td></tr><tr><td>Trails and trail fade</td><td>Incoming transition type, duration and pace</td></tr></tbody></table></div><figure class="guide-figure"><a href="assets/screenshots/07-clip-settings.png"><img src="assets/screenshots/07-clip-settings.png" width="1440" height="1050" alt="The inspector separates the active section from whole-clip playback and source settings." loading="lazy"></a><figcaption>The inspector separates the active section from whole-clip playback and source settings. Click the image in the web guide to inspect it at full size.</figcaption></figure>
+<p>Changing source video keeps the clip's show timing and scripts but resets its old source range to the full new video. Review those scripts against the new footage. Shrinking a clip can place later authored changes beyond its end; extend the clip again or move/remove those changes as appropriate.</p>
+<h2>Edit effects and transitions</h2><p>Click a purple block to open its exact cue. An <strong>Off</strong> cue ends the active effect. You can change the cue's time, effect, intensity and feedback, and edit all available camera/mirror/object settings. Logo/text cues expose appearance, reflection sources, paths, waypoints, snake and fly-along controls. <strong>Preview cue</strong> closes the dialog and moves the composition preview to that cue. <strong>Done</strong> returns to the playlist; save afterwards.</p>
+<figure class="guide-figure"><a href="assets/screenshots/08-effect-cue.png"><img src="assets/screenshots/08-effect-cue.png" width="690" height="946" alt="A selected effect cue opens the shared object editor, including the full saved appearance and choreography." loading="lazy"></a><figcaption>A selected effect cue opens the shared object editor, including the full saved appearance and choreography. Click the image in the web guide to inspect it at full size.</figcaption></figure>
+<p>Use a transition badge or <strong>Audition transition</strong> for transition review. The catalogue offers 61 types. Choose duration, pace and any effect-specific parameters offered in the audition. <strong>Use in slot</strong> applies that audition's settings. Reduced-flash settings soften supported flashes but do not make all intense imagery suitable for every viewer.</p>
+<figure class="guide-figure"><a href="assets/screenshots/21-transition-audition.png"><img src="assets/screenshots/21-transition-audition.png" width="720" height="797" alt="Audition a transition with the neighbouring sources before applying it to the slot." loading="lazy"></a><figcaption>Audition a transition with the neighbouring sources before applying it to the slot. Click the image in the web guide to inspect it at full size.</figcaption></figure>
+<div class="callout"><strong>Save before refreshing.</strong> Direct playlist edits are private and in memory until Save. Sending a playlist to Mac uses the current edited copy, including unsaved edits, but sending is not a substitute for saving it.</div>
+</article><nav class="guide-pager" aria-label="Chapter navigation"><a href="playback.html">← 3. Prepare layouts, framing and cue ranges</a><a href="effects.html">5. Video effects, chrome and text →</a></nav></main><footer class="guide-footer">Club Visuals · Current redesigned interface · 19 November 2026<br>Illustrations captured with Docshots. <a href="complete.html">Complete guide</a> · <a href="../../output/pdf/club-visuals-user-guide.pdf">Printable PDF</a></footer></div></body></html>

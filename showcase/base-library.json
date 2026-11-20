@@ -1,0 +1,284 @@
+{
+  "version": 1,
+  "bricks": [
+    {
+      "id": "opening",
+      "name": "Gentle opening",
+      "colour": "sage",
+      "steps": [
+        {
+          "slot": "Main",
+          "seconds": 30,
+          "view": "quad",
+          "preset": 15,
+          "loopMode": 1,
+          "speed": 1,
+          "zoom": 1,
+          "panX": 0,
+          "panY": 0,
+          "transition": {
+            "type": "fade-in",
+            "duration": 1.5,
+            "pace": "ease"
+          },
+          "effects": [],
+          "layoutCues": [
+            {
+              "at": 15,
+              "view": "dual",
+              "preset": 7,
+              "zoom": 1,
+              "panX": 0,
+              "panY": 0
+            }
+          ]
+        },
+        {
+          "slot": "Next",
+          "seconds": 30,
+          "view": "quad",
+          "preset": 15,
+          "loopMode": 1,
+          "speed": 1,
+          "zoom": 1,
+          "panX": 0,
+          "panY": 0,
+          "transition": {
+            "type": "cross-dissolve",
+            "duration": 1.5,
+            "pace": "ease"
+          },
+          "effects": [],
+          "layoutCues": []
+        }
+      ]
+    },
+    {
+      "id": "build",
+      "name": "Mirror build",
+      "colour": "blue",
+      "steps": [
+        {
+          "slot": "Main",
+          "seconds": 20,
+          "view": "dual",
+          "preset": 7,
+          "loopMode": 1,
+          "speed": 1,
+          "zoom": 1,
+          "panX": 0,
+          "panY": 0,
+          "transition": {
+            "type": "cross-dissolve",
+            "duration": 1.5,
+            "pace": "ease"
+          },
+          "effects": [],
+          "layoutCues": []
+        },
+        {
+          "slot": "Next",
+          "seconds": 20,
+          "view": "quad",
+          "preset": 15,
+          "loopMode": 1,
+          "speed": 1,
+          "zoom": 1,
+          "panX": 0,
+          "panY": 0,
+          "transition": {
+            "type": "cross-dissolve",
+            "duration": 1.5,
+            "pace": "ease"
+          },
+          "effects": [],
+          "layoutCues": []
+        },
+        {
+          "slot": "Third",
+          "seconds": 20,
+          "view": "octo",
+          "preset": 27,
+          "loopMode": 1,
+          "speed": 1,
+          "zoom": 1,
+          "panX": 0,
+          "panY": 0,
+          "transition": {
+            "type": "fluid-ripple",
+            "duration": 1.5,
+            "pace": "ease"
+          },
+          "effects": [],
+          "layoutCues": []
+        }
+      ]
+    },
+    {
+      "id": "peak",
+      "name": "Peak energy",
+      "colour": "coral",
+      "steps": [
+        {
+          "slot": "Main",
+          "seconds": 15,
+          "view": "octo",
+          "preset": 27,
+          "loopMode": 1,
+          "speed": 1,
+          "zoom": 1,
+          "panX": 0,
+          "panY": 0,
+          "transition": {
+            "type": "zoom-spin",
+            "duration": 1.5,
+            "pace": "ease"
+          },
+          "effects": [],
+          "layoutCues": []
+        },
+        {
+          "slot": "Next",
+          "seconds": 15,
+          "view": "quad",
+          "preset": 15,
+          "loopMode": 1,
+          "speed": 1,
+          "zoom": 1,
+          "panX": 0,
+          "panY": 0,
+          "transition": {
+            "type": "whip-pan",
+            "duration": 1.5,
+            "pace": "ease"
+          },
+          "effects": [],
+          "layoutCues": []
+        },
+        {
+          "slot": "Third",
+          "seconds": 30,
+          "view": "octo",
+          "preset": 27,
+          "loopMode": 1,
+          "speed": 1,
+          "zoom": 1,
+          "panX": 0,
+          "panY": 0,
+          "transition": {
+            "type": "cross-dissolve",
+            "duration": 1.5,
+            "pace": "ease"
+          },
+          "effects": [],
+          "layoutCues": []
+        }
+      ]
+    },
+    {
+      "id": "close",
+      "name": "Slow landing",
+      "colour": "purple",
+      "steps": [
+        {
+          "slot": "Main",
+          "seconds": 30,
+          "view": "quad",
+          "preset": 15,
+          "loopMode": 1,
+          "speed": 1,
+          "zoom": 1,
+          "panX": 0,
+          "panY": 0,
+          "transition": {
+            "type": "cross-dissolve",
+            "duration": 1.5,
+            "pace": "ease"
+          },
+          "effects": [],
+          "layoutCues": []
+        },
+        {
+          "slot": "Next",
+          "seconds": 30,
+          "view": "single",
+          "preset": 1,
+          "loopMode": 1,
+          "speed": 1,
+          "zoom": 1,
+          "panX": 0,
+          "panY": 0,
+          "transition": {
+            "type": "cross-dissolve",
+            "duration": 1.5,
+            "pace": "ease"
+          },
+          "effects": [],
+          "layoutCues": []
+        }
+      ]
+    }
+  ],
+  "models": [
+    {
+      "id": "journey",
+      "name": "Three-hour journey",
+      "minutes": 180,
+      "sections": [
+        {
+          "id": "open",
+          "name": "Opening",
+          "weight": 1,
+          "bricks": [
+            "opening"
+          ]
+        },
+        {
+          "id": "develop",
+          "name": "Develop",
+          "weight": 4,
+          "bricks": [
+            "build",
+            "opening"
+          ]
+        },
+        {
+          "id": "peak",
+          "name": "Peak",
+          "weight": 3,
+          "bricks": [
+            "build",
+            "peak"
+          ]
+        },
+        {
+          "id": "land",
+          "name": "Landing",
+          "weight": 1,
+          "bricks": [
+            "close"
+          ]
+        }
+      ]
+    }
+  ],
+  "profiles": [
+    {
+      "id": "house",
+      "name": "My first DJ",
+      "pace": 1,
+      "avoidRepeat": 3,
+      "themes": [],
+      "colours": [],
+      "types": [],
+      "exclude": [],
+      "reviewedOnly": false,
+      "similar": true,
+      "branding": {
+        "text": "",
+        "every": 300,
+        "seconds": 8
+      }
+    }
+  ]
+}

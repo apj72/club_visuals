@@ -23,7 +23,7 @@ const tmState={videos:[],snapshot:{revision:null,undoAvailable:false,videos:{}},
 const tmSame=(a,b)=>String(a).toLocaleLowerCase()===String(b).toLocaleLowerCase();
 function tmVisibleVideos(){
   const search=tm('tmSearch').value.trim().toLocaleLowerCase(), review=tm('tmReview').value;
-  return tmState.videos.filter(video=>{
+  return orderedLibraryVideos(tmState.videos).filter(video=>{
     const tags=video.catalog||{},hasTags=catalogueFields.some(field=>tags[field]?.length);
     const text=[video.filename,video.uploader,tags.notes,...catalogueFields.flatMap(field=>tags[field]||[])].join(' ').toLocaleLowerCase();
     return (!search||text.includes(search))&&catalogueFields.every(field=>!tm(tmFilterIds[field]).value||(tags[field]||[]).some(tag=>tmSame(tag,tm(tmFilterIds[field]).value)))
@@ -32,7 +32,7 @@ function tmVisibleVideos(){
 }
 function tmTagIndex(){
   const tags=new Map();
-  for(const video of tmState.videos)for(const field of catalogueFields)for(const label of video.catalog?.[field]||[]){
+  for(const video of orderedLibraryVideos(tmState.videos))for(const field of catalogueFields)for(const label of video.catalog?.[field]||[]){
     const key=field+':'+label.toLocaleLowerCase();if(!tags.has(key))tags.set(key,{key,field,label,videos:[]});tags.get(key).videos.push(video);
   }
   return [...tags.values()].sort((a,b)=>a.field.localeCompare(b.field)||a.label.localeCompare(b.label));
@@ -127,3 +127,10 @@ tm('tmRefresh').onclick=async()=>{try{await tmRefresh();tm('tmStatus').textConte
 tm('tmSelectShown').onclick=()=>{for(const video of tmVisibleVideos())tmState.selected.add(video.filename);tmRenderVideos();};tm('tmClearSelection').onclick=()=>{tmState.selected.clear();tmRenderVideos();};
 tm('tmBulkApply').onclick=()=>tmApply({action:'bulk',mode:tm('tmBulkMode').value,field:tm('tmBulkField').value,tag:tm('tmBulkTag').value,filenames:[...tmState.selected]});
 tm('tmReviewed').onclick=()=>tmApply({action:'review',reviewed:true,filenames:[...tmState.selected]});tm('tmNeedsReview').onclick=()=>tmApply({action:'review',reviewed:false,filenames:[...tmState.selected]});tm('tmUndo').onclick=()=>tmApply({action:'undo'});
+
+window.addEventListener('club-library-changed', event => {
+  tmState.videos = event.detail;
+  const valid = new Set(tmState.videos.map(video => video.filename));
+  for (const name of tmState.selected) if (!valid.has(name)) tmState.selected.delete(name);
+  if (tagManager.open) { tmPopulateFilters(); tmRender(); }
+});

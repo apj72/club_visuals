@@ -1,0 +1,49 @@
+# Proposed compiler features: pool resolution, seeded similarity and exact fill.
+# Catalogue labels are drafts: audition the resolved videos before sending.
+# Exclude further playlist slugs below to remove other previously used videos.
+# An insufficient pool is an explicit build error, never a relaxed exclusion.
+show "VERSION1 — selected discoveries" {
+  language 1
+  duration 60m
+  seed 20261115
+  output 16:9
+  tempo 128bpm meter 4/4
+}
+media bikini = file "Video by lyra.elys_DbfkMIpxAVP.mp4"
+pool discoveries = library {
+  themes any ["Abstract", "Organic & fluid", "Light & particles", "Geometric"]
+  exclude media bikini
+  exclude videos in playlist "version1-one-hour-journey-60min"
+}
+look mirror4 {
+  layout 4x pattern 15
+  crop pan (50%, 50%) zoom 1
+  playback loop speed 1
+}
+look mirror8 {
+  layout 8x pattern 27
+  crop pan (50%, 50%) zoom 1
+  playback loop speed 1
+}
+overlay brand = logo version1 {
+  material chrome
+  position (50%, 50%)
+  scale 46%
+  quality high
+  reflection 1.3
+  roughness 0.07
+  sweep y from -25deg to 25deg amount 0.22
+}
+sequence main {
+  fill 60m from discoveries {
+    clip length 20s
+    choose similar avoid-repeat 12
+    layouts [mirror4, mirror8] change every 60s
+    enter choose [cross-dissolve, fluid-ripple] over 2s ease smooth
+    remainder error
+  }
+}
+schedule {
+  every 60s from 6s for 8s show brand
+  at 59:52 for 6s show brand
+}

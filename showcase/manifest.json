@@ -1,0 +1,375 @@
+{
+  "title": "From Signal to Spectacle",
+  "date": "2026-11-19",
+  "seconds": 720,
+  "modelId": "showcase-signal-to-spectacle-v1",
+  "profileId": "showcase-directed-v1",
+  "bindings": {
+    "showcase-signal:01 · A single light": "blue_laser.mp4",
+    "showcase-signal:02 · The first constellation": "Video by uon.visuals_DdpYDh8B-su.fdash-1713314353073142v.mp4",
+    "showcase-refraction:03 · Three perspectives": "Video by themacrosift_Dd7IfJ7Mm5R.fdash-2959600471040532v.mp4",
+    "showcase-refraction:04 · A mirrored conversation": "Video by astrolionmusic_DdppZJqSlqv.fdash-28499409169711422v.mp4",
+    "showcase-refraction:05 · Four corners": "Video by justtrip.it_Dci-u9zuIVK.mp4",
+    "showcase-refraction:06 · Six windows": "Video by uon.visuals_DdkaL9MBcrv.fdash-3261056987436660v.mp4",
+    "showcase-refraction:07 · The room opens": "Video by uon.visuals_DdU-l2qAGtL.mp4",
+    "showcase-matter:08 · A surface remembers": "Video by test23rdmay_DesPIdUsisv.mp4",
+    "showcase-matter:09 · Time folds back": "version1_showcase_bounce_source.mp4",
+    "showcase-matter:10 · Colour acquires a memory": "Video by riebschlager_DfD77Dvxfgk.mp4",
+    "showcase-identity:11 · The material learns to shine": "Video by uon.visuals_DdU-l2qAGtL.mp4",
+    "showcase-identity:12 · The mark leaves its frame": "Video by gromer.png_Db_Nm-diF6p.mp4",
+    "showcase-identity:13 · The letters breathe": "Video by astrolionmusic_DdS67VQSvOv.mp4",
+    "showcase-identity:14 · Into the wordmark": "Video by test23rdmay_DesPIdUsisv.mp4",
+    "showcase-human:15 · A human in the circuit": "Video by themacrosift_De5gECWMeJY.mp4",
+    "showcase-human:16 · Movement becomes light": "version1_showcase_recorded_motion.mp4",
+    "showcase-human:17 · Made here, played here": "capture_instagram_9x16_20261116_235951_411938000.mp4",
+    "showcase-singularity:18 · Ignition": "Video by justtrip.it_Dc_8Un2Tx7j.mp4",
+    "showcase-singularity:19 · A forward leap": "Video by uon.visuals_Dd7oPxTh_g1.fdash-1421125976823177v.mp4",
+    "showcase-singularity:20 · Eightfold": "Video by uon.visuals_DdkaL9MBcrv.fdash-3261056987436660v.mp4",
+    "showcase-singularity:21 · Ribbons of light": "Video by uon.visuals_Dexodx4RUrW.mp4",
+    "showcase-singularity:22 · A beautiful fracture": "Video by astrolionmusic_DdppZJqSlqv.fdash-28499409169711422v.mp4",
+    "showcase-singularity:23 · Bodies of light": "Video by riebschlager_Da4LyKzRrEB.mp4",
+    "showcase-singularity:24 · The infinite room": "Video by uon.visuals_DdU-l2qAGtL.mp4",
+    "showcase-singularity:25 · A second gravity": "blue_laser.mp4",
+    "showcase-singularity:26 · The mark breaks free": "Video by astrolionmusic_DdS67VQSvOv.mp4",
+    "showcase-home:27 · A corridor back to stillness": "Video by hypernova_ai_Dc6JRUvjTaL.mp4",
+    "showcase-home:28 · The identity comes home": "version1_insta_flyby.mp4",
+    "showcase-home:29 · Signal becomes silence": "version1_showcase_black_stage.mp4"
+  },
+  "chapters": [
+    {
+      "name": "I · A signal in the dark",
+      "description": "A single light becomes an identity. Quiet, spacious and unmistakably deliberate.",
+      "start": 0,
+      "end": 64
+    },
+    {
+      "name": "II · One becomes many",
+      "description": "The same signal unfolds through every layout; symmetry gradually fills the room.",
+      "start": 64,
+      "end": 160
+    },
+    {
+      "name": "III · Light becomes matter",
+      "description": "Ripples, time reversal and colour turn patterns into something tactile.",
+      "start": 160,
+      "end": 256
+    },
+    {
+      "name": "IV · The identity awakens",
+      "description": "The film moves inside the Version1 mark. Materials, choreography, depth and flight become the main characters.",
+      "start": 256,
+      "end": 384
+    },
+    {
+      "name": "V · The human signal",
+      "description": "An apparently synthetic world reveals its human input. Movement becomes the instrument.",
+      "start": 384,
+      "end": 480
+    },
+    {
+      "name": "VI · The singularity",
+      "description": "All the languages combine: the fastest, richest and most layered passage of the show.",
+      "start": 480,
+      "end": 624
+    },
+    {
+      "name": "VII · Return to the source",
+      "description": "Space returns. The mark stands upright, becomes familiar, and finally disappears into silence.",
+      "start": 624,
+      "end": 720
+    }
+  ],
+  "shots": [
+    {
+      "index": 1,
+      "chapter": "I · A signal in the dark",
+      "title": "A single light",
+      "filename": "blue_laser.mp4",
+      "seconds": 32,
+      "view": "single",
+      "transition": "fade-in"
+    },
+    {
+      "index": 2,
+      "chapter": "I · A signal in the dark",
+      "title": "The first constellation",
+      "filename": "Video by uon.visuals_DdpYDh8B-su.fdash-1713314353073142v.mp4",
+      "seconds": 32,
+      "view": "single",
+      "transition": "cross-dissolve"
+    },
+    {
+      "index": 3,
+      "chapter": "II · One becomes many",
+      "title": "Three perspectives",
+      "filename": "Video by themacrosift_Dd7IfJ7Mm5R.fdash-2959600471040532v.mp4",
+      "seconds": 16,
+      "view": "triple",
+      "transition": "hexagonal-mosaic"
+    },
+    {
+      "index": 4,
+      "chapter": "II · One becomes many",
+      "title": "A mirrored conversation",
+      "filename": "Video by astrolionmusic_DdppZJqSlqv.fdash-28499409169711422v.mp4",
+      "seconds": 16,
+      "view": "dual",
+      "transition": "geometric-shatter"
+    },
+    {
+      "index": 5,
+      "chapter": "II · One becomes many",
+      "title": "Four corners",
+      "filename": "Video by justtrip.it_Dci-u9zuIVK.mp4",
+      "seconds": 16,
+      "view": "quad",
+      "transition": "cube-rotation"
+    },
+    {
+      "index": 6,
+      "chapter": "II · One becomes many",
+      "title": "Six windows",
+      "filename": "Video by uon.visuals_DdkaL9MBcrv.fdash-3261056987436660v.mp4",
+      "seconds": 16,
+      "view": "six",
+      "transition": "radial-slice"
+    },
+    {
+      "index": 7,
+      "chapter": "II · One becomes many",
+      "title": "The room opens",
+      "filename": "Video by uon.visuals_DdU-l2qAGtL.mp4",
+      "seconds": 32,
+      "view": "octo",
+      "transition": "kaleidoscope-morph"
+    },
+    {
+      "index": 8,
+      "chapter": "III · Light becomes matter",
+      "title": "A surface remembers",
+      "filename": "Video by test23rdmay_DesPIdUsisv.mp4",
+      "seconds": 32,
+      "view": "triple",
+      "transition": "fluid-ripple"
+    },
+    {
+      "index": 9,
+      "chapter": "III · Light becomes matter",
+      "title": "Time folds back",
+      "filename": "version1_showcase_bounce_source.mp4",
+      "seconds": 32,
+      "view": "single",
+      "transition": "liquid-chrome"
+    },
+    {
+      "index": 10,
+      "chapter": "III · Light becomes matter",
+      "title": "Colour acquires a memory",
+      "filename": "Video by riebschlager_DfD77Dvxfgk.mp4",
+      "seconds": 32,
+      "view": "single",
+      "transition": "ink-in-water"
+    },
+    {
+      "index": 11,
+      "chapter": "IV · The identity awakens",
+      "title": "The material learns to shine",
+      "filename": "Video by uon.visuals_DdU-l2qAGtL.mp4",
+      "seconds": 32,
+      "view": "single",
+      "transition": "smoke-dissolve"
+    },
+    {
+      "index": 12,
+      "chapter": "IV · The identity awakens",
+      "title": "The mark leaves its frame",
+      "filename": "Video by gromer.png_Db_Nm-diF6p.mp4",
+      "seconds": 32,
+      "view": "single",
+      "transition": "light-leak"
+    },
+    {
+      "index": 13,
+      "chapter": "IV · The identity awakens",
+      "title": "The letters breathe",
+      "filename": "Video by astrolionmusic_DdS67VQSvOv.mp4",
+      "seconds": 32,
+      "view": "triple",
+      "transition": "mandala-rotation"
+    },
+    {
+      "index": 14,
+      "chapter": "IV · The identity awakens",
+      "title": "Into the wordmark",
+      "filename": "Video by test23rdmay_DesPIdUsisv.mp4",
+      "seconds": 32,
+      "view": "single",
+      "transition": "dimensional-portal"
+    },
+    {
+      "index": 15,
+      "chapter": "V · The human signal",
+      "title": "A human in the circuit",
+      "filename": "Video by themacrosift_De5gECWMeJY.mp4",
+      "seconds": 32,
+      "view": "triple",
+      "transition": "holographic-breakdown"
+    },
+    {
+      "index": 16,
+      "chapter": "V · The human signal",
+      "title": "Movement becomes light",
+      "filename": "version1_showcase_recorded_motion.mp4",
+      "seconds": 32,
+      "view": "single",
+      "transition": "spectral-frequency-shift"
+    },
+    {
+      "index": 17,
+      "chapter": "V · The human signal",
+      "title": "Made here, played here",
+      "filename": "capture_instagram_9x16_20261116_235951_411938000.mp4",
+      "seconds": 32,
+      "view": "triple",
+      "transition": "neural-network-morph"
+    },
+    {
+      "index": 18,
+      "chapter": "VI · The singularity",
+      "title": "Ignition",
+      "filename": "Video by justtrip.it_Dc_8Un2Tx7j.mp4",
+      "seconds": 16,
+      "view": "six",
+      "transition": "bass-impact-distortion"
+    },
+    {
+      "index": 19,
+      "chapter": "VI · The singularity",
+      "title": "A forward leap",
+      "filename": "Video by uon.visuals_Dd7oPxTh_g1.fdash-1421125976823177v.mp4",
+      "seconds": 16,
+      "view": "six",
+      "transition": "laser-sweep"
+    },
+    {
+      "index": 20,
+      "chapter": "VI · The singularity",
+      "title": "Eightfold",
+      "filename": "Video by uon.visuals_DdkaL9MBcrv.fdash-3261056987436660v.mp4",
+      "seconds": 16,
+      "view": "octo",
+      "transition": "quantum-tiles"
+    },
+    {
+      "index": 21,
+      "chapter": "VI · The singularity",
+      "title": "Ribbons of light",
+      "filename": "Video by uon.visuals_Dexodx4RUrW.mp4",
+      "seconds": 16,
+      "view": "six",
+      "transition": "electric-arc"
+    },
+    {
+      "index": 22,
+      "chapter": "VI · The singularity",
+      "title": "A beautiful fracture",
+      "filename": "Video by astrolionmusic_DdppZJqSlqv.fdash-28499409169711422v.mp4",
+      "seconds": 16,
+      "view": "octo",
+      "transition": "reality-fracture"
+    },
+    {
+      "index": 23,
+      "chapter": "VI · The singularity",
+      "title": "Bodies of light",
+      "filename": "Video by riebschlager_Da4LyKzRrEB.mp4",
+      "seconds": 16,
+      "view": "dual",
+      "transition": "energy-burst"
+    },
+    {
+      "index": 24,
+      "chapter": "VI · The singularity",
+      "title": "The infinite room",
+      "filename": "Video by uon.visuals_DdU-l2qAGtL.mp4",
+      "seconds": 16,
+      "view": "single",
+      "transition": "infinite-zoom"
+    },
+    {
+      "index": 25,
+      "chapter": "VI · The singularity",
+      "title": "A second gravity",
+      "filename": "blue_laser.mp4",
+      "seconds": 16,
+      "view": "octo",
+      "transition": "gravity-well"
+    },
+    {
+      "index": 26,
+      "chapter": "VI · The singularity",
+      "title": "The mark breaks free",
+      "filename": "Video by astrolionmusic_DdS67VQSvOv.mp4",
+      "seconds": 16,
+      "view": "triple",
+      "transition": "chromatic-implosion"
+    },
+    {
+      "index": 27,
+      "chapter": "VII · Return to the source",
+      "title": "A corridor back to stillness",
+      "filename": "Video by hypernova_ai_Dc6JRUvjTaL.mp4",
+      "seconds": 32,
+      "view": "quad",
+      "transition": "fade-out"
+    },
+    {
+      "index": 28,
+      "chapter": "VII · Return to the source",
+      "title": "The identity comes home",
+      "filename": "version1_insta_flyby.mp4",
+      "seconds": 32,
+      "view": "triple",
+      "transition": "cross-dissolve"
+    },
+    {
+      "index": 29,
+      "chapter": "VII · Return to the source",
+      "title": "Signal becomes silence",
+      "filename": "version1_showcase_black_stage.mp4",
+      "seconds": 32,
+      "view": "single",
+      "transition": "cross-dissolve"
+    }
+  ],
+  "playlists": {
+    "version1-showcase-signal-to-spectacle-12min": {
+      "name": "VERSION1 · From Signal to Spectacle · 12 min",
+      "seconds": 720,
+      "clips": 29
+    },
+    "version1-showcase-transition-atlas": {
+      "name": "VERSION1 · Transition Atlas · all 61 effects",
+      "seconds": 256,
+      "clips": 63
+    },
+    "version1-showcase-live-input-encore": {
+      "name": "VERSION1 · Live Input Encore · connect camera first",
+      "seconds": 96,
+      "clips": 3
+    },
+    "version1-showcase-trailer": {
+      "name": "VERSION1 · Signal to Spectacle · 84-second trailer",
+      "seconds": 84,
+      "clips": 9
+    }
+  },
+  "assets": {
+    "colour": "version1_showcase_colour_and_trails.mp4",
+    "motion": "version1_showcase_recorded_motion.mp4",
+    "ripple": "version1_showcase_ripple_study.mp4",
+    "black": "version1_showcase_black_stage.mp4",
+    "bounce": "version1_showcase_bounce_source.mp4"
+  },
+  "transitionCount": 61
+}

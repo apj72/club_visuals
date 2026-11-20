@@ -2,6 +2,30 @@
 
 A browser-based tool for downloading Instagram videos and playing them back as multi-screen DJ visuals with mirror/kaleidoscope effects.
 
+## Current illustrated user guide
+
+- [Open the detailed HTML handbook](docs/user-guide/index.html) locally in a browser.
+- [Download the printable PDF](output/pdf/club-visuals-user-guide.pdf).
+- [Read all chapters on one page](docs/user-guide/complete.html).
+
+The 19 November 2026 edition covers the redesigned interface, full playlist
+composition playback, timed section editing, cue ranges, layered effects and
+logo motion, Show Builder, live inputs, capture and Mac/iPad operation. Its
+21 screenshots were captured with [Docshots](docs/user-guide/README.md#regenerate-screenshots-with-docshots)
+using isolated app data. Capture instructions are in the
+[guide-maintenance notes](docs/user-guide/README.md).
+
+## Current interface and development
+
+The complete current interface opens at **http://localhost:8008/**. Start it with
+`./start.sh` or `python3 server.py`; Show Builder and all current routes are included.
+Old `/redesign` bookmarks redirect to `/`, retaining query parameters and workspace
+fragments. The classic editor is available at `/classic` with the same shared data.
+
+`main` is the production/default GitHub branch. Create short-lived feature branches
+from it and merge changes through pull requests. The earlier `feature/ui-v2` Studio
+trial is superseded; see [release and rollback notes](docs/releases/2.0.0.md).
+
 ## Documentation for the UI redesign
 
 The current, source-checked references are:
@@ -15,11 +39,12 @@ The current, source-checked references are:
 
 - **Download** Instagram reels and posts via URL
 - **Video library** with thumbnail previews and saved drag-and-drop ordering
-- **Tiled compositions** — Single, Dual, 3x, 4x and 8x layouts in one output
+- **Tiled compositions** — Single, Dual, 3x, 4x, 6x and 8x layouts in one output
 - **iPad remote control** — private preparation preview, deliberate Mac playout, sticky live controls, ownership/handover and confirmation-free native Mac fullscreen
 - **Shared classification** — theme/colour/type tags, searchable filters, video review, vocabulary usage counts, bulk corrections and Undo
 - **32 mirror presets** — horizontal and vertical flip combinations across all screens, controlled by a slider and quick-access preset buttons
 - **Playlist / DJ mode** — build cue lists where each entry specifies a video, view mode, mirror preset, and duration (loop count or seconds). Playlists auto-advance and are saved as JSON for reuse across sessions
+- **Control hints and zoom out** — hover or focus controls for help; zoom from 0.25× to 4× in single or tiled views, with dust-faded edges over black below 1×
 - **Per-video layout presets** — save multiple named combinations of layout, playback method, panel orientation, zoom and X/Y position for each video, then use them in playlists
 - **Clean fullscreen output** — separate Mac output and private preview fullscreen
 - **Seamless looping** — near-invisible loop points
@@ -136,8 +161,11 @@ Paste an Instagram reel/post URL into the input field and click **Download**. Pr
 The Library includes search, Theme, Colour and Visual type filters. Combine
 filters to find a group such as psychedelic portraits in purple, or geometric
 3D animations. **Arrange by** groups the list by theme, colour, visual type,
-name or download date. **Clear filters** restores **My order**, preserving your
-saved drag-and-drop order. Filtered videos can still be dragged to a playlist;
+name or file modification date. **Newest first** is the default, and the chosen
+order is remembered in this browser and used throughout the video library and
+video pickers. **Clear filters** keeps that order; choose **My order** to use your
+saved drag-and-drop order. **Reload library** rescans the configured video folder
+for manually added MP4s without reloading the page. Filtered videos can still be dragged to a playlist;
 the auto-playlist selector also uses the currently visible results.
 
 The initial 167 clips have draft visual labels from thumbnail review, with
@@ -205,9 +233,118 @@ The 3D surface uses a high-resolution signed-distance outline with smoothly roun
 
 Run `node test_vfx_surface.js` for signed-distance geometry, letter counters, rotation and legacy-setting checks.
 
+### Chrome reflections on black and object choreography
+
+The 3D logo can now overlay **Camera motion extraction**, **Kaleidoscope tunnel**
+and the other video effects. VFX has separate video-effect and logo switches, an
+independent reflection-video picker, **Pulsing snake** letter motion and a
+**Fly along** viewpoint. See the [layering and animation guide](docs/vfx-layering.md).
+
+For live camera input, open **Prepare → Colour, VFX & 3D text → Camera motion…**
+and **Connect camera**. Movement can reveal the playing video on black, add a
+glow, or bend the image. Delay, sensitivity, noise rejection, fading trails and
+mirroring are adjustable. See the [camera motion guide](docs/camera-motion.md)
+for Mac output, recording and camera connection details.
+
+In **Prepare → Colour, VFX & 3D text**, choose **Chrome on black** to show the
+Version1 logo reflecting the playing video against a black backdrop. The video
+continues feeding the material. Captions are hidden in this mode, including in
+recordings. **3D Logo** returns to the ordinary logo over the video; the controller's
+**Backdrop** choice works for 3D text too.
+
+In the VFX controller, choose a **Quick look**: Chrome on black, Bouncing logo,
+Orbit + tumble, Breathing chrome, or Hidden video sweep. **Automate object and hidden
+video** enables the authored cycle. Choose a path, cycle duration and X/Y travel;
+zoom minimum/maximum animate the size, and X/Y/Z turns run together in degrees per
+cycle. Full 360° turns join smoothly. **Keep the whole object inside the screen**
+adapts its centre and size to the screen aspect. Turn it off to let a path exit.
+
+**Custom waypoints** supports dragging the numbered dots and editing each point's
+time percentage, X/Y, size and three rotation angles. Waypoint travel can use even
+speed or easing. Match first/last poses for a closed loop, or disable **Repeat cycle**
+to hold the final pose. **Play logo motion / Pause logo motion**, beside the video
+transport and in VFX, controls both authored animation and the older Auto rotate
+oscillation independently of video playback. Motion starts paused. **Restart cycle**
+starts from the beginning. Enabled automation
+replaces the older single-axis Auto rotate control; disable it to use that control.
+
+The controller's **Turn VFX off** stops the active effect without selecting another
+scene. Each editor has its own controller; reopen it after refreshing the editor.
+**Preview fullscreen** fills the screen with the private preview and restores its
+original position on exit. If native fullscreen is unavailable, it fills the
+browser window; press Escape to leave.
+
+Under **Hidden video movement**, choose a left-to-right pass, reverse pass or
+back-and-forth sweep. Video size and travel control how the finite reflection source
+enters and leaves the environment. This changes the reflections while the logo can
+remain stationary. The background stays black throughout.
+
+**Orientation** offers Horizontal, Vertical top → bottom and Vertical bottom →
+top. The letters and numbered chip stay upright in either vertical direction.
+This is the wordmark's base orientation, so it stays vertical while the
+independent rotation and choreography controls continue to work. The complete
+logo is fitted when Keep inside is enabled.
+
+To make a reusable video, press **Record a 9:16 logo video…** in VFX. Capture opens
+with **Logo render · 9:16 · 1080 × 1920**. Choose the length and press **Capture MP4**.
+The portrait preview and recording use the full output frame on black. Landscape
+1920×1080 and square 1080×1080 logo-render formats are also available. **Start logo
+motion from the beginning** resets the recorded cycle without changing the live
+look's clock. The source video loops for the render; its start time can be adjusted.
+
+Logo renders are silent H.264 MP4s at 30 fps, saved as `logo_render_…` in the
+configured source-video folder and automatically added to the library. They can
+be selected, tagged, looped and used in playlists like other videos. They use a
+higher-quality encode for reuse. Social-capture formats keep their separate clip
+folder and crop workflow. [Portrait recording example](ui-redesign/screenshots/logo-portrait-render.mp4).
+
+To keep a look, open **Playlists → Add current view**, then save the playlist. Its
+scripted logo/text cue includes backdrop and choreography. The cue editor exposes
+the same controls, and Show Builder effect windows can author or capture them as
+reusable bricks. Timeline scrubbing holds the exact authored pose; playback, Mac
+takes, clean output and recordings use the same animation clock and settings.
+
+[Demos: reflections only](ui-redesign/screenshots/chrome-reflections-only.mp4) ·
+[Logo choreography](ui-redesign/screenshots/chrome-logo-choreography.mp4) ·
+[Hidden video sweep](ui-redesign/screenshots/chrome-hidden-video-sweep.mp4).
+These examples use a generated moving light source.
+
+Restart the local server and refresh the editor, VFX controller and output after
+installing this update. `node --test test_logo_motion.cjs` checks authored paths,
+axes, timing and fitting; `python3 ui-redesign/check_chrome_motion.py` runs real GPU
+and workflow checks. Add `--demo` to render the three example videos in its temporary
+directory.
+
+### Virtual cue ranges
+
+In the redesigned **Prepare** workspace, open **Cue ranges** under **Edit this look**
+(on iPad, open **Edit controls** first). Scrub the source video and use **Set In here**
+and **Set Out here**, or enter source times in seconds. **Use range** starts at In;
+**Preview loop** repeats In → Out. Leave Out blank to use the natural video end.
+**No loop** stops at Out, and Play restarts at In. **Full video** clears the active
+range without deleting saved ranges.
+
+Give the section a name and choose **Save new range**. A video can have several
+named ranges; select one to reuse it, or use **Update selected**, **Delete selected**
+and **Reload saved ranges**. Saved ranges are shared by the Mac and iPad. They are
+metadata only: the original video is never trimmed or overwritten.
+
+**Add range to playlist…**, **Add current view**, and saved layouts retain a copy
+of the active In/Out times. The playlist inspector offers **Cue range** plus editable
+source In/Out fields. A loop-count clip measures the selected section, accounting
+for speed; a seconds-based clip keeps its requested slot duration. Timeline seeks
+and Mac output use the same range. Generated Show Builder clips have a **Source
+cue range** choice in their review inspector; Apply changes and save the edition.
+Changing or deleting a saved range does not alter existing playlist clips.
+Replacing a generated clip's source video clears its previous source-specific range.
+
+Restart the local server after updating these backend routes, then refresh the
+editor and output windows. `python3 ui-redesign/check_video_cues.py` runs the
+isolated browser rehearsal with generated temporary media.
+
 ### Save a video layout
 
-Select a video from the Library, then set its layout, Playback mode, speed (0.25×–2× in 0.25× steps), panel orientation, zoom and X/Y position in the player. The suggested name in **Saved layouts for this video** updates as you change settings; edit it if you like, then click **Save layout**. You can save several layouts for the same video, load any of them to preview it, or delete one. In the Playlist tab, select that video and choose one of its saved layouts from the **Saved layout** dropdown before adding an entry. The entry stores a copy of the values, so later changes to the saved layout do not change existing playlists.
+Select a video from the Library, then set its layout, Playback mode, speed (0.25×–2× in 0.25× steps), panel orientation, zoom and X/Y position in the player. Saved layouts also retain the active cue range. The suggested name in **Saved layouts for this video** updates as you change settings; edit it if you like, then click **Save layout**. You can save several layouts for the same video, load any of them to preview it, or delete one. In the Playlist tab, select that video and choose one of its saved layouts from the **Saved layout** dropdown before adding an entry. The entry stores a copy of the values, so later changes to the saved layout do not change existing playlists.
 
 Right-click a saved layout (or click its **⋯** button) and choose **Add to playlist…**. You can also select a video in the Library sidebar and click its **+ Playlist** button, or right-click any Library video. Select an existing playlist or create a new one, set the duration and transition, and click **Add to playlist**. The entry is saved immediately. A Library video uses its current player layout when selected, or a Single layout when it is not selected.
 
@@ -248,7 +385,7 @@ In the Playlist tab, use **+ Add current view** to insert the video currently sh
 3. Drag the green box over the area to keep. Drag its bottom-right handle to resize it while preserving the selected aspect ratio.
 4. Enter a start timecode (`mm:ss.sss`) and a length in seconds. **Use current time** copies the current playback position. If the clip runs beyond the source file, select **Playback → Loop** or **Bounce** first.
 5. To join the end smoothly to the start, choose a **Loop transition** (Crossfade, Dissolve, Wipe, Slide, Pixelate, or Circle open) and its duration. Half the transition appears at the end of the file and half at the beginning, so it continues across repeat playback. The selected timecode starts the source footage; with a transition, the exported file opens midway through the blend. **None** keeps the original capture behaviour.
-6. Click **Capture MP4**. The finished loop keeps the requested length (rounded to the nearest 30 fps frame). A transition records one extra transition length for overlapping footage; allow room for this after the source timecode, or enable Loop/Bounce. Transition lengths are 0.1–10 seconds, rounded to an even number of frames, and cannot exceed half the finished length. The result includes forward and reverse frames in Bounce mode. It is a silent H.264 MP4 in the selected clip folder; use **Download clip** to save a copy elsewhere. Instagram captures are kept out of the Club Visuals Library. Stopping early creates a shorter loop if enough footage exists for the transition; otherwise the capture reports that it was stopped too early.
+6. Click **Capture MP4**. The finished loop keeps the requested length (rounded to the nearest 30 fps frame). A transition records one extra transition length for overlapping footage; allow room for this after the source timecode, or enable Loop/Bounce. Transition lengths are 0.1–10 seconds, rounded to an even number of frames, and cannot exceed half the finished length. The result includes forward and reverse frames in Bounce mode. It is a silent H.264 MP4 in the selected clip folder; use **Download clip** to save a copy elsewhere. To reuse a social capture, choose it under **Reuse a saved capture** and click **Add to library**. This keeps the original export and adds a `capture_…` copy to the library. Newly finished captures are selected automatically; **Refresh saved captures** finds earlier exports. Stopping early creates a shorter loop if enough footage exists for the transition; otherwise the capture reports that it was stopped too early.
 
 Set the clip folder in **Settings → Instagram clip folder**. Browse to a folder and click **Use this folder**. Until you set one, clips use the regular download folder. **Use download folder** restores that behaviour.
 

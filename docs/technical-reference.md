@@ -1,3 +1,9 @@
+> Current default: `server.py` now serves the complete editor at `/`, with
+> shared routes in `editor_routes.py`, shared models in `show_library.py` and
+> `/classic` as the fallback. `ui-redesign/launch.py` remains compatible.
+> See [release 2.0.0](releases/2.0.0.md) for startup, routes and rollback.
+> Historical architecture descriptions below retain their original context.
+
 # Club Visuals: technical reference
 
 **Source review: 10 November 2026.** Implementation companion to the
@@ -20,7 +26,10 @@ and the high-definition 3D surface renderer.
 | [`output.html`](../output.html) | Clean program renderer, state replay and resident engine setup frame. |
 | [`effects.html`](../effects.html) | Colour/trails controller using its opening editor. |
 | [`vfx.html`](../vfx.html) | Scene, mirror, text/logo material and audio controls using its opening editor. |
-| [`vfx_engine.js`](../vfx_engine.js) | WebGL scene rendering, live reflections, signed-distance text/logo extrusion, material shading and quality modes. |
+| [`vfx_engine.js`](../vfx_engine.js) | WebGL scene rendering, live reflections, signed-distance text/logo extrusion, material shading, black isolation and deterministic object choreography. |
+| [`control_hints.js`](../control_hints.js) | Contextual hover/focus help for native, custom and dynamically created controls in both editors and the FX/VFX popups. |
+| [`video_framing.js`](../video_framing.js) | Shared 0.25×–4× source geometry, crop/position and cached dust-edge masks for preview, output, timelines and captures. |
+| [`logo_motion_controls.js`](../logo_motion_controls.js) | Shared backdrop, path, waypoint, zoom, multi-axis and hidden-source editor for live VFX, playlist cues and Show Builder. |
 | [`transition_engine.js`](../transition_engine.js) | Transition registry, parameter validation, easing, GPU/Canvas rendering and flash preference. |
 | [`auto_perform.js`](../auto_perform.js) | Beat/energy/section estimator and performance decisions. |
 | [`auto_audio_worklet.js`](../auto_audio_worklet.js) | AudioWorklet feature extraction for the performance engine. |
@@ -128,7 +137,7 @@ filenames/slugs must be encoded. The main implementation is in `server.py`.
 | `GET/POST/DELETE /api/playlist/<slug>` | Playlist persistence. |
 | `GET/POST /api/video-presets/<filename>` | Named per-video layouts. |
 | `DELETE /api/video/<filename>` | Delete a source and associated sidecars/presets/order entry. |
-| `POST /api/convert` | Convert browser recordings and profile-specific Instagram captures to MP4. |
+| `POST /api/convert` | Convert browser recordings and profile-specific social captures to MP4. |
 | `GET /api/state-stream` | SSE relay for live command/render events. |
 | `GET /api/state-snapshot` | Latest retained render-state commands for reconnect. |
 | `POST /api/state` | Publish render-state commands. |
@@ -194,7 +203,8 @@ and is replaced by the next successful edit.
 | Configured source directory | MP4s and optional `.info.json` sidecars | Served by Mac | No for default downloads; external directories are outside the repo |
 | `thumbnails/` | JPEG cache | Served by Mac | No |
 | `playlists/<slug>.json` | Named sequences and effect cues | Yes | No |
-| `video_presets/<filename-hash>.json` | Per-video named layout copies | Yes | No |
+| `video_presets/<filename-hash>.json` | Per-video named layout copies, including optional source ranges | Yes | No |
+| `video_cues/<filename-hash>.json` | Named source In/Out ranges and per-video revision | Yes | No |
 | `library_order.json` | Manual filename order | Yes | No |
 | `library_catalog.json` | Tags, notes, review flags and revision | Yes | No |
 | `config.json` | Source/clip paths | Yes | No |
@@ -252,8 +262,9 @@ A representative playlist entry is:
 ```
 
 The normalizers supply omitted cue/material defaults. Saved view IDs are
-`single`, `dual`, `triple`, `quad`, `octo`; UI names are Single, Dual, 3x, 4x,
-8x. Playback modes are 0 Once, 1 Loop and 2 Bounce. Transition IDs, scene IDs
+`single`, `dual`, `triple`, `quad`, `octo`, `six`; UI names are Single, Dual, 3x, 4x,
+8x and 6x. Six panels use three columns and two rows, sampling mirror configuration
+positions `[0,1,2,4,5,6]`. Numeric mode 5 is appended to preserve the existing 8x mode 4. Playback modes are 0 Once, 1 Loop and 2 Bounce. Transition IDs, scene IDs
 and object/cue field names should remain stable through a UI redesign.
 
 ## Running and checking the app
@@ -303,3 +314,171 @@ effect chains/weighted collections, offline predictive audio analysis, editable
 performance replay, arbitrary 3D mesh import and independent output routing.
 See the planning documents for proposals, and the product reference for known
 current mismatches such as clean-output Bounce and editor-local recording.
+
+## Facebook capture addition (14 November 2026)
+
+The shared V1 capture format table now includes `facebook_4x5` (1080×1350),
+`facebook_16x9` (1920×1080), `facebook_9x16` (1080×1920) and `facebook_1x1`
+(1080×1080). `X-Recording-Profile` comes from the selected table entry; legacy
+Instagram values are unchanged. All seven profiles use the existing loop
+conversion helper and silent, fast-start H.264 MP4 encoding at 30 fps. Facebook
+exports share `instagram_clip_dir` and are excluded from source discovery;
+`resolve_video_path` checks the clip folder for both export prefixes. The new
+UI consumes this same table and endpoint. No playout composition changes are
+required. See [format choices and research](facebook-capture.md).
+
+## Current-IP connection endpoint
+
+`GET /api/ipad-links` discovers current LAN IPv4 interfaces on demand and
+returns each adapter's address and supported UI URLs using the actual listener
+port. `network_links.py` uses macOS interface/route information, excludes
+loopback, tunnel and inactive interfaces, and prioritises the default LAN
+interface. No external discovery API is contacted. A route-based UDP socket
+fallback sends no application data. `remote_control.js` fetches with
+`cache: no-store`, renders a copyable link and refreshes explicitly.
+`RedesignHandler.supports_redesign` adds the new UI route; the V1 server
+never advertises a nonexistent redesigned route.
+
+The HTTP listener remains IPv4. This change does not configure IPv6, change
+network settings, authenticate controllers or bypass Wi-Fi client isolation.
+
+## Instagram cookie-source correction
+
+`instagram_auth.py` exports locally from Chrome by default or explicitly from
+Brave, with an optional profile directory. `instagram_cookie_browser` and
+`instagram_cookie_profile` are stored in config; passwords are never persisted.
+Exports use a private temporary file, validate an unexpired Instagram session,
+retain Instagram cookies only, then atomically replace the cache. Failed or
+timed-out imports preserve the previous cache. `/api/cookie-status` describes
+local cache validity and always reports `verified: false`; no live login check
+is implied. Both interfaces use the original shared connection controls.
+The old UI inferred authentication from file age and the old exporter always
+used Brave, which made Chrome browser changes ineffective for cookie refresh.
+
+### Source cue ranges
+
+`source_range.js` validates source-range snapshots, resolves clamped media bounds
+and maps show-local seconds through speed/loop/bounce into source time. An optional
+playlist/layout `sourceRange: {start, end}` uses original-media seconds; `end: null`
+means the natural end. Omission retains whole-video behavior. Source ranges do not
+change effect/layout cue times, which remain local to the playlist clip.
+
+`video_cues.py` stores named ranges in `video_cues/` with atomic replacement and
+per-video revision checks. `GET /api/video-cues/<filename>` returns `{video,
+revision, ranges}`; POST takes `{expectedRevision, ranges}`. Each item has `id`,
+`name` and `sourceRange`. Stale writes return 409, malformed ranges 400, and missing
+or unsafe source filenames 404. `video_cues.js` provides the shared editor and range
+choices for Playlists and Show Builder. Existing playlist/layout snapshots remain
+independent of this store. The `loadVideo` and `setSourceRange` output messages
+carry the same range; remote preview takes include it in the layout snapshot.
+
+### Reflective object choreography
+
+Logo/text settings optionally include `backdrop: "black"` and an `animation` object.
+Omitted settings retain legacy video overlays and single-axis rotation. The engine
+normalizes paths (still/bounce/orbit/figure8/sweep/custom), cycle duration, repeat,
+travel, zoom, three axis turns, screen fitting and hidden-source transform. Custom
+points carry normalized `at`, `x`, `y`, `scale`, `rotX`, `rotY`, `rotZ`; up to 32 are
+stored per path. Screen fitting uses the rotated object's projected bounds and
+keeps large zooms in front of the camera. Source translation/scale are applied after
+environment wrapping, with black outside the finite reflection source.
+
+The original source texture remains populated in black mode. The final framebuffer
+is cleared to opaque black before drawing the object, including before its surface
+asset has loaded. Captions are suppressed in the isolated DOM/composite paths.
+`animationClock: {time, startedAt, playing}` is runtime state; authored cues retain
+animation settings and initialize their clock from cue-local elapsed seconds.
+Timeline previews freeze it and scheduled cues derive it from their local time.
+Private preview motion starts paused; its separate transport controls both legacy
+oscillation and authored choreography through the same clock. Mac takes preserve
+the visible phase and paused/running state; output SSE snapshots retain the epoch.
+Playlist and Show Builder metadata embed the authored settings, with no new store.
+
+VFX controllers attach to an explicit editor identity and renderer/UI version.
+Their Off action changes only `enabled`; scene selection and main-button highlights
+come from the editor's authoritative state. An unavailable choreography widget
+leaves basic controls operational. Preview fullscreen temporarily moves the stage
+and transport outside the redesigned layout, restoring both on exit. A rejected
+native fullscreen request retains a visible viewport-sized preview with Escape exit.
+
+### Logo orientation and reusable render capture
+
+Logo/text settings and scripted cues carry `orientation`: `horizontal` (legacy
+default), `top-bottom` or `bottom-top`. The renderer multiplies the authored rotation
+by a local quarter-turn; neither rotation angles nor custom keyframes are rewritten.
+For the bundled logo, the source mask counter-turns each letter and the complete
+chip before that quarter-turn, producing an upright vertical stack in both reading
+directions. These masks are cached per orientation and shared by the preview,
+output and capture renderer. Text objects retain their whole-word rotation.
+Vertical objects use projected-bounds fitting even with choreography disabled,
+unless Keep inside is explicitly off.
+
+`VfxEngine.render(source, state, size)` optionally separates the output dimensions
+from the live reflection texture. Framebuffer sizes, shader resolution, fitting and
+scissor bounds all use the output dimensions. The logo-render preview and recorder
+share this renderer, with black backdrop and no crop/caption overlays. Capture's
+restart option supplies a separate recording clock, leaving the live clock intact.
+
+`logo_render_9x16`, `logo_render_16x9` and `logo_render_1x1` conversion profiles use
+the existing 30 fps loop normalization and silent H.264/fast-start output, at CRF 18.
+They are written to the source-video directory and remain included in `/api/videos`;
+social profiles retain their separate destination and exclusion rules. After a
+logo capture finishes, the shared library is reloaded. Output filenames include a
+nanosecond suffix to allow repeated renders without collisions.
+
+`GET /api/captures` lists saved social MP4s from the configured clip folder.
+`POST /api/library/import-capture` accepts `{filename}` and atomically creates a
+`capture_<filename>` copy in the source folder. `capture_library.py` rejects unsafe
+names and symlinks, preserves the export, reuses identical imports and returns 409
+instead of overwriting conflicting files. Both interfaces refresh their shared
+library after an explicit import; social captures are never included implicitly.
+
+### Camera motion extraction
+
+`camera_motion.js` samples a video-only browser `MediaStream` at up to 20 Hz into
+a 160×90 buffer. Its bounded delayed-frame history compares RGB differences,
+optionally removes the median shared lighting change, rejects noise and decays a
+movement trail. Mirroring is applied before analysis. Explicit Connect/Disconnect
+own camera access; permission errors, ended tracks, canceled connection attempts
+and page closure release tracks. Sampling uses a timer independently of preview RAF.
+
+Scene 7 consumes a separate GPU movement texture for video-on-black, additive glow
+or local distortion. `setVfx` carries normalized look settings and a runtime camera
+source ID. Camera masks use transient `cameraMotionFrame` messages at up to 10 Hz,
+with bounded image size, ordered source-local sequence numbers and no snapshot
+retention. Existing host/output SSE connections deliver them; receivers accept only
+their explicitly selected source and expire stale input after 1.2 seconds. Private
+camera packets carry no playout commands or camera colour frames. A take/playlist
+transfer binds the source ID while saved camera cues retain only authored settings.
+
+Social capture draws its WebGL effect in the same callback as compositing, avoiding
+reads of a cleared default framebuffer after browser paint. Motion masks are not
+stored as metadata; ordinary recording explicitly saves the rendered video result.
+
+### Independent object layer, reflection source and logo camera
+
+`logoEnabled` and `baseEnabled` separate the object pass from the selected video
+effect. Omitted flags preserve legacy scene-6 logo-only cues. The background pass
+supports passthrough scene `-1`; the object pass composites afterwards, and black
+isolation clears the framebuffer only for a logo-only composition. Background
+feedback history does not contain the overlaid object.
+
+`reflection_video.js` owns a silent looping reflection video per editor/output.
+`logo3d.reflectionSource` stores `{filename, speed}`; a runtime `reflectionClock`
+retains media phase/playing state across Mac takes and output snapshots. A separate
+GPU texture supplies the object environment without replacing the background source.
+An unavailable selected source stays black in that texture and reports a status.
+
+The SDF texture's alpha channel labels consecutive letter/chip spans. `snake`
+settings drive per-letter local-Z offsets, pulse amplitude and travel direction;
+ray bounds, normals and screen fitting include the displaced depth. `fly` settings
+move a local viewpoint along the wordmark, with viewing distance and direction.
+Fly rendering bypasses automatic screen fitting and uses a full-frame scissor.
+Both animations derive time from the existing independent logo clock.
+
+Combined cues store an authored `logoLayer` alongside their background effect.
+Primary logo/text cues retain their existing schema, with optional `snake`, `fly`
+and `reflectionSource`. Cue normalization strips runtime clocks. Preview seeks,
+playlist/preview restoration, Mac transfer, Show Builder snapshots and recording
+carry the same composition. Reusable logo exports explicitly render only the
+object on black; social/playlist recording retains the full composition.

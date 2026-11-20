@@ -1,0 +1,7 @@
+{
+  "guideDesktop": true,
+  "guideMobile": true,
+  "bounceSourceBoundary": true,
+  "delayedBounceFramesClosed": true,
+  "errors": []
+}
