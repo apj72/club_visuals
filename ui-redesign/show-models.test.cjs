@@ -216,3 +216,13 @@ test('six-panel layouts and oblique logo flights survive compilation and media r
   assert.deepEqual(next.entries.map(e=>[e.view,e.cues]),show.entries.map(e=>[e.view,e.cues]));
   assert.equal(C.views.indexOf('octo'),4);
 });
+
+test('colour-only timed changes inherit layout without forcing a panel count', () => {
+  const library = C.defaults();
+  const step = library.bricks[0].steps[0];
+  step.view = 'quad';
+  step.layoutCues = [{at: 4, effects: {hueRotate: 180}, trailsEnabled: true}];
+  assert.doesNotThrow(() => C.validate(library));
+  step.layoutCues[0].view = 'invalid';
+  assert.throws(() => C.validate(library), /supported layout/);
+});

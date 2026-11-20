@@ -369,13 +369,13 @@ setInterval(pollMacStatus, 1500);
   const refresh = document.getElementById('ipadLinkRefresh');
   const networks = document.getElementById('ipadLinkNetworks');
   const otherUi = document.getElementById('ipadLinkOtherUi');
-  let active = null, mode = location.pathname.startsWith('/redesign') ? 'redesign' : 'v1';
+  let active = null, mode = location.pathname.startsWith('/classic') ? 'v1' : 'default';
   let request = 0;
   function showLink() {
-    field.value = active?.urls[mode] || active?.urls.v1 || '';
+    field.value = active?.urls[mode] || active?.urls.default || active?.urls.v1 || '';
     copy.disabled = !field.value;
-    otherUi.hidden = !active?.urls.redesign;
-    otherUi.textContent = mode === 'redesign' ? 'Use original V1' : 'Use redesigned UI';
+    otherUi.hidden = !active?.urls.default || !active?.urls.v1;
+    otherUi.textContent = mode === 'default' ? 'Use classic interface' : 'Use current interface';
   }
   async function generate() {
     const run = ++request;
@@ -411,7 +411,7 @@ setInterval(pollMacStatus, 1500);
   }
   trigger.addEventListener('click', () => { if (!dialog.open) dialog.showModal(); generate(); });
   refresh.addEventListener('click', generate);
-  otherUi.addEventListener('click', () => { mode = mode === 'redesign' ? 'v1' : 'redesign'; showLink(); });
+  otherUi.addEventListener('click', () => { mode = mode === 'default' ? 'v1' : 'default'; showLink(); });
   field.addEventListener('click', () => field.select());
   copy.addEventListener('click', async () => {
     const url = field.value;

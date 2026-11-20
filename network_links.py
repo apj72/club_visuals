@@ -74,8 +74,8 @@ def ipad_links(port, redesigned=False):
     addresses = []
     for entry in local_addresses():
         origin = f"http://{entry['address']}:{int(port)}"
-        urls = {'v1': origin + '/?remote=1'}
+        urls = {'default': origin + '/?remote=1', 'v1': origin + '/classic?remote=1'}
         if redesigned:
-            urls['redesign'] = origin + '/redesign?remote=1'
+            urls['redesign'] = urls['default']
         addresses.append({**entry, 'urls': urls})
     return {'addresses': addresses, 'port': int(port)}

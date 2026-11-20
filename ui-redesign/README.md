@@ -1,3 +1,25 @@
+# Current default interface
+
+The interface in this directory is now the normal application at
+**http://localhost:8008/**. Start it with `./start.sh` or `python3 server.py`.
+`ui-redesign/launch.py` remains a compatibility launcher for the same server.
+
+- Current editor: `/` (Playlists: `/#playlist`, Show Builder: `/#builder`).
+- Classic editor: `/classic`, sharing the same media, playlists and metadata.
+- Existing `/redesign` URLs redirect to `/`, keeping parameters and workspace fragments.
+- `/redesign/*.js` and CSS remain supported asset URLs.
+- `/?host=1` remains the unskinned resident Mac playback/audio engine.
+- `main` contains the current development; the older V2 Studio trial is superseded.
+
+See the [current handbook](../docs/user-guide/index.html) and
+[release/rollback instructions](../docs/releases/2.0.0.md).
+
+The implementation journal below records earlier development stages. Its old
+launch commands, homepage locations and limitations describe those stages and
+are superseded by the current handbook and the routes above.
+
+---
+
 # Redesigned UI over V1
 
 Branch: `ui/redesign-v1-skin`.

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import argparse
 import json
 import hashlib
 import math
@@ -19,6 +20,7 @@ from video_cues import VideoCues, CueConflict, validate_range
 from network_links import ipad_links
 import instagram_auth
 from capture_library import list_captures, import_capture
+from editor_routes import EditorRoutesMixin
 
 
 class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
@@ -209,7 +211,7 @@ def cookie_status():
     return result
 
 
-class Handler(BaseHTTPRequestHandler):
+class BaseHandler(BaseHTTPRequestHandler):
     def log_message(self, fmt, *args):
         print(f"  {args[0]}")
 
@@ -238,7 +240,7 @@ class Handler(BaseHTTPRequestHandler):
             self.serve_javascript('tag_manager.js')
         elif self.path == '/api/ipad-links':
             self.send_json_response(ipad_links(self.server.server_address[1],
-                                               redesigned=getattr(self, 'supports_redesign', False)))
+                                               redesigned=True))
         elif self.path == "/api/remote-status":
             with STATE_LOCK:
                 status = {role: {**value, "connected": time.time() - value["seen"] < 6}
@@ -1244,16 +1246,35 @@ class Handler(BaseHTTPRequestHandler):
         self.wfile.write(body)
 
 
-if __name__ == "__main__":
+class Handler(EditorRoutesMixin, BaseHandler):
+    """Complete application, including the default editor and Show Builder."""
+
+
+def main(handler=Handler):
+    global MAC_OUTPUT
+    parser = argparse.ArgumentParser(description='Club Visuals application server')
+    parser.add_argument('--port', type=int, default=PORT)
+    parser.add_argument('--bind', default='0.0.0.0')
+    args = parser.parse_args()
+    MAC_OUTPUT = MacOutput(BASE_DIR, args.port)
     if not CONFIG_FILE.exists():
-        save_config({"download_dir": "./downloads"})
+        save_config({'download_dir': './downloads'})
     get_download_dir().mkdir(parents=True, exist_ok=True)
-    THUMB_DIR.mkdir(exist_ok=True)
-    PLAYLIST_DIR.mkdir(exist_ok=True)
-    VIDEO_PRESET_DIR.mkdir(exist_ok=True)
-    server = ThreadedHTTPServer(("0.0.0.0", PORT), Handler)
-    print(f"Club Visuals running at http://localhost:{PORT}")
+    for directory in (THUMB_DIR, PLAYLIST_DIR, VIDEO_PRESET_DIR):
+        directory.mkdir(exist_ok=True)
     try:
-        server.serve_forever()
+        httpd = ThreadedHTTPServer((args.bind, args.port), handler)
+    except OSError as error:
+        parser.exit(1, f'Cannot listen on {args.port}: {error}\nStop the existing server before launching this one.\n')
+    print(f'Club Visuals: http://localhost:{args.port}/', flush=True)
+    print(f'Classic UI:   http://localhost:{args.port}/classic', flush=True)
+    try:
+        httpd.serve_forever()
     except KeyboardInterrupt:
-        print("\nStopped.")
+        pass
+    finally:
+        httpd.server_close()
+
+
+if __name__ == '__main__':
+    main()

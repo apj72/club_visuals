@@ -1,4 +1,4 @@
-"""Verify that the optional launcher preserves V1 pages and asset contracts."""
+"""Verify the default editor, compatibility links and resident-engine contracts."""
 import importlib.util
 from pathlib import Path
 import threading
@@ -13,9 +13,10 @@ spec.loader.exec_module(launcher)
 
 
 class PresentationRoutes(unittest.TestCase):
+    handler = launcher.v1.Handler
     @classmethod
     def setUpClass(cls):
-        cls.httpd = launcher.v1.ThreadedHTTPServer(('127.0.0.1', 0), launcher.RedesignHandler)
+        cls.httpd = launcher.v1.ThreadedHTTPServer(('127.0.0.1', 0), cls.handler)
         cls.origin = f'http://127.0.0.1:{cls.httpd.server_port}'
         threading.Thread(target=cls.httpd.serve_forever, daemon=True).start()
 
@@ -28,9 +29,9 @@ class PresentationRoutes(unittest.TestCase):
         with urllib.request.urlopen(self.origin + path, timeout=5) as response:
             return response.read()
 
-    def test_original_entry_points_are_byte_identical(self):
+    def test_classic_and_resident_engine_are_byte_identical(self):
         expected = launcher.v1.HTML_FILE.read_bytes()
-        for path in ('/', '/index.html', '/?host=1', '/index.html?remote=1'):
+        for path in ('/classic', '/classic/?remote=1', '/?host=1', '/index.html?host=1'):
             with self.subTest(path=path):
                 self.assertEqual(self.get(path), expected)
 
@@ -40,7 +41,7 @@ class PresentationRoutes(unittest.TestCase):
                 self.assertEqual(self.get(path), (launcher.ROOT / source).read_bytes())
 
     def test_redesign_is_original_document_with_only_presentation_injection(self):
-        variant = self.get('/redesign?remote=1').decode()
+        variant = self.get('/?remote=1').decode()
         variant = variant.replace('<html lang="en" class="redesign">', '<html lang="en">', 1)
         variant = variant.replace('<link id="redesignStyles" rel="stylesheet" href="/redesign/style.css">', '', 1)
         variant = variant.replace('<script src="/redesign/presentation.js"></script>', '', 1)
@@ -64,7 +65,27 @@ class PresentationRoutes(unittest.TestCase):
         with patch('network_links.local_addresses', return_value=[{'interface':'en0', 'address':'192.168.2.10'}]):
             result = json.loads(self.get('/api/ipad-links'))
         self.assertEqual(result['addresses'][0]['urls']['redesign'],
-                         f'http://192.168.2.10:{self.httpd.server_port}/redesign?remote=1')
+                         f'http://192.168.2.10:{self.httpd.server_port}/?remote=1')
+
+    def test_all_editor_entry_points_are_the_same(self):
+        expected = self.get('/')
+        for path in ('/index.html', '/?remote=1', '/redesign', '/redesign/'):
+            with self.subTest(path=path):
+                self.assertEqual(self.get(path), expected)
+
+    def test_old_bookmarks_redirect_and_preserve_parameters(self):
+        # urllib follows redirects, so inspect the actual final URL as well.
+        with urllib.request.urlopen(self.origin + '/redesign/?remote=1&view=quad') as response:
+            self.assertEqual(response.geturl(), self.origin + '/?remote=1&view=quad')
+            self.assertIn(b'class="redesign"', response.read())
+
+    def test_startup_identity_marks_complete_application(self):
+        self.assertEqual(json.loads(self.get('/api/app-info')),
+                         {'interface': 'default', 'version': '2.0.0'})
+
+
+class CompatibilityLauncherRoutes(PresentationRoutes):
+    handler = launcher.RedesignHandler
 
 
 if __name__ == '__main__':

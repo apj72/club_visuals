@@ -352,9 +352,20 @@
                 "filename": "Video by test23rdmay_DesPIdUsisv.mp4",
                 "speed": 1
               }
+            },
+            {
+              "at": 6,
+              "seconds": 26,
+              "effect": "scene-0",
+              "intensity": 0.95,
+              "feedback": 0.16
             }
           ],
-          "layoutCues": []
+          "layoutCues": [],
+          "sourceRange": {
+            "start": 0,
+            "end": 16
+          }
         },
         {
           "slot": "09 · Time folds back",
@@ -411,7 +422,106 @@
             "reduceFlashes": true
           },
           "effects": [],
-          "layoutCues": []
+          "layoutCues": [
+            {
+              "at": 4,
+              "effects": {
+                "hueRotate": 0,
+                "saturate": 250,
+                "contrast": 130,
+                "brightness": 110,
+                "blur": 0,
+                "invert": 0,
+                "sepia": 0
+              },
+              "trailsEnabled": true,
+              "trailAmount": 0.13
+            },
+            {
+              "at": 8,
+              "effects": {
+                "hueRotate": 180,
+                "saturate": 300,
+                "contrast": 150,
+                "brightness": 120,
+                "blur": 0,
+                "invert": 0,
+                "sepia": 0
+              },
+              "trailsEnabled": true,
+              "trailAmount": 0.13
+            },
+            {
+              "at": 12,
+              "effects": {
+                "hueRotate": 120,
+                "saturate": 150,
+                "contrast": 140,
+                "brightness": 130,
+                "blur": 0,
+                "invert": 0,
+                "sepia": 0
+              },
+              "trailsEnabled": true,
+              "trailAmount": 0.13
+            },
+            {
+              "at": 16,
+              "effects": {
+                "hueRotate": 30,
+                "saturate": 60,
+                "contrast": 110,
+                "brightness": 90,
+                "blur": 0.5,
+                "invert": 0,
+                "sepia": 60
+              },
+              "trailsEnabled": false,
+              "trailAmount": 0.13
+            },
+            {
+              "at": 20,
+              "effects": {
+                "hueRotate": 0,
+                "saturate": 100,
+                "contrast": 100,
+                "brightness": 100,
+                "blur": 0,
+                "invert": 100,
+                "sepia": 0
+              },
+              "trailsEnabled": false,
+              "trailAmount": 0.13
+            },
+            {
+              "at": 24,
+              "effects": {
+                "hueRotate": 0,
+                "saturate": 80,
+                "contrast": 80,
+                "brightness": 120,
+                "blur": 2,
+                "invert": 0,
+                "sepia": 20
+              },
+              "trailsEnabled": true,
+              "trailAmount": 0.13
+            },
+            {
+              "at": 28,
+              "effects": {
+                "hueRotate": 0,
+                "saturate": 100,
+                "contrast": 100,
+                "brightness": 100,
+                "blur": 0,
+                "invert": 0,
+                "sepia": 0
+              },
+              "trailsEnabled": true,
+              "trailAmount": 0.06
+            }
+          ]
         }
       ]
     },

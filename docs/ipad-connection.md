@@ -1,3 +1,17 @@
+# Current iPad connection
+
+Start `./start.sh` on the Mac. Use **Connect iPad** to generate a current LAN link.
+The current interface is `http://<Mac-LAN-IP>:8008/?remote=1`; the classic editor is
+`http://<Mac-LAN-IP>:8008/classic?remote=1`. Older `/redesign` links redirect to the
+current homepage. Both `python3 server.py` and the former redesign launcher now
+serve the complete application. Save edits, restart the server and refresh both
+devices after updating. See the [current Mac/iPad guide](user-guide/mac-ipad.html).
+
+The notes below are the historical introduction of this feature; their separate
+launcher and homepage instructions are superseded by the above.
+
+---
+
 # Connecting an iPad to the Mac
 
 Click **Connect iPad** in the top control bar of either interface on the Mac.

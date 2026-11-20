@@ -115,7 +115,7 @@
       }
     },
     {
-      "video": "version1_showcase_colour_and_trails.mp4",
+      "video": "Video by riebschlager_DfD77Dvxfgk.mp4",
       "view": "single",
       "preset": 1,
       "loopMode": 1,
@@ -141,7 +141,22 @@
           "effect": "off"
         }
       ],
-      "layoutCues": [],
+      "layoutCues": [
+        {
+          "at": 4,
+          "effects": {
+            "hueRotate": 0,
+            "saturate": 250,
+            "contrast": 130,
+            "brightness": 110,
+            "blur": 0,
+            "invert": 0,
+            "sepia": 0
+          },
+          "trailsEnabled": true,
+          "trailAmount": 0.13
+        }
+      ],
       "build": {
         "sectionId": "showcase-matter",
         "brickId": "showcase-matter",

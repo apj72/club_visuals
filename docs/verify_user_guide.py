@@ -53,7 +53,7 @@ with sync_playwright() as p:
     page.evaluate('''(root)=>{for(const a of document.querySelectorAll('a[href]')){
       const u=new URL(a.href);if(u.protocol!=='file:')continue;
       if(u.pathname.endsWith('/complete.html')&&u.hash){a.setAttribute('href',u.hash);continue;}
-      if(decodeURIComponent(u.pathname).startsWith(root+'/'))a.href='https://github.com/apj72/club_visuals/blob/ui/redesign-v1-skin/'+decodeURIComponent(u.pathname).slice(root.length+1)+u.hash;
+      if(decodeURIComponent(u.pathname).startsWith(root+'/'))a.href='https://github.com/apj72/club_visuals/blob/main/'+decodeURIComponent(u.pathname).slice(root.length+1)+u.hash;
     }}''',str(ROOT))
     OUT.parent.mkdir(parents=True,exist_ok=True)
     page.pdf(path=str(OUT),format='A4',print_background=True,prefer_css_page_size=True,display_header_footer=True,header_template='<span></span>',footer_template='<div style="font:9px Arial;width:100%;padding:0 14mm;color:#637169;display:flex;justify-content:space-between"><span>CLUB VISUALS - USER GUIDE - 19 NOVEMBER 2026</span><span><span class="pageNumber"></span> / <span class="totalPages"></span></span></div>')

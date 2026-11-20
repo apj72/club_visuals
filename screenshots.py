@@ -11,7 +11,7 @@ MEDIA={m['index']:m['filename'] for m in json.loads((ROOT/'showcase/source-media
 SLUG='version1-showcase-signal-to-spectacle-12min'
 def js(code):return {'js':code}
 def seek(time):return js(f'async()=>{{await setTimelinePlayhead({time},{{transitionPreview:false}});video.pause();}}')
-def shot(name,caption,url='/redesign#playlist',actions=None,**extra):
+def shot(name,caption,url='/#playlist',actions=None,**extra):
     return {'name':name,'caption':caption,'url':url,'actions':actions or [],**extra}
 
 config={
@@ -32,7 +32,7 @@ config={
 }
 
 VFX_SETUP=f'''async()=>{{
- const f=document.createElement('iframe');f.style.cssText='position:absolute;left:-20000px;width:1400px;height:1000px';f.src='/redesign';document.body.append(f);
+ const f=document.createElement('iframe');f.style.cssText='position:absolute;left:-20000px;width:1400px;height:1000px';f.src='/';document.body.append(f);
  await new Promise(r=>f.onload=r);window.docEditor=f.contentWindow;
  for(let n=0;n<100&&docEditor.video?.readyState<2;n++)await new Promise(r=>setTimeout(r,50));
  docEditor.showVideo({json.dumps(MEDIA[24])},{{type:'cut'}},null,{{paused:true}});
@@ -42,10 +42,10 @@ VFX_SETUP=f'''async()=>{{
 }}'''
 
 scenarios=[
- shot('01-prepare','Prepare: private preview, video library and edit controls.','/redesign#prepare',[seek(65),js("document.querySelector('.rd-nav [data-screen=prepare]').click()")]),
- shot('02-library','Library: newest-first sorting, combined filters and tags.','/redesign#library'),
- shot('03-classification','Classification manager with shared tag vocabulary.','/redesign#library',[js('openTagManager()')]),
- shot('04-cue-ranges','Prepare: named source In/Out ranges and loop preview.','/redesign#prepare',[seek(13),js("document.querySelector('.rd-nav [data-screen=prepare]').click();document.getElementById('videoCuePanel').closest('details').open=true"),{'scroll':'#videoCuePanel'}]),
+ shot('01-prepare','Prepare: private preview, video library and edit controls.','/#prepare',[seek(65),js("document.querySelector('.rd-nav [data-screen=prepare]').click()")]),
+ shot('02-library','Library: newest-first sorting, combined filters and tags.','/#library'),
+ shot('03-classification','Classification manager with shared tag vocabulary.','/#library',[js('openTagManager()')]),
+ shot('04-cue-ranges','Prepare: named source In/Out ranges and loop preview.','/#prepare',[seek(13),js("document.querySelector('.rd-nav [data-screen=prepare]').click();document.getElementById('videoCuePanel').closest('details').open=true"),{'scroll':'#videoCuePanel'}]),
  shot('05-playlist','Playlist composition, green layout sections and purple effect cues.',actions=[seek(25)]),
  shot('06-section-edit','Edit the 24-second section without changing the earlier composition.',actions=[seek(24.01),js("document.querySelector('.right-col').scrollTop=90")]),
  shot('07-clip-settings','Whole-clip playback, source ranges, framing and colour controls.',actions=[seek(65),js("document.querySelector('.right-col').scrollTop=540")]),
@@ -55,12 +55,12 @@ scenarios=[
  shot('11-logo-appearance','3D logo orientation, material and reflection controls.','/vfx',[js(VFX_SETUP),{'scroll':'#logo3dControls'}],viewport=[760,1100]),
  shot('12-logo-motion','Path, zoom and multi-axis animation controls.','/vfx',[js(VFX_SETUP),{'screenshot':'#logoMotionControls'}],viewport=[760,1100]),
  shot('13-snake-flight','Letter wave and oblique fly-along controls.','/vfx',[js(VFX_SETUP),js("""document.querySelector('[data-dynamics="snake.enabled"]').closest('details').open=true;document.querySelector('[data-dynamics="fly.enabled"]').closest('details').open=true;document.querySelector('[data-dynamics="snake.enabled"]').closest('details').scrollIntoView()""")],viewport=[760,1100]),
- shot('14-show-builder','Show Builder: reusable model sections and brick shelf.','/redesign#builder'),
- shot('15-generated-show','Resume a saved edition and review its complete journey.','/redesign#builder',[{'click':'[data-builder-tab=generated]'},js(f"document.getElementById('sbResume').value={json.dumps(SLUG)};document.getElementById('sbResume').dispatchEvent(new Event('change',{{bubbles:true}}));[...document.querySelectorAll('button')].find(b=>b.textContent==='Load edition').click()"),{'wait':700}]),
- shot('16-auto-perform','Audio-reactive Auto Perform, kept offline for this documentation capture.','/redesign#auto'),
- shot('17-social-capture','Capture: choose output format, source time, length and loop transition.','/redesign#capture',[seek(65),js("document.querySelector('.rd-nav [data-screen=capture]').click()")]),
- shot('18-logo-render','Reusable 9:16 logo capture and restart-cycle choice.','/redesign#prepare',[seek(260),js("document.querySelector('.rd-nav [data-screen=prepare]').click();setVfxLogo3d({orientation:'top-bottom'});prepareLogoRender()"),{'wait':500}]),
- shot('19-settings','Settings: mirror preferences, folders and Instagram connection.','/redesign#settings'),
+ shot('14-show-builder','Show Builder: reusable model sections and brick shelf.','/#builder'),
+ shot('15-generated-show','Resume a saved edition and review its complete journey.','/#builder',[{'click':'[data-builder-tab=generated]'},js(f"document.getElementById('sbResume').value={json.dumps(SLUG)};document.getElementById('sbResume').dispatchEvent(new Event('change',{{bubbles:true}}));[...document.querySelectorAll('button')].find(b=>b.textContent==='Load edition').click()"),{'wait':700}]),
+ shot('16-auto-perform','Audio-reactive Auto Perform, kept offline for this documentation capture.','/#auto'),
+ shot('17-social-capture','Capture: choose output format, source time, length and loop transition.','/#capture',[seek(65),js("document.querySelector('.rd-nav [data-screen=capture]').click()")]),
+ shot('18-logo-render','Reusable 9:16 logo capture and restart-cycle choice.','/#prepare',[seek(260),js("document.querySelector('.rd-nav [data-screen=prepare]').click();setVfxLogo3d({orientation:'top-bottom'});prepareLogoRender()"),{'wait':500}]),
+ shot('19-settings','Settings: mirror preferences, folders and Instagram connection.','/#settings'),
  shot('20-ipad-playlist','The same composition editor at iPad size.',actions=[seek(25)],viewport=[834,1194]),
  shot('21-transition-audition','Transition audition using actual neighbouring library videos.',actions=[seek(65),js("openTransitionAudition('cross-dissolve',2)"),{'wait':600},{'screenshot':'#transitionAuditionDialog'}]),
 ]

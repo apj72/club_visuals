@@ -1,3 +1,9 @@
+> Current default: `server.py` now serves the complete editor at `/`, with
+> shared routes in `editor_routes.py`, shared models in `show_library.py` and
+> `/classic` as the fallback. `ui-redesign/launch.py` remains compatible.
+> See [release 2.0.0](releases/2.0.0.md) for startup, routes and rollback.
+> Historical architecture descriptions below retain their original context.
+
 # Club Visuals: technical reference
 
 **Source review: 10 November 2026.** Implementation companion to the

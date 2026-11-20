@@ -63,3 +63,16 @@ After the performance, use a short screen walkthrough to cover capabilities that
 Four playlists, a reusable Show Builder model/profile with seven chapter bricks, the preview MP4 and five additional source assets: colour/trails, ripple impulses, recorded movement extraction, an optimised bounce source and a black ending plate. The three effect studies were rendered with the application’s own processing. The movement study uses existing recorded footage through `CameraMotion.Processor`; it is not a physical-camera recording.
 
 Existing playlists, media and models are preserved. Staged playlist JSON, the recipe additions, manifest, rendering scripts and verification reports are kept in this directory. The directed edition contains the exact pinned edit; generating a fresh recipe variation can change source choices and does not inherit the edition’s manually pinned source-range trims.
+
+## Editable source correction
+
+The original ripple and colour/trails study MP4s contain a rendered three-panel
+layout. They remain useful as finished renders, but selecting Single displays
+that entire baked image. The directed playlist and recipe now use the original
+footage, with ripple VFX and timed colour/trails applied live. Layout controls
+therefore determine the actual panel count, and individual effects stay editable.
+
+`python3 showcase/editable_studies.py --install` repairs references in saved
+playlists, preserving their duration/layout choices and backing up changed JSON
+under `.runtime/before-editable-studies-*`. Original MP4s are not modified.
+Save any open editor draft before repair; reopen the playlist afterwards.

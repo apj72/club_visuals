@@ -32,13 +32,13 @@ network_links.local_addresses=lambda:addresses
 with sync_playwright() as p:
  browser=p.chromium.launch(headless=True,executable_path='/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',args=['--no-sandbox'])
  errors=[]
- for path,mode in [('/', 'v1'),('/redesign','redesign')]:
+ for path,mode in [('/classic', 'v1'),('/','default')]:
   page=browser.new_page(viewport={'width':1440,'height':1050})
   page.on('pageerror',lambda error:errors.append(str(error)))
   page.goto(f'http://127.0.0.1:{httpd.server_port}'+path,wait_until='domcontentloaded')
   addresses[:]=[{'interface':'en0','address':'192.168.2.10'},{'interface':'en1','address':'10.0.0.8'}]
   page.locator('#ipadConnect').click()
-  suffix='/redesign?remote=1' if mode=='redesign' else '/?remote=1'
+  suffix='/?remote=1' if mode=='default' else '/classic?remote=1'
   page.wait_for_function('(url)=>document.getElementById("ipadConnectionUrl").value===url',arg=f'http://192.168.2.10:{httpd.server_port}'+suffix)
   assert page.locator('#ipadLinkNetworks button').count()==2
   page.locator('#ipadLinkNetworks button').last.click()
@@ -49,7 +49,7 @@ with sync_playwright() as p:
   page.locator('#ipadLinkRefresh').click()
   page.wait_for_function('(url)=>document.getElementById("ipadConnectionUrl").value===url',arg=f'http://172.16.5.9:{httpd.server_port}'+suffix)
   page.locator('#ipadLinkOtherUi').click()
-  assert page.locator('#ipadConnectionUrl').input_value().endswith('/?remote=1' if mode=='redesign' else '/redesign?remote=1')
+  assert page.locator('#ipadConnectionUrl').input_value().endswith('/classic?remote=1' if mode=='default' else '/?remote=1')
   page.locator('#ipadLinkClose').click()
   page.evaluate('updateControlOwnership({remote:true,owner:"other-ipad"})')
   assert page.locator('#macEditorControls').evaluate('(e)=>e.inert')

@@ -53,9 +53,9 @@ class NetworkLinkTests(unittest.TestCase):
     def test_links_use_actual_server_port_and_supported_ui(self):
         with patch.object(network_links, 'local_addresses', return_value=[{'interface':'en0', 'address':'192.168.2.10'}]):
             original = network_links.ipad_links(8123)
-            self.assertEqual(original['addresses'][0]['urls'], {'v1':'http://192.168.2.10:8123/?remote=1'})
+            self.assertEqual(original['addresses'][0]['urls'], {'default':'http://192.168.2.10:8123/?remote=1', 'v1':'http://192.168.2.10:8123/classic?remote=1'})
             redesigned = network_links.ipad_links(8123, redesigned=True)
-            self.assertEqual(redesigned['addresses'][0]['urls']['redesign'], 'http://192.168.2.10:8123/redesign?remote=1')
+            self.assertEqual(redesigned['addresses'][0]['urls']['redesign'], 'http://192.168.2.10:8123/?remote=1')
 
     def test_http_refresh_follows_changed_ip_address(self):
         httpd = server.ThreadedHTTPServer(('127.0.0.1', 0), server.Handler)
@@ -65,7 +65,7 @@ class NetworkLinkTests(unittest.TestCase):
                 with patch.object(network_links, 'local_addresses', return_value=[{'interface':'en0', 'address':address}]):
                     with urllib.request.urlopen(f'http://127.0.0.1:{httpd.server_port}/api/ipad-links') as response:
                         data = json.load(response)
-                    self.assertEqual(data['addresses'][0]['urls']['v1'], f'http://{address}:{httpd.server_port}/?remote=1')
+                    self.assertEqual(data['addresses'][0]['urls']['default'], f'http://{address}:{httpd.server_port}/?remote=1')
         finally:
             httpd.shutdown(); httpd.server_close()
 

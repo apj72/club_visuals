@@ -44,7 +44,7 @@
         check(Array.isArray(step.layoutCues || []) && (step.layoutCues || []).length <= 100, 'Too many layout changes.');
         const times = new Set();
         for (const cue of step.layoutCues || []) {
-          number(cue.at, .001, step.seconds - .001, 'Layout change time'); layout(cue);
+          number(cue.at, .001, step.seconds - .001, 'Layout change time'); layout({...step, ...cue});
           check(!times.has(cue.at), 'Two layout changes cannot share a time.'); times.add(cue.at);
         }
         check(Array.isArray(step.effects || []) && (step.effects || []).length <= 100, 'Too many effects.');

@@ -15,6 +15,17 @@ logo motion, Show Builder, live inputs, capture and Mac/iPad operation. Its
 using isolated app data. Capture instructions are in the
 [guide-maintenance notes](docs/user-guide/README.md).
 
+## Current interface and development
+
+The complete current interface opens at **http://localhost:8008/**. Start it with
+`./start.sh` or `python3 server.py`; Show Builder and all current routes are included.
+Old `/redesign` bookmarks redirect to `/`, retaining query parameters and workspace
+fragments. The classic editor is available at `/classic` with the same shared data.
+
+`main` is the production/default GitHub branch. Create short-lived feature branches
+from it and merge changes through pull requests. The earlier `feature/ui-v2` Studio
+trial is superseded; see [release and rollback notes](docs/releases/2.0.0.md).
+
 ## Documentation for the UI redesign
 
 The current, source-checked references are:

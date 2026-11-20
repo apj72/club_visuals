@@ -32,9 +32,11 @@ shot(b,'Four corners',6,16,'quad',15,{transition:transition('cube-rotation',1.2)
 shot(b,'Six windows',13,16,'six',27,{transition:transition('radial-slice',1.2),layoutCues:[layout(8,'six',31,1.15,.1,0)]});
 shot(b,'The room opens',24,32,'octo',27,{transition:transition('kaleidoscope-morph',2),layoutCues:[layout(8,'octo',31,1.2),layout(16,'six',7,1),layout(24,'octo',27,1.35)],effects:[fx(8,20,'scene-4',{intensity:.48,feedback:.18})]});
 const c=chapter('matter','III · Light becomes matter','Ripples, time reversal and colour turn patterns into something tactile.',96,'purple');
-shot(c,'A surface remembers', 'ripple',32,'triple',7,{speed:.5,transition:transition('fluid-ripple',2.2),effects:[objectFx(0,6,text('MATTER',{scale:.3,reflectionSource:reflection(17),skin:'pearl'}))]});
+shot(c,'A surface remembers',17,32,'triple',7,{speed:.5,sourceRange:{start:0,end:16},transition:transition('fluid-ripple',2.2),effects:[objectFx(0,6,text('MATTER',{scale:.3,reflectionSource:reflection(17),skin:'pearl'})),fx(6,26,'scene-0',{intensity:.95,feedback:.16})]});
 shot(c,'Time folds back','bounce',32,'single',1,{loopMode:2,speed:1,sourceRange:{start:.8,end:2.8},zoom:.65,transition:transition('liquid-chrome',2.5),effects:[fx(12,16,'mirror',{text:'FORM',scale:.55,depth:.65,spin:.18,edge:.6})]});
-shot(c,'Colour acquires a memory','colour',32,'single',1,{transition:transition('ink-in-water',2),effects:[]});
+const neutralColour={hueRotate:0,saturate:100,contrast:100,brightness:100,blur:0,invert:0,sepia:0};
+const colourPhases=[neutralColour,{...neutralColour,saturate:250,contrast:130,brightness:110},{...neutralColour,hueRotate:180,saturate:300,contrast:150,brightness:120},{...neutralColour,hueRotate:120,saturate:150,contrast:140,brightness:130},{...neutralColour,hueRotate:30,saturate:60,contrast:110,brightness:90,blur:.5,sepia:60},{...neutralColour,invert:100},{...neutralColour,saturate:80,contrast:80,brightness:120,blur:2,sepia:20},neutralColour];
+shot(c,'Colour acquires a memory',7,32,'single',1,{transition:transition('ink-in-water',2),effects:[],layoutCues:colourPhases.slice(1).map((effects,i)=>({at:(i+1)*4,effects,trailsEnabled:[1,2,3,6,7].includes(i+1),trailAmount:i===6?.06:.13}))});
 const d=chapter('identity','IV · The identity awakens','The film moves inside the Version1 mark. Materials, choreography, depth and flight become the main characters.',128,'sage');
 shot(d,'The material learns to shine',24,32,'single',1,{transition:transition('smoke-dissolve',2),effects:['chrome','brushed','gold','original'].map((skin,i)=>objectFx(i*8,8,logo(skin,{motion:.2,scale:.46}))) });
 const paths=['bounce','orbit','figure8','custom'],finishes=['mirror','rose-gold','pearl','iridescent'];
