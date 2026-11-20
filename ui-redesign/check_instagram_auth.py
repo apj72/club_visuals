@@ -43,7 +43,9 @@ with sync_playwright() as p:
   page=browser.new_page(viewport={'width':1440,'height':1050})
   page.on('pageerror',lambda error:errors.append(str(error)))
   page.goto(f'http://127.0.0.1:{httpd.server_port}'+path,wait_until='domcontentloaded')
-  if path=='/':page.locator('#instagramDownloadAccess').click()
+  if path=='/':
+   page.locator('.rd-nav [data-screen=library]').click()
+   page.locator('#instagramDownloadAccess').click()
   page.locator('#connBtn').click()
   assert page.locator('#cookieBrowser').input_value()=='chrome'
   page.locator('#cookieProfile').fill('Profile 1')

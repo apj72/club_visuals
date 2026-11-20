@@ -40,7 +40,9 @@ function showOutputControls(expanded, remember = false) {
   document.getElementById('remoteControlsPanel').hidden = isMacEngine || !expanded;
   document.getElementById('remoteIntro').hidden = !isMacEngine && !expanded;
   remoteControlsToggle.setAttribute('aria-expanded', String(expanded));
-  remoteControlsToggle.textContent = expanded ? 'Hide output controls ▴' : 'Output controls ▾';
+  remoteControlsToggle.textContent = remoteBar.classList.contains('rd-header-output')
+    ? (expanded ? '▴' : '▾') : (expanded ? 'Hide output controls ▴' : 'Output controls ▾');
+  remoteControlsToggle.setAttribute('aria-label', expanded ? 'Hide output controls' : 'Show output controls');
   if (remember) try { localStorage.setItem('clubVisuals.outputControlsExpanded', String(expanded)); } catch {}
 }
 let outputControlsExpanded = false;
@@ -95,6 +97,7 @@ function updateControlOwnership(state) {
   document.getElementById('controlBanner').hidden = !(locked || isRemoteController);
   document.getElementById('controlNotice').textContent = locked ? 'Being remote controlled by iPad'
     : controllerAllowed ? 'You have remote control of the Mac' : state?.remote ? 'Another iPad has control' : 'Control has returned to the Mac';
+  remoteControlsToggle.title = 'Show or hide Mac output controls. ' + document.getElementById('controlNotice').textContent + '. Editing remains private until you send it.';
   document.getElementById('controlReturn').hidden = !locked;
   document.getElementById('controlClaim').hidden = !isRemoteController || controllerAllowed;
   document.getElementById('controlOpen').hidden = !locked;

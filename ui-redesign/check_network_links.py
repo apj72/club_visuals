@@ -55,6 +55,7 @@ with sync_playwright() as p:
   page.evaluate('updateControlOwnership({remote:true,owner:"other-ipad"})')
   assert page.locator('#macEditorControls').evaluate('(e)=>e.inert')
   assert page.locator('#ipadConnect').is_enabled()
+  if page.locator('#remoteControlsToggle').get_attribute('aria-expanded')=='false':page.locator('#remoteControlsToggle').click()
   page.locator('#ipadConnect').click()
   assert page.locator('#ipadConnectDialog').evaluate('(e)=>e.open')
   page.locator('#ipadLinkClose').click()
@@ -62,11 +63,13 @@ with sync_playwright() as p:
   for width,height in [(1440,1050),(1194,834),(834,1194),(390,844)]:
    page.set_viewport_size({'width':width,'height':height})
    assert not page.evaluate('document.documentElement.scrollWidth > innerWidth'),(path,width)
+   if page.locator('#remoteControlsToggle').get_attribute('aria-expanded')=='false':page.locator('#remoteControlsToggle').click()
    page.locator('#ipadConnect').click()
    page.wait_for_function('document.getElementById("ipadConnectionUrl").value.length>0')
    page.screenshot(path=str(report/f'connection-{mode}-{width}.png'))
    page.locator('#ipadLinkClose').click()
   addresses.clear()
+  if page.locator('#remoteControlsToggle').get_attribute('aria-expanded')=='false':page.locator('#remoteControlsToggle').click()
   page.locator('#ipadConnect').click()
   page.wait_for_function('document.getElementById("ipadLinkStatus").textContent.includes("No usable")')
   assert page.locator('#ipadConnectionUrl').input_value()==''

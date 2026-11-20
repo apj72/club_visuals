@@ -11,7 +11,7 @@ A browser-based tool for downloading Instagram videos and playing them back as m
 The 20 November 2026 edition covers the redesigned interface, full playlist
 composition playback, timed section editing, cue ranges, layered effects and
 logo motion, Show Builder, live inputs, capture and Mac/iPad operation. Its
-22 screenshots were captured with [Docshots](docs/user-guide/README.md#regenerate-screenshots-with-docshots)
+23 screenshots were captured with [Docshots](docs/user-guide/README.md#regenerate-screenshots-with-docshots)
 using isolated app data. Capture instructions are in the
 [guide-maintenance notes](docs/user-guide/README.md).
 
@@ -39,9 +39,12 @@ The current, source-checked references are:
 
 In **Library**, click **Download from Instagram** to reveal the URL field and
 Instagram browser connection controls. Settings also links to this panel.
-The **Private preview** toolbar starts rolled up: **Output controls** expands
-its Mac/iPad actions and **Hide output controls** rolls them up again. The
-browser remembers this choice; connection and handover status remain visible.
+The **Private preview** section sits at the top right. Its arrow opens Mac/iPad
+actions over the workspace; click outside or press Escape to close them.
+Connection and handover status remain reachable there. The workspace heading,
+compact search, order, reload and tag controls share the library row beneath the
+viewer (or in the playlist’s library column). The Classic interface button is
+removed; the compatibility URL remains available.
 
 Use **3D Text** for reflective lettering. Image smear, Prism fracture and
 Mirror sculpture are retained for existing saved cues, but are no longer

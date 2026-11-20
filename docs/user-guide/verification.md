@@ -1,7 +1,7 @@
 # Handbook verification - 20 November 2026
 
 - 44-page PDF, 12 HTML chapters and a combined HTML edition.
-- 22 screenshots captured with the requested local Docshots project.
+- 23 screenshots captured with the requested local Docshots project.
 - All local guide links, anchors and images checked.
 - Guide rendered at desktop (1440px) and mobile (390px) widths without page overflow.
 - Every PDF page rendered with Poppler and reviewed; representative text/table/image pages inspected at full size.
@@ -12,3 +12,5 @@
 Capture uses temporary playlists, models, catalogue, preview cache and thumbnail storage. Live playout and physical camera/audio inputs were not started. Runtime videos, private configuration and user data retain their existing Git exclusions.
 
 The compact toolbar, Library Instagram form, current/legacy effect choices and upright vertical GPU text passed isolated browser checks. Both reading directions, all three typefaces and long handles were checked.
+
+The viewer-first header/library layout passed desktop, iPad and phone checks, including popover anchoring, Escape/outside dismissal, handover, empty libraries and search/sort/reload continuity. At 1440×1050, the preparation preview height increased from about 411px to 562px without reducing the library panel.

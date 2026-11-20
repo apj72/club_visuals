@@ -3,7 +3,7 @@ html.redesign {overflow:hidden;height:100%}
 .redesign {color-scheme:dark;--rd-bg:#101413;--rd-panel:#191f1d;--rd-line:#35403a;--rd-text:#edf2eb;--rd-muted:#a4b2a8;--rd-accent:#b8ee70}
 .redesign body {background:var(--rd-bg);color:var(--rd-text);padding:0;font:14px/1.45 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;height:100dvh;min-height:0;overflow:hidden;display:flex;flex-direction:column}
 .redesign button,.redesign input,.redesign select,.redesign textarea {font:inherit;accent-color:var(--rd-accent)}
-.redesign button,.redesign .rd-fallback {min-height:40px;border:1px solid var(--rd-line);border-radius:7px;background:#232c27;color:var(--rd-text);padding:8px 12px;cursor:pointer}
+.redesign button {min-height:40px;border:1px solid var(--rd-line);border-radius:7px;background:#232c27;color:var(--rd-text);padding:8px 12px;cursor:pointer}
 .redesign button:hover:not(:disabled) {background:#303d32;border-color:#71866a}
 .redesign button:disabled {opacity:.4;cursor:not-allowed}
 .redesign button:focus-visible,.redesign a:focus-visible,.redesign summary:focus-visible,.redesign input:focus-visible {outline:2px solid var(--rd-accent);outline-offset:3px}
@@ -12,10 +12,10 @@ html.redesign {overflow:hidden;height:100%}
 .redesign .rd-header {display:flex;align-items:center;gap:26px;padding:8px 24px;padding-top:max(8px,env(safe-area-inset-top));border-bottom:1px solid var(--rd-line);flex-shrink:0;min-height:66px}
 .redesign .rd-brand {letter-spacing:2px;white-space:nowrap;font-size:13px}
 .redesign .rd-nav {display:flex;gap:4px;flex:1;overflow-x:auto;scrollbar-width:thin}
+.redesign .rd-nav {min-width:0}
 .redesign .rd-nav button {border:0;background:transparent;white-space:nowrap;color:var(--rd-muted);border-radius:0;border-bottom:2px solid transparent}
 .redesign .rd-nav button.selected {color:var(--rd-text);border-bottom-color:var(--rd-accent)}
 .redesign .rd-nav[inert] {opacity:.35}
-.redesign .rd-fallback {font-size:12px;text-decoration:none;white-space:nowrap}
 .redesign .remote-bar {position:relative;top:auto;margin:0;padding:10px 24px;border:0;border-bottom:1px solid var(--rd-line);border-radius:0;background:#1b241e;box-shadow:none;flex-shrink:0;display:grid;grid-template-columns:1fr auto;gap:3px 16px;font:12px/1.4 system-ui}
 .redesign .remote-bar>span {grid-column:1;color:var(--rd-muted)}
 .redesign .remote-actions {grid-column:1 / -1;grid-row:auto;display:flex;align-items:center;gap:6px;margin:0;flex-wrap:wrap}
@@ -33,9 +33,10 @@ html.redesign {overflow:hidden;height:100%}
 .redesign #remoteMessage:not(:empty),.redesign .control-banner {grid-column:1 / -1}
 .redesign .control-banner {background:#293c29;padding:6px 10px}
 .redesign #macEditorControls {flex:1;min-height:0;display:flex;flex-direction:column;padding:14px 24px 18px;gap:12px;overflow:hidden}
-.redesign .rd-workspace-title {flex-shrink:0;display:flex;align-items:baseline;justify-content:space-between;gap:15px}
-.redesign .rd-workspace-title h1 {font-size:21px;letter-spacing:-.4px;margin:0;text-align:left}
-.redesign .rd-workspace-title p {font-size:12px;color:var(--rd-muted)}
+.redesign .rd-workspace-title {flex-shrink:0;display:flex;align-items:center;gap:8px}
+.redesign .rd-workspace-title h1 {font-size:16px;letter-spacing:-.2px;margin:0;text-align:left;white-space:nowrap}
+.redesign .rd-workspace-title p {display:none}
+.redesign .rd-workspace-context {flex-shrink:0}
 .redesign .main-layout,.redesign body.playlist-mode .main-layout {display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:18px;align-items:stretch;width:100%;max-width:none;flex:1;min-height:0;margin:0}
 .redesign .left-col,.redesign body.playlist-mode .left-col {position:static;min-height:0;display:flex;flex-direction:column;gap:12px;overflow:hidden;min-width:0}
 .redesign .right-col,.redesign body.playlist-mode .right-col {width:auto;max-height:none;min-height:0;overflow:auto;background:var(--rd-panel);border:1px solid var(--rd-line);border-radius:10px;padding:16px;scrollbar-width:thin}
@@ -52,7 +53,7 @@ html.redesign {overflow:hidden;height:100%}
 .redesign .library-item .name {white-space:normal;overflow-wrap:anywhere}
 .redesign .library-item.active,.redesign .library-item.selected {border-color:var(--rd-accent);background:#263621}
 .redesign .catalog-tools {display:flex;align-items:center;flex-wrap:wrap;gap:8px;background:transparent;border:0;border-bottom:1px solid var(--rd-line);padding:0 0 9px;margin-bottom:10px}
-.redesign #catalogSearch {flex:1 1 180px;width:auto;min-height:40px}
+.redesign #catalogSearch {flex:0 1 220px;width:220px;max-width:100%;min-height:36px}
 .redesign #catalogManage {width:auto!important;margin:0!important;font-size:12px}
 .redesign .catalog-filters {display:flex;flex-wrap:wrap;gap:6px;width:100%;margin:0}
 .redesign .catalog-filters label {flex:1 1 100px;font-size:11px}
@@ -67,7 +68,7 @@ html.redesign {overflow:hidden;height:100%}
 .redesign .zoom-wrap.visible {display:flex;flex-wrap:wrap;gap:8px;white-space:normal}
 .redesign .zoom-wrap input {width:100%;flex:1 1 150px}
 .redesign .slider-wrap,.redesign #presetContainer {display:none!important}
-.redesign .rd-pattern-grid {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;width:100%;max-height:320px;overflow:auto;padding:3px}
+.redesign .rd-pattern-grid {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-auto-rows:max-content;align-content:start;gap:7px;width:100%;max-height:320px;overflow:auto;padding:3px}
 .redesign .rd-pattern {display:flex;align-items:center;flex-direction:column;justify-content:center;gap:5px;font-size:11px;padding:8px;min-width:0}
 .redesign .rd-pattern.selected {border-color:var(--rd-accent);color:var(--rd-accent);background:#283821}
 .redesign .rd-pattern-icon {display:grid;grid-template-columns:repeat(var(--columns),1fr);gap:3px;width:100%;max-width:132px;min-width:72px}
@@ -90,8 +91,8 @@ html.redesign {overflow:hidden;height:100%}
 .redesign .header {max-width:none;margin:20px 0 0;border-top:1px solid var(--rd-line);padding-top:20px}
 .redesign .header h1 {text-align:left;font-size:16px;margin-bottom:10px}
 .redesign .header h1::after {content:' · Instagram import';font-weight:400;color:var(--rd-muted)}
-.redesign .rd-instagram-download {display:none;margin-bottom:14px;border:1px solid var(--rd-line);border-radius:8px;padding:12px;background:#141d17}
-.redesign body[data-workspace=library] .rd-instagram-download {display:block}
+.redesign .rd-instagram-download {display:none;width:100%;margin-bottom:8px;border:1px solid var(--rd-line);border-radius:8px;padding:12px;background:#141d17}
+.redesign body[data-workspace=library] .rd-instagram-download[open] {display:block}
 .redesign .rd-instagram-download .header {margin:0;padding:12px 0 0;border:0}
 .redesign .rd-instagram-download .header h1::after {content:none}
 .redesign .auto-perform-panel {display:none;max-width:none;margin:0;overflow:auto;flex:1;min-height:0;background:var(--rd-panel);border-color:var(--rd-line);padding:20px}
@@ -171,7 +172,6 @@ html.redesign {overflow:hidden;height:100%}
 @media(max-width:1150px){
  .redesign .rd-header {gap:12px;padding-inline:14px;flex-wrap:wrap}
  .redesign .rd-nav {order:3;flex-basis:100%}
- .redesign .rd-fallback {margin-left:auto}
  .redesign .remote-bar {padding:8px 14px;grid-template-columns:1fr}
  .redesign .remote-actions {grid-column:1;grid-row:auto;flex-wrap:wrap}
  .redesign .remote-bar>span {display:none}
@@ -187,7 +187,6 @@ html.redesign {overflow:hidden;height:100%}
 @media(max-width:700px){
  .redesign .rd-header {min-height:0;padding:6px 10px;gap:3px}
  .redesign .rd-brand {font-size:11px}
- .redesign .rd-fallback {min-height:32px;padding:6px 9px;font-size:11px}
  .redesign .rd-nav button {font-size:12px;padding-inline:10px}
  .redesign .remote-actions {gap:4px;display:grid;grid-template-columns:repeat(3,1fr)}
  .redesign .remote-actions button {font-size:11px;padding:7px;min-height:40px}
@@ -213,6 +212,54 @@ html.redesign {overflow:hidden;height:100%}
 .redesign .rd-library-toolbar {display:flex;align-items:center;flex-wrap:wrap;gap:8px 14px;flex-shrink:0;font-size:12px}
 .redesign .rd-library-toolbar label {display:flex;align-items:center;gap:8px;white-space:nowrap}
 .redesign .rd-library-toolbar p {margin:0;color:var(--rd-muted);font-size:12px}
+.redesign .catalog-tools>.rd-library-toolbar {width:100%;gap:6px 10px}
+.redesign .rd-library-toolbar button {min-height:36px;padding:7px 9px;font-size:12px}
+.redesign .rd-library-toolbar .rd-workspace-title h1 {font-size:14px}
+.redesign .rd-library-toolbar #catalogSearch {min-width:140px}
+.redesign .rd-library-toolbar #catalogManage {min-height:36px!important;margin:0!important;padding:7px 9px}
+.redesign .rd-library-toolbar #libraryReloadStatus:empty,
+.redesign #libraryOrderStatus:empty,.redesign #libraryPlaylistStatus:empty {display:none}
+.redesign .rd-library-toolbar #libraryReloadStatus:not(:empty) {flex-basis:100%}
+.redesign .catalog-filters label {display:flex;align-items:center;gap:5px;flex:1 1 145px}
+.redesign .catalog-filters label>.rd-select-trigger {flex:1;width:auto;min-width:0;min-height:36px;padding:7px}
+.redesign body.playlist-mode .catalog-filters label {display:grid}
+.redesign .playlist-library-col>h2,.redesign .playlist-library-col>p {display:none}
+.redesign body.playlist-mode .rd-library-toolbar {display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+.redesign body.playlist-mode .rd-library-toolbar .rd-workspace-title,
+.redesign body.playlist-mode .rd-library-toolbar #catalogSearch,
+.redesign body.playlist-mode .rd-library-toolbar label,
+.redesign body.playlist-mode .rd-library-toolbar p {grid-column:1 / -1}
+.redesign body.playlist-mode .rd-library-toolbar #catalogSearch {width:100%}
+.redesign body.playlist-mode .rd-library-toolbar label>.rd-select-trigger {flex:1;min-width:0}
+
+/* Compact, always-reachable output status; actions open over the workspace. */
+.redesign .rd-header .remote-bar {position:relative;display:block;flex:0 1 228px;min-width:155px;margin-left:auto;padding:0;background:transparent;border:0;font-size:11px;z-index:100}
+.redesign .rd-header .remote-heading {display:grid;grid-template-columns:minmax(0,1fr) 34px;gap:0 6px;padding:3px 0;cursor:pointer}
+.redesign .rd-header .remote-heading strong {font-size:9px;letter-spacing:1.1px;grid-column:1;grid-row:1}
+.redesign .rd-header #remoteConnection {grid-column:1;grid-row:2;font-size:10px;max-width:100%}
+.redesign .rd-header #remoteControlsToggle {grid-column:2;grid-row:1 / span 2;min-height:36px;padding:4px;font-size:16px}
+.redesign .rd-output-dropdown {position:absolute;top:calc(100% + 10px);right:0;width:min(520px,calc(100vw - 28px));max-height:calc(100dvh - 100px);overflow:auto;overflow-wrap:anywhere;display:grid;gap:8px;z-index:2000;overscroll-behavior:contain}
+.redesign .rd-output-popover,.redesign .rd-output-feedback {display:none;background:#1b241e;border:1px solid var(--rd-line);border-radius:9px;padding:12px;box-shadow:0 12px 35px #0009}
+.redesign .rd-output-popover:has(.remote-actions:not([hidden])) {display:block}
+.redesign .rd-output-popover #remoteIntro {display:block;color:var(--rd-muted);font-size:12px;margin-bottom:10px}
+.redesign .rd-output-popover .remote-actions {display:flex;flex-wrap:wrap;gap:6px}
+.redesign .rd-output-feedback:has(#controlReturn:not([hidden])),
+.redesign .rd-output-feedback:has(#controlClaim:not([hidden])),
+.redesign .rd-header .remote-bar:has(.remote-actions:not([hidden])) .rd-output-feedback:has(.control-banner:not([hidden])),
+.redesign .rd-output-feedback:has(#remoteMessage:not(:empty)) {display:grid;gap:8px}
+.redesign #rdDismissOutputMessage {display:none;justify-self:end;min-height:30px;padding:2px 8px}
+.redesign .rd-output-feedback:has(#remoteMessage:not(:empty)) #rdDismissOutputMessage {display:block}
+@media(max-width:1150px){
+ .redesign .rd-header .remote-bar {flex-basis:210px}
+ .redesign .rd-library-toolbar {gap:6px}
+}
+@media(max-width:700px){
+ .redesign .rd-header .remote-bar {flex:0 1 165px;min-width:145px}
+ .redesign .rd-library-toolbar .rd-workspace-title {flex-basis:100%}
+ .redesign .rd-library-toolbar #catalogSearch {flex:1 1 150px;width:150px}
+ .redesign .rd-library-toolbar label {flex:1 1 140px}
+ .redesign .rd-output-dropdown {max-height:70dvh}
+}
 
 .redesign .video-cue-panel {padding:0;margin:0;border:0}
 .redesign .video-cue-panel h3 {display:none}

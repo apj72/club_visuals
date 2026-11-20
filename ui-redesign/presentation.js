@@ -26,28 +26,66 @@
     button.dataset.screen = key;
     nav.append(button);
   }
-  const fallback = make('a', 'rd-fallback', 'Classic interface ↗');
-  fallback.href = '/classic';
-  header.append(nav, fallback);
+  header.append(nav);
+  // The existing output controls keep their handlers and ownership rules, but
+  // live in a header dropdown instead of taking a separate row above the video.
+  remoteBar.classList.add('rd-header-output');
+  const outputDropdown = make('div', 'rd-output-dropdown');
+  const outputPopover = make('section', 'rd-output-popover');
+  outputPopover.id = 'rdOutputPopover';
+  outputPopover.setAttribute('aria-label', 'Mac output controls');
+  outputPopover.append($('remoteIntro'), $('remoteControlsPanel'));
+  const outputFeedback = make('div', 'rd-output-feedback');
+  outputFeedback.append($('controlBanner'), $('remoteMessage'));
+  const dismissFeedback = action('×', () => { $('remoteMessage').textContent = ''; });
+  dismissFeedback.id = 'rdDismissOutputMessage';
+  dismissFeedback.setAttribute('aria-label', 'Dismiss output status message');
+  outputFeedback.append(dismissFeedback);
+  outputDropdown.append(outputFeedback, outputPopover);
+  remoteBar.append(outputDropdown);
+  $('remoteControlsToggle').setAttribute('aria-controls', outputPopover.id);
+  $('remoteControlsToggle').setAttribute('aria-haspopup', 'true');
+  showOutputControls($('remoteControlsToggle').getAttribute('aria-expanded') === 'true');
+  remoteBar.querySelector('.remote-heading').addEventListener('click', event => {
+    if (!event.target.closest('button')) $('remoteControlsToggle').click();
+  });
+  document.addEventListener('pointerdown', event => {
+    if (!remoteBar.contains(event.target) && $('remoteControlsToggle').getAttribute('aria-expanded') === 'true') showOutputControls(false, true);
+  });
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && $('remoteControlsToggle').getAttribute('aria-expanded') === 'true' && !document.querySelector('dialog[open]')) {
+      showOutputControls(false, true); $('remoteControlsToggle').focus(); event.preventDefault();
+    }
+  });
+  header.append(remoteBar);
   document.body.prepend(header);
+  const contextHome = make('div', 'rd-workspace-context');
   const title = make('div', 'rd-workspace-title');
   const heading = make('h1', '', 'Prepare a look');
   const description = make('p', '', 'Audition privately, save a layout, add it to a playlist, or send it to the Mac.');
   title.append(heading, description);
-  $('macEditorControls').prepend(title);
+  contextHome.append(title);
+  $('macEditorControls').prepend(contextHome);
   const libraryToolbar = make('div', 'rd-library-toolbar');
+  libraryToolbar.setAttribute('aria-label', 'Library search and controls');
   const order = $('catalogSort');
   const orderLabel = order.closest('label');
   orderLabel.firstChild.textContent = 'Library order';
   const reload = document.querySelector('[data-reload-library]');
   const reloadStatus = $('libraryReloadStatus');
-  libraryToolbar.append(orderLabel, reload, reloadStatus);
+  const search = $('catalogSearch');
+  const manage = $('catalogManage');
+  manage.textContent = 'Manage tags';
+  manage.setAttribute('aria-label', 'Manage classification tags');
+  manage.title = 'Review videos and manage classification tags.';
+  libraryToolbar.append(title, search, orderLabel, reload, manage, reloadStatus);
+  document.querySelector('.catalog-tools').prepend(libraryToolbar);
   const downloadImport = document.querySelector('.header');
   const instagram = make('details', 'rd-instagram-download');
   instagram.id = 'instagramDownloads';
   instagram.append(make('summary', '', 'Download from Instagram'), downloadImport);
   downloadImport.querySelector('h1').textContent = 'Instagram downloads';
-  $('libraryTab').prepend(instagram);
+  libraryToolbar.after(instagram);
   function openInstagramDownload() {
     navigate('library');
     instagram.open = true;
@@ -58,7 +96,6 @@
   downloadAccess.id = 'instagramDownloadAccess';
   downloadAccess.title = 'Open Library’s Instagram downloader. Paste a reel or post URL and download it into your library.';
   libraryToolbar.append(downloadAccess);
-  title.after(libraryToolbar);
 
 
   const left = document.querySelector('.left-col');
@@ -385,7 +422,13 @@
   function displayScreen(key) {
     screen = key;
     document.body.dataset.workspace = key;
-    heading.textContent = titles[key][0]; description.textContent = titles[key][1];
+    const libraryContext = ['prepare','library','playlist'].includes(key);
+    contextHome.hidden = libraryContext;
+    (libraryContext ? libraryToolbar : contextHome).prepend(title);
+    heading.textContent = key === 'playlist' ? 'Library' : titles[key][0];
+    heading.title = key === 'playlist' ? 'Drag library videos onto the playlist timeline.' : titles[key][1];
+    description.textContent = titles[key][1];
+    downloadAccess.hidden = key !== 'library';
     nav.querySelectorAll('button').forEach(button => {
       button.classList.toggle('selected', button.dataset.screen === key);
       if (button.dataset.screen === key) button.setAttribute('aria-current', 'page'); else button.removeAttribute('aria-current');
