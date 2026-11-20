@@ -224,6 +224,8 @@ class BaseHandler(BaseHTTPRequestHandler):
             self.serve_effects()
         elif self.path == "/vfx":
             self.serve_vfx_controller()
+        elif self.path == "/effect_catalog.js":
+            self.serve_javascript("effect_catalog.js")
         elif self.path == "/vfx_engine.js":
             self.serve_vfx_engine()
         elif self.path == "/transition_engine.js":

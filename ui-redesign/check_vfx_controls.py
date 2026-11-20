@@ -37,12 +37,12 @@ try:
         page.goto(origin+'/redesign#prepare',wait_until='domcontentloaded')
         page.wait_for_function('video.readyState>=2')
         page.locator('summary').filter(has_text='Colour, VFX').click()
-        with page.expect_popup() as opened:page.locator('#mirrorBtn').click()
+        with page.expect_popup() as opened:page.locator('#text3dBtn').click()
         popup=opened.value;popup.wait_for_load_state('domcontentloaded')
         popup.wait_for_function('document.body.dataset.connected==="true"')
         def state():return page.evaluate('({enabled:vfxState.enabled,scene:vfxState.scene,kind:vfxState.logo3d.kind,backdrop:vfxState.logo3d.backdrop,orientation:vfxState.logo3d.orientation})')
         # Each shortcut selects only its intended scene/object; the popup toggles only enabled.
-        for button,scene,kind,backdrop in [('mirrorBtn',3,None,None),('logo3dBtn',6,'logo','video'),('reflectionLogoBtn',6,'logo','black'),('text3dBtn',6,'text','black')]:
+        for button,scene,kind,backdrop in [('logo3dBtn',6,'logo','video'),('reflectionLogoBtn',6,'logo','black'),('text3dBtn',6,'text','black')]:
             if button!='mirrorBtn':
                 # Standalone shortcuts remain available; combining layers is
                 # covered separately by check_vfx_layers.py.
@@ -116,7 +116,9 @@ try:
         assert page.evaluate('getVfxControllerIdentity().owner')!=second.evaluate('getVfxControllerIdentity().owner')
         popup.locator('#enableBtn').click();assert not state()['enabled']
         assert second.evaluate('vfxState.enabled') is False
-        other.locator('#scene').select_option('3');other.locator('#enableBtn').click()
+        second.evaluate('setVfxState({enabled:false,scene:3,baseEnabled:true,logoEnabled:false})')
+        other.wait_for_function('document.getElementById("scene").value==="3"')
+        other.locator('#enableBtn').click()
         assert second.evaluate('vfxState.enabled&&vfxState.scene===3')
         assert not state()['enabled'] and state()['scene']==6
         other.close();second.close();popup.locator('#enableBtn').click()

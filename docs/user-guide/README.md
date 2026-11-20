@@ -1,6 +1,6 @@
 # Current Club Visuals handbook
 
-Edition: **19 November 2026**. Twelve chapters describe the working redesigned
+Edition: **20 November 2026**. Twelve chapters describe the working redesigned
 interface. Open `index.html` in a browser, or use `complete.html` for the combined
 edition. The printable result is `output/pdf/club-visuals-user-guide.pdf` at the
 repository root. Historical screenshots in `docs/screenshots/` are not the

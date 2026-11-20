@@ -16,7 +16,7 @@ class EditorRoutesMixin:
         path = urllib.parse.urlsplit(self.path).path
         query = urllib.parse.parse_qs(urllib.parse.urlsplit(self.path).query)
         if path == '/api/app-info':
-            self.send_json_response({'interface': 'default', 'version': '2.0.0'})
+            self.send_json_response({'interface': 'default', 'version': '2.0.1'})
         elif path in ('/redesign', '/redesign/'):
             query_string = urllib.parse.urlsplit(self.path).query
             self.send_response(302)

@@ -1,56 +1,63 @@
 {
   "tool": "docshots",
-  "captured": "2026-11-19",
+  "captured": "2026-11-20",
   "isolated": true,
   "screenshots": [
+    {
+      "name": "22-instagram-download",
+      "caption": "Library: Instagram download and connection controls.",
+      "width": 1440,
+      "height": 1050,
+      "bytes": 394766
+    },
     {
       "name": "01-prepare",
       "caption": "Prepare: private preview, video library and edit controls.",
       "width": 1440,
       "height": 1050,
-      "bytes": 671950
+      "bytes": 723197
     },
     {
       "name": "02-library",
       "caption": "Library: newest-first sorting, combined filters and tags.",
       "width": 1440,
       "height": 1050,
-      "bytes": 548220
+      "bytes": 550476
     },
     {
       "name": "03-classification",
       "caption": "Classification manager with shared tag vocabulary.",
       "width": 1440,
       "height": 1050,
-      "bytes": 182240
+      "bytes": 183277
     },
     {
       "name": "04-cue-ranges",
       "caption": "Prepare: named source In/Out ranges and loop preview.",
       "width": 1440,
       "height": 1050,
-      "bytes": 244826
+      "bytes": 249282
     },
     {
       "name": "05-playlist",
       "caption": "Playlist composition, green layout sections and purple effect cues.",
       "width": 1440,
       "height": 1050,
-      "bytes": 355871
+      "bytes": 354988
     },
     {
       "name": "06-section-edit",
       "caption": "Edit the 24-second section without changing the earlier composition.",
       "width": 1440,
       "height": 1050,
-      "bytes": 423105
+      "bytes": 424388
     },
     {
       "name": "07-clip-settings",
       "caption": "Whole-clip playback, source ranges, framing and colour controls.",
       "width": 1440,
       "height": 1050,
-      "bytes": 633260
+      "bytes": 658533
     },
     {
       "name": "08-effect-cue",
@@ -64,7 +71,7 @@
       "caption": "Independent video-effect and reflective-logo layers.",
       "width": 760,
       "height": 1000,
-      "bytes": 82436
+      "bytes": 82194
     },
     {
       "name": "10-camera",
@@ -99,49 +106,49 @@
       "caption": "Show Builder: reusable model sections and brick shelf.",
       "width": 1440,
       "height": 1050,
-      "bytes": 170774
+      "bytes": 165454
     },
     {
       "name": "15-generated-show",
       "caption": "Resume a saved edition and review its complete journey.",
       "width": 1440,
       "height": 1050,
-      "bytes": 170179
+      "bytes": 161291
     },
     {
       "name": "16-auto-perform",
       "caption": "Audio-reactive Auto Perform, kept offline for this documentation capture.",
       "width": 1440,
       "height": 1050,
-      "bytes": 85664
+      "bytes": 75963
     },
     {
       "name": "17-social-capture",
       "caption": "Capture: choose output format, source time, length and loop transition.",
       "width": 1440,
       "height": 1050,
-      "bytes": 851692
+      "bytes": 842887
     },
     {
       "name": "18-logo-render",
       "caption": "Reusable 9:16 logo capture and restart-cycle choice.",
       "width": 1440,
       "height": 1050,
-      "bytes": 162605
+      "bytes": 155609
     },
     {
       "name": "19-settings",
-      "caption": "Settings: mirror preferences, folders and Instagram connection.",
+      "caption": "Settings: mirror preferences, folders and Instagram download shortcut.",
       "width": 1440,
       "height": 1050,
-      "bytes": 106759
+      "bytes": 97056
     },
     {
       "name": "20-ipad-playlist",
       "caption": "The same composition editor at iPad size.",
       "width": 834,
       "height": 1194,
-      "bytes": 151511
+      "bytes": 163286
     },
     {
       "name": "21-transition-audition",

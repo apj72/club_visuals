@@ -381,3 +381,9 @@ h1,h2,h3,[id]{scroll-margin-top:9rem}
 @media print{.toc-grid{display:block;margin:4mm 0}.toc-card{display:block;border:0;box-shadow:none;padding:2mm 0;break-inside:avoid}.toc-card h2{font-size:11pt;margin:0 0 1mm;padding:0;border:0}.toc-card p{font-size:9pt;line-height:1.35;margin:0}}
 
 @media print{.toc-card p{display:none}.toc-card{padding:1.5mm 0}}
+
+/* Keep the closing instructions with these overview screenshots in print. */
+@media print{
+ .guide-figure img[src$="03-classification.png"],
+ .guide-figure img[src$="16-auto-perform.png"]{max-height:108mm}
+}

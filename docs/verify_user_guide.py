@@ -56,7 +56,7 @@ with sync_playwright() as p:
       if(decodeURIComponent(u.pathname).startsWith(root+'/'))a.href='https://github.com/apj72/club_visuals/blob/main/'+decodeURIComponent(u.pathname).slice(root.length+1)+u.hash;
     }}''',str(ROOT))
     OUT.parent.mkdir(parents=True,exist_ok=True)
-    page.pdf(path=str(OUT),format='A4',print_background=True,prefer_css_page_size=True,display_header_footer=True,header_template='<span></span>',footer_template='<div style="font:9px Arial;width:100%;padding:0 14mm;color:#637169;display:flex;justify-content:space-between"><span>CLUB VISUALS - USER GUIDE - 19 NOVEMBER 2026</span><span><span class="pageNumber"></span> / <span class="totalPages"></span></span></div>')
+    page.pdf(path=str(OUT),format='A4',print_background=True,prefer_css_page_size=True,display_header_footer=True,header_template='<span></span>',footer_template='<div style="font:9px Arial;width:100%;padding:0 14mm;color:#637169;display:flex;justify-content:space-between"><span>CLUB VISUALS - USER GUIDE - 20 NOVEMBER 2026</span><span><span class="pageNumber"></span> / <span class="totalPages"></span></span></div>')
     browser.close()
 reader=PdfReader(OUT);pages=[page.extract_text() or '' for page in reader.pages]
 assert len(pages)>20

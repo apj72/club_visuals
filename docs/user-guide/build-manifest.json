@@ -1,8 +1,8 @@
 {
-  "edition": "2026-11-19",
+  "edition": "2026-11-20",
   "chapters": 12,
-  "approximateWords": 7788,
-  "screenshots": 21,
+  "approximateWords": 7852,
+  "screenshots": 22,
   "source": "content.py",
   "captureTool": "docshots"
 }

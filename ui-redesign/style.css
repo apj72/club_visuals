@@ -17,13 +17,18 @@ html.redesign {overflow:hidden;height:100%}
 .redesign .rd-nav[inert] {opacity:.35}
 .redesign .rd-fallback {font-size:12px;text-decoration:none;white-space:nowrap}
 .redesign .remote-bar {position:relative;top:auto;margin:0;padding:10px 24px;border:0;border-bottom:1px solid var(--rd-line);border-radius:0;background:#1b241e;box-shadow:none;flex-shrink:0;display:grid;grid-template-columns:1fr auto;gap:3px 16px;font:12px/1.4 system-ui}
-.redesign .remote-bar>strong {color:var(--rd-accent);font-size:10px;letter-spacing:1.5px;margin:0}
 .redesign .remote-bar>span {grid-column:1;color:var(--rd-muted)}
-.redesign .remote-actions {grid-column:2;grid-row:1 / span 3;display:flex;align-items:center;gap:6px;margin:0}
+.redesign .remote-actions {grid-column:1 / -1;grid-row:auto;display:flex;align-items:center;gap:6px;margin:0;flex-wrap:wrap}
 .redesign .remote-actions button {font-size:12px;min-height:40px;background:#252f28;border-color:var(--rd-line);padding:8px 10px}
 .redesign #remoteTake {background:var(--rd-accent);color:#182311;font-weight:650}
 .redesign #remoteStop {color:#ffb5a4}
 .redesign .remote-bar p {margin:0}
+.redesign .remote-heading {grid-column:1 / -1;display:flex;align-items:center;gap:12px;min-width:0}
+.redesign .remote-heading strong {color:var(--rd-accent);font-size:10px;letter-spacing:1.5px;white-space:nowrap;margin:0}
+.redesign .remote-heading #remoteConnection {flex:1;min-width:0;color:var(--rd-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.redesign .remote-heading button {background:#252f28;border-color:var(--rd-line);font:12px system-ui;white-space:nowrap;min-height:36px}
+.redesign .remote-actions[hidden],.redesign #remoteIntro[hidden] {display:none}
+.redesign #remoteMessage:empty {display:none}
 .redesign #remoteConnection {color:var(--rd-muted)}
 .redesign #remoteMessage:not(:empty),.redesign .control-banner {grid-column:1 / -1}
 .redesign .control-banner {background:#293c29;padding:6px 10px}
@@ -85,6 +90,10 @@ html.redesign {overflow:hidden;height:100%}
 .redesign .header {max-width:none;margin:20px 0 0;border-top:1px solid var(--rd-line);padding-top:20px}
 .redesign .header h1 {text-align:left;font-size:16px;margin-bottom:10px}
 .redesign .header h1::after {content:' · Instagram import';font-weight:400;color:var(--rd-muted)}
+.redesign .rd-instagram-download {display:none;margin-bottom:14px;border:1px solid var(--rd-line);border-radius:8px;padding:12px;background:#141d17}
+.redesign body[data-workspace=library] .rd-instagram-download {display:block}
+.redesign .rd-instagram-download .header {margin:0;padding:12px 0 0;border:0}
+.redesign .rd-instagram-download .header h1::after {content:none}
 .redesign .auto-perform-panel {display:none;max-width:none;margin:0;overflow:auto;flex:1;min-height:0;background:var(--rd-panel);border-color:var(--rd-line);padding:20px}
 .redesign .auto-perform-controls {gap:14px;margin:20px 0}
 .redesign .auto-perform-status {padding:18px 0;gap:18px}

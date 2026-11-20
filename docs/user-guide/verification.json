@@ -1,9 +1,9 @@
 {
   "htmlPages": 13,
   "links": "all local links and anchors valid",
-  "screenshots": 21,
-  "pdfPages": 43,
-  "pdfBytes": 6634724,
+  "screenshots": 22,
+  "pdfPages": 44,
+  "pdfBytes": 7214750,
   "responsiveChecks": [
     "1440px",
     "390px"
