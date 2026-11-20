@@ -81,7 +81,7 @@ class PresentationRoutes(unittest.TestCase):
 
     def test_startup_identity_marks_complete_application(self):
         self.assertEqual(json.loads(self.get('/api/app-info')),
-                         {'interface': 'default', 'version': '2.0.0'})
+                         {'interface': 'default', 'version': '2.0.1'})
 
 
 class CompatibilityLauncherRoutes(PresentationRoutes):

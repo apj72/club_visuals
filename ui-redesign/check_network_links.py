@@ -37,6 +37,7 @@ with sync_playwright() as p:
   page.on('pageerror',lambda error:errors.append(str(error)))
   page.goto(f'http://127.0.0.1:{httpd.server_port}'+path,wait_until='domcontentloaded')
   addresses[:]=[{'interface':'en0','address':'192.168.2.10'},{'interface':'en1','address':'10.0.0.8'}]
+  if page.locator('#remoteControlsToggle').get_attribute('aria-expanded')=='false':page.locator('#remoteControlsToggle').click()
   page.locator('#ipadConnect').click()
   suffix='/?remote=1' if mode=='default' else '/classic?remote=1'
   page.wait_for_function('(url)=>document.getElementById("ipadConnectionUrl").value===url',arg=f'http://192.168.2.10:{httpd.server_port}'+suffix)

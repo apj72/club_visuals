@@ -39,11 +39,11 @@
 <body>
 <h1>Live VFX</h1>
 <p id="filename">The current player, layout and playlist supply the image.</p>
-<div class="row"><button id="enableBtn" onclick="toggleVfx()" aria-pressed="false">Turn VFX on</button><button id="vfxPulseBtn" onclick="sendPulse()">Fire ripple / smear</button></div>
-<p class="hint">Performance keys: 1–7 switch scenes; Space fires a pulse when this window has focus.</p>
+<div class="row"><button id="enableBtn" onclick="toggleVfx()" aria-pressed="false">Turn VFX on</button><button id="vfxPulseBtn" onclick="sendPulse()">Fire ripple</button></div>
+<p class="hint">Keys 1–5: ripple, ribbons, kaleidoscope, 3D logo/text, camera motion. Space fires a ripple pulse.</p>
 <div class="row"><button id="videoLayerBtn" onclick="toggleVideoLayer()">Turn video effect on</button><button id="logoLayerBtn" onclick="toggleLogoLayer()">Turn 3D logo on</button></div>
 <p class="hint">Video effects render behind an independent 3D logo/text layer. Turn either layer off without stopping the other.</p>
-<label><span>Video effect</span><select id="scene" onchange="sendSettings()"><option value="-1">Plain background video</option><option value="0">Liquid ripple</option><option value="1">Image smear</option><option value="2">Video ribbons</option><option value="3">Mirror sculpture</option><option value="4">Kaleidoscope tunnel</option><option value="5">Prism fracture</option><option value="6">3D logo only</option><option value="7">Camera motion extraction</option></select></label>
+<label><span>Video effect</span><select id="scene" onchange="sendSettings()"><option value="-1">Plain background video</option><option value="0">Liquid ripple</option><option value="2">Video ribbons</option><option value="4">Kaleidoscope tunnel</option><option value="6">3D logo / text only</option><option value="7">Camera motion extraction</option></select></label>
 <label><span>Intensity <output id="intensityValue">0.70</output></span><input id="intensity" type="range" min="0" max="2" step="0.01" value="0.7" oninput="sendSettings()"></label>
 <label><span>Feedback trails <output id="feedbackValue">0.72</output></span><input id="feedback" type="range" min="0" max="0.96" step="0.01" value="0.72" oninput="sendSettings()"></label>
 <details id="cameraControls">
@@ -66,7 +66,7 @@
 <p class="hint">The monitor shows movement only. Longer delays pick up slower movement; raise the threshold to reject camera noise. This detects changing pixels, rather than tracking whole people. Feedback trails above apply to other scenes; use Motion trails here.</p>
 </details>
 <section class="shape-controls" id="shapeControls">
-  <h2>Mirror sculpture</h2>
+  <h2>Mirror sculpture · legacy saved effect</h2>
   <button class="wide" onclick="useVersion1Logo()">Use Version1 logo</button>
   <label><span>Shape source</span><select id="shapeKind" onchange="sendShape()"><option value="text">Text</option><option value="image">Transparent image</option></select></label>
   <label id="textField"><span>Text</span><input id="shapeText" type="text" maxlength="40" value="CLUB" oninput="sendShape()"></label>
@@ -85,7 +85,7 @@
 <section class="logo3d-controls" id="logo3dControls">
   <h2>3D branding</h2>
   <p class="hint">Reflect the playing video in the Version1 logo or text. Choose Black · reflections only below for a chrome object on black, then add a path, zoom, multi-axis turns or hidden-video movement.</p>
-  <label><span>Object</span><select id="logo3dKind" onchange="sendLogo3d()"><option value="logo">Version1 logo</option><option value="text">Instagram ID</option></select></label>
+  <label><span>Object</span><select id="logo3dKind" onchange="sendLogo3d()"><option value="logo">Version1 logo</option><option value="text">3D text / Instagram ID</option></select></label>
   <label><span>Orientation</span><select id="logo3dOrientation" onchange="sendLogo3d()"><option value="horizontal">Horizontal · left → right</option><option value="top-bottom">Vertical · top → bottom</option><option value="bottom-top">Vertical · bottom → top</option></select></label>
   <button class="wide" id="logoMotionPlay" onclick="controlLogoMotion()" aria-pressed="false">Play logo motion</button>
   <button class="wide" id="logoPortraitRender" onclick="preparePortraitRender()">Record a 9:16 logo video…</button>
@@ -124,10 +124,11 @@
 <label><span>Input sensitivity <output id="sensitivityValue">1.0x</output></span><input id="sensitivity" type="range" min="0.2" max="4" step="0.1" value="1" oninput="sendSensitivity()"></label>
 <p class="status" id="audioStatus">The selected microphone or USB input is analysed only. Video audio does not drive VFX.</p>
 <div class="disconnected" id="disconnected">Main window disconnected. Reopen VFX from the player.</div>
+<script src="/effect_catalog.js"></script>
 <script src="/vfx_engine.js"></script>
 <script src="/logo_motion_controls.js"></script>
 <script>
-  window.CLUB_VISUALS_VFX_UI_VERSION = 16;
+  window.CLUB_VISUALS_VFX_UI_VERSION = 17;
   let editorWindow = null, editorOwner = null;
   let enabled = false;
   let audioConnected = false;
@@ -141,7 +142,7 @@
   function connectedEditor() {
     try {
       const identity = editorWindow && !editorWindow.closed && editorWindow.getVfxControllerIdentity?.();
-      return !!identity && identity.owner === editorOwner && identity.version === 16 && identity.renderer === 16;
+      return !!identity && identity.owner === editorOwner && identity.version === window.CLUB_VISUALS_VFX_UI_VERSION && identity.renderer === VfxEngine.CONTROL_VERSION;
     } catch { return false; }
   }
   function updateConnection() {
@@ -172,6 +173,10 @@
       $('enableBtn').textContent = enabled ? 'Turn VFX off' : 'Turn VFX on';
       $('enableBtn').setAttribute('aria-pressed', String(enabled));
       $('enableBtn').classList.toggle('active', enabled);
+      const sceneChoices = EffectCatalog.sceneChoices(vfx.scene);
+      if (JSON.stringify([...$('scene').options].map(o => [o.value,o.textContent])) !== JSON.stringify(Object.entries(sceneChoices))) {
+        $('scene').replaceChildren(...Object.entries(sceneChoices).map(([id,name]) => new Option(name,id)));
+      }
       $('scene').value = vfx.scene;
       if (vfx.scene === 7) $('cameraControls').open = true;
       $('feedback').disabled = vfx.scene === 7;
@@ -445,8 +450,8 @@
   updateConnection();
   window.addEventListener('keydown', event => {
     if (event.target.matches('input, select, textarea')) return;
-    if (/^[1-7]$/.test(event.key)) {
-      $('scene').value = Number(event.key) - 1;
+    if (/^[1-5]$/.test(event.key)) {
+      $('scene').value = EffectCatalog.shortcutScenes[Number(event.key) - 1];
       sendSettings();
     } else if (event.code === 'Space' && !event.target.matches('button')) {
       event.preventDefault();

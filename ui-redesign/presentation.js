@@ -26,8 +26,8 @@
     button.dataset.screen = key;
     nav.append(button);
   }
-  const fallback = make('a', 'rd-fallback', 'Original V1 ↗');
-  fallback.href = '/';
+  const fallback = make('a', 'rd-fallback', 'Classic interface ↗');
+  fallback.href = '/classic';
   header.append(nav, fallback);
   document.body.prepend(header);
   const title = make('div', 'rd-workspace-title');
@@ -42,6 +42,22 @@
   const reload = document.querySelector('[data-reload-library]');
   const reloadStatus = $('libraryReloadStatus');
   libraryToolbar.append(orderLabel, reload, reloadStatus);
+  const downloadImport = document.querySelector('.header');
+  const instagram = make('details', 'rd-instagram-download');
+  instagram.id = 'instagramDownloads';
+  instagram.append(make('summary', '', 'Download from Instagram'), downloadImport);
+  downloadImport.querySelector('h1').textContent = 'Instagram downloads';
+  $('libraryTab').prepend(instagram);
+  function openInstagramDownload() {
+    navigate('library');
+    instagram.open = true;
+    instagram.scrollIntoView({block:'nearest'});
+    $('url').focus({preventScroll:true});
+  }
+  const downloadAccess = action('Download from Instagram', openInstagramDownload);
+  downloadAccess.id = 'instagramDownloadAccess';
+  downloadAccess.title = 'Open Library’s Instagram downloader. Paste a reel or post URL and download it into your library.';
+  libraryToolbar.append(downloadAccess);
   title.after(libraryToolbar);
 
 
@@ -126,8 +142,10 @@
   const recording = action('Record editor', () => $('recordBtn').click());
   captureSection.append(recording);
   right.append(captureSection);
-  // Authentication/import stays intact and moves into Settings.
-  $('settingsTab').append(document.querySelector('.header'));
+  // Keep the original authentication and downloader together in Library.
+  const settingsImport = action('Open Instagram downloads', openInstagramDownload);
+  settingsImport.id = 'settingsInstagramDownload';
+  $('settingsTab').append(settingsImport);
   const prefs = make('section', 'rd-pattern-settings');
   prefs.append(make('h2', '', 'Featured mirror patterns'));
   prefs.append(make('p', 'rd-muted', 'Choose which existing V1 orientations appear first in Prepare. Show all reveals the full list. Preferences save on this browser.'));

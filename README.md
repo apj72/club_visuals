@@ -8,10 +8,10 @@ A browser-based tool for downloading Instagram videos and playing them back as m
 - [Download the printable PDF](output/pdf/club-visuals-user-guide.pdf).
 - [Read all chapters on one page](docs/user-guide/complete.html).
 
-The 19 November 2026 edition covers the redesigned interface, full playlist
+The 20 November 2026 edition covers the redesigned interface, full playlist
 composition playback, timed section editing, cue ranges, layered effects and
 logo motion, Show Builder, live inputs, capture and Mac/iPad operation. Its
-21 screenshots were captured with [Docshots](docs/user-guide/README.md#regenerate-screenshots-with-docshots)
+22 screenshots were captured with [Docshots](docs/user-guide/README.md#regenerate-screenshots-with-docshots)
 using isolated app data. Capture instructions are in the
 [guide-maintenance notes](docs/user-guide/README.md).
 
@@ -35,6 +35,19 @@ The current, source-checked references are:
 - [Technical reference](docs/technical-reference.md): architecture, APIs, data formats, persistence, backup and tests.
 - [Documentation index](docs/README.md): reading order and the status of older guides/screenshots.
 
+### Finding downloads and output controls
+
+In **Library**, click **Download from Instagram** to reveal the URL field and
+Instagram browser connection controls. Settings also links to this panel.
+The **Private preview** toolbar starts rolled up: **Output controls** expands
+its Mac/iPad actions and **Hide output controls** rolls them up again. The
+browser remembers this choice; connection and handover status remain visible.
+
+Use **3D Text** for reflective lettering. Image smear, Prism fracture and
+Mirror sculpture are retained for existing saved cues, but are no longer
+suggested for new effects, automatic performances or keyboard scene shortcuts.
+Vertical text stacks upright letters, including Instagram handles.
+
 ## Features
 
 - **Download** Instagram reels and posts via URL
@@ -50,7 +63,7 @@ The current, source-checked references are:
 - **Seamless looping** — near-invisible loop points
 - **Efficient rendering** — Canvas tiles share a single decoded video source
 - **HD 3D text/logo materials** — rounded bevels, three typefaces, nine finishes and live-video chrome/mirror reflections
-- **Live VFX** — ripple, image smear, video ribbons, kaleidoscope, prism fracture, reflective text, and a rotatable 3D Version1 logo, driven by a venue microphone or USB audio input
+- **Live VFX** — ripple, video ribbons, kaleidoscope, 3D text, and a rotatable 3D Version1 logo, driven by a venue microphone or USB audio input
 - **Auto Perform** — listens to a microphone/USB feed and automatically changes videos, layouts, transitions, and VFX on detected beats and musical sections
 - **Instagram background clips** — position a 4:5, 9:16, or square crop box over the player, choose a source timecode and length, and save a silent MP4 for Instagram Video Studio
 
@@ -211,7 +224,7 @@ remote Record Mac action.
 
 ### Live VFX
 
-While a video or playlist is playing, click **VFX** in the main player to open its dedicated pop-out controller. Turn VFX on, choose a scene, and adjust Intensity and Feedback. The effect applies to the current layout in the main fullscreen player, clean output window, and recordings. Keys 1–7 switch scenes and Space fires a pulse while the controller has focus. To react to the DJ's music, select a venue microphone or USB audio input and click **Connect**. The input is analysed but not played through the app. The video soundtrack is not used for VFX. The **FX** button opens the separate colour and trails controller.
+While a video or playlist is playing, click **VFX** in the main player to open its dedicated pop-out controller. Turn VFX on, choose a scene, and adjust Intensity and Feedback. The effect applies to the current layout in the main fullscreen player, clean output window, and recordings. Keys 1–5 select ripple, ribbons, kaleidoscope, 3D logo/text or camera motion; Space fires a ripple pulse while the controller has focus. To react to the DJ's music, select a venue microphone or USB audio input and click **Connect**. The input is analysed but not played through the app. The video soundtrack is not used for VFX. The **FX** button opens the separate colour and trails controller.
 
 ### Auto Perform: sound to visuals
 
@@ -221,9 +234,10 @@ Use **Style** and **Change every** to tune the performance. **Videos** can use t
 
 Open **3D text for Auto Perform** to manage named text lists. The starter **Version1 regulars** list contains `@tonyt.dj`, `@smilejack`, `@moss_b`, and `version1djs.com`. Add event names, Instagram IDs, or short web URLs; edit or remove entries, untick any you want to exclude, and use **Show now** to preview one immediately. **Save as new** copies the current list under a new name, while **Rename** and **Delete list** manage saved lists. Edits save automatically, and the last selected list loads when this browser opens Club Visuals again. An existing custom text pool is kept as **My text** during the upgrade, with missing regular entries added. Auto Perform rotates through enabled entries in the active list when it selects the 3D text scene, avoiding the previous entry when it can. With Original colours, Instagram IDs have a red @ and white handle and event names/URLs are white; other selected 3D finishes determine their material appearance. If no entries are enabled, Auto Perform can still show the Version1 logo.
 
-**Mirror sculpture** uses the live video as a reflection inside text or a transparent PNG/WebP silhouette. Enter a title or Instagram handle, click **Use current video's @ID**, select the bundled **Version1 logo**, or upload logo artwork (up to 1 MB). The Position, Size, Reflection depth, Edge glow, 3D angle, Extrusion, and Motion controls shape the object and bend the video around it. Use a high-contrast logo with a transparent background; the image's alpha defines the reflective surface. The 3D controls create a live extruded silhouette rather than importing a 3D mesh.
-
-After loading a video, click **Mirror 3D** in the player controls to switch straight to Mirror sculpture and open its controller. Click the active button again to turn the effect off and close the controller.
+**Legacy saved effects:** Mirror sculpture, Image smear and Prism fracture still
+play in existing saved cues. Their controls appear only when editing an existing
+legacy effect. For new reflective lettering, use **3D Text**; vertical orientation
+stacks upright letters and retains the red @ in Original colours.
 
 Click **3D Logo** for the Version1 object or **3D Text** for editable text or an Instagram ID. Click the active button again to turn it off and close the controller. Text starts as `@tonyt.dj` in Modern sans; choose Bungee for the original block style or Editorial serif for a different look. Adjust position, size, depth and X/Y/Z rotation, or choose an auto rotation axis and its start/end angles. Auto rotate at zero holds the manual angle. The selected logo or text also becomes the shape used by Mirror 3D.
 

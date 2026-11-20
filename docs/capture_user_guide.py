@@ -40,7 +40,7 @@ def main():
             assert width>200 and height>100
             records.append({'name':scenario['name'],'caption':scenario['caption'],'width':width,'height':height,'bytes':path.stat().st_size})
         target=ROOT/'docs/user-guide/assets/screenshots/capture-manifest.json'
-        if not args.scenario:target.write_text(json.dumps({'tool':'docshots','captured':'2026-11-19','isolated':True,'screenshots':records},indent=2))
+        if not args.scenario:target.write_text(json.dumps({'tool':'docshots','captured':'2026-11-20','isolated':True,'screenshots':records},indent=2))
         print('Verified Docshots captures:',len(records),'Temporary app data:',work,flush=True)
     finally:httpd.shutdown();httpd.server_close()
 

@@ -652,7 +652,7 @@
         ['bevel',0,.1,.035],['roughness',.025,.8,.14],['reflection',0,2,1],['environment',0,2,1],['exposure',.3,2,1]]) {
         const value=Number(this.logo3d[key]);this.logo3d[key]=Number.isFinite(value)?Math.max(min,Math.min(max,value)):fallback;
       }
-      if (this.logo3d.kind === 'text' && (previousKind !== 'text' || previousText !== this.logo3d.text || previousFont !== this.logo3d.font)) {
+      if (this.logo3d.kind === 'text' && (previousKind !== 'text' || previousText !== this.logo3d.text || previousFont !== this.logo3d.font || previousOrientation !== this.logo3d.orientation)) {
         if (this.logo3d.font !== 'bungee' || this.textFontReady) this.renderLogoText();
         else this.logoSurfaceReady = false;
       } else if (this.logo3d.kind === 'logo' && (previousKind !== 'logo' || previousOrientation !== this.logo3d.orientation)) {
@@ -678,6 +678,34 @@
       const padding = 64;
       const family = this.logo3d.font === 'bungee' ? '"Version1 Bungee"'
         : this.logo3d.font === 'serif' ? 'Georgia, serif' : '"Avenir Next", Arial, sans-serif';
+      if (this.logo3d.orientation !== 'horizontal') {
+        // The object still follows its vertical axis for fitting, snake and fly.
+        // Counter-turn each grapheme in its atlas so every letter stays upright
+        // after that object rotation. Keep spaces, punctuation and the red @.
+        const glyphs = typeof Intl.Segmenter === 'function'
+          ? [...new Intl.Segmenter(undefined, {granularity:'grapheme'}).segment(value)].map(item => item.segment)
+          : Array.from(value);
+        const units = glyphs.map(glyph => /\s/.test(glyph) ? .6 : 1.15);
+        const maxWidth = Math.min(this.maxTextureSize,4096);
+        fontSize = Math.min(fontSize, (maxWidth - 32) / (units.reduce((sum,n) => sum+n,0) + .24));
+        const pad = Math.max(8,fontSize*.12);
+        ctx.font = `900 ${fontSize}px ${family}`;
+        const glyphWidth = Math.max(...glyphs.map(glyph => ctx.measureText(glyph).width));
+        canvas.width = Math.min(maxWidth,Math.ceil(units.reduce((sum,n) => sum+n*fontSize,0)+pad*2));
+        canvas.height = Math.min(this.maxTextureSize,Math.ceil(glyphWidth+pad*2));
+        ctx.font = `900 ${fontSize}px ${family}`;
+        ctx.textBaseline = 'middle'; ctx.textAlign = 'center';
+        let offset = pad;
+        glyphs.forEach((glyph,index) => {
+          const advance = units[index]*fontSize;
+          ctx.save(); ctx.translate(offset+advance/2,canvas.height/2);
+          ctx.rotate(this.logo3d.orientation === 'top-bottom' ? -Math.PI/2 : Math.PI/2);
+          ctx.fillStyle = hasAt && index===0 ? '#e20d22' : '#ffffff';
+          ctx.fillText(glyph,0,0); ctx.restore(); offset+=advance;
+        });
+        this.uploadLogoSurface(canvas);
+        return;
+      }
       const measure = () => {
         ctx.font = `900 ${fontSize}px ${family}`;
         return (hasAt ? ctx.measureText('@').width : 0) + ctx.measureText(handle).width;
@@ -926,7 +954,7 @@
       this.previous = next;
     }
   }
-  VfxEngine.CONTROL_VERSION = 16;
+  VfxEngine.CONTROL_VERSION = 17;
   VfxEngine.distanceField = distanceField;
   VfxEngine.logoEnabled = logoEnabled;
   VfxEngine.baseEnabled = baseEnabled;

@@ -1181,7 +1181,7 @@
           <button class="btn-ctrl" id="fxBtn" onclick="openFxController()">FX</button>
           <button class="btn-ctrl" id="vfxBtn" onclick="openVfxController()">VFX</button>
           <button class="btn-ctrl" id="cameraMotionBtn" onclick="openCameraMotionController()">Camera motion…</button>
-          <button class="btn-ctrl" id="mirrorBtn" onclick="activateMirrorSculpture()" title="Open reflective text and logo controls">Mirror 3D</button>
+          <button class="btn-ctrl" id="mirrorBtn" onclick="activateMirrorSculpture()" hidden style="display:none" title="Legacy mirror sculpture, retained for existing saved effects">Mirror 3D</button>
           <button class="btn-ctrl" id="reflectionLogoBtn" onclick="activateReflectionLogo()" title="Chrome logo reflecting video against black">Chrome on black</button>
           <button class="btn-ctrl" id="logo3dBtn" onclick="activateLogo3d()" title="Show the rotatable Version1 logo">3D Logo</button>
           <button class="btn-ctrl" id="text3dBtn" onclick="activateText3d()" title="Show editable 3D Instagram text">3D Text</button>
@@ -1511,6 +1511,7 @@
   </div>
 </div>
 
+<script src="/effect_catalog.js"></script>
 <script src="/vfx_engine.js"></script>
 <script src="/camera_motion.js"></script>
 <script src="/reflection_video.js"></script>
@@ -2209,14 +2210,14 @@
   }
 
   const vfxControllerOwner = globalThis.crypto?.randomUUID?.() || `editor-${Date.now()}-${Math.random()}`;
-  function getVfxControllerIdentity() { return {owner: vfxControllerOwner, version: 16, renderer: VfxEngine.CONTROL_VERSION, filename: currentFilename}; }
+  function getVfxControllerIdentity() { return {owner: vfxControllerOwner, version: VfxEngine.CONTROL_VERSION, renderer: VfxEngine.CONTROL_VERSION, filename: currentFilename}; }
   function connectVfxController(controller) {
     if (controller !== vfxWindow || controller.closed) return;
     if (typeof controller.attachEditor === 'function') controller.attachEditor(window, vfxControllerOwner);
   }
   function openVfxController() {
     if (vfxWindow && !vfxWindow.closed) {
-      if (vfxWindow.CLUB_VISUALS_VFX_UI_VERSION !== 12) {
+      if (vfxWindow.CLUB_VISUALS_VFX_UI_VERSION !== getVfxControllerIdentity().version) {
         const controller = vfxWindow;
         controller.addEventListener('load', () => connectVfxController(controller), {once: true});
         controller.location.replace('/vfx');
@@ -2827,8 +2828,7 @@
   function autoChangeVfx(energy) {
     if (!autoRun) return;
     const profile = autoUi('autoProfile').value;
-    const scenes = profile === 'ambient' ? [0, 1, 3, 5, 6] : profile === 'hypnotic' ? [0, 2, 3, 4, 5, 6]
-      : [0, 1, 2, 3, 4, 5, 6];
+    const scenes = EffectCatalog.automaticScenes(profile);
     const scene = autoPick(scenes);
     if (scene === 6) {
       const entries = autoTextEntries.filter(entry => entry.enabled && autoTextDisplay(entry));
@@ -4772,12 +4772,7 @@
     }
   }
   const TRANSITION_PACE_NAMES = { steady: 'Even', accelerate: 'Build', decelerate: 'Hit', ease: 'Ease' };
-  const PL_CUE_EFFECTS = {
-    off: 'Off', 'scene-0': 'Liquid ripple', 'scene-1': 'Image smear',
-    'scene-2': 'Video ribbons', mirror: 'Mirror sculpture',
-    'scene-4': 'Kaleidoscope tunnel', 'scene-5': 'Prism fracture',
-    logo: '3D Version1 logo', text: '3D text', camera: 'Camera motion extraction', video:'Plain background video',
-  };
+  const PL_CUE_EFFECTS = EffectCatalog.names;
   const TRANSITION_ART = {
     'cut': '<path d="M5 4v24M43 4v24M20 4v24M28 4v24"/><path d="M20 16h8" stroke-dasharray="2 3"/>',
     'fade-in': '<rect x="5" y="6" width="10" height="20" fill="currentColor" opacity=".25"/><rect x="18" y="6" width="10" height="20" fill="currentColor" opacity=".55"/><rect x="31" y="6" width="12" height="20" fill="currentColor"/>',
@@ -5623,7 +5618,7 @@
       }
       const cueDuration=timelineSegments[plPlaylist.entries.indexOf(plCueEntry)]?.duration || 10000;
       field('At (seconds)', 'at', 'number', { min: '0', max: String(Math.max(0,cueDuration-.001)), step: '0.1' });
-      field('Effect', 'effect', 'select', { options: PL_CUE_EFFECTS });
+      field('Effect', 'effect', 'select', { options: EffectCatalog.cueChoices(cue.effect) });
       const active = cue.effect !== 'off';
       if (active) {
         field('Intensity', 'intensity', 'number', { min: '0', max: '1' });
@@ -5752,7 +5747,7 @@
   async function autoScriptPlaylistEffects() {
     const playlist = plPlaylist;
     const status = document.getElementById('plAutoScriptStatus');
-    const scenes = ['scene-0', 'scene-2', 'mirror', 'scene-4', 'scene-5', 'logo', 'text'];
+    const scenes = ['scene-0', 'scene-2', 'scene-4', 'logo', 'text'];
     const candidates = playlist.entries.map((entry, index) => ({ entry, index }))
       .filter(({ entry }) => !Array.isArray(entry.cues) || entry.cues.length === 0);
     if (!candidates.length) { status.textContent = 'Every video already has cues.'; return; }

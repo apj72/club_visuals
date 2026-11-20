@@ -8,6 +8,18 @@ const E = context.window.VfxEngine;
 const logo = {x: .5, y: .5, scale: .3, depth: .45, rotX: 0, rotY: -20, rotZ: 0, motion: .25, axis: 'y', startAngle: -45, endAngle: 45};
 const plain = value => JSON.parse(JSON.stringify(value));
 
+test('changing text orientation rebuilds its glyph surface without changing authored rotation', () => {
+  const engine = Object.create(E.prototype);
+  engine.logo3d = {kind:'text',text:'@text',font:'modern',orientation:'horizontal',rotX:0,rotY:0,rotZ:0,motion:0};
+  let renders = 0;
+  engine.renderLogoText = () => { renders++; };
+  for (const orientation of ['top-bottom','bottom-top','horizontal']) engine.setLogo3d({orientation});
+  assert.equal(renders,3);
+  engine.setLogo3d({rotY:45});
+  assert.equal(renders,3);
+  assert.equal(engine.logo3d.rotY,45);
+});
+
 test('old effects retain their pose and video backdrop without authored automation', () => {
   const sample = E.sampleAnimation(logo, 8);
   assert.deepEqual(plain(sample.pose), logo);

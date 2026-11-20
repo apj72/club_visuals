@@ -19,7 +19,6 @@
   const profile = () => library.profiles.find(p => p.id === profileId);
   const brick = () => library.bricks.find(b => b.id === brickId);
   const viewNames = {single: '1× · single', dual: '2× · dual', triple: '3× · triple', quad: '4× · four tiles', six: '6× · six tiles', octo: '8× · eight tiles'};
-  const effectNames = {...PL_CUE_EFFECTS, dj: 'DJ profile branding'};
   const time = seconds => {
     const n = Math.round(seconds); return `${Math.floor(n / 3600) ? Math.floor(n / 3600) + ':' + String(Math.floor(n % 3600 / 60)).padStart(2, '0') : Math.floor(n / 60)}:${String(n % 60).padStart(2, '0')}`;
   };
@@ -309,7 +308,7 @@
     layouts.append(button('+ Layout change', () => { (s.layoutCues ||= []).push({at: Math.max(.1, s.seconds / 2), view: 'dual', preset: 7, zoom: s.zoom ?? 1, panX: s.panX ?? 0, panY: s.panY ?? 0}); changed(); })); form.append(layouts);
     const fx = panel('Timed effects and branding', 'Effect windows are local to this step. DJ profile branding substitutes the selected DJ’s text.');
     (s.effects || []).forEach((effect, i) => {
-      fx.append(row(field('At · seconds', input(effect.at, value => { effect.at = value; changed(); }, 'number', {min: 0, max: s.seconds, step: .1})), field('For · seconds', input(effect.seconds, value => { effect.seconds = value; changed(); }, 'number', {min: .1, max: s.seconds, step: .1})), field('Effect', select(effect.effect, Object.entries(effectNames).filter(([id]) => id !== 'off'), value => { effect.effect = value; changed(); })), field('Text (for text effects)', input(effect.text || '', value => { effect.text = value; changed(); }, 'text', {maxLength: 80})), button('Remove', () => { s.effects.splice(i, 1); changed(); })));
+      fx.append(row(field('At · seconds', input(effect.at, value => { effect.at = value; changed(); }, 'number', {min: 0, max: s.seconds, step: .1})), field('For · seconds', input(effect.seconds, value => { effect.seconds = value; changed(); }, 'number', {min: .1, max: s.seconds, step: .1})), field('Effect', select(effect.effect, Object.entries({...EffectCatalog.cueChoices(effect.effect), dj:'DJ profile branding'}).filter(([id]) => id !== 'off'), value => { effect.effect = value; changed(); })), field('Text (for text effects)', input(effect.text || '', value => { effect.text = value; changed(); }, 'text', {maxLength: 80})), button('Remove', () => { s.effects.splice(i, 1); changed(); })));
       if (['logo', 'text', 'dj'].includes(effect.effect)) {
         const motion = el('details'); motion.append(el('summary', '', 'Object appearance, reflections and choreography'));
         window.LogoMotionControls?.mount(motion, {settings: effect,showAppearance:true,showReflection:true,showText:false,showPreview:true,

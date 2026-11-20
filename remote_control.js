@@ -18,9 +18,11 @@ const hostCommandResults = [];
 let remoteQueue = Promise.resolve();
 const remoteBar = document.createElement('section');
 remoteBar.className = 'remote-bar';
-remoteBar.innerHTML = `<strong>${isMacEngine ? 'Mac playout engine' : 'PRIVATE PREVIEW'}</strong>
-  <span>${isMacEngine ? 'Keep this engine open. Audio inputs belong to this Mac.' : 'Audition and edit here. Changes stay private until you send them.'}</span>
-  <div class="remote-actions">
+remoteBar.innerHTML = `<div class="remote-heading"><strong>${isMacEngine ? 'Mac playout engine' : 'PRIVATE PREVIEW'}</strong>
+  <span id="remoteConnection" role="status">Connecting to Mac…</span>
+  <button id="remoteControlsToggle" type="button" aria-controls="remoteControlsPanel" aria-expanded="false">Output controls ▾</button></div>
+  <span id="remoteIntro">${isMacEngine ? 'Keep this engine open. Audio inputs belong to this Mac.' : 'Audition and edit here. Changes stay private until you send them.'}</span>
+  <div class="remote-actions" id="remoteControlsPanel">
   <button id="remoteTake">Send to Mac ▶</button><button id="remotePlaylist">Play this playlist on Mac</button>
   <button id="remoteStop">Stop Mac</button><button id="remoteNext">Next on Mac</button>
   <button id="remoteFullscreen">Mac fullscreen</button>
@@ -31,9 +33,22 @@ remoteBar.innerHTML = `<strong>${isMacEngine ? 'Mac playout engine' : 'PRIVATE P
     <button id="controlClaim" hidden>Take remote control</button>
     <button id="controlOpen" hidden>Open output screen</button>
   </div>
-  <p id="remoteConnection" role="status">Connecting to Mac…</p>
   <p id="remoteMessage" role="status"></p>`;
 document.body.prepend(remoteBar);
+const remoteControlsToggle = document.getElementById('remoteControlsToggle');
+function showOutputControls(expanded, remember = false) {
+  document.getElementById('remoteControlsPanel').hidden = isMacEngine || !expanded;
+  document.getElementById('remoteIntro').hidden = !isMacEngine && !expanded;
+  remoteControlsToggle.setAttribute('aria-expanded', String(expanded));
+  remoteControlsToggle.textContent = expanded ? 'Hide output controls ▴' : 'Output controls ▾';
+  if (remember) try { localStorage.setItem('clubVisuals.outputControlsExpanded', String(expanded)); } catch {}
+}
+let outputControlsExpanded = false;
+try { outputControlsExpanded = localStorage.getItem('clubVisuals.outputControlsExpanded') === 'true'; } catch {}
+remoteControlsToggle.hidden = isMacEngine;
+remoteControlsToggle.title = 'Show or hide Mac output controls. Preview and editing stay private until you send them.';
+showOutputControls(outputControlsExpanded);
+remoteControlsToggle.addEventListener('click', () => showOutputControls(remoteControlsToggle.getAttribute('aria-expanded') !== 'true', true));
 const macEditor = document.createElement('div');
 macEditor.id = 'macEditorControls';
 for (const element of [...document.body.children]) {
@@ -52,6 +67,7 @@ const remoteStyle = document.createElement('style');
 remoteStyle.textContent = `.remote-bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:100;margin:12px;padding:14px;border:2px solid #56d6bd;border-radius:10px;background:#182333;color:white;font:14px system-ui;box-shadow:0 6px 18px #0005}
 .remote-bar strong{display:block;color:#56d6bd;margin-bottom:6px}.remote-actions{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
 .remote-actions[hidden]{display:none}.remote-actions button,.remote-actions a{padding:12px;min-height:44px;background:#29354a;color:white;border:1px solid #73849d;border-radius:6px;text-decoration:none}
+.remote-heading{display:flex;align-items:center;gap:12px;flex-wrap:wrap}.remote-heading strong{margin:0}.remote-heading #remoteConnection{flex:1;min-width:0}.remote-heading button{padding:8px 12px;min-height:40px;border:1px solid #73849d;border-radius:6px;background:#29354a;color:white;cursor:pointer}.remote-heading button[hidden],#remoteIntro[hidden]{display:none}#remoteMessage:empty{display:none}
 #remoteTake{background:#16755f}#remoteMessage{color:#ffda87}.remote-bar p{margin-top:6px}
 .control-banner{padding:12px;background:#283a4b;border-radius:6px}.control-banner[hidden]{display:none}.control-banner button{padding:12px;min-height:44px;margin:4px 8px 0 0;border-radius:6px;border:1px solid #86cbbd;background:#203b36;color:white}
 #macEditorControls.remote-locked{opacity:.35;filter:grayscale(1);pointer-events:none}.remote-actions button:disabled{opacity:.35;cursor:not-allowed}
@@ -313,6 +329,7 @@ async function pollMacStatus() {
     const full = windowStatus?.connected ? windowStatus.fullscreen : output?.fullscreen;
     document.getElementById('remoteConnection').textContent =
       `Output: ${output?.connected || windowStatus?.connected ? (full ? 'fullscreen' : 'windowed') : 'offline'} · Mac engine: ${host?.connected ? 'connected' : 'offline'}${host?.connected && host.filename ? ' · Live: ' + host.filename : ''}`;
+    document.getElementById('remoteConnection').title = document.getElementById('remoteConnection').textContent;
     document.getElementById('remoteFullscreen').textContent = full ? 'Exit Mac fullscreen' : 'Mac fullscreen';
     document.getElementById('fsBtn').textContent = full ? 'Exit Mac fullscreen' : 'Mac fullscreen';
     if (!isMacEngine && host?.connected) {
@@ -329,6 +346,7 @@ async function pollMacStatus() {
   } catch {
     if (isRemoteController) updateControlOwnership({remote:false});
     document.getElementById('remoteConnection').textContent = 'Connection lost. Preview remains private.';
+    document.getElementById('remoteConnection').title = 'Connection lost. Preview remains private.';
   }
 }
 updateControlOwnership({remote:false});

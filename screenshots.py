@@ -23,6 +23,7 @@ config={
       if(typeof loadPlaylistBySlug!=='function')return;
       for(const dialog of document.querySelectorAll('dialog[open]'))dialog.close();
       if(plPlaying)stopPlaylist();
+      if(document.getElementById('instagramDownloads'))document.getElementById('instagramDownloads').open=false;
       for(let n=0;n<100&&video.readyState<2;n++)await new Promise(r=>setTimeout(r,50));
       if(captionEnabled)toggleCaption();video.pause();
       await loadPlaylistBySlug({json.dumps(SLUG)});
@@ -42,6 +43,7 @@ VFX_SETUP=f'''async()=>{{
 }}'''
 
 scenarios=[
+ shot('22-instagram-download','Library: Instagram download and connection controls.','/#library',[{'click':'#instagramDownloadAccess'}]),
  shot('01-prepare','Prepare: private preview, video library and edit controls.','/#prepare',[seek(65),js("document.querySelector('.rd-nav [data-screen=prepare]').click()")]),
  shot('02-library','Library: newest-first sorting, combined filters and tags.','/#library'),
  shot('03-classification','Classification manager with shared tag vocabulary.','/#library',[js('openTagManager()')]),
@@ -60,7 +62,7 @@ scenarios=[
  shot('16-auto-perform','Audio-reactive Auto Perform, kept offline for this documentation capture.','/#auto'),
  shot('17-social-capture','Capture: choose output format, source time, length and loop transition.','/#capture',[seek(65),js("document.querySelector('.rd-nav [data-screen=capture]').click()")]),
  shot('18-logo-render','Reusable 9:16 logo capture and restart-cycle choice.','/#prepare',[seek(260),js("document.querySelector('.rd-nav [data-screen=prepare]').click();setVfxLogo3d({orientation:'top-bottom'});prepareLogoRender()"),{'wait':500}]),
- shot('19-settings','Settings: mirror preferences, folders and Instagram connection.','/#settings'),
+ shot('19-settings','Settings: mirror preferences, folders and Instagram download shortcut.','/#settings'),
  shot('20-ipad-playlist','The same composition editor at iPad size.',actions=[seek(25)],viewport=[834,1194]),
  shot('21-transition-audition','Transition audition using actual neighbouring library videos.',actions=[seek(65),js("openTransitionAudition('cross-dissolve',2)"),{'wait':600},{'screenshot':'#transitionAuditionDialog'}]),
 ]
