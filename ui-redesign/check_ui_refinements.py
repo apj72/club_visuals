@@ -26,7 +26,8 @@ try:
         collapsed=page.locator('.remote-bar').bounding_box()['height']
         toggle.click()
         assert page.locator('#remoteControlsPanel').is_visible()
-        assert page.locator('.remote-bar').bounding_box()['height']>collapsed+25
+        assert page.locator('.remote-bar').bounding_box()['height']<=collapsed+2
+        assert page.locator('#rdOutputPopover').is_visible()
         page.reload(wait_until='domcontentloaded')
         assert toggle.get_attribute('aria-expanded')=='true'
         toggle.click()
@@ -35,6 +36,8 @@ try:
         assert toggle.is_enabled()
         page.evaluate('updateControlOwnership({remote:false,owner:null})')
         # Library's visible shortcut reveals the original wired downloader.
+        assert not page.locator('#instagramDownloadAccess').is_visible()
+        page.locator('.rd-nav [data-screen=library]').click()
         page.locator('#instagramDownloadAccess').click()
         assert page.evaluate('document.body.dataset.workspace')=='library'
         assert page.locator('#instagramDownloads').evaluate('(e)=>e.open')

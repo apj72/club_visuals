@@ -23,6 +23,7 @@ config={
       if(typeof loadPlaylistBySlug!=='function')return;
       for(const dialog of document.querySelectorAll('dialog[open]'))dialog.close();
       if(plPlaying)stopPlaylist();
+      if(typeof showOutputControls==='function')showOutputControls(false);
       if(document.getElementById('instagramDownloads'))document.getElementById('instagramDownloads').open=false;
       for(let n=0;n<100&&video.readyState<2;n++)await new Promise(r=>setTimeout(r,50));
       if(captionEnabled)toggleCaption();video.pause();
@@ -43,6 +44,7 @@ VFX_SETUP=f'''async()=>{{
 }}'''
 
 scenarios=[
+ shot('23-output-dropdown','Private preview in the header with output controls open over the workspace.','/#prepare',[seek(65),{'click':'#remoteControlsToggle'}]),
  shot('22-instagram-download','Library: Instagram download and connection controls.','/#library',[{'click':'#instagramDownloadAccess'}]),
  shot('01-prepare','Prepare: private preview, video library and edit controls.','/#prepare',[seek(65),js("document.querySelector('.rd-nav [data-screen=prepare]').click()")]),
  shot('02-library','Library: newest-first sorting, combined filters and tags.','/#library'),
